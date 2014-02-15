@@ -21,9 +21,11 @@ dnl **************************************************
 dnl * Libraries requirements                         *
 dnl **************************************************
 PKG_PROG_PKG_CONFIG([0.10])
-GLIB_VERSION=2.2.0
+GLIB_VERSION=2.26.0
+GIO_VERSION=2.26.0
 
 AC_SUBST(GLIB_VERSION)
+AC_SUBST(GIO_VERSION)
 
 dnl **************************************************
 dnl * Build time sanity check                        *
@@ -63,6 +65,7 @@ dnl **************************************************
 dnl * checking for glib                              *
 dnl **************************************************
 PKG_CHECK_MODULES(GLIB, [glib-2.0 >= $GLIB_VERSION])
+PKG_CHECK_MODULES(GIO, [gio-2.0 >= $GIO_VERSION])
 
 AC_PROG_INSTALL
 
@@ -156,6 +159,8 @@ AC_SUBST(LDFLAGS)
 AC_SUBST(CFLAGS)
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
+AC_SUBST(GIO_CFLAGS)
+AC_SUBST(GIO_LIBS)
 
 
 AC_CONFIG_FILES([

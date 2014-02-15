@@ -19,10 +19,17 @@
  *    You should have received a copy of the GNU General Public License
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
-
+/**
+ * @file monitor.h
+ *
+ *  This file contains all the definitions for the monitor program.
+ */
 #ifndef _MONITOR_H_
 #define _MONITOR_H_
 
 #include <stdio.h>
+#include <glib.h>
+#include <gio/gio.h>
+
 
 #endif /* #IFNDEF _MONITOR_H_ */

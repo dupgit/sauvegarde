@@ -1,11 +1,11 @@
 bin_PROGRAMS = monitor
 
 monitor_LDFLAGS = $(LDFLAGS)
-monitor_LDADD = $(GLIB_LIBS)
+monitor_LDADD = $(GLIB_LIBS) $(GIO_LIBS)
 
 MON_HEADERFILES = monitor.h
 
 monitor_SOURCES = monitor.c               \
 				  $(MON_HEADERFILES)
 
-AM_CPPFLAGS = $(GLIB_CFLAGS)
+AM_CPPFLAGS = $(GLIB_CFLAGS) $(GIO_CFLAGS)

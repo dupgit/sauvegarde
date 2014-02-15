@@ -2,3 +2,10 @@ Sauvegarde
 ==========
 
 Some experiments around backup.
+
+Comments
+--------
+
+Sauvegarde uses Javadoc comment style to be parsed by doxygen. Please
+continue to use this style into comments in the whole project as it will
+be parsed by doxygen.
