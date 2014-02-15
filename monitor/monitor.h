@@ -19,3 +19,10 @@
  *    You should have received a copy of the GNU General Public License
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
+
+#IFNDEF _MONITOR_H_
+#DEFINE _MONITOR_H_
+
+#include <stdio.h>
+
+#ENDIF /* #IFNDEF _MONITOR_H_ */

@@ -19,3 +19,12 @@
  *    You should have received a copy of the GNU General Public License
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
+
+#include "monitor.h"
+
+int main(int argc, char **argv)
+{
+
+
+    return 0;
+}
