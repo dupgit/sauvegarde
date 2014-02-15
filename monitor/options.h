@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
- *    monitor.h
+ *    options.h
  *    This file is part of "Sauvegarde" project.
  *
  *    (C) Copyright 2014 Olivier Delhomme
@@ -20,33 +20,37 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file monitor.h
+ * @file options.h
  *
- *  This file contains all the definitions for the monitor program.
+ *  This file contains all the definitions for the options of the command
+ *  line.
  */
-#ifndef _MONITOR_H_
-#define _MONITOR_H_
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <glib.h>
-#include <gio/gio.h>
-
-#include "config.h"
-#include "options.h"
+#ifndef _OPTIONS_H_
+#define _OPTIONS_H_
 
 /**
- * @def MONITOR_DATE
- * defines heraia's creation date
- *
- * @def MONITOR_AUTHORS
- * defines heraia's main authors
- *
- * @def MONITOR_LICENSE
- * defines heraia's license (at least GPL v2)
+ * @struct options_t
+ * Structure Options gives a way to store program options passed from the
+ * command line.
  */
-#define MONITOR_AUTHORS "Olivier Delhomme"
-#define MONITOR_DATE "15 02 2014"
-#define MONITOR_LICENSE ("GPL v3 or later")
+typedef struct
+{
+    gboolean version;    /** TRUE if we have to display program's version */
+} options_t;
 
-#endif /* #IFNDEF _MONITOR_H_ */
+
+/**
+ * This function parses command line options.
+ * @param argc : number of arguments given on the command line.
+ * @param argv : an array of strings that contains command line arguments.
+ */
+extern options_t *manage_command_line_options(int argc, char **argv);
+
+/**
+ * Frees the options structure if necessary
+ * @param opt : the malloc'ed options_t structure
+ */
+extern void free_options_t_structure(options_t *opt);
+
+
+#endif /* #IFNDEF _OPTIONS_H_ */

@@ -38,21 +38,47 @@ static void print_libraries_versions(void);
  */
 static void print_libraries_versions(void)
 {
-
-    fprintf(stdout, "GLIB version : %d.%d.%d\n", glib_major_version, glib_minor_version, glib_micro_version);
+    fprintf(stdout, "%s was compiled with the following libraries :\n", PACKAGE_NAME);
+    fprintf(stdout, "\t. GLIB version : %d.%d.%d\n", glib_major_version, glib_minor_version, glib_micro_version);
 
 }
 
 
 /**
- * main function
+ * Prints the version of the program.
+ */
+static void print_program_version(void)
+{
+
+    fprintf(stdout, "%s version : %s (%s)\n", PACKAGE_NAME, PACKAGE_VERSION, MONITOR_DATE);
+    fprintf(stdout, "Author(s) : %s\n", MONITOR_AUTHORS);
+    fprintf(stdout, "License : %s\n", MONITOR_LICENSE);
+    fprintf(stdout, "\n");
+
+}
+
+
+/**
+ * Main function
+ * @param argc : number of arguments given on the command line.
+ * @param argv : an array of strings that contains command line arguments.
+ * @returns always 0
  */
 int main(int argc, char **argv)
 {
+    options_t *opt = NULL;
 
     g_type_init();
 
-    print_libraries_versions();
+    opt = manage_command_line_options(argc, argv);
+
+    if (opt != NULL && opt->version == TRUE)
+        {
+            print_program_version();
+            print_libraries_versions();
+        }
+
+    free_options_t_structure(opt);
 
     return 0;
 }
