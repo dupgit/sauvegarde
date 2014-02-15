@@ -4,9 +4,10 @@ AC_INIT([Sauvegarde], [0.0.1],
         [Olivier Delhomme <olivier.delhomme@free.fr>],
         [Sauvegarde])
 
-AC_PROG_CC
 AM_INIT_AUTOMAKE([$PACKAGE_TARNAME], [$PACKAGE_VERSION])
 
+AC_PROG_CC
+AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INTLTOOL([0.23])
 
 

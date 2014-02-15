@@ -20,9 +20,9 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 
-#IFNDEF _MONITOR_H_
-#DEFINE _MONITOR_H_
+#ifndef _MONITOR_H_
+#define _MONITOR_H_
 
 #include <stdio.h>
 
-#ENDIF /* #IFNDEF _MONITOR_H_ */
+#endif /* #IFNDEF _MONITOR_H_ */
