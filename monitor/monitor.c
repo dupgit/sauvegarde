@@ -30,11 +30,13 @@
 
 #include "monitor.h"
 
-static void print_glib_version(void);
+static void print_libraries_versions(void);
 
 
-
-static void print_glib_version(void)
+/**
+ * Prints version of the libraries we are using.
+ */
+static void print_libraries_versions(void)
 {
 
     fprintf(stdout, "GLIB version : %d.%d.%d\n", glib_major_version, glib_minor_version, glib_micro_version);
@@ -42,11 +44,15 @@ static void print_glib_version(void)
 }
 
 
-
+/**
+ * main function
+ */
 int main(int argc, char **argv)
 {
 
-    print_glib_version();
+    g_type_init();
+
+    print_libraries_versions();
 
     return 0;
 }

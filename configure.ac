@@ -181,6 +181,10 @@ echo "GLIB CFLAGS   : ${GLIB_CFLAGS}"
 echo
 echo "GLIB LIBS     : ${GLIB_LIBS}"
 echo
+echo "GIO CFLAGS   : ${GIO_CFLAGS}"
+echo
+echo "GIO LIBS     : ${GIO_LIBS}"
+echo
 echo
 echo "*** Dumping configuration ***"
 echo
