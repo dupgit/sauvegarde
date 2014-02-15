@@ -1,0 +1,192 @@
+AC_PREREQ(2.59)
+
+AC_INIT([Sauvegarde], [0.0.1],
+        [Olivier Delhomme <olivier.delhomme@free.fr>],
+        [Sauvegarde])
+
+AC_PROG_CC
+AM_INIT_AUTOMAKE([$PACKAGE_TARNAME], [$PACKAGE_VERSION])
+
+AC_PROG_INTLTOOL([0.23])
+
+
+dnl **************************************************
+dnl * Put the preprocessor macros in a header file   *
+dnl * instead of command line                        *
+dnl **************************************************
+AC_CONFIG_HEADER([config.h])
+
+dnl **************************************************
+dnl * Libraries requirements                         *
+dnl **************************************************
+PKG_PROG_PKG_CONFIG([0.10])
+GLIB_VERSION=2.2.0
+
+AC_SUBST(GLIB_VERSION)
+
+dnl **************************************************
+dnl * Build time sanity check                        *
+dnl **************************************************
+AM_SANITY_CHECK
+
+dnl **************************************************
+dnl * Initialize maintainer mode                     *
+dnl **************************************************
+AM_MAINTAINER_MODE
+
+dnl **************************************************
+dnl * Checks for headers                             *
+dnl **************************************************
+AC_HEADER_STDC
+
+dnl **************************************************
+dnl * Checks dynamic libraries capabilities          *
+dnl **************************************************
+AC_DISABLE_STATIC
+AC_PROG_LIBTOOL
+
+dnl **************************************************
+dnl * languages                                      *
+dnl **************************************************
+ALL_LINGUAS=""
+
+dnl **************************************************
+dnl * triggers gettext                               *
+dnl **************************************************
+GETTEXT_PACKAGE=sauvegarde
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Gettext Package used])
+AM_GLIB_GNU_GETTEXT
+
+dnl **************************************************
+dnl * checking for glib                              *
+dnl **************************************************
+PKG_CHECK_MODULES(GLIB, [glib-2.0 >= $GLIB_VERSION])
+
+AC_PROG_INSTALL
+
+CFLAGS="$CFLAGS -Wall -Wstrict-prototypes -Wmissing-declarations \
+-Wbad-function-cast -Wcast-align -Wnested-externs -Wunused \
+-D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE \
+-DGSEAL_ENABLE -DG_DISABLE_DEPRECATED"
+
+
+dnl **************************************************
+dnl * checking OS                                    *
+dnl **************************************************
+
+case $build_os in
+    *linux*)
+        AC_DEFINE_UNQUOTED(SYS_LINUX, 1, [This is a Linux system])
+        LDFLAGS="$LDFLAGS -export-dynamic -no-undefined -module"
+    ;;
+    *mingw*)
+        AC_DEFINE_UNQUOTED(SYS_MINGW, 1, [This is a Windows system using MinGW])
+        LDFLAGS="$LDFLAGS -export-dynamic -no-undefined -module -Wl,--export-all-symbols"
+        CFLAGS="$CFLAGS -mms-bitfields -mwindows -mno-cygwin"
+    ;;
+esac
+
+
+
+dnl **************************************************
+dnl * ./configure options                            *
+dnl **************************************************
+
+dnl **************************************************
+dnl * debug option                                   *
+dnl * At this early stage debugging IS activated     *
+dnl * by default                                     *
+dnl **************************************************
+AC_ARG_ENABLE([debug],
+     [  --enable-debug         Turn on debugging],
+     [case "${enableval}" in
+       yes) debug=true ;;
+       no)  debug=false ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
+     esac],[debug=false])
+if test x$debug = xtrue
+then
+ AC_DEFINE_UNQUOTED(ENABLE_DEBUG, TRUE, [Debug mode On])
+ CFLAGS="$CFLAGS -ggdb"
+else
+ AC_DEFINE_UNQUOTED(ENABLE_DEBUG, FALSE, [Debug mode Off])
+ CFLAGS="$CFLAGS -ggdb"
+fi
+
+
+dnl **************************************************
+dnl * gcov option                                    *
+dnl **************************************************
+AC_ARG_ENABLE([gcov],
+     [  --enable-gcov          Enables gcov coverage tests],
+     [case "${enableval}" in
+       yes) gcov=true ;;
+       no)  gcov=false ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-gcov]) ;;
+     esac],[gcov=false])
+if test x$gcov = xtrue
+then
+ CFLAGS="-g -fprofile-arcs -ftest-coverage $CFLAGS "
+else
+ CFLAGS="$CFLAGS"
+fi
+
+
+dnl **************************************************
+dnl * gprof option                                   *
+dnl **************************************************
+AC_ARG_ENABLE([gprof],
+     [  --enable-gprof         Enables gprof profiling],
+     [case "${enableval}" in
+       yes) gprof=true ;;
+       no)  gprof=false ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --enable-gprof]) ;;
+     esac],[gprof=false])
+if test x$gprof = xtrue
+then
+ CFLAGS="-pg $CFLAGS"
+else
+ CFLAGS="$CFLAGS"
+fi
+
+
+AC_SUBST(LDFLAGS)
+AC_SUBST(CFLAGS)
+AC_SUBST(GLIB_CFLAGS)
+AC_SUBST(GLIB_LIBS)
+
+
+AC_CONFIG_FILES([
+Makefile
+monitor/Makefile
+po/Makefile.in
+])
+AC_OUTPUT
+echo
+echo
+echo "*** Flags that will be used to compile Sauvegarde ***"
+echo
+echo "CFLAGS        : ${CFLAGS}"
+echo
+echo "LDFLAGS       : ${LDFLAGS}"
+echo
+echo "GLIB CFLAGS   : ${GLIB_CFLAGS}"
+echo
+echo "GLIB LIBS     : ${GLIB_LIBS}"
+echo
+echo
+echo "*** Dumping configuration ***"
+echo
+echo "    - Build For OS             : $build_os"
+echo "    - Compiler                 : ${CC}"
+echo "    - Options"
+echo "      . is code profiling on ? : $gprof"
+echo "      . Code coverage is on ?  : $gcov"
+echo "      . debbuging is on ?      : $debug"
+echo "    - Prefix                   : $prefix"
+echo "    - Exec prefix              : ${exec_prefix}"
+echo "    - Locale dir               : ${LOCALEDIR}"
+echo
+echo "    You can now run 'make -s' to compile Sauvegarde"
+echo

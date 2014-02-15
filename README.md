@@ -1,4 +1,4 @@
-sauvegarde
+Sauvegarde
 ==========
 
-Some experiments around backup
+Some experiments around backup.
