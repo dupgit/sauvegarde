@@ -49,4 +49,29 @@
 #define MONITOR_DATE "15 02 2014"
 #define MONITOR_LICENSE ("GPL v3 or later")
 
+
+/**
+ * @struct path_t
+ * Structure that contains a path to be monitored and specific options such$
+ * as rate limit in seconds.
+ */
+typedef struct
+{
+    gchar *path;            /** path to be monitored                                                                           */
+    gint64 rate;            /** rate limit under which a second notification should not be notified for this path (in seconds) */
+    GFileMonitor *monitor;  /** GFileMonitor created to monitor the path 'path'                                                */
+} path_t;
+
+
+/**
+ * @struct main_struct_t
+ * Structure that will contain everything needed by the program
+ */
+typedef struct
+{
+    options_t *opt;    /** options of the program from the command line */
+    GSList *path_list; /** list of all path_t * paths monitored         */
+} main_struct_t;
+
+
 #endif /* #IFNDEF _MONITOR_H_ */

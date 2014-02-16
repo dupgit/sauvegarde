@@ -31,7 +31,13 @@
 #include "monitor.h"
 
 static void print_libraries_versions(void);
-
+static void print_program_version(void);
+static options_t *do_what_is_needed_from_command_line_options(int argc, char **argv);
+static gchar *get_filename_from_gfile(GFile *a_file);
+static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *second_file, GFileMonitorEvent event, gpointer user_data);
+static GFileMonitor *add_a_path_to_monitor(main_struct_t *main_struct, path_t *a_path);
+static path_t *new_path_t(main_struct_t *main_struct, gchar *path, gint64 rate);
+static main_struct_t *init_main_structure(options_t *opt);
 
 /**
  * Prints version of the libraries we are using.
@@ -87,7 +93,7 @@ static options_t *do_what_is_needed_from_command_line_options(int argc, char **a
  * @returns the name of the GFile if any or "--" gchar * string that may be
  *          freed when no longer needed
  */
-gchar *get_filename_from_gfile(GFile *a_file)
+static gchar *get_filename_from_gfile(GFile *a_file)
 {
     gchar *filename = NULL;
 
@@ -104,51 +110,155 @@ gchar *get_filename_from_gfile(GFile *a_file)
 }
 
 
+/**
+ * Callback function called upon change on a monitored file
+ * @param monitor : the monitor which detected a change in the monitored
+ *                  files
+ * @param first_file : is the file which has changed (original one)
+ * @param second_file : is the named of the file if it has been moved (renamed)
+ * @param event : the event that called this callback function
+ * @param user_data:  options_t * structure that contains all the options for the monitor program
+ */
 static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *second_file, GFileMonitorEvent event, gpointer user_data)
 {
     gchar *message = NULL;
     gchar *first_filename = NULL;
     gchar *second_filename = NULL;
+    gint filetype = 0;
+    main_struct_t *main_struct = (main_struct_t *) user_data;
+    options_t *opt = NULL;
+    path_t *a_path = NULL;
 
-    switch (event)
+    if (main_struct != NULL)
         {
-            case G_FILE_MONITOR_EVENT_CHANGED:
-                message = g_strdup("changed");
-            break;
-            case G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT:
-                message = g_strdup("changes done hint");
-            break;
-            case G_FILE_MONITOR_EVENT_DELETED:
-                message = g_strdup("deleted");
-            break;
-            case G_FILE_MONITOR_EVENT_CREATED:
-                message = g_strdup("created");
-            break;
-            case G_FILE_MONITOR_EVENT_ATTRIBUTE_CHANGED:
-                message = g_strdup("attribute changed");
-            break;
-            case G_FILE_MONITOR_EVENT_PRE_UNMOUNT:
-                message = g_strdup("pre unmount");
-            break;
-            case G_FILE_MONITOR_EVENT_UNMOUNTED:
-                message = g_strdup("unmounted");
-            break;
-            case G_FILE_MONITOR_EVENT_MOVED:
-                message = g_strdup("moved");
-            break;
-            default:
-                message = g_strdup("unknown event");
-            break;
-        }
+            opt = main_struct->opt;
 
-    first_filename = get_filename_from_gfile(first_file);
-    second_filename = get_filename_from_gfile(second_file);
+            switch (event)
+                {
+                    case G_FILE_MONITOR_EVENT_CHANGED:
+                        message = g_strdup("changed          ");
+                    break;
 
-    fprintf(stdout, "Event : %s ; first file is %s, second file is %s\n", message, first_filename, second_filename);
+                    case G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT:
+                        message = g_strdup("changes          ");
+                    break;
 
-    g_free(message);
-    g_free(first_filename);
-    g_free(second_filename);
+                    case G_FILE_MONITOR_EVENT_DELETED:
+                        message = g_strdup("deleted          ");
+                    break;
+
+                    case G_FILE_MONITOR_EVENT_CREATED:
+
+                        message = g_strdup("created          ");
+                        filetype = g_file_query_file_type(first_file, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL);
+
+                        if (filetype == G_FILE_TYPE_DIRECTORY && first_file != NULL)
+                            {
+                                a_path = new_path_t(main_struct, get_filename_from_gfile(first_file), 60);
+                                 main_struct->path_list = g_slist_prepend(main_struct->path_list, a_path);
+                            }
+
+                    break;
+
+                    case G_FILE_MONITOR_EVENT_ATTRIBUTE_CHANGED:
+                        message = g_strdup("attribute changed");
+                    break;
+
+                    case G_FILE_MONITOR_EVENT_PRE_UNMOUNT:
+                        message = g_strdup("pre unmount      ");
+                    break;
+
+                    case G_FILE_MONITOR_EVENT_UNMOUNTED:
+                        message = g_strdup("unmounted        ");
+                    break;
+
+                    case G_FILE_MONITOR_EVENT_MOVED:
+                        message = g_strdup("moved            ");
+                    break;
+
+                    default:
+                        message = g_strdup("unknown event    ");
+                    break;
+                }
+
+            first_filename = get_filename_from_gfile(first_file);
+            second_filename = get_filename_from_gfile(second_file);
+
+            fprintf(stdout, "Event : %s ; first file is %s, second file is %s\n", message, first_filename, second_filename);
+
+            g_free(message);
+            g_free(first_filename);
+            g_free(second_filename);
+    }
+}
+
+
+/**
+ * Creates a new monitor with the given path.
+ * @param main_struct is the main structure for the program and we need to
+ *        pass it to the callback function.
+ * @param a_path : path_t structure containing everything we need to
+ *        monitor a path.
+ * @returns a newly allocated monitor. Free the returned object with
+ *          g_object_unref().
+ */
+static GFileMonitor *add_a_path_to_monitor(main_struct_t *main_struct, path_t *a_path)
+{
+    GFileMonitor *monitor = NULL;
+    GError *error = NULL;
+    GFile *a_file = NULL;
+
+    a_file = g_file_new_for_path(a_path->path);
+
+    monitor = g_file_monitor(a_file, G_FILE_MONITOR_SEND_MOVED, NULL, &error);
+    g_file_monitor_set_rate_limit(monitor, (1000 * a_path->rate)); /* The value in this function is expressed in milliseconds */
+
+    g_signal_connect(monitor, "changed", G_CALLBACK(monitor_changed), main_struct);
+
+    return monitor;
+
+}
+
+
+/**
+ * Allocate a new structure path_t containing a path to monitor and a rate
+ * limit for notifications.
+ * @param main_struct : the main structure for the program
+ * @param path : the path to be monitored
+ * @param rate : the rate in seconds under which a new notification will not
+ *        occur.
+ * @returns a newly allocated path_t structure that may be freed when no
+ *          longer needed (do not forget to free 'path' in it).
+ */
+static path_t *new_path_t(main_struct_t *main_struct, gchar *path, gint64 rate)
+{
+    path_t *a_path = NULL;
+
+    a_path = (path_t *) g_malloc0(sizeof(path_t));
+
+    a_path->path = g_strdup(path);
+    a_path->rate = rate;
+    a_path->monitor = add_a_path_to_monitor(main_struct, a_path);
+
+    return a_path;
+}
+
+
+/**
+ * Inits the main structure
+ * @returns a main_struct_t * pointer to the main structure
+ */
+static main_struct_t *init_main_structure(options_t *opt)
+{
+    main_struct_t *main_struct = NULL;
+
+    main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
+
+    main_struct->opt = opt;
+    main_struct->path_list = NULL;
+
+    return main_struct;
+
 }
 
 
@@ -161,28 +271,27 @@ static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *sec
 int main(int argc, char **argv)
 {
     options_t *opt = NULL;  /** Structure to manage options from the command line can be freed when no longer needed */
-    GFileMonitor *monitor = NULL;
-    GError *error = NULL;
-    GFile *a_file = NULL;
+    path_t *a_path = NULL;
+    main_struct_t *main_struct = NULL;
+
     GMainLoop *mainloop = NULL;
+
 
     g_type_init();
 
     opt = do_what_is_needed_from_command_line_options(argc, argv);
+    main_struct = init_main_structure(opt);
 
-    a_file = g_file_new_for_path("/home/dup/Dossiers_Perso/projets/sauvegarde/monitor");
+    a_path = new_path_t(main_struct, "/home/dup/Dossiers_Perso/projets/sauvegarde/monitor", 60);
+    main_struct->path_list = g_slist_prepend(main_struct->path_list, a_path);
 
-    monitor = g_file_monitor(a_file, G_FILE_MONITOR_SEND_MOVED, NULL, &error);
-    g_file_monitor_set_rate_limit(monitor, 5000);
-
-    g_signal_connect(monitor, "changed", G_CALLBACK(monitor_changed), NULL);
 
     mainloop = g_main_loop_new(NULL, FALSE);
     g_main_loop_run(mainloop);
 
-    /* when leaving, we have to free memory */
-    free_options_t_structure(opt);
-    g_object_unref(monitor);
+    /* when leaving, we have to free memory... but this is not going to happen here ! */
+    /* free_options_t_structure(main_struct->opt); */
+
 
     return 0;
 }
