@@ -93,7 +93,7 @@ gchar *get_filename_from_gfile(GFile *a_file)
 
     if (a_file != NULL)
         {
-            filename = g_file_get_basename(a_file);
+            filename = g_file_get_parse_name(a_file);
         }
     else
         {
@@ -173,7 +173,7 @@ int main(int argc, char **argv)
     a_file = g_file_new_for_path("/home/dup/Dossiers_Perso/projets/sauvegarde/monitor");
 
     monitor = g_file_monitor(a_file, G_FILE_MONITOR_SEND_MOVED, NULL, &error);
-    /* g_file_monitor_set_rate_limit(monitor, 5000); */
+    g_file_monitor_set_rate_limit(monitor, 5000);
 
     g_signal_connect(monitor, "changed", G_CALLBACK(monitor_changed), NULL);
 
