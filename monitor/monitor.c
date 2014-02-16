@@ -37,7 +37,9 @@ static gchar *get_filename_from_gfile(GFile *a_file);
 static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *second_file, GFileMonitorEvent event, gpointer user_data);
 static GFileMonitor *add_a_path_to_monitor(main_struct_t *main_struct, path_t *a_path);
 static path_t *new_path_t(main_struct_t *main_struct, gchar *path, gint64 rate);
+static void free_path_t(path_t *a_path);
 static main_struct_t *init_main_structure(options_t *opt);
+
 
 /**
  * Prints version of the libraries we are using.
@@ -128,6 +130,8 @@ static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *sec
     main_struct_t *main_struct = (main_struct_t *) user_data;
     options_t *opt = NULL;
     path_t *a_path = NULL;
+    gboolean done = FALSE;
+    GSList *head = NULL;
 
     if (main_struct != NULL)
         {
@@ -145,11 +149,36 @@ static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *sec
 
                     case G_FILE_MONITOR_EVENT_DELETED:
                         message = g_strdup("deleted          ");
+
+                        filetype = g_file_query_file_type(first_file, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL);
+
+                        if (first_file != NULL)
+                            {
+                                first_filename = get_filename_from_gfile(first_file);
+
+                                head = main_struct->path_list;
+                                while (head != NULL && done == FALSE)
+                                    {
+                                        fprintf(stdout, ".\n");
+                                        a_path = (path_t *) head->data;
+                                        if (g_strcmp0(first_filename, a_path->path) == 0) /* both strings are equal */
+                                            {
+                                                main_struct->path_list = g_slist_remove_link(main_struct->path_list, head);
+                                                free_path_t(a_path);
+                                            }
+                                        else
+                                            {
+                                                head = g_slist_next(head);
+                                            }
+                                    }
+                            }
+
                     break;
 
                     case G_FILE_MONITOR_EVENT_CREATED:
 
                         message = g_strdup("created          ");
+
                         filetype = g_file_query_file_type(first_file, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL);
 
                         if (filetype == G_FILE_TYPE_DIRECTORY && first_file != NULL)
@@ -241,6 +270,20 @@ static path_t *new_path_t(main_struct_t *main_struct, gchar *path, gint64 rate)
     a_path->monitor = add_a_path_to_monitor(main_struct, a_path);
 
     return a_path;
+}
+
+/**
+ * Free the memory for path_t * structure
+ * @param a path_t * pointer to be freed from memory
+ */
+static void free_path_t(path_t *a_path)
+{
+    if (a_path != NULL)
+        {
+            g_free(a_path->path);
+            g_object_unref(a_path->monitor);
+            g_free(a_path);
+        }
 }
 
 
