@@ -71,6 +71,7 @@ typedef struct
 {
     options_t *opt;        /** options of the program from the command line */
     GSList *path_list;     /** list of all path_t * paths monitored         */
+    const gchar *hostname; /** the name of the current machine              */
 } main_struct_t;
 
 

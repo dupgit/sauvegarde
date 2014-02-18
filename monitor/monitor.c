@@ -253,7 +253,7 @@ static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *sec
             first_filename = get_filename_from_gfile(first_file);
             second_filename = get_filename_from_gfile(second_file);
 
-            fprintf(stdout, "Event : %s ; first file is %s, second file is %s\n", message, first_filename, second_filename);
+            fprintf(stdout, "%s ; Event : %s ; first file is %s, second file is %s\n", main_struct->hostname, message, first_filename, second_filename);
 
             g_free(message);
             g_free(first_filename);
@@ -336,10 +336,12 @@ static main_struct_t *init_main_structure(options_t *opt)
 {
     main_struct_t *main_struct = NULL;
 
+
     main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
 
     main_struct->opt = opt;
     main_struct->path_list = NULL;
+    main_struct->hostname = g_get_host_name();
 
     return main_struct;
 
@@ -360,7 +362,9 @@ int main(int argc, char **argv)
     GMainLoop *mainloop = NULL;
 
 
+
     g_type_init();
+
 
 
     opt = do_what_is_needed_from_command_line_options(argc, argv);
