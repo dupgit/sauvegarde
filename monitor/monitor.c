@@ -113,6 +113,72 @@ static gchar *get_filename_from_gfile(GFile *a_file)
 
 
 /**
+ * A new file has been created and we create a new monitor and insert the
+ * file filename in the list only if this file is a directory.
+ * @param main_struct is the main structure of the program
+ * @param a_file is the GFile * file that was created
+ */
+static void file_created(main_struct_t *main_struct, GFile *a_file)
+{
+    path_t *a_path = NULL;
+    gint filetype = 0;
+
+    if (a_file != NULL)
+        {
+
+            filetype = g_file_query_file_type(a_file, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL);
+
+            if (filetype == G_FILE_TYPE_DIRECTORY)
+                {
+                    a_path = new_path_t(main_struct, get_filename_from_gfile(a_file), 60);
+                    main_struct->path_list = g_slist_prepend(main_struct->path_list, a_path);
+                }
+
+        }
+}
+
+
+/**
+ *
+ *
+ */
+static void file_deleted(main_struct_t *main_struct, GFile *a_file)
+{
+    path_t *a_path = NULL;
+    gchar *filename = NULL;
+    gboolean done = FALSE;
+    GSList *head = NULL;    /** used to iter over the path list */
+
+    if (a_file != NULL)
+        {
+
+            filename = get_filename_from_gfile(a_file);
+
+            head = main_struct->path_list;
+
+            while (head != NULL && done == FALSE)
+                {
+
+                    a_path = (path_t *) head->data;
+
+                    if (g_strcmp0(filename, a_path->path) == 0) /* both strings are equal */
+                        {
+                            main_struct->path_list = g_slist_remove_link(main_struct->path_list, head);
+                            free_path_t(a_path);
+                        }
+                    else
+                        {
+                            head = g_slist_next(head);
+                        }
+                }
+
+            g_free(filename);
+
+        }
+}
+
+
+/**
  * Callback function called upon change on a monitored file
  * @param monitor : the monitor which detected a change in the monitored
  *                  files
@@ -123,18 +189,20 @@ static gchar *get_filename_from_gfile(GFile *a_file)
  */
 static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *second_file, GFileMonitorEvent event, gpointer user_data)
 {
+
+    main_struct_t *main_struct = (main_struct_t *) user_data;
+
     gchar *message = NULL;
     gchar *first_filename = NULL;
     gchar *second_filename = NULL;
-    gint filetype = 0;
-    main_struct_t *main_struct = (main_struct_t *) user_data;
+
     options_t *opt = NULL;
-    path_t *a_path = NULL;
-    gboolean done = FALSE;
-    GSList *head = NULL;
+
 
     if (main_struct != NULL)
         {
+
+            /* We are suposed to be sure that main_struct exists ! */
             opt = main_struct->opt;
 
             switch (event)
@@ -148,44 +216,16 @@ static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *sec
                     break;
 
                     case G_FILE_MONITOR_EVENT_DELETED:
+
                         message = g_strdup("deleted          ");
-
-                        filetype = g_file_query_file_type(first_file, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL);
-
-                        if (first_file != NULL)
-                            {
-                                first_filename = get_filename_from_gfile(first_file);
-
-                                head = main_struct->path_list;
-                                while (head != NULL && done == FALSE)
-                                    {
-                                        fprintf(stdout, ".\n");
-                                        a_path = (path_t *) head->data;
-                                        if (g_strcmp0(first_filename, a_path->path) == 0) /* both strings are equal */
-                                            {
-                                                main_struct->path_list = g_slist_remove_link(main_struct->path_list, head);
-                                                free_path_t(a_path);
-                                            }
-                                        else
-                                            {
-                                                head = g_slist_next(head);
-                                            }
-                                    }
-                            }
+                        file_deleted(main_struct, first_file);
 
                     break;
 
                     case G_FILE_MONITOR_EVENT_CREATED:
 
                         message = g_strdup("created          ");
-
-                        filetype = g_file_query_file_type(first_file, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL);
-
-                        if (filetype == G_FILE_TYPE_DIRECTORY && first_file != NULL)
-                            {
-                                a_path = new_path_t(main_struct, get_filename_from_gfile(first_file), 60);
-                                 main_struct->path_list = g_slist_prepend(main_struct->path_list, a_path);
-                            }
+                        file_created(main_struct, first_file);
 
                     break;
 
@@ -218,7 +258,8 @@ static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *sec
             g_free(message);
             g_free(first_filename);
             g_free(second_filename);
-    }
+
+        }
 }
 
 
@@ -316,11 +357,11 @@ int main(int argc, char **argv)
     options_t *opt = NULL;  /** Structure to manage options from the command line can be freed when no longer needed */
     path_t *a_path = NULL;
     main_struct_t *main_struct = NULL;
-
     GMainLoop *mainloop = NULL;
 
 
     g_type_init();
+
 
     opt = do_what_is_needed_from_command_line_options(argc, argv);
     main_struct = init_main_structure(opt);
@@ -329,12 +370,13 @@ int main(int argc, char **argv)
     main_struct->path_list = g_slist_prepend(main_struct->path_list, a_path);
 
 
+
+    /* infinite loop */
     mainloop = g_main_loop_new(NULL, FALSE);
     g_main_loop_run(mainloop);
 
     /* when leaving, we have to free memory... but this is not going to happen here ! */
     /* free_options_t_structure(main_struct->opt); */
-
 
     return 0;
 }

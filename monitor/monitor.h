@@ -69,8 +69,8 @@ typedef struct
  */
 typedef struct
 {
-    options_t *opt;    /** options of the program from the command line */
-    GSList *path_list; /** list of all path_t * paths monitored         */
+    options_t *opt;        /** options of the program from the command line */
+    GSList *path_list;     /** list of all path_t * paths monitored         */
 } main_struct_t;
 
 
