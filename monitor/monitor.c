@@ -106,7 +106,7 @@ static gchar *get_filename_from_gfile(GFile *a_file)
         }
     else
         {
-            filename = g_strdup("--");
+            filename = NULL;
         }
 
     return filename;
@@ -194,12 +194,13 @@ static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *sec
 {
 
     main_struct_t *main_struct = (main_struct_t *) user_data;
+    options_t *opt = NULL;
 
     gchar *message = NULL;
     gchar *first_filename = NULL;
     gchar *second_filename = NULL;
-
-    options_t *opt = NULL;
+    GFileInfo *fileinfo = NULL;
+    guint64 size = 0;
 
 
     if (main_struct != NULL)
@@ -211,56 +212,76 @@ static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *sec
             switch (event)
                 {
                     case G_FILE_MONITOR_EVENT_CHANGED:
-                        message = g_strdup("changed          ");
+                        message = g_strdup("event=changed");
                     break;
 
                     case G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT:
-                        message = g_strdup("changes          ");
+                        message = g_strdup("event=changes");
                     break;
 
                     case G_FILE_MONITOR_EVENT_DELETED:
-
-                        message = g_strdup("deleted          ");
+                        message = g_strdup("event=deleted");
                         file_deleted(main_struct, first_file);
-
                     break;
 
                     case G_FILE_MONITOR_EVENT_CREATED:
-
-                        message = g_strdup("created          ");
+                        message = g_strdup("event=created");
                         file_created(main_struct, first_file);
-
+                        fileinfo = g_file_query_info(first_file, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, NULL);
+                        size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
                     break;
 
                     case G_FILE_MONITOR_EVENT_ATTRIBUTE_CHANGED:
-                        message = g_strdup("attribute changed");
+                        message = g_strdup("event=attribute changed");
                     break;
 
                     case G_FILE_MONITOR_EVENT_PRE_UNMOUNT:
-                        message = g_strdup("pre unmount      ");
+                        message = g_strdup("event=pre unmount");
                     break;
 
                     case G_FILE_MONITOR_EVENT_UNMOUNTED:
-                        message = g_strdup("unmounted        ");
+                        message = g_strdup("event=unmounted");
                     break;
 
                     case G_FILE_MONITOR_EVENT_MOVED:
-                        message = g_strdup("moved            ");
+                        message = g_strdup("event=moved");
                     break;
 
                     default:
-                        message = g_strdup("unknown event    ");
+                        message = g_strdup("event=unknown");
                     break;
                 }
 
             first_filename = get_filename_from_gfile(first_file);
             second_filename = get_filename_from_gfile(second_file);
 
-            fprintf(stdout, "%s ; Event : %s ; first file is %s, second file is %s\n", main_struct->hostname, message, first_filename, second_filename);
+
+
+            if (first_filename != NULL && second_filename == NULL)
+                {
+                    fprintf(stdout, "host=%s ; %s ; size=%llu ; file1=%s\n", main_struct->hostname, message, (long long unsigned int) size, first_filename);
+                }
+            else if (first_filename != NULL && second_filename != NULL)
+                {
+                    fprintf(stdout, "host=%s ; %s ; file1=%s ; file2=%s\n", main_struct->hostname, message, first_filename, second_filename);
+                }
+            else if (first_filename == NULL && second_filename != NULL)
+                {
+                    fprintf(stdout, "host=%s ; %s ; file2=%s\n", main_struct->hostname, message, second_filename);
+                }
+            else  /* both filenames are NULL */
+                {
+                    fprintf(stdout, "host=%s ; %s\n", main_struct->hostname, message);
+                }
 
             g_free(message);
-            g_free(first_filename);
+            g_free(first_filename);    /* g_free() handles NULL pointers */
             g_free(second_filename);
+
+            if (fileinfo != NULL)
+                {
+                    g_object_unref(fileinfo);
+                }
 
         }
 }
@@ -325,7 +346,10 @@ static void free_path_t(path_t *a_path)
     if (a_path != NULL)
         {
             g_free(a_path->path);
-            g_object_unref(a_path->monitor);
+            if (a_path->monitor != NULL)
+                {
+                    g_object_unref(a_path->monitor);
+                }
             g_free(a_path);
         }
 }
@@ -413,7 +437,6 @@ int main(int argc, char **argv)
     path_t *a_path = NULL;
     main_struct_t *main_struct = NULL;
     GMainLoop *mainloop = NULL;
-
 
     g_type_init();
 
