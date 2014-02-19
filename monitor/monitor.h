@@ -58,7 +58,8 @@
 typedef struct
 {
     gchar *path;            /** path to be monitored                                                                           */
-    gint64 rate;            /** rate limit under which a second notification should not be notified for this path (in seconds) */
+    GQuark key;             /** GQuark associated to the path string                                                           */
+    gint64 rate;            /** rate limit under which a second notification should not be notified for this path (in minutes) */
     GFileMonitor *monitor;  /** GFileMonitor created to monitor the path 'path'                                                */
 } path_t;
 
@@ -69,9 +70,9 @@ typedef struct
  */
 typedef struct
 {
-    options_t *opt;        /** options of the program from the command line */
-    GSList *path_list;     /** list of all path_t * paths monitored         */
-    const gchar *hostname; /** the name of the current machine              */
+    options_t *opt;        /** options of the program from the command line            */
+    GTree *path_tree;      /** Balanced Binary Trees to store path_t * paths monitored */
+    const gchar *hostname; /** the name of the current machine                         */
 } main_struct_t;
 
 

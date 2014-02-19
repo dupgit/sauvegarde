@@ -1,0 +1,4 @@
+monitor
+=======
+
+* Add monitors to all subdirectories of a directory (see g_file_enumerate_children)
