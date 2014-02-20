@@ -34,6 +34,7 @@
 
 #include "config.h"
 #include "options.h"
+#include "path.h"
 
 /**
  * @def MONITOR_DATE
@@ -48,20 +49,6 @@
 #define MONITOR_AUTHORS "Olivier Delhomme"
 #define MONITOR_DATE "15 02 2014"
 #define MONITOR_LICENSE ("GPL v3 or later")
-
-
-/**
- * @struct path_t
- * Structure that contains a path to be monitored and specific options such$
- * as rate limit in seconds.
- */
-typedef struct
-{
-    gchar *path;            /** path to be monitored                                                                           */
-    GQuark key;             /** GQuark associated to the path string                                                           */
-    gint64 rate;            /** rate limit under which a second notification should not be notified for this path (in minutes) */
-    GFileMonitor *monitor;  /** GFileMonitor created to monitor the path 'path'                                                */
-} path_t;
 
 
 /**

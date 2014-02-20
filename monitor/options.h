@@ -46,11 +46,22 @@ typedef struct
  */
 extern options_t *manage_command_line_options(int argc, char **argv);
 
+
 /**
  * Frees the options structure if necessary
  * @param opt : the malloc'ed options_t structure
  */
 extern void free_options_t_structure(options_t *opt);
+
+
+/**
+ * Decides what to do upon command lines options passed to the program
+ * @param argc : number of arguments given on the command line.
+ * @param argv : an array of strings that contains command line arguments.
+ * @returns options_t structure malloc'ed and filled upon choosen command
+ *          line's option (in manage_command_line_options function).
+ */
+extern options_t *do_what_is_needed_from_command_line_options(int argc, char **argv);
 
 
 #endif /* #IFNDEF _OPTIONS_H_ */
