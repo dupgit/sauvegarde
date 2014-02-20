@@ -300,12 +300,62 @@ static GFileMonitor *add_a_path_to_monitor(main_struct_t *main_struct, path_t *a
     a_file = g_file_new_for_path(a_path->path);
 
     monitor = g_file_monitor(a_file, G_FILE_MONITOR_NONE, NULL, &error);
-    g_file_monitor_set_rate_limit(monitor, (60000 * a_path->rate)); /* The value in this function is expressed in milliseconds and rate is in minutes*/
 
-    g_signal_connect(monitor, "changed", G_CALLBACK(monitor_changed), main_struct);
+    if (error == NULL)
+        {
+            g_file_monitor_set_rate_limit(monitor, (60000 * a_path->rate)); /* The value in this function is expressed in milliseconds and rate is in minutes*/
+            g_signal_connect(monitor, "changed", G_CALLBACK(monitor_changed), main_struct);
 
-    return monitor;
+            return monitor;
+        }
+    else
+        {
+            return NULL; /* An error occured when trying to add a monitor */
+        }
+}
 
+/**
+ * Traverse all sub-directories of a directory and adds each directory into
+ * path_t * structure in main_struct->path_tree balanced binary tree.
+ * @param main_struct : main structure with everything needed
+ * @param directory : the directory that we want to traverse
+ */
+static void traverse_directory(main_struct_t *main_struct, gchar *directory)
+{
+    GFile *a_dir = NULL;
+    GFileEnumerator *file_enum = NULL;
+    GError *error = NULL;
+    GFileInfo *fileinfo = NULL;
+    gchar *dirname = NULL;
+    path_t *a_path = NULL;
+
+
+    a_path = new_path_t(directory, MONITOR_TIME);
+    a_path->monitor = add_a_path_to_monitor(main_struct, a_path);
+    add_path_to_tree(main_struct, a_path);
+
+    a_dir = g_file_new_for_path(directory);
+
+    file_enum = g_file_enumerate_children(a_dir, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
+
+    if (error == NULL)
+        {
+            fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
+
+            while (error == NULL && fileinfo != NULL)
+                {
+                    if (g_file_info_get_file_type(fileinfo) == G_FILE_TYPE_DIRECTORY)
+                        {
+                            dirname = g_strdup(g_file_info_get_name(fileinfo));
+
+                            traverse_directory(main_struct, dirname);
+
+                            g_free(dirname);
+                        }
+
+                    fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
+                }
+        }
 }
 
 
@@ -324,8 +374,6 @@ void add_path_to_tree(main_struct_t *main_struct, path_t *a_path)
 
         }
 }
-
-
 
 
 /**
@@ -357,7 +405,6 @@ static main_struct_t *init_main_structure(options_t *opt)
 int main(int argc, char **argv)
 {
     options_t *opt = NULL;  /** Structure to manage options from the command line can be freed when no longer needed */
-    path_t *a_path = NULL;
     main_struct_t *main_struct = NULL;
     GMainLoop *mainloop = NULL;
 
@@ -366,9 +413,7 @@ int main(int argc, char **argv)
     opt = do_what_is_needed_from_command_line_options(argc, argv);
     main_struct = init_main_structure(opt);
 
-    a_path = new_path_t("/home/dup/Dossiers_Perso/projets/sauvegarde/monitor", 5);
-    a_path->monitor = add_a_path_to_monitor(main_struct, a_path);
-    add_path_to_tree(main_struct, a_path);
+    traverse_directory(main_struct, "/home/dup/Dossiers_Perso/projets/sauvegarde");
 
 
     /* infinite loop */

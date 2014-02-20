@@ -38,17 +38,21 @@
 
 /**
  * @def MONITOR_DATE
- * defines heraia's creation date
+ * defines monitor's creation date
  *
  * @def MONITOR_AUTHORS
- * defines heraia's main authors
+ * defines monitor's main authors
  *
  * @def MONITOR_LICENSE
- * defines heraia's license (at least GPL v2)
+ * defines monitor's license (at least GPL v2)
+ *
+ * @def MONITOR_TIME
+ * defines monitor default rate limit in minutes
  */
 #define MONITOR_AUTHORS "Olivier Delhomme"
 #define MONITOR_DATE "15 02 2014"
 #define MONITOR_LICENSE ("GPL v3 or later")
+#define MONITOR_TIME (5)
 
 
 /**
