@@ -1,5 +1,9 @@
 monitor
 =======
 
-* Add monitors to all subdirectories of a directory (see g_file_enumerate_children)
-* Retreive meta informations about a file : size, owner, group, creation date, rights
+* Add monitors to all subdirectories of a directory (see
+  g_file_enumerate_children)
+* Retreive meta informations about a file : size, owner, group, creation
+  date, rights
+* Need a cache for the monitored directory to avoid a whole disk traversal
+  each time we restart the process

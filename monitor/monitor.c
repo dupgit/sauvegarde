@@ -301,7 +301,7 @@ static GFileMonitor *add_a_path_to_monitor(main_struct_t *main_struct, path_t *a
 
     monitor = g_file_monitor(a_file, G_FILE_MONITOR_NONE, NULL, &error);
 
-    if (error == NULL)
+    if (monitor != NULL && error == NULL)
         {
             fprintf(stdout, "-> %s\n", a_path->path);
             g_file_monitor_set_rate_limit(monitor, (60000 * a_path->rate)); /* The value in this function is expressed in milliseconds and rate is in minutes*/
@@ -309,9 +309,16 @@ static GFileMonitor *add_a_path_to_monitor(main_struct_t *main_struct, path_t *a
 
             return monitor;
         }
-    else
+    else if (error != NULL) /* An error occured when trying to add a monitor */
         {
-            return NULL; /* An error occured when trying to add a monitor */
+            fprintf(stderr, "Unable to monitor directory %s : %s\n", a_path->path, error->message);
+            g_error_free(error);
+
+            return NULL;
+        }
+    else /* No error but no new monitor ! */
+        {
+            fprintf(stderr, "Unable to monitor directory %s (don't know why !)\n", a_path->path);
         }
 }
 
@@ -386,6 +393,27 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
 
 
 /**
+ * This function is a wrapper to directory_traverse function to allow
+ * the directory traversal to be threaded
+ */
+static gpointer threaded_directory_traversal(gpointer data)
+{
+    thread_data_t *a_thread_data = (thread_data_t *) data;
+    main_struct_t *main_struct = a_thread_data->main_struct;
+    GSList *dir_list = a_thread_data->dir_list;
+
+    while (dir_list != NULL)
+        {
+            traverse_directory(main_struct, dir_list->data);
+
+            dir_list = g_slist_next(dir_list);
+        }
+
+    return NULL;
+}
+
+
+/**
  * Inits the main structure
  * @returns a main_struct_t * pointer to the main structure
  */
@@ -416,13 +444,20 @@ int main(int argc, char **argv)
     options_t *opt = NULL;  /** Structure to manage options from the command line can be freed when no longer needed */
     main_struct_t *main_struct = NULL;
     GMainLoop *mainloop = NULL;
+    thread_data_t *a_thread_data = NULL;
+    GThread *a_thread = NULL;
 
     g_type_init();
 
     opt = do_what_is_needed_from_command_line_options(argc, argv);
     main_struct = init_main_structure(opt);
 
-    traverse_directory(main_struct, "/home/dup");
+    a_thread_data = (thread_data_t *) g_malloc0(sizeof(thread_data_t));
+
+    a_thread_data->main_struct = main_struct;
+    a_thread_data->dir_list = g_slist_prepend(a_thread_data->dir_list, "/home/dup/Dossiers_Perso/projets/sauvegarde");
+
+    a_thread = g_thread_create(threaded_directory_traversal, a_thread_data, FALSE, NULL);
 
     /* infinite loop */
     mainloop = g_main_loop_new(NULL, FALSE);

@@ -67,4 +67,16 @@ typedef struct
 } main_struct_t;
 
 
+/**
+ * @struct thread_t
+ * Structure to be passed to a thread that will traverse the directory list
+ */
+typedef struct
+{
+    main_struct_t *main_struct;
+    GSList *dir_list;
+} thread_data_t;
+
+
+
 #endif /* #IFNDEF _MONITOR_H_ */
