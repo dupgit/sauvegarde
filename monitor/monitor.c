@@ -303,6 +303,7 @@ static GFileMonitor *add_a_path_to_monitor(main_struct_t *main_struct, path_t *a
 
     if (error == NULL)
         {
+            fprintf(stdout, "-> %s\n", a_path->path);
             g_file_monitor_set_rate_limit(monitor, (60000 * a_path->rate)); /* The value in this function is expressed in milliseconds and rate is in minutes*/
             g_signal_connect(monitor, "changed", G_CALLBACK(monitor_changed), main_struct);
 
@@ -313,6 +314,24 @@ static GFileMonitor *add_a_path_to_monitor(main_struct_t *main_struct, path_t *a
             return NULL; /* An error occured when trying to add a monitor */
         }
 }
+
+
+/**
+ * Adds a path to the GTree structure
+ * @param main_struct : the main structure (path_tree field contains the
+ *        GTree * balanced binary tree).
+ * @param path : a path_t * to be inserted in the balanced binary tree.
+ */
+void add_path_to_tree(main_struct_t *main_struct, path_t *a_path)
+{
+    if (a_path != NULL)
+        {
+
+            g_tree_insert(main_struct->path_tree, a_path, NULL);
+
+        }
+}
+
 
 /**
  * Traverse all sub-directories of a directory and adds each directory into
@@ -346,7 +365,7 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
                 {
                     if (g_file_info_get_file_type(fileinfo) == G_FILE_TYPE_DIRECTORY)
                         {
-                            dirname = g_strdup(g_file_info_get_name(fileinfo));
+                            dirname = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
 
                             traverse_directory(main_struct, dirname);
 
@@ -355,24 +374,14 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
 
                     fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
                 }
+
+            g_file_enumerator_close(file_enum, NULL, NULL);
         }
-}
-
-
-/**
- * Adds a path to the GTree structure
- * @param main_struct : the main structure (path_tree field contains the
- *        GTree * balanced binary tree).
- * @param path : a path_t * to be inserted in the balanced binary tree.
- */
-void add_path_to_tree(main_struct_t *main_struct, path_t *a_path)
-{
-    if (a_path != NULL)
-        {
-
-            g_tree_insert(main_struct->path_tree, a_path, NULL);
-
-        }
+    else
+    {
+        fprintf(stderr, "Unable to enumerate directory %s : %s\n", directory, error->message);
+        g_error_free(error);
+    }
 }
 
 
@@ -413,8 +422,7 @@ int main(int argc, char **argv)
     opt = do_what_is_needed_from_command_line_options(argc, argv);
     main_struct = init_main_structure(opt);
 
-    traverse_directory(main_struct, "/home/dup/Dossiers_Perso/projets/sauvegarde");
-
+    traverse_directory(main_struct, "/home/dup");
 
     /* infinite loop */
     mainloop = g_main_loop_new(NULL, FALSE);
