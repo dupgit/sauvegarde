@@ -29,8 +29,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <glib.h>
 #include <gio/gio.h>
+#include <sys/inotify.h>
+#include <errno.h>
 
 #include "config.h"
 #include "options.h"
@@ -64,6 +67,7 @@ typedef struct
     options_t *opt;        /** options of the program from the command line            */
     GTree *path_tree;      /** Balanced Binary Trees to store path_t * paths monitored */
     const gchar *hostname; /** the name of the current machine                         */
+    int fd;                /** file descriptor to be used bu inotify                   */
 } main_struct_t;
 
 

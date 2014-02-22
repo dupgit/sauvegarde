@@ -1,8 +1,8 @@
 monitor
 =======
 
-* Add monitors to all subdirectories of a directory (see
-  g_file_enumerate_children)
+* Need something different from GFileMonitor because we hit _SC_OPEN_MAX
+  limit too quickly.
 * Retreive meta informations about a file : size, owner, group, creation
   date, rights
 * Need a cache for the monitored directory to avoid a whole disk traversal

@@ -35,10 +35,10 @@
  */
 typedef struct
 {
-    gchar *path;            /** path to be monitored                                                                           */
-    GQuark key;             /** GQuark associated to the path string                                                           */
-    gint64 rate;            /** rate limit under which a second notification should not be notified for this path (in minutes) */
-    GFileMonitor *monitor;  /** GFileMonitor created to monitor the path 'path'                                                */
+    gchar *path;     /** path to be monitored                                                                           */
+    GQuark key;      /** GQuark associated to the path string                                                           */
+    gint64 rate;     /** rate limit under which a second notification should not be notified for this path (in minutes) */
+    int wd;          /** watch descriptor to monitor the path 'path'                                                */
 } path_t;
 
 

@@ -33,7 +33,7 @@
 
 static gchar *get_filename_from_gfile(GFile *a_file);
 static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *second_file, GFileMonitorEvent event, gpointer user_data);
-static GFileMonitor *add_a_path_to_monitor(main_struct_t *main_struct, path_t *a_path);
+static int add_a_path_to_monitor(main_struct_t *main_struct, path_t *a_path);
 static void add_path_to_tree(main_struct_t *main_struct, path_t *a_path);
 static main_struct_t *init_main_structure(options_t *opt);
 
@@ -81,7 +81,7 @@ static void file_created(main_struct_t *main_struct, GFile *a_file)
             if (filetype == G_FILE_TYPE_DIRECTORY)
                 {
                     a_path = new_path_t(get_filename_from_gfile(a_file), 60);
-                    a_path->monitor = add_a_path_to_monitor(main_struct, a_path);
+                    a_path->wd = add_a_path_to_monitor(main_struct, a_path);
                     add_path_to_tree(main_struct, a_path);
                 }
 
@@ -288,37 +288,29 @@ static void monitor_changed(GFileMonitor *monitor, GFile *first_file, GFile *sec
  *        pass it to the callback function.
  * @param a_path : path_t structure containing everything we need to
  *        monitor a path.
- * @returns a newly allocated monitor. Free the returned object with
- *          g_object_unref().
+ * @returns
  */
-static GFileMonitor *add_a_path_to_monitor(main_struct_t *main_struct, path_t *a_path)
+static int add_a_path_to_monitor(main_struct_t *main_struct, path_t *a_path)
 {
-    GFileMonitor *monitor = NULL;
-    GError *error = NULL;
-    GFile *a_file = NULL;
+    int result = 0;
 
-    a_file = g_file_new_for_path(a_path->path);
 
-    monitor = g_file_monitor(a_file, G_FILE_MONITOR_NONE, NULL, &error);
-
-    if (monitor != NULL && error == NULL)
+    if (main_struct != NULL && a_path != NULL && a_path->path != NULL)
         {
             fprintf(stdout, "-> %s\n", a_path->path);
-            g_file_monitor_set_rate_limit(monitor, (60000 * a_path->rate)); /* The value in this function is expressed in milliseconds and rate is in minutes*/
-            g_signal_connect(monitor, "changed", G_CALLBACK(monitor_changed), main_struct);
 
-            return monitor;
-        }
-    else if (error != NULL) /* An error occured when trying to add a monitor */
-        {
-            fprintf(stderr, "Unable to monitor directory %s : %s\n", a_path->path, error->message);
-            g_error_free(error);
+            result = inotify_add_watch(main_struct->fd, a_path->path, IN_ATTRIB | IN_CREATE | IN_DELETE | IN_DELETE_SELF | IN_MODIFY | IN_DONT_FOLLOW);
 
-            return NULL;
+            if (result == -1)
+                {
+                    perror("Error while adding a new watch descriptor");
+                }
+
+            return result;
         }
-    else /* No error but no new monitor ! */
+    else
         {
-            fprintf(stderr, "Unable to monitor directory %s (don't know why !)\n", a_path->path);
+            return -1;
         }
 }
 
@@ -356,8 +348,9 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
     path_t *a_path = NULL;
 
 
+    /* Adding "directory " path to be monitored */
     a_path = new_path_t(directory, MONITOR_TIME);
-    a_path->monitor = add_a_path_to_monitor(main_struct, a_path);
+    a_path->wd = add_a_path_to_monitor(main_struct, a_path);
     add_path_to_tree(main_struct, a_path);
 
     a_dir = g_file_new_for_path(directory);
@@ -409,6 +402,8 @@ static gpointer threaded_directory_traversal(gpointer data)
             dir_list = g_slist_next(dir_list);
         }
 
+    fflush(NULL);
+
     return NULL;
 }
 
@@ -446,22 +441,48 @@ int main(int argc, char **argv)
     GMainLoop *mainloop = NULL;
     thread_data_t *a_thread_data = NULL;
     GThread *a_thread = NULL;
+    long max_files = 0;
+    int fd = 0;
+    int result = 0;
+    char buffer[16384];
+    struct inotify_event *event = NULL;
+    gchar *filename = NULL;
 
     g_type_init();
+
+    max_files = sysconf(_SC_OPEN_MAX);
+    fprintf(stdout, "Maximum number of opened files : %ld\n", max_files);
 
     opt = do_what_is_needed_from_command_line_options(argc, argv);
     main_struct = init_main_structure(opt);
 
+     main_struct->fd = inotify_init();
+
+    /* Adding paths to be monitored in a threaded way */
     a_thread_data = (thread_data_t *) g_malloc0(sizeof(thread_data_t));
 
     a_thread_data->main_struct = main_struct;
-    a_thread_data->dir_list = g_slist_prepend(a_thread_data->dir_list, "/home/dup/Dossiers_Perso/projets/sauvegarde");
+    a_thread_data->dir_list = g_slist_prepend(a_thread_data->dir_list, "/home/dup/Dossiers_Perso/projets");
 
     a_thread = g_thread_create(threaded_directory_traversal, a_thread_data, FALSE, NULL);
 
+
+    while(1)
+        {
+            read(main_struct->fd, buffer, sizeof(buffer));
+            event = (struct inotify_event *) buffer;
+
+            filename = g_strndup(event->name, event->len);
+
+            printf("Fichier surveillé : %s\n", filename);
+
+            g_free(filename);
+        }
+
+
     /* infinite loop */
-    mainloop = g_main_loop_new(NULL, FALSE);
-    g_main_loop_run(mainloop);
+    /* mainloop = g_main_loop_new(NULL, FALSE);
+    g_main_loop_run(mainloop); */
 
     /* when leaving, we have to free memory... but this is not going to happen here ! */
     /* free_options_t_structure(main_struct->opt); */

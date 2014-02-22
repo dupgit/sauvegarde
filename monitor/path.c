@@ -46,7 +46,7 @@ path_t *new_path_t(gchar *path, gint64 rate)
     a_path->path = g_strdup(path);
     a_path->key = g_quark_from_string(path);
     a_path->rate = rate;
-    a_path->monitor = NULL;
+    a_path->wd = -1;
 
     return a_path;
 }
@@ -60,10 +60,6 @@ void free_path_t(path_t *a_path)
     if (a_path != NULL)
         {
             g_free(a_path->path);
-            if (a_path->monitor != NULL)
-                {
-                    g_object_unref(a_path->monitor);
-                }
             g_free(a_path);
         }
 }
