@@ -166,6 +166,7 @@ AC_SUBST(GIO_LIBS)
 AC_CONFIG_FILES([
 Makefile
 monitor/Makefile
+ciseaux/Makefile
 po/Makefile.in
 ])
 AC_OUTPUT
