@@ -44,14 +44,20 @@
  *
  * @def CISEAUX_LICENSE
  * defines ciseaux's license (at least GPL v2)
- *
- * @def CISEAUX_BLOCK_SIZE
- * default block size in bytes
  */
 #define CISEAUX_AUTHORS ("Olivier Delhomme")
 #define CISEAUX_DATE ("24 02 2014")
 #define CISEAUX_LICENSE ("GPL v3 or later")
+
+/**
+ * @def CISEAUX_BLOCK_SIZE
+ * default block size in bytes
+ *
+ * @def CISEAUX_MAX_THREADS
+ * default maximum number of threads in a thread pool
+ */
 #define CISEAUX_BLOCK_SIZE (32768)
+#define CISEAUX_MAX_THREADS (16)
 
 
 /**
@@ -60,7 +66,8 @@
  */
 typedef struct
 {
-    options_t *opt;        /** options of the program from the command line */
+    options_t *opt;   /** options of the program from the command line                  */
+    GThreadPool *tp;  /** Thread pool that will be used to calculate the hashs of files */
 } main_struct_t;
 
 
