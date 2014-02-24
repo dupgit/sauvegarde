@@ -138,6 +138,10 @@ static void init_thread_pool(main_struct_t *main_struct)
 
     if (main_struct != NULL)
         {
+            if (main_struct->opt != NULL && main_struct->opt->max_threads != CISEAUX_MAX_THREADS)
+                {
+                    max_threads = main_struct->opt->max_threads;
+                }
 
             tp = g_thread_pool_new(calculate_hashs_on_a_file, main_struct, max_threads, FALSE, &error);
 
@@ -186,6 +190,8 @@ int main(int argc, char **argv)
     init_thread_pool(main_struct);
 
     head = main_struct->opt->filename_list;
+
+
 
     max_threads = g_thread_pool_get_max_threads(main_struct->tp);
 

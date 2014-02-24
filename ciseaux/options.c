@@ -41,14 +41,16 @@ static void print_program_version(void);
  */
 options_t *manage_command_line_options(int argc, char **argv)
 {
-    gboolean version = FALSE;            /** version option selected ?                   */
-    gint blocksize = CISEAUX_BLOCK_SIZE; /** computed block size in bytes                */
-    gchar **filename_array = NULL;       /** array of filenames left on the command line */
+    gboolean version = FALSE;      /** version option selected ?                   */
+    gint64 blocksize = 0;            /** computed block size in bytes                */
+    gchar **filename_array = NULL; /** array of filenames left on the command line */
+    gint64 max_threads = 0;          /** Maximum number of threads to be used        */
 
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, "Prints program version", NULL },
         { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, "Block size used to compute hashs", NULL},
+        { "max-thread", 'm', 0, G_OPTION_ARG_INT64 , &max_threads, "Maximum threads we can use at once", NULL},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &filename_array, "", NULL},
         { NULL }
     };
@@ -81,8 +83,15 @@ options_t *manage_command_line_options(int argc, char **argv)
         }
 
     opt->version = version;
-    opt->blocksize = blocksize;
 
+    if (blocksize > 0)
+        {
+            opt->blocksize = blocksize;
+        }
+    else
+        {
+            opt->blocksize = CISEAUX_BLOCK_SIZE;
+        }
 
     filename_list = NULL;
 
@@ -101,6 +110,15 @@ options_t *manage_command_line_options(int argc, char **argv)
         }
 
     opt->filename_list = filename_list;
+
+    if (max_threads > 0)
+        {
+            opt->max_threads = max_threads;
+        }
+    else
+        {
+             opt->max_threads = CISEAUX_MAX_THREADS;
+        }
 
     g_option_context_free(context);
     g_free(bugreport);
