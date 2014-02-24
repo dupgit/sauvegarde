@@ -44,10 +44,14 @@
  *
  * @def CISEAUX_LICENSE
  * defines ciseaux's license (at least GPL v2)
+ *
+ * @def CISEAUX_BLOCK_SIZE
+ * default block size in bytes
  */
-#define CISEAUX_AUTHORS "Olivier Delhomme"
-#define CISEAUX_DATE "24 02 2014"
+#define CISEAUX_AUTHORS ("Olivier Delhomme")
+#define CISEAUX_DATE ("24 02 2014")
 #define CISEAUX_LICENSE ("GPL v3 or later")
+#define CISEAUX_BLOCK_SIZE (32768)
 
 
 #endif /* #ifndef _CISEAUX_H_ */

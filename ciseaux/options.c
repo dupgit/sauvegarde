@@ -41,26 +41,38 @@ static void print_program_version(void);
  */
 options_t *manage_command_line_options(int argc, char **argv)
 {
-    gboolean version = FALSE;
+    gboolean version = FALSE;            /** version option selected ?                   */
+    gint blocksize = CISEAUX_BLOCK_SIZE; /** computed block size in bytes                */
+    gchar **filename_array = NULL;       /** array of filenames left on the command line */
+
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, "Prints program version", NULL },
+        { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, "Block size used to compute hashs", NULL},
+        { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &filename_array, "", NULL},
         { NULL }
     };
 
     GError *error = NULL;
-    GOptionContext *context;
+    GOptionContext *context;  /** GOption context to manage options     */
     options_t *opt = NULL;    /** Structure to manage program's options */
     gchar *bugreport = NULL;
+    gchar *summary = NULL;
+    gint num = 0;             /** number of filenames in the filename_array if any */
+    gint i = 0;
+    GSList *filename_list = NULL;
+    gchar *filename = NULL;
 
     opt = (options_t *) g_malloc0(sizeof(options_t));
 
     bugreport = g_strconcat("Please report bugs to : ", PACKAGE_BUGREPORT, NULL);
+    summary = g_strdup("This program is hashing files with SHA256 algorithms from Glib.");
     context = g_option_context_new("");
 
     g_option_context_add_main_entries(context, entries, GETTEXT_PACKAGE);
     g_option_context_set_help_enabled(context, TRUE);
     g_option_context_set_description(context, bugreport);
+    g_option_context_set_summary(context, summary);
 
     if (!g_option_context_parse(context, &argc, &argv, &error))
         {
@@ -69,9 +81,30 @@ options_t *manage_command_line_options(int argc, char **argv)
         }
 
     opt->version = version;
+    opt->blocksize = blocksize;
+
+
+    filename_list = NULL;
+
+    if (filename_array != NULL)
+        {
+            /* retrieving the filenames stored in the array to put them
+             * into a list in the options_t * structure
+             */
+            num = g_strv_length(filename_array);
+
+            for (i = 0; i < num; i++)
+                {
+                    filename = g_strdup(filename_array[i]);
+                    filename_list = g_slist_append(filename_list, filename);
+                }
+        }
+
+    opt->filename_list = filename_list;
 
     g_option_context_free(context);
     g_free(bugreport);
+    g_free(summary);
 
     return opt;
 }
@@ -83,9 +116,22 @@ options_t *manage_command_line_options(int argc, char **argv)
  */
 void free_options_t_structure(options_t *opt)
 {
+    GSList *head = NULL;
+    GSList *next = NULL;
 
     if (opt != NULL)
         {
+            /* free the list */
+            head = opt->filename_list;
+
+            while (head != NULL)
+                {
+                    g_free(head->data);
+                    next = g_slist_next(head);
+                    g_slist_free_1(head);
+                    head = next;
+                }
+
             g_free(opt);
         }
 

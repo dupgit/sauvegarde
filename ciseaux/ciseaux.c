@@ -22,7 +22,8 @@
 
 /**
  * @file ciseaux.c
- *
+ * This program should receive filenames on which it has to calculate their
+ * SHA256 checksums : checksums are calculated for a defined block size.
  */
 
 #include "ciseaux.h"
@@ -38,9 +39,7 @@ int main(int argc, char **argv)
 {
     options_t *opt = NULL;  /** Structure to manage options from the command line can be freed when no longer needed */
 
-
     opt = do_what_is_needed_from_command_line_options(argc, argv);
-
 
     return 0;
 }

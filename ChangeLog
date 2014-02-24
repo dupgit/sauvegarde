@@ -1,6 +1,8 @@
 24.02.2014
      - Olivier Delhomme <olivier.delhomme@free.fr>
-        * Added "ciseaux" directory to the project.
+        * Added "ciseaux" directory to the project. Retrieving the files
+          from the command line in ciseaux. Added -b or --blocksize option
+          to fix a different blocksize than the 32768 default one.
 
 22.02.2014
      - Olivier Delhomme <olivier.delhomme@free.fr>

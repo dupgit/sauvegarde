@@ -35,7 +35,9 @@
  */
 typedef struct
 {
-    gboolean version;    /** TRUE if we have to display program's version */
+    gboolean version;       /** TRUE if we have to display program's version */
+    GSList *filename_list;  /** Filenames that were left in the command line */
+    guint64 blocksize;      /** block size in bytes                          */
 } options_t;
 
 
