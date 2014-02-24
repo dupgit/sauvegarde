@@ -54,4 +54,16 @@
 #define CISEAUX_BLOCK_SIZE (32768)
 
 
+/**
+ * @struct main_struct_t
+ * Structure that will contain everything needed by the program
+ */
+typedef struct
+{
+    options_t *opt;        /** options of the program from the command line */
+} main_struct_t;
+
+
+
+
 #endif /* #ifndef _CISEAUX_H_ */

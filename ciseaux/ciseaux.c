@@ -37,9 +37,12 @@
  */
 int main(int argc, char **argv)
 {
-    options_t *opt = NULL;  /** Structure to manage options from the command line can be freed when no longer needed */
+    main_struct_t *main_struct = NULL;  /** Structure that contians everything needed by the program */
 
-    opt = do_what_is_needed_from_command_line_options(argc, argv);
+    main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
+
+    main_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
+
 
     return 0;
 }
