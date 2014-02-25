@@ -167,6 +167,29 @@ static void init_thread_pool(main_struct_t *main_struct)
 }
 
 
+/**
+ *  Inits internationalization
+ */
+static void init_international_languages(void)
+{
+    gchar *result = NULL;
+    gchar *codeset = NULL;
+    gchar *text_domain = NULL;
+
+    setlocale(LC_ALL, "");
+    result = bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
+    codeset = bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+    text_domain = textdomain(GETTEXT_PACKAGE);
+
+    if (ENABLE_DEBUG == TRUE)
+        {
+            fprintf(stdout, "Gettext package : %s\n", GETTEXT_PACKAGE);
+            fprintf(stdout, "Bindtextdomain : %s\n", result);
+            fprintf(stdout, "Code set : %s\n", codeset);
+            fprintf(stdout, "Text domain : %s\n", text_domain);
+        }
+}
+
 
 /**
  * Main function
@@ -183,6 +206,8 @@ int main(int argc, char **argv)
 
     /* Initialising GLib */
     g_type_init();
+
+    init_international_languages();
 
     main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
 

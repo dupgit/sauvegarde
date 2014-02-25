@@ -94,7 +94,7 @@ msgstr "Indiquez les bugs à : "
 
 #: ../ciseaux/options.c:71
 msgid "This program is hashing files with SHA256 algorithms from Glib."
-msgstr "Ce programme calcul les sommes de contrôle (hashs) avec l'algorithme SHA256 de la librairie Glib."
+msgstr "Ce programme calcule les sommes de contrôle (hashs) avec l'algorithme SHA256 de la librairie Glib."
 
 #: ../ciseaux/options.c:81
 #, c-format

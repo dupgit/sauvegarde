@@ -92,6 +92,12 @@ case $build_os in
 esac
 
 
+dnl **************************************************
+dnl * directories definitions                        *
+dnl **************************************************
+LOCALE_DIR="$prefix/share/locale"
+AC_DEFINE_UNQUOTED(LOCALE_DIR, "$prefix/share/locale", [Locale Directory])
+
 
 dnl **************************************************
 dnl * ./configure options                            *
@@ -197,7 +203,7 @@ echo "      . Code coverage is on ?  : $gcov"
 echo "      . debbuging is on ?      : $debug"
 echo "    - Prefix                   : $prefix"
 echo "    - Exec prefix              : ${exec_prefix}"
-echo "    - Locale dir               : ${LOCALEDIR}"
+echo "    - Locale dir               : ${LOCALE_DIR}"
 echo
 echo "    You can now run 'make -s' to compile Sauvegarde"
 echo
