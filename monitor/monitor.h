@@ -35,6 +35,7 @@
 #include <unistd.h>
 #include <glib.h>
 #include <gio/gio.h>
+#include <glib/gi18n-lib.h>
 #include <sys/inotify.h>
 #include <errno.h>
 
