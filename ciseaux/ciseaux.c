@@ -192,7 +192,6 @@ int main(int argc, char **argv)
     head = main_struct->opt->filename_list;
 
 
-
     max_threads = g_thread_pool_get_max_threads(main_struct->tp);
 
     while (head != NULL)
