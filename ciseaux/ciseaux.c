@@ -53,7 +53,7 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
 
             if (error != NULL)
                 {
-                    fprintf(stderr, "Error while reading %s file : %s\n", filename, error->message);
+                    fprintf(stderr, _("Error while reading %s file: %s\n"), filename, error->message);
                     read = 0;
                 }
             else
@@ -97,7 +97,7 @@ static void calculate_hashs_on_a_file(gpointer data, gpointer user_data)
 
     if (error != NULL)
         {
-           fprintf(stderr, "Can't get informations on %s file : %s\n", filename, error->message);
+           fprintf(stderr, _("Can't get informations on %s file: %s\n"), filename, error->message);
         }
     else if (fileinfo != NULL)
         {
@@ -109,7 +109,7 @@ static void calculate_hashs_on_a_file(gpointer data, gpointer user_data)
 
                     if (error != NULL)
                         {
-                            fprintf(stderr, "Error while opening %s file : %s\n", filename, error->message);
+                            fprintf(stderr, _("Error while opening %s file: %s\n"), filename, error->message);
                         }
                     else
                         {
@@ -119,7 +119,7 @@ static void calculate_hashs_on_a_file(gpointer data, gpointer user_data)
                 }
             else
                 {
-                    fprintf(stderr, "%s is not a regular file\n", filename);
+                    fprintf(stderr, _("%s is not a regular file\n"), filename);
                 }
         }
 }
@@ -151,12 +151,12 @@ static void init_thread_pool(main_struct_t *main_struct)
                 }
             else if (error != NULL)
                 {
-                    fprintf(stderr, "Unable to create a thread pool : %s\n", error->message);
+                    fprintf(stderr, _("Unable to create a thread pool: %s\n"), error->message);
                     exit(EXIT_FAILURE);
                 }
             else
                 {
-                    fprintf(stderr, "Thread pool not created but no error generated !\n");
+                    fprintf(stderr, _("Thread pool not created but no error generated!\n"));
                     exit(EXIT_FAILURE);
                 }
         }

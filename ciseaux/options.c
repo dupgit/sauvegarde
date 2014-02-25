@@ -48,9 +48,9 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     GOptionEntry entries[] =
     {
-        { "version", 'v', 0, G_OPTION_ARG_NONE, &version, "Prints program version", NULL },
-        { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, "Block size used to compute hashs", NULL},
-        { "max-thread", 'm', 0, G_OPTION_ARG_INT64 , &max_threads, "Maximum threads we can use at once", NULL},
+        { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
+        { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Block size used to compute hashs"), NULL},
+        { "max-thread", 'm', 0, G_OPTION_ARG_INT64 , &max_threads, N_("Maximum threads we can use at once"), NULL},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &filename_array, "", NULL},
         { NULL }
     };
@@ -67,8 +67,8 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     opt = (options_t *) g_malloc0(sizeof(options_t));
 
-    bugreport = g_strconcat("Please report bugs to : ", PACKAGE_BUGREPORT, NULL);
-    summary = g_strdup("This program is hashing files with SHA256 algorithms from Glib.");
+    bugreport = g_strconcat(_("Please report bugs to: "), PACKAGE_BUGREPORT, NULL);
+    summary = g_strdup(_("This program is hashing files with SHA256 algorithms from Glib."));
     context = g_option_context_new("");
 
     g_option_context_add_main_entries(context, entries, GETTEXT_PACKAGE);
@@ -78,7 +78,7 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     if (!g_option_context_parse(context, &argc, &argv, &error))
         {
-            g_print("Option parsing failed: %s\n", error->message);
+            g_print(_("Option parsing failed: %s\n"), error->message);
             exit(1);
         }
 
@@ -155,13 +155,14 @@ void free_options_t_structure(options_t *opt)
 
 }
 
+
 /**
  * Prints version of the libraries we are using.
  */
 static void print_libraries_versions(void)
 {
-    fprintf(stdout, "%s was compiled with the following libraries :\n", PACKAGE_NAME);
-    fprintf(stdout, "\t. GLIB version : %d.%d.%d\n", glib_major_version, glib_minor_version, glib_micro_version);
+    fprintf(stdout, _("%s was compiled with the following libraries:\n"), PACKAGE_NAME);
+    fprintf(stdout, _("\t. GLIB version : %d.%d.%d\n"), glib_major_version, glib_minor_version, glib_micro_version);
 
 }
 
@@ -172,9 +173,9 @@ static void print_libraries_versions(void)
 static void print_program_version(void)
 {
 
-    fprintf(stdout, "%s version : %s (%s)\n", PACKAGE_NAME, PACKAGE_VERSION, CISEAUX_DATE);
-    fprintf(stdout, "Author(s) : %s\n", CISEAUX_AUTHORS);
-    fprintf(stdout, "License : %s\n", CISEAUX_LICENSE);
+    fprintf(stdout, _("%s version : %s (%s)\n"), PACKAGE_NAME, PACKAGE_VERSION, CISEAUX_DATE);
+    fprintf(stdout, _("Author(s) : %s\n"), CISEAUX_AUTHORS);
+    fprintf(stdout, _("License : %s\n"), CISEAUX_LICENSE);
     fprintf(stdout, "\n");
 
 }

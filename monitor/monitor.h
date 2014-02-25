@@ -27,6 +27,9 @@
 #ifndef _MONITOR_H_
 #define _MONITOR_H_
 
+/* Configuration from ./configure script */
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -35,7 +38,6 @@
 #include <sys/inotify.h>
 #include <errno.h>
 
-#include "config.h"
 #include "options.h"
 #include "path.h"
 
@@ -52,9 +54,9 @@
  * @def MONITOR_TIME
  * defines monitor default rate limit in minutes
  */
-#define MONITOR_AUTHORS "Olivier Delhomme"
-#define MONITOR_DATE "15 02 2014"
-#define MONITOR_LICENSE ("GPL v3 or later")
+#define MONITOR_AUTHORS ("Olivier Delhomme")
+#define MONITOR_DATE N_("15 02 2014")
+#define MONITOR_LICENSE N_("GPL v3 or later")
 #define MONITOR_TIME (5)
 
 

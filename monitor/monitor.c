@@ -303,7 +303,7 @@ static int add_a_path_to_monitor(main_struct_t *main_struct, path_t *a_path)
 
             if (result == -1)
                 {
-                    perror("Error while adding a new watch descriptor");
+                    perror(_("Error while adding a new watch descriptor"));
                 }
 
             return result;
@@ -379,7 +379,7 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
         }
     else
     {
-        fprintf(stderr, "Unable to enumerate directory %s : %s\n", directory, error->message);
+        fprintf(stderr, _("Unable to enumerate directory %s: %s\n"), directory, error->message);
         g_error_free(error);
     }
 }
@@ -451,7 +451,7 @@ int main(int argc, char **argv)
     g_type_init();
 
     max_files = sysconf(_SC_OPEN_MAX);
-    fprintf(stdout, "Maximum number of opened files : %ld\n", max_files);
+    fprintf(stdout, _("Maximum number of opened files: %ld\n"), max_files);
 
     opt = do_what_is_needed_from_command_line_options(argc, argv);
     main_struct = init_main_structure(opt);
@@ -474,7 +474,7 @@ int main(int argc, char **argv)
 
             filename = g_strndup(event->name, event->len);
 
-            printf("Fichier surveillé : %s\n", filename);
+            printf(_("File monitored: %s\n"), filename);
 
             g_free(filename);
         }

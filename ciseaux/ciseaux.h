@@ -27,12 +27,15 @@
 #ifndef _CISEAUX_H_
 #define _CISEAUX_H_
 
+/* Configuration from ./configure script */
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <glib.h>
 #include <gio/gio.h>
+#include <glib/gi18n-lib.h>
 
-#include "config.h"
 #include "options.h"
 
 /**
@@ -46,8 +49,8 @@
  * defines ciseaux's license (at least GPL v2)
  */
 #define CISEAUX_AUTHORS ("Olivier Delhomme")
-#define CISEAUX_DATE ("24 02 2014")
-#define CISEAUX_LICENSE ("GPL v3 or later")
+#define CISEAUX_DATE N_("24 02 2014")
+#define CISEAUX_LICENSE N_("GPL v3 or later")
 
 /**
  * @def CISEAUX_BLOCK_SIZE
