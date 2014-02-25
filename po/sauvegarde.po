@@ -1,0 +1,128 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-02-25 14:43+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../monitor/monitor.h:59
+msgid "15 02 2014"
+msgstr ""
+
+#: ../monitor/monitor.h:60 ../ciseaux/ciseaux.h:53
+msgid "GPL v3 or later"
+msgstr ""
+
+#: ../ciseaux/options.c:51
+msgid "Prints program version"
+msgstr ""
+
+#: ../ciseaux/options.c:52
+msgid "Block size used to compute hashs"
+msgstr ""
+
+#: ../ciseaux/options.c:53
+msgid "Maximum threads we can use at once"
+msgstr ""
+
+#: ../ciseaux/ciseaux.h:52
+msgid "24 02 2014"
+msgstr ""
+
+#: ../monitor/monitor.c:306
+msgid "Error while adding a new watch descriptor"
+msgstr ""
+
+#: ../monitor/monitor.c:382
+#, c-format
+msgid "Unable to enumerate directory %s: %s\n"
+msgstr ""
+
+#: ../monitor/monitor.c:454
+#, c-format
+msgid "Maximum number of opened files: %ld\n"
+msgstr ""
+
+#: ../monitor/monitor.c:477
+#, c-format
+msgid "File monitored: %s\n"
+msgstr ""
+
+#: ../ciseaux/ciseaux.c:56
+#, c-format
+msgid "Error while reading %s file: %s\n"
+msgstr ""
+
+#: ../ciseaux/ciseaux.c:100
+#, c-format
+msgid "Can't get informations on %s file: %s\n"
+msgstr ""
+
+#: ../ciseaux/ciseaux.c:112
+#, c-format
+msgid "Error while opening %s file: %s\n"
+msgstr ""
+
+#: ../ciseaux/ciseaux.c:122
+#, c-format
+msgid "%s is not a regular file\n"
+msgstr ""
+
+#: ../ciseaux/ciseaux.c:154
+#, c-format
+msgid "Unable to create a thread pool: %s\n"
+msgstr ""
+
+#: ../ciseaux/ciseaux.c:159
+#, c-format
+msgid "Thread pool not created but no error generated!\n"
+msgstr ""
+
+#: ../ciseaux/options.c:70
+msgid "Please report bugs to: "
+msgstr ""
+
+#: ../ciseaux/options.c:71
+msgid "This program is hashing files with SHA256 algorithms from Glib."
+msgstr ""
+
+#: ../ciseaux/options.c:81
+#, c-format
+msgid "Option parsing failed: %s\n"
+msgstr ""
+
+#: ../ciseaux/options.c:164
+#, c-format
+msgid "%s was compiled with the following libraries:\n"
+msgstr ""
+
+#: ../ciseaux/options.c:165
+#, c-format
+msgid "\t. GLIB version : %d.%d.%d\n"
+msgstr ""
+
+#: ../ciseaux/options.c:176
+#, c-format
+msgid "%s version : %s (%s)\n"
+msgstr ""
+
+#: ../ciseaux/options.c:177
+#, c-format
+msgid "Author(s) : %s\n"
+msgstr ""
+
+#: ../ciseaux/options.c:178
+#, c-format
+msgid "License : %s\n"
+msgstr ""

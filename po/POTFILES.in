@@ -1,5 +1,12 @@
 # List of source files containing translatable strings.
 # Please keep this file sorted in this order.
 ../monitor/monitor.c
-
-
+../monitor/options.c
+../monitor/path.h
+../monitor/monitor.h
+../monitor/options.h
+../monitor/path.h
+../ciseaux/ciseaux.c
+../ciseaux/options.c
+../ciseaux/ciseaux.h
+../ciseaux/options.h
