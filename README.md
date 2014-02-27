@@ -10,16 +10,16 @@ Infrastucture
 This is how I imagine the programs may interact themselves but it may
 evolve in the future.
 
-hid   | -----------      -----------      ---------------        -----------
-to    | | monitor | ---> | ciseaux | ---> | antememoire |  <---> | serveur |
-user  | -----------      -----------      ---------------        -----------
-                                                                      ^
-user                                ----------------                  |
-client                              | restauration | <----------------|
-(GUI ?)                             ----------------
-\                                                      /        \          /
- ------------ Client side (on a notebook) -------------          - server -
-                                                                    side
+    hid   | -----------      -----------      ---------------        -----------
+    to    | | monitor | ---> | ciseaux | ---> | antememoire |  <---> | serveur |
+    user  | -----------      -----------      ---------------        -----------
+                                                                          ^
+    user                                ----------------                  |
+    client                              | restauration | <----------------|
+    (GUI ?)                             ----------------
+    \                                                      /        \          /
+     ------------ Client side (on a notebook) -------------          - server -
+                                                                        side
 
 
 * "monitor" may monitor a filesystem and send events to "ciseaux".
