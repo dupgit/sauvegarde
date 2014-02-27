@@ -15,6 +15,18 @@ function delete_file {
 
 }
 
+
+##
+# Prints the directory to be deleted (first argument of the function : $1)
+# and deletes it.
+#
+function delete_dir {
+
+    echo "$1"
+    rm -fr $1
+}
+
+
 ##
 # Prints the command being executed and deletes files in the whole
 # project ($1 is the argument to find files to be deleted)
@@ -35,7 +47,6 @@ if [ -f Makefile ];
 fi;
 
 delete_file "aclocal.m4"
-delete_file "autom4te.cache"
 delete_file "config.guess"
 delete_file "config.sub"
 delete_file "depcomp"
@@ -46,6 +57,7 @@ delete_file "configure"
 delete_file "config.status"
 delete_file "config.log"
 delete_file "libtool"
+delete_dir "autom4te.cache"
 
 delete_evrywhere "*~"
 delete_evrywhere "*#"

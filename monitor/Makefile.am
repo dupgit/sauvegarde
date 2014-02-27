@@ -1,7 +1,9 @@
 bin_PROGRAMS = monitor
 
+DEFS = -I../libsauvegarde
+
 monitor_LDFLAGS = $(LDFLAGS)
-monitor_LDADD = $(GLIB_LIBS) $(GIO_LIBS)
+monitor_LDADD = $(GLIB_LIBS) $(GIO_LIBS)  -L../libsauvegarde -lsauvegarde
 
 MON_HEADERFILES = monitor.h               \
                   options.h				  \

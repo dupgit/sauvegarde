@@ -29,7 +29,7 @@
 #include "ciseaux.h"
 
 /**
- * Does the checksum on the opened stream
+ * Does the checksum on the opened stream.
  * @param main_struct is the mains structure fro the program
  * @param stream the stream on which we want to calculate the checksum
  * @param filename is the filename of the opened stream (to be displayed in
@@ -163,30 +163,6 @@ static void init_thread_pool(main_struct_t *main_struct)
     else
         {
             exit(EXIT_FAILURE);
-        }
-}
-
-
-/**
- *  Inits internationalization
- */
-static void init_international_languages(void)
-{
-    gchar *result = NULL;
-    gchar *codeset = NULL;
-    gchar *text_domain = NULL;
-
-    setlocale(LC_ALL, "");
-    result = bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
-    codeset = bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
-    text_domain = textdomain(GETTEXT_PACKAGE);
-
-    if (ENABLE_DEBUG == TRUE)
-        {
-            fprintf(stdout, "Gettext package : %s\n", GETTEXT_PACKAGE);
-            fprintf(stdout, "Bindtextdomain : %s\n", result);
-            fprintf(stdout, "Code set : %s\n", codeset);
-            fprintf(stdout, "Text domain : %s\n", text_domain);
         }
 }
 

@@ -171,6 +171,7 @@ AC_SUBST(GIO_LIBS)
 
 AC_CONFIG_FILES([
 Makefile
+libsauvegarde/Makefile
 monitor/Makefile
 ciseaux/Makefile
 po/Makefile.in

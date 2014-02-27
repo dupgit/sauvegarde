@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
- *    ciseaux.h
+ *    libsauvegarde.h
  *    This file is part of "Sauvegarde" project.
  *
  *    (C) Copyright 2014 Olivier Delhomme
@@ -20,12 +20,13 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file ciseaux.h
+ * @file libsauvegarde.h
  *
- *  This file contains all the definitions for the ciseaux program.
+ *  This file contains all the definitions for the common tools of
+ * "Sauvegarde" collection programs.
  */
-#ifndef _CISEAUX_H_
-#define _CISEAUX_H_
+#ifndef _LIBSAUVEGARDE_H_
+#define _LIBSAUVEGARDE_H_
 
 /* Configuration from ./configure script */
 #include "config.h"
@@ -36,46 +37,9 @@
 #include <gio/gio.h>
 #include <glib/gi18n-lib.h>
 
-#include <libsauvegarde.h>
-
-#include "options.h"
-
 /**
- * @def CISEAUX_DATE
- * defines ciseaux's creation date
- *
- * @def CISEAUX_AUTHORS
- * defines ciseaux's main authors
- *
- * @def CISEAUX_LICENSE
- * defines ciseaux's license (at least GPL v2)
+ *  Inits internationalization domain for sauvegarde project
  */
-#define CISEAUX_AUTHORS ("Olivier Delhomme")
-#define CISEAUX_DATE N_("24 02 2014")
-#define CISEAUX_LICENSE N_("GPL v3 or later")
+extern void init_international_languages(void);
 
-/**
- * @def CISEAUX_BLOCK_SIZE
- * default block size in bytes
- *
- * @def CISEAUX_MAX_THREADS
- * default maximum number of threads in a thread pool
- */
-#define CISEAUX_BLOCK_SIZE (32768)
-#define CISEAUX_MAX_THREADS (16)
-
-
-/**
- * @struct main_struct_t
- * Structure that will contain everything needed by the program
- */
-typedef struct
-{
-    options_t *opt;   /** options of the program from the command line                  */
-    GThreadPool *tp;  /** Thread pool that will be used to calculate the hashs of files */
-} main_struct_t;
-
-
-
-
-#endif /* #ifndef _CISEAUX_H_ */
+#endif /* #ifndef _LIBSAUVEGARDE_H_ */

@@ -450,6 +450,8 @@ int main(int argc, char **argv)
 
     g_type_init();
 
+    init_international_languages();
+
     max_files = sysconf(_SC_OPEN_MAX);
     fprintf(stdout, _("Maximum number of opened files: %ld\n"), max_files);
 
