@@ -12,3 +12,15 @@ monitor
 
 * Need a cache for the monitored directory to avoid a whole disk traversal
   each time we restart the process
+
+* Need command line options.
+
+ciseaux
+=======
+
+* Need a configuration file (and a command line option to specify a
+  configuration file).
+
+
+libsauvegarde
+=============
