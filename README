@@ -20,7 +20,7 @@ Learnt things
   that the disk is full ! The limit on my system is 8192 watchs at a time.
 * We should use another mechanism to monitor a whole filesystem as limits
   for GFileMonitor and inotify techniques are very low compared to the
-  number of directories a filesystem might have (my /home have
+  number of directories a filesystem might have (my /home have 37826
   directories !). We might want to look at redirfs
   (http://www.redirfs.org/tiki-index.php) or pluginfs
   (http://www.pluginfs.org/).
