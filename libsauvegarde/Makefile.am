@@ -1,9 +1,11 @@
 
 pkglib_LTLIBRARIES = libsauvegarde.la
 
-headerfiles = libsauvegarde.h
+headerfiles = libsauvegarde.h	\
+			  configuration.h
 
-libsauvegarde_la_SOURCES =	libsauvegarde.c 			\
+libsauvegarde_la_SOURCES =	libsauvegarde.c 	\
+							configuration.c		\
 							$(headerfiles)
 
 libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)	\

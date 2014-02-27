@@ -37,6 +37,8 @@
 #include <gio/gio.h>
 #include <glib/gi18n-lib.h>
 
+#include "configuration.h"
+
 /**
  * Prints version of the libraries we are using.
  */
