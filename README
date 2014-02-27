@@ -9,3 +9,18 @@ Comments
 Sauvegarde uses Javadoc comment style to be parsed by doxygen. Please
 continue to use this style into comments in the whole project as it will
 be parsed by doxygen.
+
+
+Learnt things
+-------------
+
+* GFileMonitor in Glib 2.26 does not warn when the file descriptors are
+  exhausted. The default limit on my system is 1024 files monitored
+* inotify interface does warn when one can not add a new watch. It says
+  that the disk is full ! The limit on my system is 8192 watchs at a time.
+* We should use another mechanism to monitor a whole filesystem as limits
+  for GFileMonitor and inotify techniques are very low compared to the
+  number of directories a filesystem might have (my /home have
+  directories !). We might want to look at redirfs
+  (http://www.redirfs.org/tiki-index.php) or pluginfs
+  (http://www.pluginfs.org/).
