@@ -55,3 +55,14 @@ Learnt things from experiments
   directories !). We might want to look at redirfs
   (http://www.redirfs.org/tiki-index.php) or pluginfs
   (http://www.pluginfs.org/).
+
+
+Usefull links
+-------------
+* redirfs  : [http://www.redirfs.org/tiki-index.php](http://www.redirfs.org/tiki-index.php)
+* pluginfs : [http://www.pluginfs.org/](http://www.pluginfs.org/)
+* sqlite   : [http://www.sqlite.org/cintro.html](http://www.sqlite.org/cintro.html)
+* zmq      : [http://czmq.zeromq.org/](http://czmq.zeromq.org/)
+
+
+
