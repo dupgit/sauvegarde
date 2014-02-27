@@ -3,6 +3,24 @@ Sauvegarde
 
 Some experiments around backup and continuous data protection (CDP)
 
+License
+-------
+
+This is free software an real open source as GPLv3 is used for this
+collection of programs. Feel free to contibute and/or give help to the
+projects used here (see dependencies section)
+
+
+Dependencies
+------------
+
+This project depends on :
+
+* autotools     (2.59)
+* glib and gio  (2.26)
+* 0MQ           (3.2.4)
+* sqlite        (3.6.20)
+
 
 Infrastucture
 -------------
