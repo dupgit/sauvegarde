@@ -28,6 +28,35 @@
 
 #include "libsauvegarde.h"
 
+
+/**
+ * Prints version of the libraries we are using.
+ */
+void print_libraries_versions(void)
+{
+    fprintf(stdout, _("%s was compiled with the following libraries:\n"), PACKAGE_NAME);
+    fprintf(stdout, _("\t. GLIB version : %d.%d.%d\n"), glib_major_version, glib_minor_version, glib_micro_version);
+
+}
+
+
+/**
+ * Prints the version of the program.
+ * @param date : publication date of this version
+ * @param authors : authors that contributed to this program
+ * @param license : license in use for this program and its sources
+ */
+void print_program_version(gchar *date, gchar *authors, gchar *license)
+{
+
+    fprintf(stdout, _("%s version : %s (%s)\n"), PACKAGE_NAME, PACKAGE_VERSION, date);
+    fprintf(stdout, _("Author(s) : %s\n"), authors);
+    fprintf(stdout, _("License : %s\n"), license);
+    fprintf(stdout, "\n");
+
+}
+
+
 /**
  *  Inits internationalization domain for sauvegarde project
  */

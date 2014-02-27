@@ -28,10 +28,6 @@
 
 #include "ciseaux.h"
 
-static void print_libraries_versions(void);
-static void print_program_version(void);
-
-
 /**
  * This function parses command line options.
  * @param argc : number of arguments given on the command line.
@@ -157,31 +153,6 @@ void free_options_t_structure(options_t *opt)
 
 
 /**
- * Prints version of the libraries we are using.
- */
-static void print_libraries_versions(void)
-{
-    fprintf(stdout, _("%s was compiled with the following libraries:\n"), PACKAGE_NAME);
-    fprintf(stdout, _("\t. GLIB version : %d.%d.%d\n"), glib_major_version, glib_minor_version, glib_micro_version);
-
-}
-
-
-/**
- * Prints the version of the program.
- */
-static void print_program_version(void)
-{
-
-    fprintf(stdout, _("%s version : %s (%s)\n"), PACKAGE_NAME, PACKAGE_VERSION, CISEAUX_DATE);
-    fprintf(stdout, _("Author(s) : %s\n"), CISEAUX_AUTHORS);
-    fprintf(stdout, _("License : %s\n"), CISEAUX_LICENSE);
-    fprintf(stdout, "\n");
-
-}
-
-
-/**
  * Decides what to do upon command lines options passed to the program
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
@@ -196,7 +167,7 @@ options_t *do_what_is_needed_from_command_line_options(int argc, char **argv)
 
     if (opt != NULL && opt->version == TRUE)
         {
-            print_program_version();
+            print_program_version(CISEAUX_DATE, CISEAUX_AUTHORS, CISEAUX_LICENSE);
             print_libraries_versions();
         }
 

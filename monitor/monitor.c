@@ -458,7 +458,7 @@ int main(int argc, char **argv)
     opt = do_what_is_needed_from_command_line_options(argc, argv);
     main_struct = init_main_structure(opt);
 
-     main_struct->fd = inotify_init();
+    main_struct->fd = inotify_init();
 
     /* Adding paths to be monitored in a threaded way */
     a_thread_data = (thread_data_t *) g_malloc0(sizeof(thread_data_t));

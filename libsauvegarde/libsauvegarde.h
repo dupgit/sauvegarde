@@ -38,6 +38,20 @@
 #include <glib/gi18n-lib.h>
 
 /**
+ * Prints version of the libraries we are using.
+ */
+extern void print_libraries_versions(void);
+
+
+/**
+ * Prints the version of the program.
+ * @param date : publication date of this version
+ * @param authors : authors that contributed to this program
+ * @param license : license in use for this program and its sources
+ */
+extern void print_program_version(gchar *date, gchar *authors, gchar *license);
+
+/**
  *  Inits internationalization domain for sauvegarde project
  */
 extern void init_international_languages(void);

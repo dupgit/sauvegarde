@@ -27,9 +27,6 @@
 
 #include "monitor.h"
 
-static void print_libraries_versions(void);
-static void print_program_version(void);
-
 
 /**
  * This function parses command line options.
@@ -43,7 +40,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     gboolean version = FALSE;
     GOptionEntry entries[] =
     {
-        { "version", 'v', 0, G_OPTION_ARG_NONE, &version, "Prints program version", NULL },
+        { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
         { NULL }
     };
 
@@ -54,7 +51,7 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     opt = (options_t *) g_malloc0(sizeof(options_t));
 
-    bugreport = g_strconcat("Please report bugs to : ", PACKAGE_BUGREPORT, NULL);
+    bugreport = g_strconcat(_("Please report bugs to: "), PACKAGE_BUGREPORT, NULL);
     context = g_option_context_new("");
 
     g_option_context_add_main_entries(context, entries, GETTEXT_PACKAGE);
@@ -63,7 +60,7 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     if (!g_option_context_parse(context, &argc, &argv, &error))
         {
-            g_print("Option parsing failed: %s\n", error->message);
+            g_print(_("Option parsing failed: %s\n"), error->message);
             exit(1);
         }
 
@@ -91,31 +88,6 @@ void free_options_t_structure(options_t *opt)
 }
 
 /**
- * Prints version of the libraries we are using.
- */
-static void print_libraries_versions(void)
-{
-    fprintf(stdout, "%s was compiled with the following libraries :\n", PACKAGE_NAME);
-    fprintf(stdout, "\t. GLIB version : %d.%d.%d\n", glib_major_version, glib_minor_version, glib_micro_version);
-
-}
-
-
-/**
- * Prints the version of the program.
- */
-static void print_program_version(void)
-{
-
-    fprintf(stdout, "%s version : %s (%s)\n", PACKAGE_NAME, PACKAGE_VERSION, MONITOR_DATE);
-    fprintf(stdout, "Author(s) : %s\n", MONITOR_AUTHORS);
-    fprintf(stdout, "License : %s\n", MONITOR_LICENSE);
-    fprintf(stdout, "\n");
-
-}
-
-
-/**
  * Decides what to do upon command lines options passed to the program
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
@@ -130,7 +102,7 @@ options_t *do_what_is_needed_from_command_line_options(int argc, char **argv)
 
     if (opt != NULL && opt->version == TRUE)
         {
-            print_program_version();
+            print_program_version(MONITOR_DATE, MONITOR_AUTHORS, MONITOR_LICENSE);
             print_libraries_versions();
         }
 
