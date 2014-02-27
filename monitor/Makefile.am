@@ -1,9 +1,11 @@
 bin_PROGRAMS = monitor
 
-DEFS = -I../libsauvegarde
+DEFS =	-I../libsauvegarde $(GLIB_CFLAGS) $(GIO_CFLAGS) $(ZMQ_CFLAGS) \
+		$(SQLITE_CFLAGS)
 
 monitor_LDFLAGS = $(LDFLAGS)
-monitor_LDADD = $(GLIB_LIBS) $(GIO_LIBS)  -L../libsauvegarde -lsauvegarde
+monitor_LDADD = $(GLIB_LIBS) $(GIO_LIBS)  -L../libsauvegarde -lsauvegarde \
+				$(ZMQ_LIBS) $(SQLITE_LIBS)
 
 MON_HEADERFILES = monitor.h               \
                   options.h				  \

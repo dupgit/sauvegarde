@@ -23,6 +23,8 @@ dnl **************************************************
 PKG_PROG_PKG_CONFIG([0.10])
 GLIB_VERSION=2.26.0
 GIO_VERSION=2.26.0
+SQLITE_VERSION=3.6.20
+ZMQ_VERSION=3.2.4
 
 AC_SUBST(GLIB_VERSION)
 AC_SUBST(GIO_VERSION)
@@ -62,10 +64,12 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Gettext Package used])
 AM_GLIB_GNU_GETTEXT
 
 dnl **************************************************
-dnl * checking for glib                              *
+dnl * checking for modules (glib, gio, sqlite, zmq)  *
 dnl **************************************************
 PKG_CHECK_MODULES(GLIB, [glib-2.0 >= $GLIB_VERSION])
 PKG_CHECK_MODULES(GIO, [gio-2.0 >= $GIO_VERSION])
+PKG_CHECK_MODULES(SQLITE, [sqlite3 >= $SQLITE_VERSION])
+PKG_CHECK_MODULES(ZMQ, [libzmq >= $ZMQ_VERSION])
 
 AC_PROG_INSTALL
 
@@ -160,13 +164,19 @@ else
  CFLAGS="$CFLAGS"
 fi
 
-
+dnl **************************************************
+dnl * exporting variables                            *
+dnl **************************************************
 AC_SUBST(LDFLAGS)
 AC_SUBST(CFLAGS)
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
+AC_SUBST(SQLITE_CFLAGS)
+AC_SUBST(SQLITE_LIBS)
+AC_SUBST(ZMQ_CFLAGS)
+AC_SUBST(ZMQ_LIBS)
 
 
 AC_CONFIG_FILES([
@@ -182,16 +192,16 @@ echo
 echo "*** Flags that will be used to compile Sauvegarde ***"
 echo
 echo "CFLAGS        : ${CFLAGS}"
-echo
 echo "LDFLAGS       : ${LDFLAGS}"
 echo
 echo "GLIB CFLAGS   : ${GLIB_CFLAGS}"
-echo
 echo "GLIB LIBS     : ${GLIB_LIBS}"
-echo
-echo "GIO CFLAGS   : ${GIO_CFLAGS}"
-echo
-echo "GIO LIBS     : ${GIO_LIBS}"
+echo "GIO CFLAGS    : ${GIO_CFLAGS}"
+echo "GIO LIBS      : ${GIO_LIBS}"
+echo "SQLITE CFLAGS : ${SQLITE_CFLAGS}"
+echo "SQLITE LIBS   : ${SQLITE_LIBS}"
+echo "LIBZMQ CFLAGS : ${ZMQ_CFLAGS}"
+echo "LIBZMP LIBS   : ${ZMQ_LIBS}"
 echo
 echo
 echo "*** Dumping configuration ***"

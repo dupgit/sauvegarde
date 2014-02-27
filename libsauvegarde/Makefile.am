@@ -6,9 +6,10 @@ headerfiles = libsauvegarde.h
 libsauvegarde_la_SOURCES =	libsauvegarde.c 			\
 							$(headerfiles)
 
-libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)
+libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)	\
+						  $(ZMQ_CFLAGS) $(SQLITE_CFLAGS)
 
-AM_LDFLAGS = $(GLIB_LIBS) $(GIO_LIBS)
+AM_LDFLAGS = $(LDFLAGS) $(GLIB_LIBS) $(GIO_LIBS) $(ZMQ_LIBS) $(SQLITE_LIBS)
 
 include_HEADERS = $(headerfiles)
 
