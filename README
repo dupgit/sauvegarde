@@ -10,7 +10,7 @@ Infrastucture
 This is how I imagine the programs may interact themselves but it may
 evolve in the future.
 
-hided | -----------      -----------      ---------------        -----------
+hid   | -----------      -----------      ---------------        -----------
 to    | | monitor | ---> | ciseaux | ---> | antememoire |  <---> | serveur |
 user  | -----------      -----------      ---------------        -----------
                                                                       ^
