@@ -38,6 +38,7 @@
 #include <glib/gi18n-lib.h>
 #include <sys/inotify.h>
 #include <errno.h>
+#include <libsauvegarde.h>
 
 #include "options.h"
 #include "path.h"

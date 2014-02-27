@@ -1,3 +1,8 @@
+27.02.2014
+     - Olivier Delhomme <olivier.delhomme@free.fr>
+        * Added a libsauvegarde to collect all common tools (to avoid
+          duplicating code and simplify maintenance).
+
 24.02.2014
      - Olivier Delhomme <olivier.delhomme@free.fr>
         * Added "ciseaux" directory to the project. Retrieving the files
