@@ -346,13 +346,7 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
     GFileInfo *fileinfo = NULL;
     gchar *dirname = NULL;
     gchar *filename = NULL;
-    path_t *a_path = NULL;
     GFileType filetype = G_FILE_TYPE_UNKNOWN;
-
-    /* a_path = new_path_t(directory, MONITOR_TIME);
-     * a_path->wd = add_a_path_to_monitor(main_struct, a_path);
-     * add_path_to_tree(main_struct, a_path);
-     */
 
     a_dir = g_file_new_for_path(directory);
 
