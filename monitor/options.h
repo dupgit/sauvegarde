@@ -37,6 +37,7 @@ typedef struct
 {
     gboolean version;     /** TRUE if we have to display program's version       */
     GSList *dirname_list; /** Directory names that were left in the command line */
+    gchar *configfile;    /** filename for the configuration file                */
 } options_t;
 
 

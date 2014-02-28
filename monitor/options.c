@@ -39,10 +39,12 @@ options_t *manage_command_line_options(int argc, char **argv)
 {
     gboolean version = FALSE;
     gchar **dirname_array = NULL;  /** array of dirnames left on the command line */
+    gchar *configfile = NULL;      /** filename for the configuration file if any */
 
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
+        { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
