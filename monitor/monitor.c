@@ -345,8 +345,9 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
     GError *error = NULL;
     GFileInfo *fileinfo = NULL;
     gchar *dirname = NULL;
+    gchar *filename = NULL;
     path_t *a_path = NULL;
-
+    GFileType filetype = G_FILE_TYPE_UNKNOWN;
 
     /* a_path = new_path_t(directory, MONITOR_TIME);
      * a_path->wd = add_a_path_to_monitor(main_struct, a_path);
@@ -363,15 +364,26 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
 
             while (error == NULL && fileinfo != NULL)
                 {
-                    if (g_file_info_get_file_type(fileinfo) == G_FILE_TYPE_DIRECTORY)
+                    filetype = g_file_info_get_file_type(fileinfo);
+
+                    if ( filetype == G_FILE_TYPE_DIRECTORY)
                         {
+                            /* We've got a directory : we must go into it ! */
                             dirname = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
 
                             traverse_directory(main_struct, dirname);
 
-                            fprintf(stdout, "%s\n", dirname);
-
                             g_free(dirname);
+                        }
+                    else if (filetype == G_FILE_TYPE_REGULAR)
+                        {
+                            /* We've got a regular file : we have to transmit it to ciseaux */
+
+                            filename = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
+
+                            fprintf(stdout, "%s\n", filename);
+
+                            g_free(filename);
                         }
 
                     fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
@@ -389,7 +401,8 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
 
 /**
  * This function is a wrapper to directory_traverse function to allow
- * the directory traversal to be threaded
+ * the directory traversal to be threaded. We need to traverse at least
+ * once to be sure that every file has been saved at least once.
  * @param data : thread_data_t * structure.
  */
 static gpointer first_directory_traversal(gpointer data)
@@ -451,24 +464,13 @@ int main(int argc, char **argv)
     GMainLoop *mainloop = NULL;
     thread_data_t *a_thread_data = NULL;
     GThread *a_thread = NULL;
-    long max_files = 0;
-    int fd = 0;
-    int result = 0;
-    char buffer[16384];
-    struct inotify_event *event = NULL;
-    gchar *filename = NULL;
 
     g_type_init();
 
     init_international_languages();
 
-    max_files = sysconf(_SC_OPEN_MAX);
-    fprintf(stdout, _("Maximum number of opened files: %ld\n"), max_files);
-
     opt = do_what_is_needed_from_command_line_options(argc, argv);
     main_struct = init_main_structure(opt);
-
-    main_struct->fd = inotify_init();
 
     /* Adding paths to be monitored in a threaded way */
     a_thread_data = (thread_data_t *) g_malloc0(sizeof(thread_data_t));
@@ -479,22 +481,9 @@ int main(int argc, char **argv)
     a_thread = g_thread_create(first_directory_traversal, a_thread_data, FALSE, NULL);
 
 
-    while(1)
-        {
-            read(main_struct->fd, buffer, sizeof(buffer));
-            event = (struct inotify_event *) buffer;
-
-            filename = g_strndup(event->name, event->len);
-
-            printf(_("File monitored: %s\n"), filename);
-
-            g_free(filename);
-        }
-
-
     /* infinite loop */
-    /* mainloop = g_main_loop_new(NULL, FALSE);
-    g_main_loop_run(mainloop); */
+    mainloop = g_main_loop_new(NULL, FALSE);
+    g_main_loop_run(mainloop);
 
     /* when leaving, we have to free memory... but this is not going to happen here ! */
     /* free_options_t_structure(main_struct->opt); */
