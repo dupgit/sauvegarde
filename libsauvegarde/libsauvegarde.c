@@ -79,3 +79,26 @@ void init_international_languages(void)
             fprintf(stdout, "Text domain : %s\n", text_domain);
         }
 }
+
+
+/**
+ * Sets options parameters
+ * @param context is the context for options it must have been created
+ *        previously and not NULL.
+ * @param entries are the entries for the options.
+ * @param help is a boolean to choose if we want GOption to display
+ *        an automaticaly formatted help.
+ * @param bugreport is the message we want to display related to bug
+ *        reports. It is displayed at the end of the options help message.
+ * @param summary is a gchar* string that will be displayed before the
+ *        description of the options. It is supposed to be a summary of
+ *        what the program does.
+ */
+void set_option_context_options(GOptionContext *context, GOptionEntry entries[], gboolean help, gchar *bugreport, gchar *summary)
+{
+    g_option_context_add_main_entries(context, entries, GETTEXT_PACKAGE);
+    g_option_context_set_help_enabled(context, help);
+    g_option_context_set_description(context, bugreport);
+    g_option_context_set_summary(context, summary);
+
+}

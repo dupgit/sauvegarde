@@ -51,6 +51,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     GOptionContext *context;
     options_t *opt = NULL;    /** Structure to manage program's options */
     gchar *bugreport = NULL;
+    gchar *summary = NULL;
     gint num = 0;             /** number of filenames in the filename_array if any */
     gint i = 0;
     GSList *dirname_list = NULL;
@@ -60,11 +61,10 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt = (options_t *) g_malloc0(sizeof(options_t));
 
     bugreport = g_strconcat(_("Please report bugs to: "), PACKAGE_BUGREPORT, NULL);
+    summary = g_strdup(_("This program is monitoring file changes in the filesystem."));
     context = g_option_context_new("");
 
-    g_option_context_add_main_entries(context, entries, GETTEXT_PACKAGE);
-    g_option_context_set_help_enabled(context, TRUE);
-    g_option_context_set_description(context, bugreport);
+    set_option_context_options(context, entries, TRUE, bugreport, summary);
 
     if (!g_option_context_parse(context, &argc, &argv, &error))
         {
@@ -127,6 +127,7 @@ void free_options_t_structure(options_t *opt)
         }
 
 }
+
 
 /**
  * Decides what to do upon command lines options passed to the program

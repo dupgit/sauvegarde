@@ -62,10 +62,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     summary = g_strdup(_("This program is hashing files with SHA256 algorithms from Glib."));
     context = g_option_context_new("");
 
-    g_option_context_add_main_entries(context, entries, GETTEXT_PACKAGE);
-    g_option_context_set_help_enabled(context, TRUE);
-    g_option_context_set_description(context, bugreport);
-    g_option_context_set_summary(context, summary);
+    set_option_context_options(context, entries, TRUE, bugreport, summary);
 
     if (!g_option_context_parse(context, &argc, &argv, &error))
         {
