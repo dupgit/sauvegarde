@@ -39,7 +39,6 @@ options_t *manage_command_line_options(int argc, char **argv)
 {
     gboolean version = FALSE;      /** version option selected ?                   */
     gint64 blocksize = 0;            /** computed block size in bytes                */
-    gchar **filename_array = NULL; /** array of filenames left on the command line */
     gint64 max_threads = 0;          /** Maximum number of threads to be used        */
 
     GOptionEntry entries[] =
@@ -47,7 +46,6 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
         { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Block size used to compute hashs"), NULL},
         { "max-threads", 'm', 0, G_OPTION_ARG_INT64 , &max_threads, N_("Maximum threads we can use at once"), NULL},
-        { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &filename_array, "", NULL},
         { NULL }
     };
 
@@ -56,10 +54,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     options_t *opt = NULL;    /** Structure to manage program's options */
     gchar *bugreport = NULL;
     gchar *summary = NULL;
-    gint num = 0;             /** number of filenames in the filename_array if any */
-    gint i = 0;
-    GSList *filename_list = NULL;
-    gchar *filename = NULL;
+
 
     opt = (options_t *) g_malloc0(sizeof(options_t));
 
@@ -89,24 +84,6 @@ options_t *manage_command_line_options(int argc, char **argv)
             opt->blocksize = CISEAUX_BLOCK_SIZE;
         }
 
-    filename_list = NULL;
-
-    if (filename_array != NULL)
-        {
-            /* retrieving the filenames stored in the array to put them
-             * into a list in the options_t * structure
-             */
-            num = g_strv_length(filename_array);
-
-            for (i = 0; i < num; i++)
-                {
-                    filename = g_strdup(filename_array[i]);
-                    filename_list = g_slist_append(filename_list, filename);
-                }
-        }
-
-    opt->filename_list = filename_list;
-
     if (max_threads > 0)
         {
             opt->max_threads = max_threads;
@@ -130,22 +107,9 @@ options_t *manage_command_line_options(int argc, char **argv)
  */
 void free_options_t_structure(options_t *opt)
 {
-    GSList *head = NULL;
-    GSList *next = NULL;
 
     if (opt != NULL)
         {
-            /* free the list */
-            head = opt->filename_list;
-
-            while (head != NULL)
-                {
-                    g_free(head->data);
-                    next = g_slist_next(head);
-                    g_slist_free_1(head);
-                    head = next;
-                }
-
             g_free(opt);
         }
 

@@ -38,9 +38,12 @@
 options_t *manage_command_line_options(int argc, char **argv)
 {
     gboolean version = FALSE;
+    gchar **dirname_array = NULL;  /** array of dirnames left on the command line */
+
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
+        { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
 
@@ -48,6 +51,11 @@ options_t *manage_command_line_options(int argc, char **argv)
     GOptionContext *context;
     options_t *opt = NULL;    /** Structure to manage program's options */
     gchar *bugreport = NULL;
+    gint num = 0;             /** number of filenames in the filename_array if any */
+    gint i = 0;
+    GSList *dirname_list = NULL;
+    gchar *dirname = NULL;
+
 
     opt = (options_t *) g_malloc0(sizeof(options_t));
 
@@ -66,6 +74,25 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     opt->version = version;
 
+    dirname_list = NULL;
+
+    if (dirname_array != NULL)
+        {
+            /* retrieving the filenames stored in the array to put them
+             * into a list in the options_t * structure
+             */
+            num = g_strv_length(dirname_array);
+
+            for (i = 0; i < num; i++)
+                {
+                    dirname = g_strdup(dirname_array[i]);
+                    dirname_list = g_slist_append(dirname_list, dirname);
+                }
+        }
+
+    opt->dirname_list = dirname_list;
+
+
     g_option_context_free(context);
     g_free(bugreport);
 
@@ -79,9 +106,23 @@ options_t *manage_command_line_options(int argc, char **argv)
  */
 void free_options_t_structure(options_t *opt)
 {
+    GSList *head = NULL;
+    GSList *next = NULL;
+
 
     if (opt != NULL)
         {
+            /* free the list */
+            head = opt->dirname_list;
+
+            while (head != NULL)
+                {
+                    g_free(head->data);
+                    next = g_slist_next(head);
+                    g_slist_free_1(head);
+                    head = next;
+                }
+
             g_free(opt);
         }
 

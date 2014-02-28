@@ -190,7 +190,7 @@ int main(int argc, char **argv)
     main_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
     init_thread_pool(main_struct);
 
-    head = main_struct->opt->filename_list;
+    head = NULL; /* ciseaux has to receive filenames from monitor */
 
 
     max_threads = g_thread_pool_get_max_threads(main_struct->tp);
