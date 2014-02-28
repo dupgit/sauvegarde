@@ -348,10 +348,10 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
     path_t *a_path = NULL;
 
 
-    /* Adding "directory " path to be monitored */
-    a_path = new_path_t(directory, MONITOR_TIME);
-    a_path->wd = add_a_path_to_monitor(main_struct, a_path);
-    add_path_to_tree(main_struct, a_path);
+    /* a_path = new_path_t(directory, MONITOR_TIME);
+     * a_path->wd = add_a_path_to_monitor(main_struct, a_path);
+     * add_path_to_tree(main_struct, a_path);
+     */
 
     a_dir = g_file_new_for_path(directory);
 
@@ -368,6 +368,8 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
                             dirname = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
 
                             traverse_directory(main_struct, dirname);
+
+                            fprintf(stdout, "%s\n", dirname);
 
                             g_free(dirname);
                         }
@@ -388,21 +390,29 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
 /**
  * This function is a wrapper to directory_traverse function to allow
  * the directory traversal to be threaded
+ * @param data : thread_data_t * structure.
  */
-static gpointer threaded_directory_traversal(gpointer data)
+static gpointer first_directory_traversal(gpointer data)
 {
     thread_data_t *a_thread_data = (thread_data_t *) data;
-    main_struct_t *main_struct = a_thread_data->main_struct;
-    GSList *dir_list = a_thread_data->dir_list;
+    main_struct_t *main_struct = NULL;
+    GSList *head = NULL;
 
-    while (dir_list != NULL)
+    if (a_thread_data != NULL)
         {
-            traverse_directory(main_struct, dir_list->data);
+            main_struct = a_thread_data->main_struct;
 
-            dir_list = g_slist_next(dir_list);
+            if (main_struct != NULL)
+                {
+                    head = a_thread_data->dir_list;
+
+                    while ( head != NULL)
+                        {
+                            traverse_directory(main_struct, head->data);
+                            head = g_slist_next(head);
+                        }
+                }
         }
-
-    fflush(NULL);
 
     return NULL;
 }
@@ -464,9 +474,9 @@ int main(int argc, char **argv)
     a_thread_data = (thread_data_t *) g_malloc0(sizeof(thread_data_t));
 
     a_thread_data->main_struct = main_struct;
-    a_thread_data->dir_list = g_slist_prepend(a_thread_data->dir_list, "/home/dup/Dossiers_Perso/projets");
+    a_thread_data->dir_list = g_slist_prepend(NULL, "/home/dup");
 
-    a_thread = g_thread_create(threaded_directory_traversal, a_thread_data, FALSE, NULL);
+    a_thread = g_thread_create(first_directory_traversal, a_thread_data, FALSE, NULL);
 
 
     while(1)

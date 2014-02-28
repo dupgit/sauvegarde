@@ -81,8 +81,8 @@ typedef struct
  */
 typedef struct
 {
-    main_struct_t *main_struct;
-    GSList *dir_list;
+    main_struct_t *main_struct; /** main structure for the program      */
+    GSList *dir_list;           /** List of directories to be monitored */
 } thread_data_t;
 
 
