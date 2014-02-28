@@ -464,23 +464,28 @@ int main(int argc, char **argv)
     init_international_languages();
 
     opt = do_what_is_needed_from_command_line_options(argc, argv);
-    main_struct = init_main_structure(opt);
 
-    /* Adding paths to be monitored in a threaded way */
-    a_thread_data = (thread_data_t *) g_malloc0(sizeof(thread_data_t));
+    if (opt != NULL)
+        {
+            main_struct = init_main_structure(opt);
 
-    a_thread_data->main_struct = main_struct;
-    a_thread_data->dir_list = g_slist_prepend(NULL, "/home/dup");
+            /* Adding paths to be monitored in a threaded way */
+            a_thread_data = (thread_data_t *) g_malloc0(sizeof(thread_data_t));
 
-    a_thread = g_thread_create(first_directory_traversal, a_thread_data, FALSE, NULL);
+            a_thread_data->main_struct = main_struct;
+            a_thread_data->dir_list = opt->dirname_list;
+
+            a_thread = g_thread_create(first_directory_traversal, a_thread_data, FALSE, NULL);
 
 
-    /* infinite loop */
-    mainloop = g_main_loop_new(NULL, FALSE);
-    g_main_loop_run(mainloop);
+            /* infinite loop */
+            mainloop = g_main_loop_new(NULL, FALSE);
+            g_main_loop_run(mainloop);
 
-    /* when leaving, we have to free memory... but this is not going to happen here ! */
-    /* free_options_t_structure(main_struct->opt); */
+            /* when leaving, we have to free memory... but this is not going to happen here ! */
+            /* free_options_t_structure(main_struct->opt); */
+
+        }
 
     return 0;
 }

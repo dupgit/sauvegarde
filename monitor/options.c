@@ -27,9 +27,56 @@
 
 #include "monitor.h"
 
+/**
+ * Reads from the configuration file "filename"
+ * @param opt : options_t * structure to store options read from the
+ *              configuration file "filename"
+ * @param filename : the filename of the configuration file to read from
+ * @todo : error management for each call to g_key_file* functions
+ */
+static void read_from_configuration_file(options_t *opt, gchar *filename)
+{
+    GKeyFile *keyfile = NULL;
+    gchar **dirname_array = NULL;  /** array of dirnames read into the configuration file */
+    gint num = 0;
+    gint i = 0;
+    gchar *dirname = NULL;
+
+    if (filename != NULL)
+        {
+
+            opt->configfile = g_strdup(filename);
+
+            keyfile = g_key_file_new();
+
+            if (g_key_file_load_from_file(keyfile, opt->configfile, G_KEY_FILE_KEEP_COMMENTS, NULL))
+                {
+                    dirname_array = g_key_file_get_string_list(keyfile, GN_MONITOR, KN_DIR_LIST, NULL, NULL);
+
+                    if (dirname != NULL)
+                        {
+                            num = g_strv_length(dirname_array);
+
+                            for (i = 0; i < num; i++)
+                                {
+                                    dirname = g_strdup(dirname_array[i]);
+                                    opt->dirname_list = g_slist_append(opt->dirname_list, dirname);
+                                }
+                        }
+                }
+
+            g_key_file_free(keyfile);
+        }
+}
+
 
 /**
  * This function parses command line options.
+ * 0) default values are set into the options_t * structure
+ * 1) reads the default configuration file if any.
+ * 2) reads the configuration file mentionned in the command line option
+ * 3) sets the command line options (except for the list of directories,
+ *    all other values are replaced by thoses in the command line)
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
  * @returns options_t structure malloc'ed and filled upon choosen command
@@ -56,7 +103,6 @@ options_t *manage_command_line_options(int argc, char **argv)
     gchar *summary = NULL;
     gint num = 0;             /** number of filenames in the filename_array if any */
     gint i = 0;
-    GSList *dirname_list = NULL;
     gchar *dirname = NULL;
 
 
@@ -74,26 +120,33 @@ options_t *manage_command_line_options(int argc, char **argv)
             exit(1);
         }
 
-    opt->version = version;
+    /* 0) Setting default values */
+    opt->dirname_list = NULL;
 
-    dirname_list = NULL;
+    /* 1) Reading from the default configuration file */
+    read_from_configuration_file(opt, DEFAULT_CONFIG_FILE);
+
+    opt->version = version; /* only TRUE if -v or --version was invoked */
+
+    if (configfile != NULL)
+        {
+            /* 2) Reading the configuration from the configuration file */
+            read_from_configuration_file(opt, configfile);
+        }
 
     if (dirname_array != NULL)
         {
-            /* retrieving the filenames stored in the array to put them
-             * into a list in the options_t * structure
+            /* 3) retrieving the filenames stored in the array to put them
+             *    into a list in the options_t * structure
              */
             num = g_strv_length(dirname_array);
 
             for (i = 0; i < num; i++)
                 {
                     dirname = g_strdup(dirname_array[i]);
-                    dirname_list = g_slist_append(dirname_list, dirname);
+                    opt->dirname_list = g_slist_append(opt->dirname_list, dirname);
                 }
         }
-
-    opt->dirname_list = dirname_list;
-
 
     g_option_context_free(context);
     g_free(bugreport);

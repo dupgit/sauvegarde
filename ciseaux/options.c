@@ -29,7 +29,41 @@
 #include "ciseaux.h"
 
 /**
+ * Reads from the configuration file "filename"
+ * @param opt : options_t * structure to store options read from the
+ *              configuration file "filename"
+ * @param filename : the filename of the configuration file to read from
+ * @todo : error management for each call to g_key_file* functions
+ */
+static void read_from_configuration_file(options_t *opt, gchar *filename)
+{
+    GKeyFile *keyfile = NULL;
+
+    if (filename != NULL)
+        {
+
+            opt->configfile = g_strdup(filename);
+
+            keyfile = g_key_file_new();
+
+            if (g_key_file_load_from_file(keyfile, opt->configfile, G_KEY_FILE_KEEP_COMMENTS, NULL))
+                {
+                    opt->blocksize = g_key_file_get_int64(keyfile, GN_CISEAUX, KN_BLOCK_SIZE, NULL);
+                    opt->max_threads = g_key_file_get_int64(keyfile, GN_CISEAUX, KN_MAX_THREADS, NULL);
+                }
+
+            g_key_file_free(keyfile);
+        }
+}
+
+
+/**
  * This function parses command line options.
+ * 0) default values are set into the options_t * structure
+ * 1) reads the default configuration file if any.
+ * 2) reads the configuration file mentionned in the command line option
+ * 3) sets the command line options (all other values are replaced by
+ *    thoses in the command line)
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
  * @returns options_t structure malloc'ed and filled upon choosen command
@@ -38,14 +72,16 @@
 options_t *manage_command_line_options(int argc, char **argv)
 {
     gboolean version = FALSE;      /** version option selected ?                   */
-    gint64 blocksize = 0;            /** computed block size in bytes                */
-    gint64 max_threads = 0;          /** Maximum number of threads to be used        */
+    gint64 blocksize = 0;          /** computed block size in bytes                */
+    gint64 max_threads = 0;        /** Maximum number of threads to be used        */
+    gchar *configfile = NULL;      /** filename for the configuration file if any */
 
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
         { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Block size used to compute hashs"), NULL},
         { "max-threads", 'm', 0, G_OPTION_ARG_INT64 , &max_threads, N_("Maximum threads we can use at once"), NULL},
+        { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
         { NULL }
     };
 
@@ -70,24 +106,32 @@ options_t *manage_command_line_options(int argc, char **argv)
             exit(1);
         }
 
-    opt->version = version;
+    /* 0) Setting default values */
+    opt->blocksize = CISEAUX_BLOCK_SIZE;
+    opt->max_threads = CISEAUX_MAX_THREADS;
+
+    /* 1) Reading from the default configuration file */
+    read_from_configuration_file(opt, DEFAULT_CONFIG_FILE);
+
+    opt->version = version; /* only TRUE if -v or --version was invoked */
+
+    if (configfile != NULL)
+        {
+            /* 2) Reading the configuration from the configuration file */
+            read_from_configuration_file(opt, configfile);
+        }
+
+    /* 3) Setting the options from the one specified on the command line */
 
     if (blocksize > 0)
         {
             opt->blocksize = blocksize;
         }
-    else
-        {
-            opt->blocksize = CISEAUX_BLOCK_SIZE;
-        }
+
 
     if (max_threads > 0)
         {
             opt->max_threads = max_threads;
-        }
-    else
-        {
-             opt->max_threads = CISEAUX_MAX_THREADS;
         }
 
     g_option_context_free(context);
@@ -107,6 +151,7 @@ void free_options_t_structure(options_t *opt)
 
     if (opt != NULL)
         {
+            g_free(opt->configfile);
             g_free(opt);
         }
 

@@ -38,6 +38,7 @@ typedef struct
     gboolean version;      /** TRUE if we have to display program's version          */
     gint64 blocksize;      /** block size in bytes                                   */
     gint64 max_threads;    /** MAximum threads to be used at once in the thread pool */
+    gchar *configfile;     /** filename for the configuration file                   */
 } options_t;
 
 
