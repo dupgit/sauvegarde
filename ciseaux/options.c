@@ -104,6 +104,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     options_t *opt = NULL;    /** Structure to manage program's options */
     gchar *bugreport = NULL;
     gchar *summary = NULL;
+    gchar *defaultconfigfilename = NULL;
 
 
     opt = (options_t *) g_malloc0(sizeof(options_t));
@@ -125,7 +126,9 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->max_threads = CISEAUX_MAX_THREADS;
 
     /* 1) Reading from the default configuration file */
-    read_from_configuration_file(opt, DEFAULT_CONFIG_FILE);
+    defaultconfigfilename = get_probable_etc_path("ciseaux");
+    read_from_configuration_file(opt, defaultconfigfilename);
+    g_free(defaultconfigfilename);
 
     opt->version = version; /* only TRUE if -v or --version was invoked */
 
@@ -185,10 +188,14 @@ options_t *do_what_is_needed_from_command_line_options(int argc, char **argv)
 
     opt = manage_command_line_options(argc, argv);
 
-    if (opt != NULL && opt->version == TRUE)
+    if (opt != NULL)
         {
-            print_program_version(CISEAUX_DATE, CISEAUX_AUTHORS, CISEAUX_LICENSE);
-            print_libraries_versions();
+            if (opt->version == TRUE)
+                {
+                    print_program_version(CISEAUX_DATE, CISEAUX_AUTHORS, CISEAUX_LICENSE);
+                    print_libraries_versions();
+                    exit(EXIT_SUCCESS);
+                }
         }
 
     return opt;

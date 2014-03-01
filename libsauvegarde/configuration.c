@@ -28,4 +28,30 @@
 
 #include "libsauvegarde.h"
 
+/**
+ * Gets the probable filename for the configuration file of sauvegarde
+ * project. This is needed when one wants to install the project in an
+ * uncommon location such as a homedir for instance.
+ * @param progname is the name of the program we want to search for in the
+ *        user's path
+ * @returns a gchar * which contain the filename of the configuration file
+ *          relative to progname or NULL if something went wrong.
+ */
+gchar *get_probable_etc_path(gchar *progname)
+{
+    gchar *abs_path = NULL;
+    gchar *path = NULL;
 
+    if (progname != NULL)
+        {
+            /* the first location of the program in the path */
+            abs_path = g_find_program_in_path(progname);
+            if (abs_path != NULL)
+                {
+                    path =  g_build_path(G_DIR_SEPARATOR_S, g_path_get_dirname(abs_path), "..", "etc", "sauvegarde", "sauvegarde.conf", NULL);
+                    g_free(abs_path);
+                }
+        }
+
+    return path;
+}

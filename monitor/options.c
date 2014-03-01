@@ -45,8 +45,12 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
     if (filename != NULL)
         {
-
             opt->configfile = g_strdup(filename);
+
+            if (ENABLE_DEBUG == TRUE)
+                {
+                    fprintf(stdout, _("Reading configuration from file %s\n"), opt->configfile);
+                }
 
             keyfile = g_key_file_new();
 
@@ -113,6 +117,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     gint num = 0;             /** number of filenames in the filename_array if any */
     gint i = 0;
     gchar *dirname = NULL;
+    gchar *defaultconfigfilename = NULL;
 
 
     opt = (options_t *) g_malloc0(sizeof(options_t));
@@ -133,7 +138,9 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->dirname_list = NULL;
 
     /* 1) Reading from the default configuration file */
-    read_from_configuration_file(opt, DEFAULT_CONFIG_FILE);
+    defaultconfigfilename = get_probable_etc_path("monitor");
+    read_from_configuration_file(opt,  defaultconfigfilename);
+    g_free(defaultconfigfilename);
 
     opt->version = version; /* only TRUE if -v or --version was invoked */
 
@@ -206,10 +213,14 @@ options_t *do_what_is_needed_from_command_line_options(int argc, char **argv)
 
     opt = manage_command_line_options(argc, argv);
 
-    if (opt != NULL && opt->version == TRUE)
+    if (opt != NULL)
         {
-            print_program_version(MONITOR_DATE, MONITOR_AUTHORS, MONITOR_LICENSE);
-            print_libraries_versions();
+            if (opt->version == TRUE)
+                {
+                    print_program_version(MONITOR_DATE, MONITOR_AUTHORS, MONITOR_LICENSE);
+                    print_libraries_versions();
+                    exit(EXIT_SUCCESS);
+                }
         }
 
     return opt;

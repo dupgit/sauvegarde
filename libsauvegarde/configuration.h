@@ -29,12 +29,6 @@
 #define _CONFIGURATION_H_
 
 /**
- * @def DEFAULT_CONFIG_FILE
- * Define the default filename of the configuration file
- */
-#define DEFAULT_CONFIG_FILE ("/etc/sauvegarde/sauvergarde.conf")
-
-/**
  * @note on key naming scheme :
  *  GN == Group Name that will group KN_* keys used for a same purpose or
  *        a same program. It should begin with an uppercase letter.
@@ -75,6 +69,17 @@
  */
 #define KN_DIR_LIST ("directory-list")
 
+
+/**
+ * Gets the probable filename for the configuration file of sauvegarde
+ * project. This is needed when one wants to install the project in an
+ * uncommon location such as a homedir for instance.
+ * @param progname is the name of the program we want to search for in the
+ *        user's path
+ * @returns a gchar * which contain the filename of the configuration file
+ *          relative to progname or NULL if something went wrong.
+ */
+extern gchar *get_probable_etc_path(gchar *progname);
 
 
 #endif /* #ifndef _CONFIGURATION_H_ */
