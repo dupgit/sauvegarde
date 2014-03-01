@@ -29,6 +29,14 @@
 #ifndef _COMMUNIQUE_H_
 #define _COMMUNIQUE_H_
 
+
+/**
+ * @def MAX_MESSAGE_SIZE
+ * Defines the maximum message size that we will be able to send or receive
+ * default is 32768
+ */
+#define MAX_MESSAGE_SIZE (32768)
+
 /**
  * @struct comm_t
  * Structure that will contain everything needed to the communication layer.
@@ -59,6 +67,39 @@ extern gchar *get_communication_library_version(void);
  *           NULL.
  */
 extern comm_t *create_push_socket(gchar *somewhere);
+
+
+/**
+ * Creates and connects a new PULL socket to somewhere
+ * @param somewhere is the string that will define the connection we want
+ *        eg "tcp://localhost:5468" or "tcp://10.1.1.60:3128"...
+ * @returns  a newly allocated comm_t * structure where context should not
+ *           be NULL and receiver should not be null but sender is set to
+ *           NULL.
+ */
+comm_t *create_pull_socket(gchar *somewhere);
+
+
+/**
+ * Sends a message throught sender socket
+ * @param comm : the communication structure that handles sockets. sender
+ *        field is the one used to send message.
+ * @param message is a gchar * message to be sent.
+ * @returns size of the message sent. 0 may be returned if comm or message
+ *          are NULL.
+ */
+gint send_message(comm_t *comm, gchar *message);
+
+
+/**
+ * Waits the arrival of a message
+ * @param comm : the communication structure that handles sockets. receiver
+ *        field is the one used to receive message.
+ * @returns a newly allocated gchar * message that can be freed when no
+ *         longer needed.
+ */
+gchar *receive_message(comm_t *comm);
+
 
 
 #endif /* #ifndef _COMMUNIQUE_H_ */

@@ -376,7 +376,12 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
 
                             filename = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
 
-                            fprintf(stdout, "%s\n", filename);
+                            send_message(main_struct->comm, filename);
+
+                            if (ENABLE_DEBUG == TRUE)
+                                {
+                                    fprintf(stdout, "Sent %s\n", filename);
+                                }
 
                             g_free(filename);
                         }
@@ -483,7 +488,6 @@ int main(int argc, char **argv)
             a_thread_data->dir_list = opt->dirname_list;
 
             a_thread = g_thread_create(first_directory_traversal, a_thread_data, FALSE, NULL);
-
 
 
             /* infinite loop */

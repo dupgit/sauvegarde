@@ -72,6 +72,7 @@ typedef struct
 {
     options_t *opt;   /** options of the program from the command line                  */
     GThreadPool *tp;  /** Thread pool that will be used to calculate the hashs of files */
+    comm_t *comm;     /** Communication structure from the program                      */
 } main_struct_t;
 
 

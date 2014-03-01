@@ -58,7 +58,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                 {
                     dirname_array = g_key_file_get_string_list(keyfile, GN_MONITOR, KN_DIR_LIST, NULL, &error);
 
-                    if (dirname != NULL)
+                    if (dirname_array != NULL)
                         {
                             num = g_strv_length(dirname_array);
 
@@ -66,6 +66,11 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                                 {
                                     dirname = g_strdup(dirname_array[i]);
                                     opt->dirname_list = g_slist_append(opt->dirname_list, dirname);
+
+                                    if (ENABLE_DEBUG == TRUE)
+                                        {
+                                            fprintf(stdout, "%s\n", dirname);
+                                        }
                                 }
                         }
                     else if (error != NULL &&  ENABLE_DEBUG == TRUE)

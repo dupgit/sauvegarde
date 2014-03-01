@@ -91,35 +91,39 @@ static void calculate_hashs_on_a_file(gpointer data, gpointer user_data)
     GError *error = NULL;
 
 
-    a_file = g_file_new_for_path(filename);
-
-    fileinfo = g_file_query_info(a_file, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
-
-    if (error != NULL)
-        {
-           fprintf(stderr, _("Can't get informations on %s file: %s\n"), filename, error->message);
-        }
-    else if (fileinfo != NULL)
+    if (filename != NULL)
         {
 
-            if (g_file_info_get_file_type(fileinfo) == G_FILE_TYPE_REGULAR)
+            a_file = g_file_new_for_path(filename);
+
+            fileinfo = g_file_query_info(a_file, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
+
+            if (error != NULL)
+                {
+                   fprintf(stderr, _("Can't get informations on %s file: %s\n"), filename, error->message);
+                }
+            else if (fileinfo != NULL)
                 {
 
-                    stream = g_file_read(a_file, NULL, &error);
-
-                    if (error != NULL)
+                    if (g_file_info_get_file_type(fileinfo) == G_FILE_TYPE_REGULAR)
                         {
-                            fprintf(stderr, _("Error while opening %s file: %s\n"), filename, error->message);
+
+                            stream = g_file_read(a_file, NULL, &error);
+
+                            if (error != NULL)
+                                {
+                                    fprintf(stderr, _("Error while opening %s file: %s\n"), filename, error->message);
+                                }
+                            else
+                                {
+                                    do_checksum(main_struct, stream, filename);
+                                    g_input_stream_close((GInputStream *) stream, NULL, NULL);
+                                }
                         }
                     else
                         {
-                            do_checksum(main_struct, stream, filename);
-                            g_input_stream_close((GInputStream *) stream, NULL, NULL);
+                            fprintf(stderr, _("%s is not a regular file\n"), filename);
                         }
-                }
-            else
-                {
-                    fprintf(stderr, _("%s is not a regular file\n"), filename);
                 }
         }
 }
@@ -176,9 +180,8 @@ static void init_thread_pool(main_struct_t *main_struct)
 int main(int argc, char **argv)
 {
     main_struct_t *main_struct = NULL;  /** Structure that contians everything needed by the program */
-    GSList *head = NULL;
     gint max_threads = 0;
-    GMainLoop *mainloop = NULL;
+    gchar *message =  NULL;
 
     /* Initialising GLib */
     g_type_init();
@@ -188,29 +191,40 @@ int main(int argc, char **argv)
     main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
 
     main_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
+    main_struct->comm = create_pull_socket("tcp://*:14013/");
+
     init_thread_pool(main_struct);
-
-    head = NULL; /* ciseaux has to receive filenames from monitor */
-
 
     max_threads = g_thread_pool_get_max_threads(main_struct->tp);
 
-    while (head != NULL)
+    /* infinite loop */
+
+    while (1)
         {
-            if (g_thread_pool_get_num_threads(main_struct->tp) < max_threads)
+
+            message = receive_message(main_struct->comm);
+
+            if (message != NULL)
                 {
-                    g_thread_pool_push(main_struct->tp, head->data, NULL);
-                    head = g_slist_next(head);
-                }
-            else
-                {
-                    sleep(0.1);
+
+                    if (g_thread_pool_get_num_threads(main_struct->tp) < max_threads)
+                        {
+                            g_thread_pool_push(main_struct->tp, message, NULL);
+                        }
+                    else
+                        {
+                            /** Sleeping until a thread is available... this suppose that
+                             * the communication layer stacks every messages that will arrive
+                             * in between.
+                             */
+                            while (g_thread_pool_get_num_threads(main_struct->tp) >= max_threads)
+                                {
+                                    usleep(100);
+                                }
+                        }
                 }
         }
 
-    /* infinite loop */
-    mainloop = g_main_loop_new(NULL, FALSE);
-    g_main_loop_run(mainloop);
 
     return 0;
 }
