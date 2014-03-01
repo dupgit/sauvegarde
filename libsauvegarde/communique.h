@@ -30,11 +30,49 @@
 #define _COMMUNIQUE_H_
 
 /**
+ * @struct comm_t
+ * Structure that will contain everything needed to the communication layer.
+ */
+typedef struct
+{
+   void *context;   /** context to be used by the functions calling ZMQ */
+   void *sender;    /** "socket" for the sender                         */
+   void *receiver;  /** "socket" for the receiver                       */
+} comm_t;
+
+
+
+/**
  * gets the version for the communication library (ZMQ for now)
  * @returns a newly allocated string that contains the version and that
  *          may be freed with g_free when no longer needed.
  */
 extern gchar *get_communication_library_version(void);
+
+
+/**
+ * Creates a new communication context within ZMQ
+ * @returns a newly allocated comm_t * structure where context should not
+ *          be NULL. sender and receiver are set to NULL.
+ */
+extern comm_t *create_new_context(void);
+
+
+/**
+ * Creates a new PUSH sender and set sender field accordingly
+ * @param comm : an allocated comm_t struct where context field is expected
+ *               to be not NULL.
+ */
+void create_new_push_sender(comm_t *comm);
+
+
+/**
+ * Connects a socket somewhere eg : tcp://localhost:5558
+ * @param socket is the socket to be connect to somewhere
+ * @param somewhere is the string that will define the connection we want
+ *        eg "tcp://localhost:5468" or "tcp://10.1.1.60:3128"...
+ */
+void connect_socket_somewhere(void *socket, gchar *somewhere);
 
 
 #endif /* #ifndef _COMMUNIQUE_H_ */

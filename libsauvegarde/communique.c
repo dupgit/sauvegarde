@@ -43,3 +43,57 @@ gchar *get_communication_library_version(void)
 
     return g_strdup_printf(_("\t. ZMQ version : %d.%d.%d\n"), zmq_major, zmq_minor, zmq_patch);
 }
+
+
+/**
+ * Creates a new communication context within ZMQ
+ * @returns a newly allocated comm_t * structure where context should not
+ *          be NULL. sender and receiver are set to NULL.
+ */
+comm_t *create_new_context(void)
+{
+    comm_t *comm = NULL;
+
+    comm = (comm_t *) g_malloc0(sizeof(comm_t));
+
+    if (comm != NULL)
+        {
+            comm->context = zmq_ctx_new();
+        }
+
+    comm->sender = NULL;
+    comm->receiver = NULL;
+
+    return comm;
+}
+
+
+/**
+ * Creates a new PUSH sender and set sender field accordingly
+ * @param comm : an allocated comm_t struct where context field is expected
+ *               to be not NULL.
+ */
+void create_new_push_sender(comm_t *comm)
+{
+    if (comm != NULL && comm->context != NULL)
+        {
+            comm->sender = zmq_socket(comm->context, ZMQ_PUSH);
+        }
+}
+
+
+/**
+ * Connects a socket somewhere eg : tcp://localhost:5558
+ * @param socket is the socket to be connect to somewhere
+ * @param somewhere is the string that will define the connection we want
+ *        eg "tcp://localhost:5468" or "tcp://10.1.1.60:3128"...
+ */
+void connect_socket_somewhere(void *socket, gchar *somewhere)
+{
+    if (socket != NULL && somewhere != NULL)
+        {
+            zmq_connect(socket, somewhere);
+        }
+}
+
+

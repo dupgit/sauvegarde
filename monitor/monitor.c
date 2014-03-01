@@ -458,6 +458,7 @@ int main(int argc, char **argv)
     GMainLoop *mainloop = NULL;
     thread_data_t *a_thread_data = NULL;
     GThread *a_thread = NULL;
+    comm_t *comm = NULL;
 
     g_type_init();
 
@@ -469,6 +470,10 @@ int main(int argc, char **argv)
         {
             main_struct = init_main_structure(opt);
 
+            comm = create_new_context();
+            create_new_push_sender(comm);
+            connect_socket_somewhere(comm->sender, "tcp://localhost:14013/");
+
             /* Adding paths to be monitored in a threaded way */
             a_thread_data = (thread_data_t *) g_malloc0(sizeof(thread_data_t));
 
@@ -476,6 +481,7 @@ int main(int argc, char **argv)
             a_thread_data->dir_list = opt->dirname_list;
 
             a_thread = g_thread_create(first_directory_traversal, a_thread_data, FALSE, NULL);
+
 
 
             /* infinite loop */
