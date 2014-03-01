@@ -29,15 +29,15 @@
 #include "ciseaux.h"
 
 /**
- * Reads from the configuration file "filename"
+ * Reads from the configuration file "filename" if it exists.
  * @param opt : options_t * structure to store options read from the
  *              configuration file "filename"
  * @param filename : the filename of the configuration file to read from
- * @todo : error management for each call to g_key_file* functions
  */
 static void read_from_configuration_file(options_t *opt, gchar *filename)
 {
-    GKeyFile *keyfile = NULL;
+    GKeyFile *keyfile = NULL; /** Configuration file parser */
+    GError *error = NULL;     /** Glib error handling       */
 
     if (filename != NULL)
         {
@@ -46,10 +46,23 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
             keyfile = g_key_file_new();
 
-            if (g_key_file_load_from_file(keyfile, opt->configfile, G_KEY_FILE_KEEP_COMMENTS, NULL))
+            if (g_key_file_load_from_file(keyfile, opt->configfile, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
-                    opt->blocksize = g_key_file_get_int64(keyfile, GN_CISEAUX, KN_BLOCK_SIZE, NULL);
-                    opt->max_threads = g_key_file_get_int64(keyfile, GN_CISEAUX, KN_MAX_THREADS, NULL);
+                    opt->blocksize = g_key_file_get_int64(keyfile, GN_CISEAUX, KN_BLOCK_SIZE, &error);
+                    if (error != NULL && ENABLE_DEBUG == TRUE)
+                        {
+                            fprintf(stderr, _("Could not load blocksize from file %s : %s"), filename, error->message);
+                        }
+
+                    opt->max_threads = g_key_file_get_int64(keyfile, GN_CISEAUX, KN_MAX_THREADS, &error);
+                    if (error != NULL && ENABLE_DEBUG == TRUE)
+                        {
+                            fprintf(stderr, _("Could not load max-threads from file %s : %s"), filename, error->message);
+                        }
+                }
+            else if (error != NULL && ENABLE_DEBUG == TRUE)
+                {
+                    fprintf(stderr, _("Failed to open %s configuration file : %s"), filename, error->message);
                 }
 
             g_key_file_free(keyfile);

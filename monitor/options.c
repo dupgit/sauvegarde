@@ -32,15 +32,15 @@
  * @param opt : options_t * structure to store options read from the
  *              configuration file "filename"
  * @param filename : the filename of the configuration file to read from
- * @todo : error management for each call to g_key_file* functions
  */
 static void read_from_configuration_file(options_t *opt, gchar *filename)
 {
-    GKeyFile *keyfile = NULL;
+    GKeyFile *keyfile = NULL;      /** Configuration file parser                          */
+    GError *error = NULL;          /** Glib error handling                                */
     gchar **dirname_array = NULL;  /** array of dirnames read into the configuration file */
     gint num = 0;
     gint i = 0;
-    gchar *dirname = NULL;
+    gchar *dirname = NULL;         /** A variable to help to have things more simple      */
 
     if (filename != NULL)
         {
@@ -49,9 +49,9 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
             keyfile = g_key_file_new();
 
-            if (g_key_file_load_from_file(keyfile, opt->configfile, G_KEY_FILE_KEEP_COMMENTS, NULL))
+            if (g_key_file_load_from_file(keyfile, opt->configfile, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
-                    dirname_array = g_key_file_get_string_list(keyfile, GN_MONITOR, KN_DIR_LIST, NULL, NULL);
+                    dirname_array = g_key_file_get_string_list(keyfile, GN_MONITOR, KN_DIR_LIST, NULL, &error);
 
                     if (dirname != NULL)
                         {
@@ -63,6 +63,14 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                                     opt->dirname_list = g_slist_append(opt->dirname_list, dirname);
                                 }
                         }
+                    else if (error != NULL &&  ENABLE_DEBUG == TRUE)
+                        {
+                            fprintf(stderr, _("Could not load directory list from file %s : %s\n"), filename, error->message);
+                        }
+                }
+            else if (error != NULL && ENABLE_DEBUG == TRUE)
+                {
+                    fprintf(stderr, _("Failed to open %s configuration file : %s\n"), filename, error->message);
                 }
 
             g_key_file_free(keyfile);
