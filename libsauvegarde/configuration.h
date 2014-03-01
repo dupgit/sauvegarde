@@ -47,6 +47,7 @@
 #define GN_MONITOR ("Monitor")
 #define GN_CISEAUX ("Ciseaux")
 
+
 /** Below you'll find some definitions for the ciseaux program */
 /**
  * @def KN_BLOCK_SIZE

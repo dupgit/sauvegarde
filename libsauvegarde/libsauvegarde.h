@@ -36,8 +36,10 @@
 #include <glib.h>
 #include <gio/gio.h>
 #include <glib/gi18n-lib.h>
+#include <zmq.h>
 
 #include "configuration.h"
+#include "communique.h"
 
 /**
  * Prints version of the libraries we are using.
@@ -52,6 +54,7 @@ extern void print_libraries_versions(void);
  * @param license : license in use for this program and its sources
  */
 extern void print_program_version(gchar *date, gchar *authors, gchar *license);
+
 
 /**
  *  Inits internationalization domain for sauvegarde project

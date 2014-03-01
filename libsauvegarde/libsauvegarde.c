@@ -34,9 +34,18 @@
  */
 void print_libraries_versions(void)
 {
+    gchar *comm_version = NULL;
+
+
     fprintf(stdout, _("%s was compiled with the following libraries:\n"), PACKAGE_NAME);
     fprintf(stdout, _("\t. GLIB version : %d.%d.%d\n"), glib_major_version, glib_minor_version, glib_micro_version);
 
+    comm_version = get_communication_library_version();
+    if (comm_version != NULL)
+        {
+            fprintf(stdout, "%s", comm_version);
+            g_free(comm_version);
+        }
 }
 
 

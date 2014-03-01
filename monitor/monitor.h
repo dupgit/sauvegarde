@@ -30,6 +30,7 @@
 /* Configuration from ./configure script */
 #include "config.h"
 
+#include <zmq.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -38,6 +39,7 @@
 #include <glib/gi18n-lib.h>
 #include <sys/inotify.h>
 #include <errno.h>
+
 #include <libsauvegarde.h>
 
 #include "options.h"
