@@ -28,6 +28,7 @@
 
 #include "ciseaux.h"
 
+
 /**
  * Reads from the configuration file "filename" if it exists.
  * @param opt : options_t * structure to store options read from the
