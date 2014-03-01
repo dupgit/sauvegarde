@@ -90,7 +90,6 @@ static void calculate_hashs_on_a_file(gpointer data, gpointer user_data)
     GFileInfo *fileinfo = NULL;
     GError *error = NULL;
 
-
     if (filename != NULL)
         {
 
@@ -125,6 +124,8 @@ static void calculate_hashs_on_a_file(gpointer data, gpointer user_data)
                             fprintf(stderr, _("%s is not a regular file\n"), filename);
                         }
                 }
+
+            g_free(filename);
         }
 }
 
