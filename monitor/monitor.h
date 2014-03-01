@@ -73,7 +73,7 @@ typedef struct
     options_t *opt;        /** options of the program from the command line            */
     GTree *path_tree;      /** Balanced Binary Trees to store path_t * paths monitored */
     const gchar *hostname; /** the name of the current machine                         */
-    int fd;                /** file descriptor to be used bu inotify                   */
+    comm_t *comm;          /** Communication structure from the program                */
 } main_struct_t;
 
 

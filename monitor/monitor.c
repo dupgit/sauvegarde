@@ -299,12 +299,13 @@ static int add_a_path_to_monitor(main_struct_t *main_struct, path_t *a_path)
         {
             fprintf(stdout, "-> %s\n", a_path->path);
 
-            result = inotify_add_watch(main_struct->fd, a_path->path, IN_ATTRIB | IN_CREATE | IN_DELETE | IN_DELETE_SELF | IN_MODIFY | IN_DONT_FOLLOW);
+             /* result = inotify_add_watch(main_struct->fd, a_path->path, IN_ATTRIB | IN_CREATE | IN_DELETE | IN_DELETE_SELF | IN_MODIFY | IN_DONT_FOLLOW);
 
             if (result == -1)
                 {
                     perror(_("Error while adding a new watch descriptor"));
                 }
+            */
 
             return result;
         }
@@ -439,6 +440,7 @@ static main_struct_t *init_main_structure(options_t *opt)
     main_struct->opt = opt;
     main_struct->path_tree = g_tree_new(compare_path);
     main_struct->hostname = g_get_host_name();
+    main_struct->comm = NULL;
 
     return main_struct;
 
@@ -458,7 +460,7 @@ int main(int argc, char **argv)
     GMainLoop *mainloop = NULL;
     thread_data_t *a_thread_data = NULL;
     GThread *a_thread = NULL;
-    comm_t *comm = NULL;
+
 
     g_type_init();
 
@@ -471,7 +473,7 @@ int main(int argc, char **argv)
             main_struct = init_main_structure(opt);
 
             /* Creating a new push socket on localhost port 14013 */
-            comm = create_push_socket("tcp://localhost:14013/");
+            main_struct->comm = create_push_socket("tcp://localhost:14013/");
 
 
             /* Adding paths to be monitored in a threaded way */
