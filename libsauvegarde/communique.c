@@ -28,6 +28,11 @@
 
 #include "libsauvegarde.h"
 
+static comm_t *create_new_context(void);
+static void create_new_push_sender(comm_t *comm);
+static void connect_socket_somewhere(void *socket, gchar *somewhere);
+
+
 /**
  * gets the version for the communication library (ZMQ for now)
  * @returns a newly allocated string that contains the version and that
@@ -50,7 +55,7 @@ gchar *get_communication_library_version(void)
  * @returns a newly allocated comm_t * structure where context should not
  *          be NULL. sender and receiver are set to NULL.
  */
-comm_t *create_new_context(void)
+static comm_t *create_new_context(void)
 {
     comm_t *comm = NULL;
 
@@ -73,7 +78,7 @@ comm_t *create_new_context(void)
  * @param comm : an allocated comm_t struct where context field is expected
  *               to be not NULL.
  */
-void create_new_push_sender(comm_t *comm)
+static void create_new_push_sender(comm_t *comm)
 {
     if (comm != NULL && comm->context != NULL)
         {
@@ -88,12 +93,38 @@ void create_new_push_sender(comm_t *comm)
  * @param somewhere is the string that will define the connection we want
  *        eg "tcp://localhost:5468" or "tcp://10.1.1.60:3128"...
  */
-void connect_socket_somewhere(void *socket, gchar *somewhere)
+static void connect_socket_somewhere(void *socket, gchar *somewhere)
 {
     if (socket != NULL && somewhere != NULL)
         {
             zmq_connect(socket, somewhere);
         }
 }
+
+/**
+ * Creates and connects a new typesocket socket to somewhere
+ * @param somewhere is the string that will define the connection we want
+ *        eg "tcp://localhost:5468" or "tcp://10.1.1.60:3128"...
+ * @returns  a newly allocated comm_t * structure where context should not
+ *           be NULL and sender should not be null but receiver is set to
+ *           NULL.
+ */
+comm_t *create_push_socket(gchar *somewhere)
+{
+    comm_t *comm = NULL;
+
+    if (somewhere != NULL)
+        {
+            comm = create_new_context();
+            create_new_push_sender(comm);
+            connect_socket_somewhere(comm->sender, somewhere);
+        }
+
+    return comm;
+
+}
+
+
+
 
 

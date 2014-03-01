@@ -51,28 +51,14 @@ extern gchar *get_communication_library_version(void);
 
 
 /**
- * Creates a new communication context within ZMQ
- * @returns a newly allocated comm_t * structure where context should not
- *          be NULL. sender and receiver are set to NULL.
- */
-extern comm_t *create_new_context(void);
-
-
-/**
- * Creates a new PUSH sender and set sender field accordingly
- * @param comm : an allocated comm_t struct where context field is expected
- *               to be not NULL.
- */
-void create_new_push_sender(comm_t *comm);
-
-
-/**
- * Connects a socket somewhere eg : tcp://localhost:5558
- * @param socket is the socket to be connect to somewhere
+ * Creates and connects a new typesocket socket to somewhere
  * @param somewhere is the string that will define the connection we want
  *        eg "tcp://localhost:5468" or "tcp://10.1.1.60:3128"...
+ * @returns  a newly allocated comm_t * structure where context should not
+ *           be NULL and sender should not be null but receiver is set to
+ *           NULL.
  */
-void connect_socket_somewhere(void *socket, gchar *somewhere);
+extern comm_t *create_push_socket(gchar *somewhere);
 
 
 #endif /* #ifndef _COMMUNIQUE_H_ */

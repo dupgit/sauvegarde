@@ -470,9 +470,9 @@ int main(int argc, char **argv)
         {
             main_struct = init_main_structure(opt);
 
-            comm = create_new_context();
-            create_new_push_sender(comm);
-            connect_socket_somewhere(comm->sender, "tcp://localhost:14013/");
+            /* Creating a new push socket on localhost port 14013 */
+            comm = create_push_socket("tcp://localhost:14013/");
+
 
             /* Adding paths to be monitored in a threaded way */
             a_thread_data = (thread_data_t *) g_malloc0(sizeof(thread_data_t));
