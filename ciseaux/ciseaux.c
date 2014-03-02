@@ -202,7 +202,7 @@ int main(int argc, char **argv)
 
     while (1)
         {
-
+            /* Waiting for message to arrive */
             message = receive_message(main_struct->comm);
 
             if (message != NULL)
@@ -216,7 +216,8 @@ int main(int argc, char **argv)
                         {
                             /** Sleeping until a thread is available... this suppose that
                              * the communication layer stacks every messages that will arrive
-                             * in between.
+                             * in between. Otherwise we can use a list to cache everything
+                             * that arrives throught the messaging system.
                              */
                             while (g_thread_pool_get_num_threads(main_struct->tp) >= max_threads)
                                 {

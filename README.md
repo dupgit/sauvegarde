@@ -77,8 +77,10 @@ Learnt things from experiments
 
 Usefull links
 -------------
-* redirfs  : [http://www.redirfs.org/tiki-index.php](http://www.redirfs.org/tiki-index.php)
-* pluginfs : [http://www.pluginfs.org/](http://www.pluginfs.org/)
+* Filesystem events notifycation :
+ * redirfs  : [http://www.redirfs.org/tiki-index.php](http://www.redirfs.org/tiki-index.php)
+ * pluginfs : [http://www.pluginfs.org/](http://www.pluginfs.org/)
+ * dazuko   : [http://dazuko.dnsalias.org/wiki/index.php/Main_Page](http://dazuko.dnsalias.org/wiki/index.php/Main_Page)
 * sqlite   : [http://www.sqlite.org/cintro.html](http://www.sqlite.org/cintro.html)
 * zmq      : [http://czmq.zeromq.org/](http://czmq.zeromq.org/)
 

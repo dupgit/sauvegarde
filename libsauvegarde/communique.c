@@ -200,11 +200,11 @@ gint send_message(comm_t *comm, gchar *message)
 
 
 /**
- * Tries to receive a message.
+ * Waits to receive a message.
  * @param comm : the communication structure that handles sockets. receiver
  *        field is the one used to receive message.
  * @returns a newly allocated gchar * message that can be freed when no
- *         longer needed.
+ *          longer needed.
  */
 gchar *receive_message(comm_t *comm)
 {
@@ -219,7 +219,7 @@ gchar *receive_message(comm_t *comm)
 
              if (size != -1)
                 {
-                    message = g_strndup(buffer, size);
+                    message = g_strndup(buffer, size); /* g_strndup adds the trailing \0x0 */
                 }
         }
 
