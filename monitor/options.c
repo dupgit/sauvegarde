@@ -77,6 +77,18 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                         {
                             fprintf(stderr, _("Could not load directory list from file %s : %s\n"), filename, error->message);
                         }
+
+                    opt->blocksize = g_key_file_get_int64(keyfile, GN_CISEAUX, KN_BLOCK_SIZE, &error);
+                    if (error != NULL && ENABLE_DEBUG == TRUE)
+                        {
+                            fprintf(stderr, _("Could not load blocksize from file %s : %s"), filename, error->message);
+                        }
+
+                    opt->max_threads = g_key_file_get_int64(keyfile, GN_CISEAUX, KN_MAX_THREADS, &error);
+                    if (error != NULL && ENABLE_DEBUG == TRUE)
+                        {
+                            fprintf(stderr, _("Could not load max-threads from file %s : %s"), filename, error->message);
+                        }
                 }
             else if (error != NULL && ENABLE_DEBUG == TRUE)
                 {
@@ -103,13 +115,17 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 options_t *manage_command_line_options(int argc, char **argv)
 {
     gboolean version = FALSE;
-    gchar **dirname_array = NULL;  /** array of dirnames left on the command line */
-    gchar *configfile = NULL;      /** filename for the configuration file if any */
+    gchar **dirname_array = NULL;  /** array of dirnames left on the command line  */
+    gchar *configfile = NULL;      /** filename for the configuration file if any  */
+    gint64 blocksize = 0;          /** computed block size in bytes                */
+    gint64 max_threads = 0;        /** Maximum number of threads to be used        */
 
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
+        { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Block size used to compute hashs"), NULL},
+        { "max-threads", 'm', 0, G_OPTION_ARG_INT64 , &max_threads, N_("Maximum threads we can use at once"), NULL},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
@@ -128,7 +144,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt = (options_t *) g_malloc0(sizeof(options_t));
 
     bugreport = g_strconcat(_("Please report bugs to: "), PACKAGE_BUGREPORT, NULL);
-    summary = g_strdup(_("This program is monitoring file changes in the filesystem."));
+    summary = g_strdup(_("This program is monitoring file changes in the filesystem and is hashing\nfiles with SHA256 algorithms from Glib."));
     context = g_option_context_new("");
 
     set_option_context_options(context, entries, TRUE, bugreport, summary);
@@ -198,6 +214,8 @@ void free_options_t_structure(options_t *opt)
                     g_slist_free_1(head);
                     head = next;
                 }
+
+            g_free(opt->configfile);
 
             g_free(opt);
         }

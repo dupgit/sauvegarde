@@ -35,9 +35,11 @@
  */
 typedef struct
 {
-    gboolean version;     /** TRUE if we have to display program's version       */
-    GSList *dirname_list; /** Directory names that were left in the command line */
-    gchar *configfile;    /** filename for the configuration file                */
+    gboolean version;     /** TRUE if we have to display program's version          */
+    GSList *dirname_list; /** Directory names that were left in the command line    */
+    gint64 blocksize;     /** block size in bytes                                   */
+    gint64 max_threads;   /** MAximum threads to be used at once in the thread pool */
+    gchar *configfile;    /** filename for the configuration file                   */
 } options_t;
 
 

@@ -27,31 +27,6 @@
 #ifndef _CISEAUX_H_
 #define _CISEAUX_H_
 
-/* Configuration from ./configure script */
-#include "config.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <glib.h>
-#include <gio/gio.h>
-#include <glib/gi18n-lib.h>
-#include <libsauvegarde.h>
-
-#include "options.h"
-
-/**
- * @def CISEAUX_DATE
- * defines ciseaux's creation date
- *
- * @def CISEAUX_AUTHORS
- * defines ciseaux's main authors
- *
- * @def CISEAUX_LICENSE
- * defines ciseaux's license (at least GPL v2)
- */
-#define CISEAUX_AUTHORS ("Olivier Delhomme")
-#define CISEAUX_DATE N_("24 02 2014")
-#define CISEAUX_LICENSE N_("GPL v3 or later")
 
 /**
  * @def CISEAUX_BLOCK_SIZE
@@ -63,19 +38,11 @@
 #define CISEAUX_BLOCK_SIZE (32768)
 #define CISEAUX_MAX_THREADS (16)
 
-
 /**
- * @struct main_struct_t
- * Structure that will contain everything needed by the program
+ * Inits the thread pool and saves it into main_struct
+ * @param main_struct : the structures that stores everything. Without
+ *        errors, tp field contains the new thread pool.
  */
-typedef struct
-{
-    options_t *opt;   /** options of the program from the command line                  */
-    GThreadPool *tp;  /** Thread pool that will be used to calculate the hashs of files */
-    comm_t *comm;     /** Communication structure from the program                      */
-} main_struct_t;
-
-
-
+extern void init_thread_pool(main_struct_t *main_struct);
 
 #endif /* #ifndef _CISEAUX_H_ */

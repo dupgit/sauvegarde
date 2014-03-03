@@ -26,7 +26,7 @@
  * SHA256 checksums : checksums are calculated for a defined block size.
  */
 
-#include "ciseaux.h"
+#include "monitor.h"
 
 /**
  * Does the checksum on the opened stream.
@@ -135,7 +135,7 @@ static void calculate_hashs_on_a_file(gpointer data, gpointer user_data)
  * @param main_struct : the structures that stores everything. Without
  *        errors, tp field contains the new thread pool.
  */
-static void init_thread_pool(main_struct_t *main_struct)
+void init_thread_pool(main_struct_t *main_struct)
 {
     GThreadPool *tp = NULL;
     GError *error = NULL;
@@ -169,64 +169,4 @@ static void init_thread_pool(main_struct_t *main_struct)
         {
             exit(EXIT_FAILURE);
         }
-}
-
-
-/**
- * Main function
- * @param argc : number of arguments given on the command line.
- * @param argv : an array of strings that contains command line arguments.
- * @returns always 0
- */
-int main(int argc, char **argv)
-{
-    main_struct_t *main_struct = NULL;  /** Structure that contians everything needed by the program */
-    gint max_threads = 0;
-    gchar *message =  NULL;
-
-    /* Initialising GLib */
-    g_type_init();
-
-    init_international_languages();
-
-    main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
-
-    main_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
-    main_struct->comm = create_pull_socket("tcp://*:14013/");
-
-    init_thread_pool(main_struct);
-
-    max_threads = g_thread_pool_get_max_threads(main_struct->tp);
-
-    /* infinite loop */
-
-    while (1)
-        {
-            /* Waiting for message to arrive */
-            message = receive_message(main_struct->comm);
-
-            if (message != NULL)
-                {
-
-                    if (g_thread_pool_get_num_threads(main_struct->tp) < max_threads)
-                        {
-                            g_thread_pool_push(main_struct->tp, message, NULL);
-                        }
-                    else
-                        {
-                            /** Sleeping until a thread is available... this suppose that
-                             * the communication layer stacks every messages that will arrive
-                             * in between. Otherwise we can use a list to cache everything
-                             * that arrives throught the messaging system.
-                             */
-                            while (g_thread_pool_get_num_threads(main_struct->tp) >= max_threads)
-                                {
-                                    usleep(100);
-                                }
-                        }
-                }
-        }
-
-
-    return 0;
 }

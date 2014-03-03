@@ -299,14 +299,6 @@ static int add_a_path_to_monitor(main_struct_t *main_struct, path_t *a_path)
         {
             fprintf(stdout, "-> %s\n", a_path->path);
 
-             /* result = inotify_add_watch(main_struct->fd, a_path->path, IN_ATTRIB | IN_CREATE | IN_DELETE | IN_DELETE_SELF | IN_MODIFY | IN_DONT_FOLLOW);
-
-            if (result == -1)
-                {
-                    perror(_("Error while adding a new watch descriptor"));
-                }
-            */
-
             return result;
         }
     else
@@ -348,8 +340,10 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
     gchar *dirname = NULL;
     gchar *filename = NULL;
     GFileType filetype = G_FILE_TYPE_UNKNOWN;
+    gint max_threads = 0;
 
     a_dir = g_file_new_for_path(directory);
+    max_threads = g_thread_pool_get_max_threads(main_struct->tp);
 
     file_enum = g_file_enumerate_children(a_dir, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
 
@@ -376,11 +370,21 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
 
                             filename = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
 
-                            send_message(main_struct->comm, filename);
+                            if (g_thread_pool_get_num_threads(main_struct->tp) >= max_threads)
+                                {
+                                    while (g_thread_pool_get_num_threads(main_struct->tp) >= max_threads)
+                                        {
+                                            usleep(1);
+                                        }
+                                }
+                            else
+                                {
+                                    g_thread_pool_push(main_struct->tp, g_strdup(filename), NULL);
+                                }
 
                             if (ENABLE_DEBUG == TRUE)
                                 {
-                                    fprintf(stdout, "Sent %s\n", filename);
+                                    fprintf(stdout, _("%s in the thread pool\n"), filename);
                                 }
 
                             g_free(filename);
@@ -477,9 +481,7 @@ int main(int argc, char **argv)
         {
             main_struct = init_main_structure(opt);
 
-            /* Creating a new push socket on localhost port 14013 */
-            main_struct->comm = create_push_socket("tcp://localhost:14013/");
-
+            init_thread_pool(main_struct);
 
             /* Adding paths to be monitored in a threaded way */
             a_thread_data = (thread_data_t *) g_malloc0(sizeof(thread_data_t));
@@ -487,12 +489,13 @@ int main(int argc, char **argv)
             a_thread_data->main_struct = main_struct;
             a_thread_data->dir_list = opt->dirname_list;
 
-            a_thread = g_thread_create(first_directory_traversal, a_thread_data, FALSE, NULL);
+            a_thread = g_thread_create(first_directory_traversal, a_thread_data, TRUE, NULL);
 
+            g_thread_join(a_thread);
 
             /* infinite loop */
-            mainloop = g_main_loop_new(NULL, FALSE);
-            g_main_loop_run(mainloop);
+            /* mainloop = g_main_loop_new(NULL, FALSE); */
+            /* g_main_loop_run(mainloop); */
 
             /* when leaving, we have to free memory... but this is not going to happen here ! */
             /* free_options_t_structure(main_struct->opt); */

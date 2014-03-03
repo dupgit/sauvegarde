@@ -45,6 +45,7 @@
 #include "options.h"
 #include "path.h"
 
+
 /**
  * @def MONITOR_DATE
  * defines monitor's creation date
@@ -70,10 +71,11 @@
  */
 typedef struct
 {
-    options_t *opt;        /** options of the program from the command line            */
-    GTree *path_tree;      /** Balanced Binary Trees to store path_t * paths monitored */
-    const gchar *hostname; /** the name of the current machine                         */
-    comm_t *comm;          /** Communication structure from the program                */
+    options_t *opt;        /** options of the program from the command line                  */
+    GTree *path_tree;      /** Balanced Binary Trees to store path_t * paths monitored       */
+    const gchar *hostname; /** the name of the current machine                               */
+    GThreadPool *tp;       /** Thread pool that will be used to calculate the hashs of files */
+    comm_t *comm;          /** Communication structure from the program                      */
 } main_struct_t;
 
 
@@ -87,6 +89,7 @@ typedef struct
     GSList *dir_list;           /** List of directories to be monitored */
 } thread_data_t;
 
+#include "ciseaux.h"
 
 
 #endif /* #IFNDEF _MONITOR_H_ */

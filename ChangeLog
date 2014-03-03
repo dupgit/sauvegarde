@@ -1,3 +1,9 @@
+03.02.2014
+     - Olivier Delhomme <olivier.delhomme@free.fr>
+        * Merging monitor and ciseaux (next I'll add antememoire to the
+          same program). This will ease usage of a notification event
+          system when one will need to filter out PIDs of thoses programs.
+
 27.02.2014
      - Olivier Delhomme <olivier.delhomme@free.fr>
         * Added a libsauvegarde to collect all common tools (to avoid
