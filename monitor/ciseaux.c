@@ -170,3 +170,49 @@ void init_thread_pool(main_struct_t *main_struct)
             exit(EXIT_FAILURE);
         }
 }
+
+
+/**
+ * This function waits for messages in the queue and then transmits them
+ * to the thread pool.
+ * @param data : main_struct_t * structure.
+ */
+gpointer ciseaux(gpointer data)
+{
+    main_struct_t *main_struct = (main_struct_t *) data;
+
+    gchar *filename = NULL;
+    gint max_threads = 0;
+
+    if (main_struct != NULL)
+        {
+
+            max_threads = g_thread_pool_get_max_threads(main_struct->tp);
+
+            do
+                {
+                    if (g_thread_pool_get_num_threads(main_struct->tp) < max_threads)
+                        {
+                            if (filename != NULL)
+                                {
+                                    g_free(filename);
+                                }
+
+                            filename = g_async_queue_pop(main_struct->queue);
+
+                            if (g_strcmp0(filename, "$END$") != 0)
+                                {
+                                    g_thread_pool_push(main_struct->tp, g_strdup(filename), NULL);
+                                }
+                        }
+                    else
+                        {
+                            usleep(10);
+                        }
+                }
+            while (g_strcmp0(filename, "$END$") != 0);
+
+        }
+}
+
+

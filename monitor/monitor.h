@@ -75,7 +75,7 @@ typedef struct
     GTree *path_tree;      /** Balanced Binary Trees to store path_t * paths monitored       */
     const gchar *hostname; /** the name of the current machine                               */
     GThreadPool *tp;       /** Thread pool that will be used to calculate the hashs of files */
-    comm_t *comm;          /** Communication structure from the program                      */
+    GAsyncQueue *queue;    /** Communication queue between threads                           */
 } main_struct_t;
 
 

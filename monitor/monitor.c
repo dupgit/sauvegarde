@@ -340,10 +340,9 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
     gchar *dirname = NULL;
     gchar *filename = NULL;
     GFileType filetype = G_FILE_TYPE_UNKNOWN;
-    gint max_threads = 0;
+
 
     a_dir = g_file_new_for_path(directory);
-    max_threads = g_thread_pool_get_max_threads(main_struct->tp);
 
     file_enum = g_file_enumerate_children(a_dir, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
 
@@ -370,16 +369,9 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
 
                             filename = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
 
-                            if (g_thread_pool_get_num_threads(main_struct->tp) >= max_threads)
+                            if (filename != NULL)
                                 {
-                                    while (g_thread_pool_get_num_threads(main_struct->tp) >= max_threads)
-                                        {
-                                            usleep(1);
-                                        }
-                                }
-                            else
-                                {
-                                    g_thread_pool_push(main_struct->tp, g_strdup(filename), NULL);
+                                    g_async_queue_push(main_struct->queue, g_strdup(filename));
                                 }
 
                             if (ENABLE_DEBUG == TRUE)
@@ -449,7 +441,7 @@ static main_struct_t *init_main_structure(options_t *opt)
     main_struct->opt = opt;
     main_struct->path_tree = g_tree_new(compare_path);
     main_struct->hostname = g_get_host_name();
-    main_struct->comm = NULL;
+    main_struct->queue = g_async_queue_new();
 
     return main_struct;
 
@@ -469,6 +461,7 @@ int main(int argc, char **argv)
     GMainLoop *mainloop = NULL;
     thread_data_t *a_thread_data = NULL;
     GThread *a_thread = NULL;
+    GThread *cut_thread = NULL;
 
 
     g_type_init();
@@ -490,8 +483,17 @@ int main(int argc, char **argv)
             a_thread_data->dir_list = opt->dirname_list;
 
             a_thread = g_thread_create(first_directory_traversal, a_thread_data, TRUE, NULL);
+            cut_thread = g_thread_create(ciseaux, main_struct, TRUE, NULL);
 
+
+            /* As we are only testing things for now, we just wait for the
+             * threads to join and then exits.
+             */
             g_thread_join(a_thread);
+
+            g_async_queue_push(main_struct->queue, g_strdup("$END$"));
+
+            g_thread_join(cut_thread);
 
             /* infinite loop */
             /* mainloop = g_main_loop_new(NULL, FALSE); */

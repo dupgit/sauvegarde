@@ -45,4 +45,11 @@
  */
 extern void init_thread_pool(main_struct_t *main_struct);
 
+/**
+ * This function waits for messages in the queue and then transmits them
+ * to the thread pool.
+ * @param data : main_struct_t * structure.
+ */
+extern gpointer ciseaux(gpointer data);
+
 #endif /* #ifndef _CISEAUX_H_ */
