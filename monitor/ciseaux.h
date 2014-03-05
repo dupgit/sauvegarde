@@ -38,12 +38,6 @@
 #define CISEAUX_BLOCK_SIZE (32768)
 #define CISEAUX_MAX_THREADS (16)
 
-/**
- * Inits the thread pool and saves it into main_struct
- * @param main_struct : the structures that stores everything. Without
- *        errors, tp field contains the new thread pool.
- */
-extern void init_thread_pool(main_struct_t *main_struct);
 
 /**
  * This function waits for messages in the queue and then transmits them

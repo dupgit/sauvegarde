@@ -42,6 +42,7 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
     guint64 i = 0;
     GChecksum *checksum = NULL;
     GError *error = NULL;
+    gchar *to_print = NULL;
 
     checksum = g_checksum_new(G_CHECKSUM_SHA256);
     buffer = (guchar *) g_malloc0 (main_struct->opt->blocksize + 1);
@@ -62,7 +63,10 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
                     if (read != 0)
                         {
                             g_checksum_update(checksum, buffer, read);
-                            fprintf(stdout, "%s - %ld - %s\n", filename, i, g_checksum_get_string(checksum));
+
+                            to_print = g_strdup_printf("%ld - %s - %ld - %s", read, filename, i, g_checksum_get_string(checksum));
+                            g_async_queue_push(main_struct->print_queue, to_print);
+
                             g_checksum_reset(checksum);
                             i = i + 1;
                         }
@@ -77,142 +81,128 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
 
 /**
  * The main function that will calculate the hashs on a file. This function
- * is called from a thread pool.
- * @param data a gchar * filename
- * @param user_data is main_struct_t * pointer
+ * is a thread itself.
+ * @param data is main_struct_t * pointer
  */
-static void calculate_hashs_on_a_file(gpointer data, gpointer user_data)
+static void calculate_hashs_on_a_file(gpointer data)
 {
-    main_struct_t *main_struct = (main_struct_t *) user_data;
-    gchar *filename = (gchar *) data;
+    main_struct_t *main_struct = (main_struct_t *) data;
+    gchar *filename = NULL;
     GFile *a_file = NULL;
     GFileInputStream *stream = NULL;
     GFileInfo *fileinfo = NULL;
     GError *error = NULL;
 
-    if (filename != NULL)
-        {
-
-            a_file = g_file_new_for_path(filename);
-
-            fileinfo = g_file_query_info(a_file, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
-
-            if (error != NULL)
-                {
-                   fprintf(stderr, _("Can't get informations on %s file: %s\n"), filename, error->message);
-                }
-            else if (fileinfo != NULL)
-                {
-
-                    if (g_file_info_get_file_type(fileinfo) == G_FILE_TYPE_REGULAR)
-                        {
-
-                            stream = g_file_read(a_file, NULL, &error);
-
-                            if (error != NULL)
-                                {
-                                    fprintf(stderr, _("Error while opening %s file: %s\n"), filename, error->message);
-                                }
-                            else
-                                {
-                                    do_checksum(main_struct, stream, filename);
-                                    g_input_stream_close((GInputStream *) stream, NULL, NULL);
-                                }
-                        }
-                    else
-                        {
-                            fprintf(stderr, _("%s is not a regular file\n"), filename);
-                        }
-                }
-
-            g_free(filename);
-        }
-}
-
-
-/**
- * Inits the thread pool and saves it into main_struct
- * @param main_struct : the structures that stores everything. Without
- *        errors, tp field contains the new thread pool.
- */
-void init_thread_pool(main_struct_t *main_struct)
-{
-    GThreadPool *tp = NULL;
-    GError *error = NULL;
-    gint max_threads =  CISEAUX_MAX_THREADS;
 
     if (main_struct != NULL)
         {
-            if (main_struct->opt != NULL && main_struct->opt->max_threads != CISEAUX_MAX_THREADS)
-                {
-                    max_threads = main_struct->opt->max_threads;
-                }
 
-            tp = g_thread_pool_new(calculate_hashs_on_a_file, main_struct, max_threads, FALSE, &error);
+            do
+                {
+                    if (filename != NULL)
+                        {
+                             g_free(filename);
+                        }
 
-            if (tp != NULL && error == NULL)
-                {
-                    main_struct->tp = tp;
+                    filename = g_async_queue_pop(main_struct->queue);
+
+                    if (g_strcmp0(filename, "$END$") != 0)
+                        {
+
+                            a_file = g_file_new_for_path(filename);
+                            fileinfo = g_file_query_info(a_file, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
+
+                            if (error != NULL)
+                                {
+                                   fprintf(stderr, _("Can't get informations on %s file: %s\n"), filename, error->message);
+                                }
+                            else if (fileinfo != NULL)
+                                {
+
+                                    if (g_file_info_get_file_type(fileinfo) == G_FILE_TYPE_REGULAR)
+                                        {
+
+                                            stream = g_file_read(a_file, NULL, &error);
+
+                                            if (error != NULL)
+                                                {
+                                                    fprintf(stderr, _("Error while opening %s file: %s\n"), filename, error->message);
+                                                }
+                                            else
+                                                {
+                                                    do_checksum(main_struct, stream, filename);
+                                                    g_input_stream_close((GInputStream *) stream, NULL, NULL);
+                                                }
+                                        }
+                                    else
+                                        {
+                                            fprintf(stderr, _("%s is not a regular file\n"), filename);
+                                        }
+                                }
+                        }
                 }
-            else if (error != NULL)
-                {
-                    fprintf(stderr, _("Unable to create a thread pool: %s\n"), error->message);
-                    exit(EXIT_FAILURE);
-                }
-            else
-                {
-                    fprintf(stderr, _("Thread pool not created but no error generated!\n"));
-                    exit(EXIT_FAILURE);
-                }
-        }
-    else
-        {
-            exit(EXIT_FAILURE);
-        }
+            while (g_strcmp0(filename, "$END$") != 0);
+    }
 }
 
 
 /**
- * This function waits for messages in the queue and then transmits them
- * to the thread pool.
+ * This function waits for messages in the queue and then prints them to
+ * screen.
+ * @param data : main_struct_t * structure.
+ */
+static gpointer print_things(gpointer data)
+{
+    main_struct_t *main_struct = (main_struct_t *) data;
+    gchar *to_print = NULL;
+
+    if (main_struct != NULL)
+        {
+            do
+                {
+                    if (to_print != NULL)
+                        {
+                            g_free(to_print);
+                        }
+
+                    to_print = g_async_queue_pop(main_struct->print_queue);
+
+                    if (g_strcmp0(to_print, "$END$") != 0)
+                        {
+                            fprintf(stdout, "%s\n", to_print);
+                        }
+                }
+            while (g_strcmp0(to_print, "$END$") != 0);
+        }
+
+    return NULL;
+}
+
+
+/**
+ * This function waits for messages to be available in the queue (a
+ * GAsyncQueue). This function is a thread itself and it creates one
+ * thread to print things and many threads to calculate the checksums.
  * @param data : main_struct_t * structure.
  */
 gpointer ciseaux(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
-
     gchar *filename = NULL;
-    gint max_threads = 0;
+    GThread *print_thread = NULL;
+    GThread *calc_thread = NULL;
 
     if (main_struct != NULL)
         {
+            print_thread = g_thread_create(print_things, main_struct, TRUE, NULL);
+            calc_thread = g_thread_create(calculate_hashs_on_a_file, main_struct, TRUE, NULL);
 
-            max_threads = g_thread_pool_get_max_threads(main_struct->tp);
-
-            do
-                {
-                    if (g_thread_pool_get_num_threads(main_struct->tp) < max_threads)
-                        {
-                            if (filename != NULL)
-                                {
-                                    g_free(filename);
-                                }
-
-                            filename = g_async_queue_pop(main_struct->queue);
-
-                            if (g_strcmp0(filename, "$END$") != 0)
-                                {
-                                    g_thread_pool_push(main_struct->tp, g_strdup(filename), NULL);
-                                }
-                        }
-                    else
-                        {
-                            usleep(10);
-                        }
-                }
-            while (g_strcmp0(filename, "$END$") != 0);
-
+            g_thread_join(calc_thread);
+            g_async_queue_push(main_struct->print_queue, "$END$");
+            g_thread_join(print_thread);
         }
+
+    return NULL;
 }
 
 

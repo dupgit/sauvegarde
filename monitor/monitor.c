@@ -442,6 +442,7 @@ static main_struct_t *init_main_structure(options_t *opt)
     main_struct->path_tree = g_tree_new(compare_path);
     main_struct->hostname = g_get_host_name();
     main_struct->queue = g_async_queue_new();
+    main_struct->print_queue = g_async_queue_new();
 
     return main_struct;
 
@@ -473,8 +474,6 @@ int main(int argc, char **argv)
     if (opt != NULL)
         {
             main_struct = init_main_structure(opt);
-
-            init_thread_pool(main_struct);
 
             /* Adding paths to be monitored in a threaded way */
             a_thread_data = (thread_data_t *) g_malloc0(sizeof(thread_data_t));

@@ -157,9 +157,11 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     /* 0) Setting default values */
     opt->dirname_list = NULL;
+    opt->blocksize = CISEAUX_BLOCK_SIZE;
+    opt->max_threads = CISEAUX_MAX_THREADS;
 
     /* 1) Reading from the default configuration file */
-    defaultconfigfilename = get_probable_etc_path("monitor");
+    defaultconfigfilename = get_probable_etc_path("client");
     read_from_configuration_file(opt,  defaultconfigfilename);
     g_free(defaultconfigfilename);
 
@@ -183,6 +185,15 @@ options_t *manage_command_line_options(int argc, char **argv)
                     dirname = g_strdup(dirname_array[i]);
                     opt->dirname_list = g_slist_append(opt->dirname_list, dirname);
                 }
+        }
+
+    if (blocksize > 0)
+        {
+            opt->blocksize = blocksize;
+        }
+    if (max_threads > 0)
+        {
+            opt->max_threads = max_threads;
         }
 
     g_option_context_free(context);
