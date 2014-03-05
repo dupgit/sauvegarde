@@ -48,21 +48,26 @@
 
 /**
  * @def MONITOR_DATE
- * defines monitor's creation date
+ * Defines monitor's creation date
  *
  * @def MONITOR_AUTHORS
- * defines monitor's main authors
+ * Defines monitor's main authors
  *
  * @def MONITOR_LICENSE
- * defines monitor's license (at least GPL v2)
+ * Defines monitor's license (at least GPL v2)
  *
  * @def MONITOR_TIME
- * defines monitor default rate limit in minutes
+ * Defines monitor default rate limit in minutes
+ *
+ * @def PROGRAM_NAME
+ * Defines the main program name for this part (monitor + ciseaux +
+ * antememoire).
  */
 #define MONITOR_AUTHORS ("Olivier Delhomme")
 #define MONITOR_DATE N_("15 02 2014")
 #define MONITOR_LICENSE N_("GPL v3 or later")
 #define MONITOR_TIME (5)
+#define PROGRAM_NAME ("client")
 
 
 /**

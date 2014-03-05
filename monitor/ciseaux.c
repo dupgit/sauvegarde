@@ -81,7 +81,9 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
 
 /**
  * The main function that will calculate the hashs on a file. This function
- * is a thread itself.
+ * is a thread itself. It waits for messages in the main queue.
+ * Messages are sent by the following functions :
+ * . traverse_directory.
  * @param data is main_struct_t * pointer
  */
 static void calculate_hashs_on_a_file(gpointer data)
@@ -148,7 +150,8 @@ static void calculate_hashs_on_a_file(gpointer data)
 
 /**
  * This function waits for messages in the queue and then prints them to
- * screen.
+ * screen. Messages are sent by do checksum function via the print_queue
+ * queue.
  * @param data : main_struct_t * structure.
  */
 static gpointer print_things(gpointer data)
@@ -180,9 +183,12 @@ static gpointer print_things(gpointer data)
 
 
 /**
- * This function waits for messages to be available in the queue (a
- * GAsyncQueue). This function is a thread itself and it creates one
- * thread to print things and many threads to calculate the checksums.
+ * This function is a thread itself (instanciated by monitor.c's main
+ * function. It creates one thread to print things and
+ * one other thread to calculate the checksums.
+ * It waits until the end of the calc_thread thread (this will chang
+ * as in the future thoses functions should have an end unless the program
+ * itself ends.
  * @param data : main_struct_t * structure.
  */
 gpointer ciseaux(gpointer data)

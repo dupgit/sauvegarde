@@ -161,7 +161,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->max_threads = CISEAUX_MAX_THREADS;
 
     /* 1) Reading from the default configuration file */
-    defaultconfigfilename = get_probable_etc_path("client");
+    defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME);
     read_from_configuration_file(opt,  defaultconfigfilename);
     g_free(defaultconfigfilename);
 
