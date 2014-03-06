@@ -461,7 +461,7 @@ int main(int argc, char **argv)
     main_struct_t *main_struct = NULL;
     GMainLoop *mainloop = NULL;
     thread_data_t *a_thread_data = NULL;
-    GThread *a_thread = NULL;
+    GThread *a_thread = NULL;     /* thread used to do the directory traversal */
     GThread *cut_thread = NULL;
 
 

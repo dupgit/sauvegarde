@@ -86,7 +86,7 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
  * . traverse_directory.
  * @param data is main_struct_t * pointer
  */
-static void calculate_hashs_on_a_file(gpointer data)
+static gpointer calculate_hashs_on_a_file(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
     gchar *filename = NULL;
@@ -144,7 +144,9 @@ static void calculate_hashs_on_a_file(gpointer data)
                         }
                 }
             while (g_strcmp0(filename, "$END$") != 0);
-    }
+        }
+
+    return NULL;
 }
 
 
@@ -183,10 +185,10 @@ static gpointer print_things(gpointer data)
 
 
 /**
- * This function is a thread itself (instanciated by monitor.c's main
- * function. It creates one thread to print things and
- * one other thread to calculate the checksums.
- * It waits until the end of the calc_thread thread (this will chang
+ * This function creates one thread to print things and
+ * one other thread to calculate the checksums. This function
+ * is a thread itself.
+ * It waits until the end of the calc_thread thread (this will change
  * as in the future thoses functions should have an end unless the program
  * itself ends.
  * @param data : main_struct_t * structure.
@@ -206,6 +208,7 @@ gpointer ciseaux(gpointer data)
             g_thread_join(calc_thread);
             g_async_queue_push(main_struct->print_queue, "$END$");
             g_thread_join(print_thread);
+
         }
 
     return NULL;
