@@ -77,7 +77,6 @@
 typedef struct
 {
     options_t *opt;           /** options of the program from the command line                                              */
-    GTree *path_tree;         /** Balanced Binary Trees to store path_t * paths monitored                                   */
     const gchar *hostname;    /** the name of the current machine                                                           */
     GAsyncQueue *queue;       /** Communication queue between threads                                                       */
     GAsyncQueue *print_queue; /** Communication queue between the threads pool and a thread that may print things to screen */

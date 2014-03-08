@@ -101,10 +101,12 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
 
 /**
- * This function parses command line options.
+ * This function parses command line options. It sets the options in this
+ * order. It means that the value used for an option is the one set in the
+ * lastest step.
  * 0) default values are set into the options_t * structure
  * 1) reads the default configuration file if any.
- * 2) reads the configuration file mentionned in the command line option
+ * 2) reads the configuration file mentionned on the command line.
  * 3) sets the command line options (except for the list of directories,
  *    all other values are replaced by thoses in the command line)
  * @param argc : number of arguments given on the command line.
@@ -160,24 +162,27 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->blocksize = CISEAUX_BLOCK_SIZE;
     opt->max_threads = CISEAUX_MAX_THREADS;
 
-    /* 1) Reading from the default configuration file */
+    /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME);
     read_from_configuration_file(opt,  defaultconfigfilename);
     g_free(defaultconfigfilename);
 
     opt->version = version; /* only TRUE if -v or --version was invoked */
 
+    /* 2) Reading the configuration from the configuration file specified
+     *    on the command line
+     */
     if (configfile != NULL)
         {
-            /* 2) Reading the configuration from the configuration file */
             read_from_configuration_file(opt, configfile);
         }
 
+
+    /* 3) retrieving other options from the command line. Directories are
+     *    added to the existing directory list
+     */
     if (dirname_array != NULL)
         {
-            /* 3) retrieving the filenames stored in the array to put them
-             *    into a list in the options_t * structure
-             */
             num = g_strv_length(dirname_array);
 
             for (i = 0; i < num; i++)
