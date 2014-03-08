@@ -86,4 +86,22 @@ extern void set_option_context_options(GOptionContext *context, GOptionEntry ent
  */
 extern gchar *get_filename_from_gfile(GFile *a_file);
 
+
+/**
+ * Frees a pointer if it is not NULL and returns NULL
+ * @param to_free is the pointer to be freed (must have been malloc with
+ *         g_malloc* functions).
+ * @returns NULL
+ */
+gpointer free_variable(gpointer to_free);
+
+
+/**
+ * Unrefs an object if it is not NULL and returns NULL
+ * @param object_to_unref is the pointer to be unref'ed.
+ * @returns NULL
+ */
+gpointer free_object(gpointer object_to_unref);
+
+
 #endif /* #ifndef _LIBSAUVEGARDE_H_ */

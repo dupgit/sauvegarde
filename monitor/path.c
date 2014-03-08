@@ -59,8 +59,8 @@ void free_path_t(path_t *a_path)
 {
     if (a_path != NULL)
         {
-            g_free(a_path->path);
-            g_free(a_path);
+            free_variable(a_path->path);
+            free_variable(a_path);
         }
 }
 

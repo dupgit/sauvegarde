@@ -36,7 +36,6 @@ void print_libraries_versions(void)
 {
     gchar *comm_version = NULL;
 
-
     fprintf(stdout, _("%s was compiled with the following libraries:\n"), PACKAGE_NAME);
     fprintf(stdout, _("\t. GLIB version : %d.%d.%d\n"), glib_major_version, glib_minor_version, glib_micro_version);
 
@@ -44,7 +43,7 @@ void print_libraries_versions(void)
     if (comm_version != NULL)
         {
             fprintf(stdout, "%s", comm_version);
-            g_free(comm_version);
+            free_variable(comm_version);
         }
 }
 
@@ -109,7 +108,6 @@ void set_option_context_options(GOptionContext *context, GOptionEntry entries[],
     g_option_context_set_help_enabled(context, help);
     g_option_context_set_description(context, bugreport);
     g_option_context_set_summary(context, summary);
-
 }
 
 
@@ -135,3 +133,37 @@ extern gchar *get_filename_from_gfile(GFile *a_file)
     return filename;
 }
 
+
+/**
+ * Frees a pointer if it is not NULL and returns NULL
+ * @param to_free is the pointer to be freed (must have been malloc with
+ *         g_malloc* functions).
+ * @returns NULL
+ */
+gpointer free_variable(gpointer to_free)
+{
+    if (to_free != NULL)
+        {
+            g_free(to_free);
+            to_free = NULL;
+        }
+
+    return NULL;
+}
+
+
+/**
+ * Unrefs an object if it is not NULL and returns NULL
+ * @param object_to_unref is the pointer to be unref'ed.
+ * @returns NULL
+ */
+gpointer free_object(gpointer object_to_unref)
+{
+    if (object_to_unref != NULL)
+        {
+            g_object_unref(object_to_unref);
+            object_to_unref = NULL;
+        }
+
+    return NULL;
+}

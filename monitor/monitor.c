@@ -70,11 +70,8 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
                             dirname = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
 
                             traverse_directory(main_struct, dirname);
-                            if (dirname != NULL)
-                                {
-                                    g_free(dirname);
-                                    dirname = NULL;
-                                }
+
+                            dirname = free_variable(dirname);
                         }
                     else if (filetype == G_FILE_TYPE_REGULAR)
                         {
@@ -91,33 +88,18 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
                                 {
                                     fprintf(stdout, _("%s passed to checksum's thread\n"), filename);
                                 }
-                            if (filename != NULL)
-                                {
-                                    g_free(filename);
-                                    filename = NULL;
-                                }
+
+                            filename = free_variable(filename);
                         }
 
-                    if (fileinfo != NULL)
-                        {
-                            g_object_unref(fileinfo);
-                            fileinfo = NULL;
-                        }
+                    fileinfo = free_object(fileinfo);
+
                     fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
                 }
 
-            if (fileinfo != NULL)
-                {
-                    g_object_unref(fileinfo);
-                    fileinfo = NULL;
-                }
-
+            fileinfo = free_object(fileinfo);
             g_file_enumerator_close(file_enum, NULL, NULL);
-            if (file_enum != NULL)
-                {
-                    g_object_unref(file_enum);
-                    file_enum = NULL;
-                }
+            file_enum = free_object(file_enum);
         }
     else
         {
@@ -126,11 +108,8 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
             error = NULL;
         }
 
-    if (a_dir != NULL)
-        {
-           g_object_unref(a_dir);
-           a_dir = NULL;
-        }
+    free_object(a_dir);
+
 }
 
 

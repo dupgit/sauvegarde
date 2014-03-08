@@ -103,11 +103,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
 
             do
                 {
-                    if (filename != NULL)
-                        {
-                             g_free(filename);
-                             filename = NULL;
-                        }
+                    filename = free_variable(filename);
 
                     filename = g_async_queue_pop(main_struct->queue);
 
@@ -144,40 +140,23 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                                                         {
                                                             do_checksum(main_struct, stream, filename);
                                                             g_input_stream_close((GInputStream *) stream, NULL, NULL);
-                                                            if (stream != NULL)
-                                                                {
-                                                                    g_object_unref(stream);
-                                                                    stream = NULL;
-                                                                }
+                                                            stream = free_object(stream);
                                                         }
                                                 }
                                             else
                                                 {
                                                     fprintf(stderr, _("%s is not a regular file\n"), filename);
                                                 }
-                                            if (fileinfo != NULL)
-                                                {
-                                                    g_object_unref(fileinfo);
-                                                    fileinfo = NULL;
-                                                }
+                                            fileinfo = free_object(fileinfo);
                                         }
-                                    if (a_file != NULL)
-                                        {
-                                            g_object_unref(a_file);
-                                            a_file = NULL;
-                                        }
+
+                                    a_file = free_object(a_file);
                                 }
                         }
                 }
             while (g_strcmp0(filename, "$END$") != 0);
 
-
-            if (filename != NULL)
-                {
-                     g_free(filename);
-                     filename = NULL;
-                }
-
+            filename = free_variable(filename);
         }
 
     return NULL;
@@ -199,11 +178,7 @@ static gpointer print_things(gpointer data)
         {
             do
                 {
-                    if (to_print != NULL)
-                        {
-                            g_free(to_print);
-                            to_print = NULL;
-                        }
+                    to_print = free_variable(to_print);
 
                     to_print = g_async_queue_pop(main_struct->print_queue);
 
@@ -213,12 +188,6 @@ static gpointer print_things(gpointer data)
                         }
                 }
             while (g_strcmp0(to_print, "$END$") != 0);
-
-            if (to_print != NULL)
-                {
-                    g_free(to_print);
-                }
-
         }
 
     return NULL;

@@ -156,7 +156,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME);
     read_from_configuration_file(opt,  defaultconfigfilename);
-    g_free(defaultconfigfilename);
+    defaultconfigfilename = free_variable(defaultconfigfilename);
 
     opt->version = version; /* only TRUE if -v or --version was invoked */
 
@@ -189,8 +189,8 @@ options_t *manage_command_line_options(int argc, char **argv)
         }
 
     g_option_context_free(context);
-    g_free(bugreport);
-    g_free(summary);
+    free_variable(bugreport);
+    free_variable(summary);
 
     return opt;
 }
@@ -213,15 +213,15 @@ void free_options_t_structure(options_t *opt)
 
             while (head != NULL)
                 {
-                    g_free(head->data);
+                    head->data = free_variable(head->data);
                     next = g_slist_next(head);
                     g_slist_free_1(head);
                     head = next;
                 }
 
-            g_free(opt->configfile);
+            free_variable(opt->configfile);
 
-            g_free(opt);
+            free_variable(opt);
         }
 
 }
