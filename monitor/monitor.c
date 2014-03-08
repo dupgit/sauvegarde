@@ -31,31 +31,9 @@
 #include "monitor.h"
 
 
-static gchar *get_filename_from_gfile(GFile *a_file);
+static void traverse_directory(main_struct_t *main_struct, gchar *directory);
+static gpointer first_directory_traversal(gpointer data);
 static main_struct_t *init_main_structure(options_t *opt);
-
-
-/**
- * Gets the filename of a  GFile
- * @param a_file : the GFile to get the filename from.
- * @returns the name of the GFile if any or "--" gchar * string that may be
- *          freed when no longer needed
- */
-static gchar *get_filename_from_gfile(GFile *a_file)
-{
-    gchar *filename = NULL;
-
-    if (a_file != NULL)
-        {
-            filename = g_file_get_parse_name(a_file);
-        }
-    else
-        {
-            filename = NULL;
-        }
-
-    return filename;
-}
 
 
 /**

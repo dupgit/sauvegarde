@@ -111,3 +111,27 @@ void set_option_context_options(GOptionContext *context, GOptionEntry entries[],
     g_option_context_set_summary(context, summary);
 
 }
+
+
+/**
+ * Gets the filename of a  GFile
+ * @param a_file : the GFile to get the filename from.
+ * @returns the name of the GFile if any or "--" gchar * string that may be
+ *          freed when no longer needed
+ */
+extern gchar *get_filename_from_gfile(GFile *a_file)
+{
+    gchar *filename = NULL;
+
+    if (a_file != NULL)
+        {
+            filename = g_file_get_parse_name(a_file);
+        }
+    else
+        {
+            filename = NULL;
+        }
+
+    return filename;
+}
+
