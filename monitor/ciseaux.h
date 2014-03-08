@@ -31,12 +31,9 @@
 /**
  * @def CISEAUX_BLOCK_SIZE
  * default block size in bytes
- *
- * @def CISEAUX_MAX_THREADS
- * default maximum number of threads in a thread pool
  */
 #define CISEAUX_BLOCK_SIZE (32768)
-#define CISEAUX_MAX_THREADS (16)
+
 
 
 /**

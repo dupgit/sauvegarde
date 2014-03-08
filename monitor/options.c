@@ -83,12 +83,6 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                         {
                             fprintf(stderr, _("Could not load blocksize from file %s : %s"), filename, error->message);
                         }
-
-                    opt->max_threads = g_key_file_get_int64(keyfile, GN_CISEAUX, KN_MAX_THREADS, &error);
-                    if (error != NULL && ENABLE_DEBUG == TRUE)
-                        {
-                            fprintf(stderr, _("Could not load max-threads from file %s : %s"), filename, error->message);
-                        }
                 }
             else if (error != NULL && ENABLE_DEBUG == TRUE)
                 {
@@ -120,14 +114,12 @@ options_t *manage_command_line_options(int argc, char **argv)
     gchar **dirname_array = NULL;  /** array of dirnames left on the command line  */
     gchar *configfile = NULL;      /** filename for the configuration file if any  */
     gint64 blocksize = 0;          /** computed block size in bytes                */
-    gint64 max_threads = 0;        /** Maximum number of threads to be used        */
 
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
         { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Block size used to compute hashs"), NULL},
-        { "max-threads", 'm', 0, G_OPTION_ARG_INT64 , &max_threads, N_("Maximum threads we can use at once"), NULL},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
@@ -160,7 +152,6 @@ options_t *manage_command_line_options(int argc, char **argv)
     /* 0) Setting default values */
     opt->dirname_list = NULL;
     opt->blocksize = CISEAUX_BLOCK_SIZE;
-    opt->max_threads = CISEAUX_MAX_THREADS;
 
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME);
@@ -196,13 +187,10 @@ options_t *manage_command_line_options(int argc, char **argv)
         {
             opt->blocksize = blocksize;
         }
-    if (max_threads > 0)
-        {
-            opt->max_threads = max_threads;
-        }
 
     g_option_context_free(context);
     g_free(bugreport);
+    g_free(summary);
 
     return opt;
 }
