@@ -93,7 +93,7 @@ extern gchar *get_filename_from_gfile(GFile *a_file);
  *         g_malloc* functions).
  * @returns NULL
  */
-gpointer free_variable(gpointer to_free);
+extern gpointer free_variable(gpointer to_free);
 
 
 /**
@@ -101,7 +101,15 @@ gpointer free_variable(gpointer to_free);
  * @param object_to_unref is the pointer to be unref'ed.
  * @returns NULL
  */
-gpointer free_object(gpointer object_to_unref);
+extern gpointer free_object(gpointer object_to_unref);
+
+
+/**
+ * Frees an error if it exists and return NULL
+ * @param error : the error to be freed
+ * @returns NULL
+ */
+extern gpointer free_error(gpointer error);
 
 
 #endif /* #ifndef _LIBSAUVEGARDE_H_ */

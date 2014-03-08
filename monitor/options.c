@@ -76,17 +76,20 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                     else if (error != NULL &&  ENABLE_DEBUG == TRUE)
                         {
                             fprintf(stderr, _("Could not load directory list from file %s : %s\n"), filename, error->message);
+                            error = free_error(error);
                         }
 
                     opt->blocksize = g_key_file_get_int64(keyfile, GN_CISEAUX, KN_BLOCK_SIZE, &error);
                     if (error != NULL && ENABLE_DEBUG == TRUE)
                         {
                             fprintf(stderr, _("Could not load blocksize from file %s : %s"), filename, error->message);
+                            error = free_error(error);
                         }
                 }
             else if (error != NULL && ENABLE_DEBUG == TRUE)
                 {
                     fprintf(stderr, _("Failed to open %s configuration file : %s\n"), filename, error->message);
+                    error = free_error(error);
                 }
 
             g_key_file_free(keyfile);
@@ -220,7 +223,6 @@ void free_options_t_structure(options_t *opt)
                 }
 
             free_variable(opt->configfile);
-
             free_variable(opt);
         }
 

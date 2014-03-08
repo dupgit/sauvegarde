@@ -55,8 +55,7 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
             if (error != NULL)
                 {
                     fprintf(stderr, _("Error while reading %s file: %s\n"), filename, error->message);
-                    g_error_free(error);
-                    error = NULL;
+                    error = free_error(error);
                     read = 0;
                 }
             else
@@ -119,8 +118,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                                     if (error != NULL)
                                         {
                                             fprintf(stderr, _("Can't get informations on %s file: %s\n"), filename, error->message);
-                                            g_error_free(error);
-                                            error = NULL;
+                                            error = free_error(error);
                                         }
                                     else if (fileinfo != NULL)
                                         {
@@ -133,8 +131,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                                                     if (error != NULL)
                                                         {
                                                             fprintf(stderr, _("Error while opening %s file: %s\n"), filename, error->message);
-                                                            g_error_free(error);
-                                                            error = NULL;
+                                                            error = free_error(error);
                                                         }
                                                     else
                                                         {

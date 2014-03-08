@@ -167,3 +167,20 @@ gpointer free_object(gpointer object_to_unref)
 
     return NULL;
 }
+
+
+/**
+ * Frees an error if it exists and return NULL
+ * @param error : the error to be freed
+ * @returns NULL
+ */
+gpointer free_error(gpointer error)
+{
+    if (error != NULL)
+        {
+            g_error_free(error);
+            error = NULL;
+        }
+
+    return NULL;
+}
