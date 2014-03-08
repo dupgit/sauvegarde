@@ -28,6 +28,12 @@
 
 #include "monitor.h"
 
+static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gchar *filename);
+static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname);
+static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filename);
+static gpointer calculate_hashs_on_a_file(gpointer data);
+static gpointer print_things(gpointer data);
+
 /**
  * Does the checksum on the opened stream.
  * @param main_struct is the mains structure fro the program
@@ -79,6 +85,55 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
 }
 
 
+/**
+ * This function transmits all information about the directory
+ * @param main_struct : main structure (needed to know the queue to
+ *        send the message.
+ * @param dirname : a gchar * directory name.
+ */
+static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname)
+{
+    gchar *to_print = NULL;
+
+    if (main_struct != NULL && main_struct->print_queue != NULL)
+        {
+            to_print = g_strdup_printf("%d - %s", G_FILE_TYPE_DIRECTORY, dirname);
+            g_async_queue_push(main_struct->print_queue, to_print);
+        }
+}
+
+
+/**
+ * This functions is calling everything that is needed to calculate
+ * the checksums of a file.
+ * @param main_struct : main structure that contains everything
+ * @param a_file : the GFile opened
+ * @param filename the filename of the opened GFile
+ */
+static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filename)
+{
+    GFileInputStream *stream = NULL;
+    GError *error = NULL;
+
+    if (a_file != NULL && main_struct != NULL)
+        {
+
+            stream = g_file_read(a_file, NULL, &error);
+
+            if (error != NULL)
+                {
+                    fprintf(stderr, _("Error while opening %s file: %s\n"), filename, error->message);
+                    free_error(error);
+                }
+            else
+                {
+                    do_checksum(main_struct, stream, filename);
+                    g_input_stream_close((GInputStream *) stream, NULL, NULL);
+                    stream = free_object(stream);
+                }
+        }
+}
+
 
 /**
  * The main function that will calculate the hashs on a file. This function
@@ -86,15 +141,17 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
  * Messages are sent by the following functions :
  * . traverse_directory.
  * @param data is main_struct_t * pointer
+ * @returns NULL to fullfill the template needed to create a GThread
  */
 static gpointer calculate_hashs_on_a_file(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
     gchar *filename = NULL;
     GFile *a_file = NULL;
-    GFileInputStream *stream = NULL;
+
     GFileInfo *fileinfo = NULL;
     GError *error = NULL;
+    GFileType filetype = G_FILE_TYPE_UNKNOWN;
 
 
     if (main_struct != NULL)
@@ -122,23 +179,15 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                                         }
                                     else if (fileinfo != NULL)
                                         {
+                                            filetype = g_file_info_get_file_type(fileinfo);
 
-                                            if (g_file_info_get_file_type(fileinfo) == G_FILE_TYPE_REGULAR)
+                                            if (filetype == G_FILE_TYPE_REGULAR)
                                                 {
-
-                                                    stream = g_file_read(a_file, NULL, &error);
-
-                                                    if (error != NULL)
-                                                        {
-                                                            fprintf(stderr, _("Error while opening %s file: %s\n"), filename, error->message);
-                                                            error = free_error(error);
-                                                        }
-                                                    else
-                                                        {
-                                                            do_checksum(main_struct, stream, filename);
-                                                            g_input_stream_close((GInputStream *) stream, NULL, NULL);
-                                                            stream = free_object(stream);
-                                                        }
+                                                    it_is_a_file(main_struct, a_file, filename);
+                                                }
+                                            else if (filetype == G_FILE_TYPE_DIRECTORY)
+                                                {
+                                                    it_is_a_directory(main_struct, filename);
                                                 }
                                             else
                                                 {
@@ -163,8 +212,9 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
 /**
  * This function waits for messages in the queue and then prints them to
  * screen. Messages are sent by do checksum function via the print_queue
- * queue.
+ * queue. This function is running in a thread.
  * @param data : main_struct_t * structure.
+ * @returns NULL to fullfill the template needed to create a GThread
  */
 static gpointer print_things(gpointer data)
 {
@@ -199,6 +249,7 @@ static gpointer print_things(gpointer data)
  * as in the future thoses functions should have an end unless the program
  * itself ends.
  * @param data : main_struct_t * structure.
+ * @returns NULL to fullfill the template needed to create a GThread
  */
 gpointer ciseaux(gpointer data)
 {

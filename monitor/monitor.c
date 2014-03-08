@@ -68,10 +68,12 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
                         {
                             /* We've got a directory : we must go into it ! */
                             dirname = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
-
-                            traverse_directory(main_struct, dirname);
-
-                            dirname = free_variable(dirname);
+                            if (dirname != NULL)
+                                {
+                                    g_async_queue_push(main_struct->queue, g_strdup(dirname));
+                                    traverse_directory(main_struct, dirname);
+                                    dirname = free_variable(dirname);
+                                }
                         }
                     else if (filetype == G_FILE_TYPE_REGULAR)
                         {
