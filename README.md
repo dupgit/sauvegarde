@@ -1,18 +1,15 @@
-Sauvegarde
-==========
+# Sauvegarde
 
 Some experiments around backup and continuous data protection (CDP)
 
-License
--------
+## License
 
 This is free software an real open source as GPLv3 is used for this
 collection of programs. Feel free to contibute and/or give help to the
 projects used here (see dependencies section)
 
 
-Dependencies
-------------
+## Dependencies
 
 This project depends on :
 
@@ -22,8 +19,7 @@ This project depends on :
 * sqlite        (3.6.20)
 
 
-Infrastucture
--------------
+## Infrastucture
 
 This is how I imagine the programs may interact themselves but it may
 evolve in the future.
@@ -52,16 +48,18 @@ evolve in the future.
   main's sauvegarde server.
 
 
-Comments
---------
+### Dialog protocol
+
+
+
+## Comments
 
 Sauvegarde uses Javadoc comment style to be parsed by doxygen. Please
 continue to use this style into comments in the whole project as it will
 be parsed by doxygen.
 
 
-Learnt things from experiments
-------------------------------
+## Learnt things from experiments
 
 * GFileMonitor in Glib 2.26 does not warn when the file descriptors are
   exhausted. The default limit on my system is 1024 files monitored
@@ -76,8 +74,8 @@ Learnt things from experiments
 * redirfs, pluginfs and dazuko seems dead (on 02 march 2014).
 
 
-Usefull links
--------------
+## Usefull links
+
 * Filesystem events notifycation :
  * redirfs  : [http://www.redirfs.org/tiki-index.php](http://www.redirfs.org/tiki-index.php)
  * pluginfs : [http://www.pluginfs.org/](http://www.pluginfs.org/)
