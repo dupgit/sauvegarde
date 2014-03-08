@@ -55,6 +55,8 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
             if (error != NULL)
                 {
                     fprintf(stderr, _("Error while reading %s file: %s\n"), filename, error->message);
+                    g_error_free(error);
+                    error = NULL;
                     read = 0;
                 }
             else
@@ -104,6 +106,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                     if (filename != NULL)
                         {
                              g_free(filename);
+                             filename = NULL;
                         }
 
                     filename = g_async_queue_pop(main_struct->queue);
@@ -112,38 +115,69 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                         {
 
                             a_file = g_file_new_for_path(filename);
-                            fileinfo = g_file_query_info(a_file, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
 
-                            if (error != NULL)
+                            if (a_file != NULL)
                                 {
-                                   fprintf(stderr, _("Can't get informations on %s file: %s\n"), filename, error->message);
-                                }
-                            else if (fileinfo != NULL)
-                                {
+                                    fileinfo = g_file_query_info(a_file, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
 
-                                    if (g_file_info_get_file_type(fileinfo) == G_FILE_TYPE_REGULAR)
+                                    if (error != NULL)
+                                        {
+                                            fprintf(stderr, _("Can't get informations on %s file: %s\n"), filename, error->message);
+                                            g_error_free(error);
+                                            error = NULL;
+                                        }
+                                    else if (fileinfo != NULL)
                                         {
 
-                                            stream = g_file_read(a_file, NULL, &error);
-
-                                            if (error != NULL)
+                                            if (g_file_info_get_file_type(fileinfo) == G_FILE_TYPE_REGULAR)
                                                 {
-                                                    fprintf(stderr, _("Error while opening %s file: %s\n"), filename, error->message);
+
+                                                    stream = g_file_read(a_file, NULL, &error);
+
+                                                    if (error != NULL)
+                                                        {
+                                                            fprintf(stderr, _("Error while opening %s file: %s\n"), filename, error->message);
+                                                            g_error_free(error);
+                                                            error = NULL;
+                                                        }
+                                                    else
+                                                        {
+                                                            do_checksum(main_struct, stream, filename);
+                                                            g_input_stream_close((GInputStream *) stream, NULL, NULL);
+                                                            if (stream != NULL)
+                                                                {
+                                                                    g_object_unref(stream);
+                                                                    stream = NULL;
+                                                                }
+                                                        }
                                                 }
                                             else
                                                 {
-                                                    do_checksum(main_struct, stream, filename);
-                                                    g_input_stream_close((GInputStream *) stream, NULL, NULL);
+                                                    fprintf(stderr, _("%s is not a regular file\n"), filename);
+                                                }
+                                            if (fileinfo != NULL)
+                                                {
+                                                    g_object_unref(fileinfo);
+                                                    fileinfo = NULL;
                                                 }
                                         }
-                                    else
+                                    if (a_file != NULL)
                                         {
-                                            fprintf(stderr, _("%s is not a regular file\n"), filename);
+                                            g_object_unref(a_file);
+                                            a_file = NULL;
                                         }
                                 }
                         }
                 }
             while (g_strcmp0(filename, "$END$") != 0);
+
+
+            if (filename != NULL)
+                {
+                     g_free(filename);
+                     filename = NULL;
+                }
+
         }
 
     return NULL;
@@ -168,6 +202,7 @@ static gpointer print_things(gpointer data)
                     if (to_print != NULL)
                         {
                             g_free(to_print);
+                            to_print = NULL;
                         }
 
                     to_print = g_async_queue_pop(main_struct->print_queue);
@@ -178,6 +213,12 @@ static gpointer print_things(gpointer data)
                         }
                 }
             while (g_strcmp0(to_print, "$END$") != 0);
+
+            if (to_print != NULL)
+                {
+                    g_free(to_print);
+                }
+
         }
 
     return NULL;
@@ -196,7 +237,6 @@ static gpointer print_things(gpointer data)
 gpointer ciseaux(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
-    gchar *filename = NULL;
     GThread *print_thread = NULL;
     GThread *calc_thread = NULL;
 

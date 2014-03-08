@@ -70,8 +70,11 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
                             dirname = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
 
                             traverse_directory(main_struct, dirname);
-
-                            g_free(dirname);
+                            if (dirname != NULL)
+                                {
+                                    g_free(dirname);
+                                    dirname = NULL;
+                                }
                         }
                     else if (filetype == G_FILE_TYPE_REGULAR)
                         {
@@ -86,22 +89,48 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
 
                             if (ENABLE_DEBUG == TRUE)
                                 {
-                                    fprintf(stdout, _("%s in the thread pool\n"), filename);
+                                    fprintf(stdout, _("%s passed to checksum's thread\n"), filename);
                                 }
-
-                            g_free(filename);
+                            if (filename != NULL)
+                                {
+                                    g_free(filename);
+                                    filename = NULL;
+                                }
                         }
 
+                    if (fileinfo != NULL)
+                        {
+                            g_object_unref(fileinfo);
+                            fileinfo = NULL;
+                        }
                     fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
                 }
 
+            if (fileinfo != NULL)
+                {
+                    g_object_unref(fileinfo);
+                    fileinfo = NULL;
+                }
+
             g_file_enumerator_close(file_enum, NULL, NULL);
+            if (file_enum != NULL)
+                {
+                    g_object_unref(file_enum);
+                    file_enum = NULL;
+                }
         }
     else
-    {
-        fprintf(stderr, _("Unable to enumerate directory %s: %s\n"), directory, error->message);
-        g_error_free(error);
-    }
+        {
+            fprintf(stderr, _("Unable to enumerate directory %s: %s\n"), directory, error->message);
+            g_error_free(error);
+            error = NULL;
+        }
+
+    if (a_dir != NULL)
+        {
+           g_object_unref(a_dir);
+           a_dir = NULL;
+        }
 }
 
 
@@ -125,7 +154,7 @@ static gpointer first_directory_traversal(gpointer data)
                 {
                     head = a_thread_data->dir_list;
 
-                    while ( head != NULL)
+                    while (head != NULL)
                         {
                             traverse_directory(main_struct, head->data);
                             head = g_slist_next(head);
