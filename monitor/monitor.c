@@ -171,7 +171,6 @@ static main_struct_t *init_main_structure(options_t *opt)
     main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
 
     main_struct->opt = opt;
-    main_struct->path_tree = g_tree_new(compare_path);
     main_struct->hostname = g_get_host_name();
     main_struct->queue = g_async_queue_new();
     main_struct->print_queue = g_async_queue_new();
