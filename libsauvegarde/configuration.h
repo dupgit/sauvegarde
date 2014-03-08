@@ -53,14 +53,8 @@
  * @def KN_BLOCK_SIZE
  * Defines the key name for the blocksize option. Expected value is of
  * type gint64 but may only be positive.
- *
- * @def KN_MAX_THREADS
- * Defines the key name for the max-threads option. Expected value is of
- * type gint64 but value may only be positive. A typical value should be
- * between 2 and 32 (default is 16).
  */
 #define KN_BLOCK_SIZE ("blocksize")
-#define KN_MAX_THREADS ("max-threads")
 
 
 /** Below you'll find some definitions for the monitor program */
