@@ -84,6 +84,6 @@ extern void set_option_context_options(GOptionContext *context, GOptionEntry ent
  * @returns the name of the GFile if any or "--" gchar * string that may be
  *          freed when no longer needed
  */
-extern gchar *get_filename_from_gfile(GFile *a_file)
+extern gchar *get_filename_from_gfile(GFile *a_file);
 
 #endif /* #ifndef _LIBSAUVEGARDE_H_ */
