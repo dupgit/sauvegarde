@@ -1,6 +1,7 @@
 # Sauvegarde
 
-Some experiments around backup and continuous data protection (CDP)
+Some experiments around backup and continuous data protection (CDP).
+
 
 ## License
 
@@ -48,8 +49,29 @@ evolve in the future.
   main's sauvegarde server.
 
 
-### Dialog protocol
+### Messages contents
 
+I'll try to pass everything into strings.
+
+* "\n" will be the delimiter for the fields in the string.
+* The last field is the filename and the last delimiter is \x0 (thus a file
+  can have a "\n" in its name).
+
+#### Directory
+
+    G_FILE_TYPE_DIRECTORY
+    dirname
+
+
+#### File
+
+    G_FILE_TYPE_REGULAR
+    filename
+        [
+            -> number_of_chunk
+            size
+            checksum
+        ]
 
 
 ## Comments

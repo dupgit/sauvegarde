@@ -71,7 +71,7 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
                         {
                             g_checksum_update(checksum, buffer, read);
 
-                            to_print = g_strdup_printf("%ld - %s - %ld - %s", read, filename, i, g_checksum_get_string(checksum));
+                            to_print = g_strdup_printf("-> %ld\n%ld\n%s", i, read, g_checksum_get_string(checksum));
                             g_async_queue_push(main_struct->print_queue, to_print);
 
                             g_checksum_reset(checksum);
@@ -97,7 +97,7 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname)
 
     if (main_struct != NULL && main_struct->print_queue != NULL)
         {
-            to_print = g_strdup_printf("%d - %s", G_FILE_TYPE_DIRECTORY, dirname);
+            to_print = g_strdup_printf("%d\n%s", G_FILE_TYPE_DIRECTORY, dirname);
             g_async_queue_push(main_struct->print_queue, to_print);
         }
 }
@@ -114,10 +114,10 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
 {
     GFileInputStream *stream = NULL;
     GError *error = NULL;
+    gchar *to_print = NULL;
 
-    if (a_file != NULL && main_struct != NULL)
+    if (a_file != NULL && main_struct != NULL && main_struct->print_queue != NULL)
         {
-
             stream = g_file_read(a_file, NULL, &error);
 
             if (error != NULL)
@@ -127,6 +127,9 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                 }
             else
                 {
+                    to_print = g_strdup_printf("%d\n%s", G_FILE_TYPE_REGULAR, filename);
+                    g_async_queue_push(main_struct->print_queue, to_print);
+
                     do_checksum(main_struct, stream, filename);
                     g_input_stream_close((GInputStream *) stream, NULL, NULL);
                     stream = free_object(stream);

@@ -1,5 +1,4 @@
-monitor
-=======
+# monitor
 
 * Need something different from GFileMonitor because we hit _SC_OPEN_MAX
   limit too quickly. inotify suffer the same problem. Some project that
@@ -15,12 +14,11 @@ monitor
 
 * Need command line options.
 
-ciseaux
-=======
+# ciseaux
 
 * Need a configuration file (and a command line option to specify a
   configuration file).
 
 
-libsauvegarde
-=============
+# libsauvegarde
+
