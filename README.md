@@ -60,12 +60,14 @@ I'll try to pass everything into strings.
 #### Directory
 
     G_FILE_TYPE_DIRECTORY
+    owner
     dirname
 
 
 #### File
 
     G_FILE_TYPE_REGULAR
+    owner
     filename
         [
             -> number_of_chunk

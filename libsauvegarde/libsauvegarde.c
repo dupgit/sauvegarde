@@ -135,6 +135,30 @@ extern gchar *get_filename_from_gfile(GFile *a_file)
 
 
 /**
+ * Returns the username of the owner of the a file
+ * @param fileinfo : a GFileInfo pointer obtained from an opened file
+ *        (GFile *)
+ * @returns the username of the owner an empty string if an error occurs
+ */
+extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo)
+{
+    gchar *owner = NULL;
+
+    if (fileinfo != NULL)
+        {
+            owner = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_USER);
+        }
+    else
+        {
+            owner = g_strdup("");
+        }
+
+    return owner;
+}
+
+
+
+/**
  * Frees a pointer if it is not NULL and returns NULL
  * @param to_free is the pointer to be freed (must have been malloc with
  *         g_malloc* functions).

@@ -29,8 +29,8 @@
 #include "monitor.h"
 
 static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gchar *filename);
-static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname);
-static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filename);
+static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileInfo *fileinfo);
+static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filename, GFileInfo *fileinfo);
 static gpointer calculate_hashs_on_a_file(gpointer data);
 static gpointer print_things(gpointer data);
 
@@ -86,19 +86,24 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
 
 
 /**
- * This function transmits all information about the directory
+ * This function transmits all information about the directory.
+ * @note Do not free to_print variable here because it is transmited to
+ *       the thread that will print it and is freed there.
  * @param main_struct : main structure (needed to know the queue to
  *        send the message.
  * @param dirname : a gchar * directory name.
  */
-static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname)
+static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileInfo *fileinfo)
 {
     gchar *to_print = NULL;
+    gchar *owner = NULL;
 
     if (main_struct != NULL && main_struct->print_queue != NULL)
         {
-            to_print = g_strdup_printf("%d\n%s", G_FILE_TYPE_DIRECTORY, dirname);
+            owner = get_username_owner_from_gfile(fileinfo);
+            to_print = g_strdup_printf("%d\n%s\n%s", G_FILE_TYPE_DIRECTORY, owner, dirname);
             g_async_queue_push(main_struct->print_queue, to_print);
+            free_variable(owner);
         }
 }
 
@@ -106,15 +111,18 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname)
 /**
  * This functions is calling everything that is needed to calculate
  * the checksums of a file.
+ * @note Do not free to_print variable here because it is transmited to
+ *       the thread that will print it and is freed there.
  * @param main_struct : main structure that contains everything
  * @param a_file : the GFile opened
  * @param filename the filename of the opened GFile
  */
-static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filename)
+static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filename, GFileInfo *fileinfo)
 {
     GFileInputStream *stream = NULL;
     GError *error = NULL;
     gchar *to_print = NULL;
+    gchar *owner = NULL;
 
     if (a_file != NULL && main_struct != NULL && main_struct->print_queue != NULL)
         {
@@ -127,12 +135,14 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                 }
             else
                 {
-                    to_print = g_strdup_printf("%d\n%s", G_FILE_TYPE_REGULAR, filename);
+                    owner = get_username_owner_from_gfile(fileinfo);
+                    to_print = g_strdup_printf("%d\n%s\n%s", G_FILE_TYPE_REGULAR, owner, filename);
                     g_async_queue_push(main_struct->print_queue, to_print);
 
                     do_checksum(main_struct, stream, filename);
                     g_input_stream_close((GInputStream *) stream, NULL, NULL);
-                    stream = free_object(stream);
+                    free_object(stream);
+                    free_variable(owner);
                 }
         }
 }
@@ -186,11 +196,11 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
 
                                             if (filetype == G_FILE_TYPE_REGULAR)
                                                 {
-                                                    it_is_a_file(main_struct, a_file, filename);
+                                                    it_is_a_file(main_struct, a_file, filename, fileinfo);
                                                 }
                                             else if (filetype == G_FILE_TYPE_DIRECTORY)
                                                 {
-                                                    it_is_a_directory(main_struct, filename);
+                                                    it_is_a_directory(main_struct, filename, fileinfo);
                                                 }
                                             else
                                                 {
@@ -205,7 +215,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                 }
             while (g_strcmp0(filename, "$END$") != 0);
 
-            filename = free_variable(filename);
+            free_variable(filename);
         }
 
     return NULL;
