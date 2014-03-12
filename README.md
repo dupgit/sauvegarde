@@ -57,6 +57,7 @@ I'll try to pass everything into strings.
 * The last field is the filename and the last delimiter is \x0 (thus a file
   can have a "\n" in its name).
 
+
 #### Directory
 
     G_FILE_TYPE_DIRECTORY
