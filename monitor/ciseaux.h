@@ -45,6 +45,6 @@
  * @param data : main_struct_t * structure.
  * @returns NULL to fullfill the template needed to create a GThread
  */
-gpointer ciseaux(gpointer data);
+extern gpointer ciseaux(gpointer data);
 
 #endif /* #ifndef _CISEAUX_H_ */
