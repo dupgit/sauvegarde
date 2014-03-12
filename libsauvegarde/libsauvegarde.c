@@ -143,17 +143,24 @@ extern gchar *get_filename_from_gfile(GFile *a_file)
 extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo)
 {
     gchar *owner = NULL;
+    gchar *group = NULL;
+    gchar *result = NULL;
 
     if (fileinfo != NULL)
         {
             owner = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_USER);
+            group = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_GROUP);
+
+            result = g_strconcat(owner, ":", group, NULL);
+            free_variable(owner);
+            free_variable(group);
         }
     else
         {
-            owner = g_strdup("");
+            result = g_strdup("");
         }
 
-    return owner;
+    return result;
 }
 
 
