@@ -91,9 +91,19 @@ extern gchar *get_filename_from_gfile(GFile *a_file);
  * Returns the username of the owner of the a file
  * @param fileinfo : a GFileInfo pointer obtained from an opened file
  *        (GFile *)
- * @returns the username of the owner an empty string if an error occurs
+ * @returns the "user:group uid:gid" of the file or an empty string if an
+ *          error occurs
  */
 extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo);
+
+
+/**
+ * Returns the dates of a file
+ * @param fileinfo : a GFileInfo pointer obtained from an opened file
+ *        (GFile *)
+ * @returns "access_time changed_time created_time" gchar *string
+ */
+extern gchar *get_dates_from_gfile(GFileInfo *fileinfo);
 
 
 /**

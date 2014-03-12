@@ -138,7 +138,8 @@ extern gchar *get_filename_from_gfile(GFile *a_file)
  * Returns the username of the owner of the a file
  * @param fileinfo : a GFileInfo pointer obtained from an opened file
  *        (GFile *)
- * @returns the username of the owner an empty string if an error occurs
+ * @returns the "user:group uid:gid" of the file or an empty string if an
+ *          error occurs
  */
 extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo)
 {
@@ -164,6 +165,36 @@ extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo)
             free_variable(ids);
             free_variable(group);
             free_variable(owner);
+        }
+    else
+        {
+            result = g_strdup("");
+        }
+
+    return result;
+}
+
+
+/**
+ * Returns the dates of a file
+ * @param fileinfo : a GFileInfo pointer obtained from an opened file
+ *        (GFile *)
+ * @returns "access_time changed_time modified_time" gchar *string
+ */
+extern gchar *get_dates_from_gfile(GFileInfo *fileinfo)
+{
+    guint64 atime = 0;
+    guint64 ctime = 0;
+    guint64 mtime = 0;
+    gchar *result = NULL;
+
+    if (fileinfo != NULL)
+        {
+            atime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_ACCESS);
+            ctime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_CHANGED);
+            mtime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+
+            result = g_strdup_printf("%ld %ld %ld", atime, ctime, mtime);
         }
     else
         {
