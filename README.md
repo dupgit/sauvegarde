@@ -60,14 +60,14 @@ I'll try to pass everything into strings.
 #### Directory
 
     G_FILE_TYPE_DIRECTORY
-    user:group
+    user:group uid:gid
     dirname
 
 
 #### File
 
     G_FILE_TYPE_REGULAR
-    user:group
+    user:group uid:gid
     filename
         [
             -> number_of_chunk

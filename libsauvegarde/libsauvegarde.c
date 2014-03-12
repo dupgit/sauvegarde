@@ -145,15 +145,25 @@ extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo)
     gchar *owner = NULL;
     gchar *group = NULL;
     gchar *result = NULL;
+    gchar *ids = NULL;
+    guint32 uid = 0;
+    guint32 gid = 0;
+
 
     if (fileinfo != NULL)
         {
             owner = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_USER);
             group = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_GROUP);
 
-            result = g_strconcat(owner, ":", group, NULL);
-            free_variable(owner);
+            uid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_UID);
+            gid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_GID);
+            ids = g_strdup_printf("%d:%d", uid, gid);
+
+            result = g_strconcat(owner, ":", group, " ", ids, NULL);
+
+            free_variable(ids);
             free_variable(group);
+            free_variable(owner);
         }
     else
         {
@@ -162,7 +172,6 @@ extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo)
 
     return result;
 }
-
 
 
 /**
