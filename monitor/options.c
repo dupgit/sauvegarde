@@ -142,7 +142,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
  */
 options_t *manage_command_line_options(int argc, char **argv)
 {
-    gboolean version = FALSE;
+    gboolean version = FALSE;      /** True if -v was selected on the command line */
     gchar **dirname_array = NULL;  /** array of dirnames left on the command line  */
     gchar *configfile = NULL;      /** filename for the configuration file if any  */
     gint64 blocksize = 0;          /** computed block size in bytes                */
@@ -158,9 +158,9 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     GError *error = NULL;
     GOptionContext *context;
-    options_t *opt = NULL;    /** Structure to manage program's options */
-    gchar *bugreport = NULL;
-    gchar *summary = NULL;
+    options_t *opt = NULL;    /** Structure to manage program's options            */
+    gchar *bugreport = NULL;  /** Bug Report message                               */
+    gchar *summary = NULL;    /** Abstract for the program                         */
     gint num = 0;             /** number of filenames in the filename_array if any */
     gint i = 0;
     gchar *dirname = NULL;
