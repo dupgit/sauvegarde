@@ -94,11 +94,14 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
             if (g_key_file_load_from_file(keyfile, opt->configfile, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
+                    /* Reading the directory list */
                     dirname_array = g_key_file_get_string_list(keyfile, GN_MONITOR, KN_DIR_LIST, NULL, &error);
 
                     if (dirname_array != NULL)
                         {
                             opt->dirname_list = convert_gchar_array_to_GSList(dirname_array, opt->dirname_list);
+                            /* The array is no longer needed (everything has been copied with g_strdup) */
+                            g_strfreev(dirname_array);
                         }
                     else if (error != NULL &&  ENABLE_DEBUG == TRUE)
                         {
@@ -106,6 +109,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                             error = free_error(error);
                         }
 
+                    /* Reading the blocksize if any */
                     opt->blocksize = g_key_file_get_int64(keyfile, GN_CISEAUX, KN_BLOCK_SIZE, &error);
                     if (error != NULL && ENABLE_DEBUG == TRUE)
                         {
@@ -236,9 +240,11 @@ options_t *manage_command_line_options(int argc, char **argv)
 
 
     /* 3) retrieving other options from the command line. Directories are
-     *    added to the existing directory list
+     *    added to the existing directory list and then the array is freed
+     *    as every string has been copied with g_strdup().
      */
     opt->dirname_list = convert_gchar_array_to_GSList(dirname_array, opt->dirname_list);
+    g_strfreev(dirname_array);
 
     if (blocksize > 0)
         {
