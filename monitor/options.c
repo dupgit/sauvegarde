@@ -32,6 +32,11 @@ static void read_from_configuration_file(options_t *opt, gchar *filename);
 static GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list);
 
 
+/**
+ * Prints options as selected when invoking the program with -v option
+ * @param opt the options_t * structure that contains all selected options
+ *        from the command line and that will be used by the program.
+ */
 static void print_selected_options(options_t *opt)
 {
     GSList *head = NULL;
@@ -59,7 +64,6 @@ static void print_selected_options(options_t *opt)
                 }
         }
 }
-
 
 
 /**
