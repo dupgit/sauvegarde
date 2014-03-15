@@ -55,4 +55,14 @@ extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo);
  */
 extern gchar *get_dates_from_gfile(GFileInfo *fileinfo);
 
+
+/**
+ * Get unix mode of a file
+ * @param fileinfo : a GFileInfo pointer obtained from an opened file
+ *        (GFile *)
+ * @returns a newly allocated string with file mode in decimal
+ *          representation.
+ */
+extern gchar *get_file_mode_from_gfile(GFileInfo *fileinfo);
+
 #endif /* #ifndef _FILES_H_ */

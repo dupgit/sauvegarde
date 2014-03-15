@@ -121,3 +121,32 @@ extern gchar *get_dates_from_gfile(GFileInfo *fileinfo)
 
     return result;
 }
+
+
+/**
+ * Get unix mode of a file
+ * @param fileinfo : a GFileInfo pointer obtained from an opened file
+ *        (GFile *)
+ * @returns a newly allocated string with file mode in decimal
+ *          representation.
+ */
+extern gchar *get_file_mode_from_gfile(GFileInfo *fileinfo)
+{
+    guint32 mode = 0;
+    gchar *result = NULL;
+
+    if (fileinfo != NULL)
+        {
+            mode = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_MODE);
+
+            result =  g_strdup_printf("%d", mode);
+        }
+    else
+        {
+            result = g_strdup("");
+        }
+
+    return result;
+
+}
+

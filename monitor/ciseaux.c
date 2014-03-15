@@ -98,17 +98,21 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
     gchar *to_print = NULL;
     gchar *owner = NULL;
     gchar *dates = NULL;
+    gchar *mode = NULL;
 
     if (main_struct != NULL && main_struct->print_queue != NULL)
         {
             owner = get_username_owner_from_gfile(fileinfo);
             dates = get_dates_from_gfile(fileinfo);
-            to_print = g_strdup_printf("%d\n%s\n%s\n%s", G_FILE_TYPE_DIRECTORY, owner, dates, dirname);
+            mode = get_file_mode_from_gfile(fileinfo);
+
+            to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_DIRECTORY, owner, dates, mode, dirname);
 
             g_async_queue_push(main_struct->print_queue, to_print);
 
             free_variable(owner);
             free_variable(dates);
+            free_variable(mode);
         }
 }
 
@@ -129,6 +133,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
     gchar *to_print = NULL;
     gchar *owner = NULL;
     gchar *dates = NULL;
+    gchar *mode = NULL;
 
     if (a_file != NULL && main_struct != NULL && main_struct->print_queue != NULL)
         {
@@ -143,7 +148,9 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                 {
                     owner = get_username_owner_from_gfile(fileinfo);
                     dates = get_dates_from_gfile(fileinfo);
-                    to_print = g_strdup_printf("%d\n%s\n%s\n%s", G_FILE_TYPE_REGULAR, owner, dates, filename);
+                    mode = get_file_mode_from_gfile(fileinfo);
+
+                    to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_REGULAR, owner, dates, mode, filename);
                     g_async_queue_push(main_struct->print_queue, to_print);
 
                     do_checksum(main_struct, stream, filename);
@@ -152,6 +159,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                     free_object(stream);
                     free_variable(owner);
                     free_variable(dates);
+                    free_variable(mode);
                 }
         }
 }

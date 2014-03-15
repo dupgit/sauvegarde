@@ -63,6 +63,7 @@ I'll try to pass everything into strings.
     G_FILE_TYPE_DIRECTORY
     user:group uid:gid
     access_time changed_time modified_time
+    dir_mode
     dirname
 
 
@@ -71,6 +72,7 @@ I'll try to pass everything into strings.
     G_FILE_TYPE_REGULAR
     user:group uid:gid
     access_time changed_time modified_time
+    file_mode
     filename
         [
             -> number_of_chunk
