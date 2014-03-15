@@ -89,7 +89,7 @@ gint compare_path(gconstpointer a, gconstpointer b)
         {
             result = 1;
         }
-    else  /* path_b == NULL) */
+    else  /* (path_b == NULL) */
         {
             result = -1;
         }

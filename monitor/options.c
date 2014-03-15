@@ -127,6 +127,40 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
 
 /**
+ * This functions converts a gchar ** array to a GSList of gchar *.
+ * The function appends to the list first_list (if it exists - it may be
+ * NULL) each entry of the array so elements are in the same order in the
+ * array and in the list.
+ * @param array is a gchar * array.
+ * @param first_list is a list that may allready contain some elements and
+ *        to which we will add all the elements of 'array' array.
+ * @returns a newly allocated GSList that may be freed when no longer
+ *          needed or NULL if array is NULL.
+ */
+static GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list)
+{
+    gchar *a_string = NULL;    /** gchar * that is read in the array      */
+    GSList *list = first_list; /** The list to be returned (may be NULL)  */
+    gint i = 0;
+    gint num = 0;              /** Number of elements in the array if any */
+
+    if (array != NULL)
+        {
+            num = g_strv_length(array);
+
+            for (i = 0; i < num; i++)
+                {
+                    a_string = g_strdup(array[i]);
+                    list = g_slist_append(list, a_string);
+                }
+        }
+
+    return list;
+}
+
+
+
+/**
  * This function parses command line options. It sets the options in this
  * order. It means that the value used for an option is the one set in the
  * lastest step.
@@ -161,9 +195,6 @@ options_t *manage_command_line_options(int argc, char **argv)
     options_t *opt = NULL;    /** Structure to manage program's options            */
     gchar *bugreport = NULL;  /** Bug Report message                               */
     gchar *summary = NULL;    /** Abstract for the program                         */
-    gint num = 0;             /** number of filenames in the filename_array if any */
-    gint i = 0;
-    gchar *dirname = NULL;
     gchar *defaultconfigfilename = NULL;
 
 
@@ -204,16 +235,8 @@ options_t *manage_command_line_options(int argc, char **argv)
     /* 3) retrieving other options from the command line. Directories are
      *    added to the existing directory list
      */
-    if (dirname_array != NULL)
-        {
-            num = g_strv_length(dirname_array);
+    opt->dirname_list = convert_gchar_array_to_GSList(dirname_array, opt->dirname_list);
 
-            for (i = 0; i < num; i++)
-                {
-                    dirname = g_strdup(dirname_array[i]);
-                    opt->dirname_list = g_slist_append(opt->dirname_list, dirname);
-                }
-        }
 
     if (blocksize > 0)
         {
