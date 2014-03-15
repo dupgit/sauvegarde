@@ -178,7 +178,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     if (!g_option_context_parse(context, &argc, &argv, &error))
         {
             g_print(_("Option parsing failed: %s\n"), error->message);
-            exit(1);
+            exit(EXIT_FAILURE);
         }
 
     /* 0) Setting default values */
