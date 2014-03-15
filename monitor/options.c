@@ -27,6 +27,35 @@
 
 #include "monitor.h"
 
+static void print_selected_options(options_t *opt)
+{
+    GSList *head = NULL;
+
+    if (opt != NULL)
+        {
+            fprintf(stdout, _("\nOptions are :\n"));
+
+            if (opt->dirname_list != NULL)
+                {
+                    fprintf(stdout, _("Directory list :\n"));
+                    head = opt->dirname_list;
+                    while (head != NULL)
+                        {
+                            fprintf(stdout, "\t%s\n", (char *) head->data);
+                            head = g_slist_next(head);
+                        }
+                }
+
+            fprintf(stdout, _("Blocksize : %ld\n"), opt->blocksize);
+
+            if (opt->configfile != NULL)
+                {
+                    fprintf(stdout, _("Configuration file : %s\n"), opt->configfile);
+                }
+        }
+}
+
+
 
 /**
  * Reads from the configuration file "filename"
@@ -248,6 +277,7 @@ options_t *do_what_is_needed_from_command_line_options(int argc, char **argv)
                 {
                     print_program_version(MONITOR_DATE, MONITOR_AUTHORS, MONITOR_LICENSE);
                     print_libraries_versions();
+                    print_selected_options(opt);
                     exit(EXIT_SUCCESS);
                 }
         }
