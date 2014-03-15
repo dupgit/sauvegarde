@@ -121,8 +121,10 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
  * pluginfs : [http://www.pluginfs.org/](http://www.pluginfs.org/)
  * dazuko   : [http://dazuko.dnsalias.org/wiki/index.php/Main_Page](http://dazuko.dnsalias.org/wiki/index.php/Main_Page)
  * fanotify : [http://www.xypron.de/projects/fanotify-manpages/man7/fanotify.7.html](http://www.xypron.de/projects/fanotify-manpages/man7/fanotify.7.html)
-* sqlite   : [http://www.sqlite.org/cintro.html](http://www.sqlite.org/cintro.html)
-* zmq      : [http://czmq.zeromq.org/](http://czmq.zeromq.org/)
+* sqlite    : [http://www.sqlite.org/cintro.html](http://www.sqlite.org/cintro.html)
+* zmq       : [http://czmq.zeromq.org/](http://czmq.zeromq.org/)
+* Software quality checkers :
+ * lizard   : [https://github.com/terryyin/lizard](https://github.com/terryyin/lizard)
 
 
 
