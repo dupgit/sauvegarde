@@ -81,11 +81,22 @@ I'll try to pass everything into strings.
         ]
 
 
-## Comments
+## Coding into this project
+
+### Comments
 
 Sauvegarde uses Javadoc comment style to be parsed by doxygen. Please
 continue to use this style into comments in the whole project as it will
 be parsed by doxygen.
+
+
+### Verifying complexity
+
+I discovered 'lizard' a simple but excellent python program that checks the
+complexity of a program (ok, how complex it look like because it does not
+take into account preprocessor macros...). If you plan to hack into this
+project please look at the result of this program (you may find it
+following this link : [https://github.com/terryyin/lizard](https://github.com/terryyin/lizard)
 
 
 ## Learnt things from experiments
