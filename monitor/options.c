@@ -98,18 +98,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
                     if (dirname_array != NULL)
                         {
-                            num = g_strv_length(dirname_array);
-
-                            for (i = 0; i < num; i++)
-                                {
-                                    dirname = g_strdup(dirname_array[i]);
-                                    opt->dirname_list = g_slist_append(opt->dirname_list, dirname);
-
-                                    if (ENABLE_DEBUG == TRUE)
-                                        {
-                                            fprintf(stdout, "%s\n", dirname);
-                                        }
-                                }
+                            opt->dirname_list = convert_gchar_array_to_GSList(dirname_array, opt->dirname_list);
                         }
                     else if (error != NULL &&  ENABLE_DEBUG == TRUE)
                         {
@@ -161,6 +150,11 @@ static GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list)
                 {
                     a_string = g_strdup(array[i]);
                     list = g_slist_append(list, a_string);
+
+                    if (ENABLE_DEBUG == TRUE)
+                        {
+                            fprintf(stdout, "%s\n", a_string);
+                        }
                 }
         }
 
@@ -245,7 +239,6 @@ options_t *manage_command_line_options(int argc, char **argv)
      *    added to the existing directory list
      */
     opt->dirname_list = convert_gchar_array_to_GSList(dirname_array, opt->dirname_list);
-
 
     if (blocksize > 0)
         {
