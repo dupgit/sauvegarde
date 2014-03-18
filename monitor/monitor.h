@@ -43,8 +43,6 @@
 #include <libsauvegarde.h>
 
 #include "options.h"
-/* #include "path.h" */
-
 
 /**
  * @def MONITOR_DATE
