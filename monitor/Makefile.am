@@ -9,7 +9,7 @@ client_LDADD =  $(GLIB_LIBS) $(GIO_LIBS)  -L../libsauvegarde -lsauvegarde \
 
 MON_HEADERFILES = monitor.h               \
                   options.h				  \
-                  ciseaux.h				  \
+                  ciseaux.h
 
 client_SOURCES = monitor.c                \
 				  options.c				  \
