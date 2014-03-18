@@ -177,7 +177,6 @@ int main(int argc, char **argv)
 {
     options_t *opt = NULL;  /** Structure to manage options from the command line can be freed when no longer needed */
     main_struct_t *main_struct = NULL;
-    GMainLoop *mainloop = NULL;
     thread_data_t *a_thread_data = NULL;
     GThread *a_thread = NULL;     /* thread used to do the directory traversal */
     GThread *cut_thread = NULL;
@@ -211,10 +210,6 @@ int main(int argc, char **argv)
             g_async_queue_push(main_struct->queue, g_strdup("$END$"));
 
             g_thread_join(cut_thread);
-
-            /* infinite loop */
-            /* mainloop = g_main_loop_new(NULL, FALSE); */
-            /* g_main_loop_run(mainloop); */
 
             /* when leaving, we have to free memory... but this is not going to happen here ! */
             /* free_options_t_structure(main_struct->opt); */
