@@ -6,7 +6,11 @@
 ../monitor/monitor.h
 ../monitor/options.h
 ../monitor/path.h
-../ciseaux/ciseaux.c
-../ciseaux/options.c
-../ciseaux/ciseaux.h
-../ciseaux/options.h
+../libsauvegarde/communique.c
+../libsauvegarde/configuration.c
+../libsauvegarde/files.c
+../libsauvegarde/libsauvegarde.c
+../libsauvegarde/communique.h
+../libsauvegarde/configuration.h
+../libsauvegarde/files.h
+../libsauvegarde/libsauvegarde.h
