@@ -43,7 +43,7 @@
 #include <libsauvegarde.h>
 
 #include "options.h"
-#include "path.h"
+/* #include "path.h" */
 
 
 /**
