@@ -77,9 +77,6 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
     GKeyFile *keyfile = NULL;      /** Configuration file parser                          */
     GError *error = NULL;          /** Glib error handling                                */
     gchar **dirname_array = NULL;  /** array of dirnames read into the configuration file */
-    gint num = 0;
-    gint i = 0;
-    gchar *dirname = NULL;         /** A variable to help to have things more simple      */
 
     if (filename != NULL)
         {
