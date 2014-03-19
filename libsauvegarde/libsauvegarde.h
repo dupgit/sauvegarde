@@ -41,6 +41,7 @@
 #include "configuration.h"
 #include "communique.h"
 #include "files.h"
+#include "hashs.h"
 
 /**
  * Prints version of the libraries we are using.
