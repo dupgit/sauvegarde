@@ -28,4 +28,29 @@
 #ifndef _HASHS_H_
 #define _HASHS_H_
 
+/**
+ * @def HASH_LEN
+ * Defines the length in byte of hash's binary form
+ */
+#define HASH_LEN (32)
+
+/**
+ * @struct hashs_t
+ * Structure that contains a balanced binary tree to store hashs in a
+ * binary form to save space.
+ */
+typedef struct
+{
+    GTree *tree_hash; /** A balanced binary tree to strores hashs */
+} hashs_t;
+
+
+/**
+ * Comparison function used with the GTree structure to sort hashs
+ * properly.
+ * @returns a negative value if a < b, zero if a = b and a positive value
+ * if a > b.
+ */
+gint compare_two_hashs(gconstpointer a, gconstpointer b);
+
 #endif /* #ifndef _HASHS_H_ */

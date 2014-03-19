@@ -27,3 +27,59 @@
  */
 
 #include "libsauvegarde.h"
+
+/**
+ * Comparison function used with the GTree structure to sort hashs
+ * properly.
+ * @returns a negative value if a < b, zero if a = b and a positive value
+ * if a > b.
+ */
+gint compare_two_hashs(gconstpointer a, gconstpointer b)
+{
+    gchar *hash_a = (gchar *) a;
+    gchar *hash_b = (gchar *) b;
+    guint first = 0;
+    guint second = 0;
+    guint i = 0;
+
+    if (a != NULL)
+        {
+            if (b != NULL)
+                {
+                    while (first == second && i < HASH_LEN)
+                        {
+                            first = (guint) hash_a[i];
+                            second = (guint) hash_b[i];
+                            i = i + 1;
+                        }
+
+                    if (i == HASH_LEN)
+                        {
+                            return 0;
+                        }
+                    if (first < second)
+                        {
+                            return -1;
+                        }
+                    else
+                        {
+                            return 1;
+                        }
+                }
+            else
+                {
+                    return -1;
+                }
+        }
+    else
+        {
+            if (b != NULL)
+                {
+                    return 1;
+                }
+            else
+                {
+                    return 0;
+                }
+        }
+}
