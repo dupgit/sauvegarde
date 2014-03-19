@@ -29,8 +29,29 @@
 #include "libsauvegarde.h"
 
 /**
+ * Allocate a new hashs_t structure with a GTree
+ * @returns a newly allocated hashs_t structure with a GTree initialized
+ *          with compare_two_hashs function to sort the hashs.
+ */
+hashs_t *new_hash_struct(void)
+{
+    hashs_t *tree_hash = NULL;
+
+    tree_hash = (hashs_t *) g_malloc0(sizeof(hashs_t));
+
+    tree_hash = g_tree_new(compare_two_hashs);
+
+    return tree_hash;
+}
+
+
+/**
  * Comparison function used with the GTree structure to sort hashs
  * properly.
+ * @param a is a hash in a binary form
+ * @param b is a hash in ab inary form to be compared with a. Comparison is
+ *        done comparing byte 1 of a an b, if there equal compares byte 2
+ *        and so on. Worst case is when the two hashs are equals.
  * @returns a negative value if a < b, zero if a = b and a positive value
  * if a > b.
  */
