@@ -75,7 +75,7 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
                             g_checksum_update(checksum, buffer, read);
                             g_checksum_get_digest(checksum, a_hash, &digest_len);
                             to_print = g_strdup_printf("-> %ld\n%ld\n%s", i, read, g_checksum_get_string(checksum));
-                            insert_into_tree(main_struct->hashs, a_hash);
+                            insert_into_tree(main_struct->hashs, a_hash, buffer, read);
                             g_async_queue_push(main_struct->print_queue, to_print);
 
                             g_checksum_reset(checksum);

@@ -215,6 +215,10 @@ int main(int argc, char **argv)
             /* when leaving, we have to free memory... but this is not going to happen here ! */
             /* free_options_t_structure(main_struct->opt); */
 
+            /* printing some stats of the GTree */
+            fprintf(stdout, _("Number of nodes : %d\n"), g_tree_nnodes(main_struct->hashs->tree_hash));
+            fprintf(stdout, _("Tree height     : %d\n"), g_tree_height(main_struct->hashs->tree_hash));
+
         }
 
     return 0;
