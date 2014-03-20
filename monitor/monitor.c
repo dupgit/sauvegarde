@@ -161,6 +161,7 @@ static main_struct_t *init_main_structure(options_t *opt)
     main_struct->hostname = g_get_host_name();
     main_struct->queue = g_async_queue_new();
     main_struct->print_queue = g_async_queue_new();
+    main_struct->hashs = new_hash_struct();
 
     return main_struct;
 

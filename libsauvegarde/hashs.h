@@ -44,12 +44,14 @@ typedef struct
     GTree *tree_hash; /** A balanced binary tree to strores hashs */
 } hashs_t;
 
+
 /**
  * Allocate a new hashs_t structure with a GTree
  * @returns a newly allocated hashs_t structure with a GTree initialized
  *          with compare_two_hashs function to sort the hashs.
  */
 extern hashs_t *new_hash_struct(void);
+
 
 /**
  * Comparison function used with the GTree structure to sort hashs
@@ -58,5 +60,14 @@ extern hashs_t *new_hash_struct(void);
  * if a > b.
  */
 extern gint compare_two_hashs(gconstpointer a, gconstpointer b);
+
+
+/**
+ * A function to insert a binary hash into the GTree structure
+ * @param hashs : the hash structure that contains the binary tree in which
+ *        we want to insert the second parameter
+ * @param a_hash is a hash in a binary form
+ */
+void insert_into_tree(hashs_t *hashs, guint8 *a_hash);
 
 #endif /* #ifndef _HASHS_H_ */

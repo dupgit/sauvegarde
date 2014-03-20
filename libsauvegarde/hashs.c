@@ -35,21 +35,21 @@
  */
 hashs_t *new_hash_struct(void)
 {
-    hashs_t *tree_hash = NULL;
+    hashs_t *hashs = NULL;
 
-    tree_hash = (hashs_t *) g_malloc0(sizeof(hashs_t));
+    hashs = (hashs_t *) g_malloc0(sizeof(hashs_t));
 
-    tree_hash = g_tree_new(compare_two_hashs);
+    hashs->tree_hash = g_tree_new(compare_two_hashs);
 
-    return tree_hash;
+    return hashs;
 }
 
 
 /**
  * Comparison function used with the GTree structure to sort hashs
  * properly.
- * @param a is a hash in a binary form
- * @param b is a hash in ab inary form to be compared with a. Comparison is
+ * @param a is a hash in a binary form (a guint8 *)
+ * @param b is a hash in a binary form to be compared with a. Comparison is
  *        done comparing byte 1 of a an b, if there equal compares byte 2
  *        and so on. Worst case is when the two hashs are equals.
  * @returns a negative value if a < b, zero if a = b and a positive value
@@ -57,8 +57,8 @@ hashs_t *new_hash_struct(void)
  */
 gint compare_two_hashs(gconstpointer a, gconstpointer b)
 {
-    gchar *hash_a = (gchar *) a;
-    gchar *hash_b = (gchar *) b;
+    guint8 *hash_a = (guint8 *) a;
+    guint8 *hash_b = (guint8 *) b;
     guint first = 0;
     guint second = 0;
     guint i = 0;
@@ -102,5 +102,23 @@ gint compare_two_hashs(gconstpointer a, gconstpointer b)
                 {
                     return 0;
                 }
+        }
+}
+
+/**
+ * A function to insert a binary hash into the GTree structure
+ * @param hashs : the hash structure that contains the binary tree in which
+ *        we want to insert the second parameter
+ * @param a_hash is a hash in a binary form
+ */
+void insert_into_tree(hashs_t *hashs, guint8 *a_hash)
+{
+    guint8 *a_hash_dup = NULL;  /** A hashs to be duplicated */
+
+
+    if (hashs != NULL && a_hash != NULL)
+        {
+            a_hash_dup = g_memdup(a_hash, HASH_LEN);
+            g_tree_insert(hashs->tree_hash, a_hash_dup, NULL);
         }
 }
