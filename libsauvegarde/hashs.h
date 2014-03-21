@@ -41,7 +41,9 @@
  */
 typedef struct
 {
-    GTree *tree_hash; /** A balanced binary tree to strores hashs */
+    GTree *tree_hash;    /** A balanced binary tree to strores hashs and data */
+    guint64 total_bytes; /** Total number of bytes that passed into */
+    guint64 in_bytes;    /** Number of bytes into the GTree (deduplicated) */
 } hashs_t;
 
 

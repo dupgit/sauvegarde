@@ -40,6 +40,8 @@ hashs_t *new_hash_struct(void)
     hashs = (hashs_t *) g_malloc0(sizeof(hashs_t));
 
     hashs->tree_hash = g_tree_new(compare_two_hashs);
+    hashs->total_bytes = 0;
+    hashs->in_bytes = 0;
 
     return hashs;
 }
@@ -124,6 +126,12 @@ void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize rea
             a_hash_dup = g_memdup(a_hash, HASH_LEN);
             buffer_dup = g_memdup(buffer, read);
 
-            g_tree_insert(hashs->tree_hash, a_hash_dup, buffer_dup);
+            hashs->total_bytes = hashs->total_bytes + read;
+
+            if (g_tree_lookup(hashs->tree_hash, a_hash_dup) == NULL)
+                {
+                    hashs->in_bytes = hashs->in_bytes + read;
+                    g_tree_insert(hashs->tree_hash, a_hash_dup, buffer_dup);
+                }
         }
 }
