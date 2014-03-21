@@ -169,6 +169,24 @@ static main_struct_t *init_main_structure(options_t *opt)
 
 
 /**
+ * Prints statistics from the binary tree hash
+ * @param hashs : the structure that contains all hashs and some values
+ *        that may give some stats about the datas
+ */
+static print_tree_hashs_stats(hashs_t *hashs)
+{
+    if (hashs != NULL)
+        {
+            /* printing some stats of the GTree */
+            fprintf(stdout, _("Number of nodes : %d\n"), g_tree_nnodes(hashs->tree_hash));
+            fprintf(stdout, _("Tree height     : %d\n"), g_tree_height(hashs->tree_hash));
+            fprintf(stdout, _("Total size      : %d\n"), hashs->total_bytes);
+            fprintf(stdout, _("Dedup size      : %d\n"), hashs->total_bytes - hashs->in_bytes);
+        }
+}
+
+
+/**
  * Main function
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
@@ -215,9 +233,7 @@ int main(int argc, char **argv)
             /* when leaving, we have to free memory... but this is not going to happen here ! */
             /* free_options_t_structure(main_struct->opt); */
 
-            /* printing some stats of the GTree */
-            fprintf(stdout, _("Number of nodes : %d\n"), g_tree_nnodes(main_struct->hashs->tree_hash));
-            fprintf(stdout, _("Tree height     : %d\n"), g_tree_height(main_struct->hashs->tree_hash));
+            print_tree_hashs_stats(main_struct->hashs);
 
         }
 
