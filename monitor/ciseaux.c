@@ -257,7 +257,7 @@ static gpointer print_things(gpointer data)
     main_struct_t *main_struct = (main_struct_t *) data;
     gchar *to_print = NULL;
 
-    if (main_struct != NULL)
+    if (main_struct != NULL && main_struct->opt != NULL && main_struct->opt->noprint == FALSE)
         {
             do
                 {

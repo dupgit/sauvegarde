@@ -35,10 +35,11 @@
  */
 typedef struct
 {
-    gboolean version;     /** TRUE if we have to display program's version                      */
-    GSList *dirname_list; /** Directory names that were left in the command line                */
-    gint64 blocksize;     /** block size in bytes                                               */
-    gchar *configfile;    /** filename for the configuration file specified on the command line */
+    gboolean version;     /** TRUE if we have to display program's version                                      */
+    GSList *dirname_list; /** Directory names that were left in the command line                                */
+    gint64 blocksize;     /** block size in bytes                                                               */
+    gchar *configfile;    /** filename for the configuration file specified on the command line                 */
+    gboolean noprint;     /** FALSE by default, TRUE if we want to quiet the program while calculating checsums */
 } options_t;
 
 

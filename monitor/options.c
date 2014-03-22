@@ -180,16 +180,18 @@ static GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list)
  */
 options_t *manage_command_line_options(int argc, char **argv)
 {
-    gboolean version = FALSE;      /** True if -v was selected on the command line */
-    gchar **dirname_array = NULL;  /** array of dirnames left on the command line  */
-    gchar *configfile = NULL;      /** filename for the configuration file if any  */
-    gint64 blocksize = 0;          /** computed block size in bytes                */
+    gboolean version = FALSE;      /** True if -v was selected on the command line      */
+    gchar **dirname_array = NULL;  /** array of dirnames left on the command line       */
+    gchar *configfile = NULL;      /** filename for the configuration file if any       */
+    gint64 blocksize = 0;          /** computed block size in bytes                     */
+    gboolean noprint = FALSE;      /** True if we do not want to print will checksuming */
 
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
         { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Block size used to compute hashs"), NULL},
+        { "noprint", 'n', 0, G_OPTION_ARG_NONE, &noprint, N_("Quiets the program while calculating checksum"), NULL},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
@@ -219,6 +221,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     /* 0) Setting default values */
     opt->dirname_list = NULL;
     opt->blocksize = CISEAUX_BLOCK_SIZE;
+    opt->noprint = FALSE;
 
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME);
@@ -246,6 +249,11 @@ options_t *manage_command_line_options(int argc, char **argv)
     if (blocksize > 0)
         {
             opt->blocksize = blocksize;
+        }
+
+    if (noprint == TRUE)
+        {
+            opt->noprint = TRUE;
         }
 
     g_option_context_free(context);
