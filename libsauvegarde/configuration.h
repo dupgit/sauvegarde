@@ -43,9 +43,13 @@
   *
   * @def GN_CISEAUX
   * Defines the group name for all preferences related to "ciseaux" program
+  *
+  * @def GN_ANTEMEMOIRE
+  * Defines the group name for all preferences related to "antememoire" program
   */
 #define GN_MONITOR ("Monitor")
 #define GN_CISEAUX ("Ciseaux")
+#define GN_ANTEMEMOIRE ("AnteMemoire")
 
 
 /** Below you'll find some definitions for the ciseaux program */
@@ -64,6 +68,15 @@
  */
 #define KN_DIR_LIST ("directory-list")
 
+
+/** Below you'll find some definitions for the antememoire program */
+/**
+ * @def KN_CACHE_DIR
+ * Defines a directory where we will put some cache files and stuff
+ * temporary needed to do the job. The program needs write access to this
+ * directory.
+ */
+#define KN_CACHE_DIR ("/var/tmp/sauvegarde")
 
 /**
  * Gets the probable filename for the configuration file of sauvegarde
