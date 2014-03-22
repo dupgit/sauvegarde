@@ -76,7 +76,7 @@
  * temporary needed to do the job. The program needs write access to this
  * directory.
  */
-#define KN_CACHE_DIR ("/var/tmp/sauvegarde")
+#define KN_CACHE_DIR ("cache-directory")
 
 /**
  * Gets the probable filename for the configuration file of sauvegarde

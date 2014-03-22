@@ -62,6 +62,11 @@ static void print_selected_options(options_t *opt)
                 {
                     fprintf(stdout, _("Configuration file : %s\n"), opt->configfile);
                 }
+
+            if (opt->dircache != NULL)
+                {
+                    fprintf(stdout, _("Cache directory : %s\n"), opt->dircache);
+                }
         }
 }
 
@@ -80,16 +85,21 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
     if (filename != NULL)
         {
+
+            if (opt->configfile != NULL)
+                {
+                    free_variable(opt->configfile);
+                }
             opt->configfile = g_strdup(filename);
 
             if (ENABLE_DEBUG == TRUE)
                 {
-                    fprintf(stdout, _("Reading configuration from file %s\n"), opt->configfile);
+                    fprintf(stdout, _("Reading configuration from file %s\n"), filename);
                 }
 
             keyfile = g_key_file_new();
 
-            if (g_key_file_load_from_file(keyfile, opt->configfile, G_KEY_FILE_KEEP_COMMENTS, &error))
+            if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
                     /* Reading the directory list */
                     dirname_array = g_key_file_get_string_list(keyfile, GN_MONITOR, KN_DIR_LIST, NULL, &error);
@@ -108,6 +118,15 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
                     /* Reading the blocksize if any */
                     opt->blocksize = g_key_file_get_int64(keyfile, GN_CISEAUX, KN_BLOCK_SIZE, &error);
+                    if (error != NULL && ENABLE_DEBUG == TRUE)
+                        {
+                            fprintf(stderr, _("Could not load blocksize from file %s : %s"), filename, error->message);
+                            error = free_error(error);
+                        }
+
+                    /* Reading the cache directory if any */
+                    free_variable(opt->dircache);
+                    opt->dircache = g_key_file_get_string(keyfile, GN_ANTEMEMOIRE, KN_CACHE_DIR, &error);
                     if (error != NULL && ENABLE_DEBUG == TRUE)
                         {
                             fprintf(stderr, _("Could not load blocksize from file %s : %s"), filename, error->message);
@@ -185,6 +204,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     gchar *configfile = NULL;      /** filename for the configuration file if any       */
     gint64 blocksize = 0;          /** computed block size in bytes                     */
     gboolean noprint = FALSE;      /** True if we do not want to print will checksuming */
+    gchar *dircache = NULL;        /** Directory used to store cache files              */
 
     GOptionEntry entries[] =
     {
@@ -192,6 +212,7 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
         { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Block size used to compute hashs"), NULL},
         { "noprint", 'n', 0, G_OPTION_ARG_NONE, &noprint, N_("Quiets the program while calculating checksum"), NULL},
+        { "dircache", 'd', 0, G_OPTION_ARG_STRING, &dircache, N_("Directory where to cache files"), NULL},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
@@ -202,9 +223,6 @@ options_t *manage_command_line_options(int argc, char **argv)
     gchar *bugreport = NULL;  /** Bug Report message                               */
     gchar *summary = NULL;    /** Abstract for the program                         */
     gchar *defaultconfigfilename = NULL;
-
-
-    opt = (options_t *) g_malloc0(sizeof(options_t));
 
     bugreport = g_strconcat(_("Please report bugs to: "), PACKAGE_BUGREPORT, NULL);
     summary = g_strdup(_("This program is monitoring file changes in the filesystem and is hashing\nfiles with SHA256 algorithms from Glib."));
@@ -219,9 +237,14 @@ options_t *manage_command_line_options(int argc, char **argv)
         }
 
     /* 0) Setting default values */
+
+    opt = (options_t *) g_malloc0(sizeof(options_t));
+
     opt->dirname_list = NULL;
     opt->blocksize = CISEAUX_BLOCK_SIZE;
     opt->noprint = FALSE;
+    opt->configfile = NULL;
+    opt->dircache = g_strdup("/var/tmp/sauvegarde");
 
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME);
@@ -256,6 +279,12 @@ options_t *manage_command_line_options(int argc, char **argv)
             opt->noprint = TRUE;
         }
 
+    if (dircache != NULL)
+        {
+            free_variable(opt->dircache);
+            opt->dircache = g_strdup(dircache);
+        }
+
     g_option_context_free(context);
     free_variable(bugreport);
     free_variable(summary);
@@ -287,6 +316,7 @@ void free_options_t_structure(options_t *opt)
                     head = next;
                 }
 
+            free_variable(opt->dircache);
             free_variable(opt->configfile);
             free_variable(opt);
         }

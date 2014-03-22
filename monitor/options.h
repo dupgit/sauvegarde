@@ -40,6 +40,7 @@ typedef struct
     gint64 blocksize;     /** block size in bytes                                                               */
     gchar *configfile;    /** filename for the configuration file specified on the command line                 */
     gboolean noprint;     /** FALSE by default, TRUE if we want to quiet the program while calculating checsums */
+    gchar *dircache;      /** Directory where we will cache files and temporary stuff to do the job             */
 } options_t;
 
 
