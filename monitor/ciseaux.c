@@ -112,7 +112,7 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
             dates = get_dates_from_gfile(fileinfo);
             mode = get_file_mode_from_gfile(fileinfo);
 
-            to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_DIRECTORY, owner, dates, mode, dirname);
+            to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s\x0", G_FILE_TYPE_DIRECTORY, owner, dates, mode, dirname);
 
             g_async_queue_push(main_struct->print_queue, to_print);
 
@@ -156,7 +156,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                     dates = get_dates_from_gfile(fileinfo);
                     mode = get_file_mode_from_gfile(fileinfo);
 
-                    to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_REGULAR, owner, dates, mode, filename);
+                    to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s\x0", G_FILE_TYPE_REGULAR, owner, dates, mode, filename);
                     g_async_queue_push(main_struct->print_queue, to_print);
 
                     do_checksum(main_struct, stream, filename);
