@@ -37,6 +37,7 @@
 #include <gio/gio.h>
 #include <glib/gi18n-lib.h>
 #include <zmq.h>
+#include <sqlite3.h>
 
 #include "configuration.h"
 #include "communique.h"
