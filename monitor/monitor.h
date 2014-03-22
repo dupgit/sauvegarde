@@ -78,6 +78,7 @@ typedef struct
     const gchar *hostname;    /** the name of the current machine                                                           */
     GAsyncQueue *queue;       /** Communication queue between threads                                                       */
     GAsyncQueue *print_queue; /** Communication queue between the threads pool and a thread that may print things to screen */
+    GAsyncQueue *store_queue; /** Communication queue with same messages than print_queue but that can not be shutdown !    */
     hashs_t *hashs;           /** calculated hashs stored in a balanced binary tree                                         */
 } main_struct_t;
 

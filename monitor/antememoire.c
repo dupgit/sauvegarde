@@ -26,3 +26,24 @@
  */
 
 #include "monitor.h"
+
+
+/**
+ * This function is a thread that is waiting to receive messages from
+ * the checksum function and whose aim is to store somewhere the data
+ * of a buffer that a been checksumed.
+ * @param data : main_struct_t * structure.
+ * @returns NULL to fullfill the template needed to create a GThread
+ */
+gpointer store_buffer_data(gpointer data)
+{
+    main_struct_t *main_struct = (main_struct_t *) data;
+    gchar *to_store = NULL;
+
+    if (main_struct != NULL)
+        {
+            to_store = g_async_queue_pop(main_struct->store_queue);
+        }
+
+    return NULL;
+}

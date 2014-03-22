@@ -27,4 +27,13 @@
 #ifndef _ANTEMEMOIRE_H_
 #define _ANTEMEMOIRE_H_
 
+/**
+ * This function is a thread that is waiting to receive messages from
+ * the checksum function and whose aim is to store somewhere the data
+ * of a buffer that a been checksumed.
+ * @param data : main_struct_t * structure.
+ * @returns NULL to fullfill the template needed to create a GThread
+ */
+extern gpointer store_buffer_data(gpointer data);
+
 #endif /* #ifndef _ANTEMEMOIRE_H_ */
