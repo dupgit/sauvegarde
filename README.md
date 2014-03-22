@@ -112,6 +112,9 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
   (http://www.redirfs.org/tiki-index.php) or pluginfs
   (http://www.pluginfs.org/).
 * redirfs, pluginfs and dazuko seems dead (on 02 march 2014).
+* It seems (on my system) that the more the blocksize is small the more the
+  intra-deduplication rate is high (from 2.56 % at 32768 bytes to 8% at 512
+  bytes).
 
 
 ## Usefull links
