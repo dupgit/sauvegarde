@@ -233,14 +233,14 @@ int main(int argc, char **argv)
             g_async_queue_push(main_struct->queue, g_strdup("$END$"));
 
             g_thread_join(cut_thread);
+
             g_async_queue_push(main_struct->store_queue, g_strdup("$END$"));
             g_thread_join(store_thread);
 
-            /* when leaving, we have to free memory... but this is not going to happen here ! */
-            /* free_options_t_structure(main_struct->opt); */
-
             print_tree_hashs_stats(main_struct->hashs);
 
+            /* when leaving, we have to free memory... but this is not going to happen here ! */
+            /* free_options_t_structure(main_struct->opt); */
         }
 
     return 0;
