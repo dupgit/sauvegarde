@@ -27,6 +27,68 @@
 
 #include "monitor.h"
 
+/**
+ * This function has to split the messages received in order to store
+ * everything properly in the database. It waits to get new messages
+ * from the store queue (checksums).
+ * @param main_struct is the main structure. It is used here to get the
+ *        store queue
+ * @param to_store : the message received to be splited and stored into
+ *        a database.
+ */
+static gchar *split_messages(main_struct_t *main_struct, gchar *to_store)
+{
+    int filetype = 0;
+    char *owner = NULL;
+    char *dates = NULL;
+    char *mode = NULL;
+    char *filename = NULL;
+    long int read = 0;
+    char *a_hash = NULL;
+    char *checksum = NULL;
+    long int i = 0;
+
+    owner = (char *) g_malloc0(64);
+    dates = (char *) g_malloc0(64);
+    mode = (char *) g_malloc0(64);
+    filename = (char *) g_malloc0(1024);
+    a_hash = (char *) g_malloc0(HASH_LEN+1);
+
+    if (to_store != NULL)
+        {
+            sscanf(to_store, "%d\n%s\n%s\n%s\n%s", &filetype, owner, dates, mode, filename);
+
+            fprintf(stdout, "%d - %s - %s - %s - %s\n", filetype, owner, dates, mode, filename);
+
+            if (filetype == G_FILE_TYPE_REGULAR)
+                {
+                    do
+                        {
+                            checksum = free_variable(checksum);
+                            checksum = g_async_queue_pop(main_struct->store_queue);
+                            if (checksum != NULL)
+                                {
+                                    sscanf(checksum, "-> %ld\n%ld\n%s", &i, &read, a_hash);
+                                    fprintf(stdout, "%s\n", a_hash);
+                                }
+                        }
+                    while (checksum[0] == '-');
+                }
+            else if (filetype == G_FILE_TYPE_DIRECTORY)
+                {
+
+                }
+        }
+
+    free_variable(owner);
+    free_variable(dates);
+    free_variable(mode);
+    free_variable(filename);
+    free_variable(a_hash);
+
+    return checksum;
+}
+
 
 /**
  * This function is a thread that is waiting to receive messages from
@@ -48,7 +110,12 @@ gpointer store_buffer_data(gpointer data)
 
                     to_store = g_async_queue_pop(main_struct->store_queue);
 
-                    fprintf(stdout, "%s\n", to_store);
+                    do
+                        {
+                            to_store = split_messages(main_struct, to_store);
+                        }
+                    while (to_store != NULL && g_strcmp0(to_store, "$END$") != 0);
+                    /* fprintf(stdout, "%s\n", to_store); */
                 }
             while (g_strcmp0(to_store, "$END$") != 0);
         }

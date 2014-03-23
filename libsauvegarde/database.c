@@ -26,7 +26,6 @@
  * programs of "Sauvegarde" project.
  */
 
-
 #include "libsauvegarde.h"
 
 

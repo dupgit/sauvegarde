@@ -28,11 +28,13 @@
 #ifndef _DATABASE_H_
 #define _DATABASE_H_
 
+
 /**
  * @def DATABASE_NAME
  * Defines the database used.
  */
 #define DATABASE_NAME ("SQLITE")
+
 
 /**
  * @returns a string containing the version of the database used.
