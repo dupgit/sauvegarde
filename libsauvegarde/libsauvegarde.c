@@ -45,7 +45,7 @@ void print_libraries_versions(void)
             fprintf(stdout, "%s", comm_version);
             free_variable(comm_version);
         }
-    fprintf(stdout, _("\t. SQLITE version : %s\n"), sqlite3_libversion());
+    fprintf(stdout, _("\t. %s version : %s\n"), DATABASE_NAME, db_version());
 }
 
 

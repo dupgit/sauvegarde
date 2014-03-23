@@ -28,3 +28,12 @@
 
 
 #include "libsauvegarde.h"
+
+
+/**
+ * @returns a string containing the version of the database used.
+ */
+gchar *db_version(void)
+{
+    return sqlite3_libversion();
+}
