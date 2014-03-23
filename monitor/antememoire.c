@@ -42,7 +42,15 @@ gpointer store_buffer_data(gpointer data)
 
     if (main_struct != NULL)
         {
-            to_store = g_async_queue_pop(main_struct->store_queue);
+            do
+                {
+                    to_store = free_variable(to_store);
+
+                    to_store = g_async_queue_pop(main_struct->store_queue);
+
+                    fprintf(stdout, "%s\n", to_store);
+                }
+            while (g_strcmp0(to_store, "$END$") != 0);
         }
 
     return NULL;

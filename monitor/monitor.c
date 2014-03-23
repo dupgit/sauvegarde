@@ -202,6 +202,7 @@ int main(int argc, char **argv)
     thread_data_t *a_thread_data = NULL;
     GThread *a_thread = NULL;     /* thread used to do the directory traversal */
     GThread *cut_thread = NULL;
+    GThread *store_thread = NULL;
 
 
     g_type_init();
@@ -222,7 +223,7 @@ int main(int argc, char **argv)
 
             a_thread = g_thread_create(first_directory_traversal, a_thread_data, TRUE, NULL);
             cut_thread = g_thread_create(ciseaux, main_struct, TRUE, NULL);
-
+            store_thread = g_thread_create(store_buffer_data, main_struct, TRUE, NULL);
 
             /* As we are only testing things for now, we just wait for the
              * threads to join and then exits.
@@ -232,6 +233,8 @@ int main(int argc, char **argv)
             g_async_queue_push(main_struct->queue, g_strdup("$END$"));
 
             g_thread_join(cut_thread);
+            g_async_queue_push(main_struct->store_queue, g_strdup("$END$"));
+            g_thread_join(store_thread);
 
             /* when leaving, we have to free memory... but this is not going to happen here ! */
             /* free_options_t_structure(main_struct->opt); */

@@ -49,6 +49,7 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
     GChecksum *checksum = NULL;
     GError *error = NULL;
     gchar *to_print = NULL;
+    gchar *to_store = NULL;
     guint8 *a_hash = NULL;
     gsize digest_len = HASH_LEN;
 
@@ -75,8 +76,12 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
                             g_checksum_update(checksum, buffer, read);
                             g_checksum_get_digest(checksum, a_hash, &digest_len);
                             to_print = g_strdup_printf("-> %ld\n%ld\n%s", i, read, g_checksum_get_string(checksum));
+                            to_store = g_strdup(to_print);
+
                             insert_into_tree(main_struct->hashs, a_hash, buffer, read);
+
                             g_async_queue_push(main_struct->print_queue, to_print);
+                            g_async_queue_push(main_struct->store_queue, to_store);
 
                             g_checksum_reset(checksum);
                             i = i + 1;
@@ -102,6 +107,7 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
 static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileInfo *fileinfo)
 {
     gchar *to_print = NULL;
+    gchar *to_store = NULL;
     gchar *owner = NULL;
     gchar *dates = NULL;
     gchar *mode = NULL;
@@ -113,8 +119,10 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
             mode = get_file_mode_from_gfile(fileinfo);
 
             to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s\x0", G_FILE_TYPE_DIRECTORY, owner, dates, mode, dirname);
+            to_store = g_strdup(to_print);
 
             g_async_queue_push(main_struct->print_queue, to_print);
+            g_async_queue_push(main_struct->store_queue, to_store);
 
             free_variable(owner);
             free_variable(dates);
@@ -137,6 +145,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
     GFileInputStream *stream = NULL;
     GError *error = NULL;
     gchar *to_print = NULL;
+    gchar *to_store = NULL;
     gchar *owner = NULL;
     gchar *dates = NULL;
     gchar *mode = NULL;
@@ -157,7 +166,10 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                     mode = get_file_mode_from_gfile(fileinfo);
 
                     to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s\x0", G_FILE_TYPE_REGULAR, owner, dates, mode, filename);
+                    to_store = g_strdup(to_print);
+
                     g_async_queue_push(main_struct->print_queue, to_print);
+                    g_async_queue_push(main_struct->store_queue, to_store);
 
                     do_checksum(main_struct, stream, filename);
                     g_input_stream_close((GInputStream *) stream, NULL, NULL);

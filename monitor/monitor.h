@@ -43,6 +43,8 @@
 #include <libsauvegarde.h>
 
 #include "options.h"
+#include "ciseaux.h"
+#include "antememoire.h"
 
 /**
  * @def MONITOR_DATE
