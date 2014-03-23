@@ -43,6 +43,7 @@
 #include "communique.h"
 #include "files.h"
 #include "hashs.h"
+#include "database.h"
 
 /**
  * Prints version of the libraries we are using.
