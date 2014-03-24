@@ -52,6 +52,7 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
     gchar *to_store = NULL;
     guint8 *a_hash = NULL;
     gsize digest_len = HASH_LEN;
+    meta_data_t *meta = NULL;
 
     checksum = g_checksum_new(G_CHECKSUM_SHA256);
     buffer = (guchar *) g_malloc0 (main_struct->opt->blocksize + 1);
@@ -76,7 +77,7 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
                             g_checksum_update(checksum, buffer, read);
                             g_checksum_get_digest(checksum, a_hash, &digest_len);
                             to_print = g_strdup_printf("-> %ld\n%ld\n%s", i, read, g_checksum_get_string(checksum));
-                            to_store = g_strdup(to_print);
+
 
                             insert_into_tree(main_struct->hashs, a_hash, buffer, read);
 

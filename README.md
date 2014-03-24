@@ -118,6 +118,8 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
   the maximum filesystem size is smaller... For the default value we will
   have to find a value that will fit best intra-deduplication rate, cpu
   demand, maximum filesystem size and low memory consumption.
+* It seems that it will be difficult to get things via 'simple' message
+  passing between threads.
 
 
 ## Usefull links

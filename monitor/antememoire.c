@@ -91,6 +91,35 @@ static gchar *split_messages(main_struct_t *main_struct, gchar *to_store)
 
 
 /**
+ * @returns a newly allocated meta_data_t * empty structure. We use 65534
+ * as default uid and gid to avoid using 0 which is dedicated to a
+ * priviledged user.
+ */
+ meta_data_t *new_meta_data_t()
+ {
+    meta_data_t *meta = NULL;
+
+    meta = (meta_data_t *) g_malloc0(sizeof(meta_data_t));
+
+    if (meta != NULL)
+        {
+            meta->file_type = 0;
+            meta->mode = 0;
+            meta->atime = 0;
+            meta->ctime = 0;
+            meta->mtime = 0;
+            meta->owner = NULL;
+            meta->group = NULL;
+            meta->uid = 65534;  /* nfsnobody on my system ie unpriviledged user */
+            meta->gid = 65534;  /* nfsnobody on my system ie unpriviledged user */
+            meta->name = NULL;
+            hash_list = NULL;
+        }
+
+    return meta;
+ }
+
+/**
  * This function is a thread that is waiting to receive messages from
  * the checksum function and whose aim is to store somewhere the data
  * of a buffer that a been checksumed.
@@ -100,24 +129,17 @@ static gchar *split_messages(main_struct_t *main_struct, gchar *to_store)
 gpointer store_buffer_data(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
-    gchar *to_store = NULL;
+    meta_data_t *meta = NULL;
 
     if (main_struct != NULL)
         {
             do
                 {
-                    to_store = free_variable(to_store);
 
-                    to_store = g_async_queue_pop(main_struct->store_queue);
+                    meta = g_async_queue_pop(main_struct->store_queue);
 
-                    do
-                        {
-                            to_store = split_messages(main_struct, to_store);
-                        }
-                    while (to_store != NULL && g_strcmp0(to_store, "$END$") != 0);
-                    /* fprintf(stdout, "%s\n", to_store); */
                 }
-            while (g_strcmp0(to_store, "$END$") != 0);
+            while (1);
         }
 
     return NULL;

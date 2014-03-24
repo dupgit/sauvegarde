@@ -37,7 +37,8 @@
 /**
  * @struct hashs_t
  * Structure that contains a balanced binary tree to store hashs in a
- * binary form to save space.
+ * binary form to save space. keys are hashs and value is the data that
+ * generated the corresponding checksum.
  */
 typedef struct
 {
