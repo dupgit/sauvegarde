@@ -41,7 +41,7 @@ static gpointer print_things(gpointer data);
  * @param filename is the filename of the opened stream (to be displayed in
  *        case of error.
  */
-static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gchar *filename)
+static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gchar *filename, meta_data_t *meta)
 {
     gssize read = 1;
     guchar *buffer = NULL;
@@ -52,7 +52,6 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
     gchar *to_store = NULL;
     guint8 *a_hash = NULL;
     gsize digest_len = HASH_LEN;
-    meta_data_t *meta = NULL;
 
     checksum = g_checksum_new(G_CHECKSUM_SHA256);
     buffer = (guchar *) g_malloc0 (main_struct->opt->blocksize + 1);
@@ -76,13 +75,12 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
                         {
                             g_checksum_update(checksum, buffer, read);
                             g_checksum_get_digest(checksum, a_hash, &digest_len);
-                            to_print = g_strdup_printf("-> %ld\n%ld\n%s", i, read, g_checksum_get_string(checksum));
-
+                            meta->hash_list = g_slist_prepend(meta->hash_list, meta);
 
                             insert_into_tree(main_struct->hashs, a_hash, buffer, read);
 
+                            to_print = g_strdup_printf("-> %ld\n%ld\n%s", i, read, g_checksum_get_string(checksum));
                             g_async_queue_push(main_struct->print_queue, to_print);
-                            g_async_queue_push(main_struct->store_queue, to_store);
 
                             g_checksum_reset(checksum);
                             i = i + 1;
@@ -90,6 +88,8 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
                         }
                 }
         }
+
+    meta->hash_list = g_slist_reverse(meta->hash_list);
 
     g_free(a_hash);
     g_free(buffer);
@@ -105,7 +105,7 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
  *        send the message.
  * @param dirname : a gchar * directory name.
  */
-static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileInfo *fileinfo)
+static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileInfo *fileinfo, meta_data_t *meta)
 {
     gchar *to_print = NULL;
     gchar *to_store = NULL;
@@ -115,15 +115,15 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
 
     if (main_struct != NULL && main_struct->print_queue != NULL)
         {
-            owner = get_username_owner_from_gfile(fileinfo);
-            dates = get_dates_from_gfile(fileinfo);
-            mode = get_file_mode_from_gfile(fileinfo);
+            owner = get_username_owner_from_gfile(fileinfo, meta);
+            dates = get_dates_from_gfile(fileinfo, meta);
+            mode = get_file_mode_from_gfile(fileinfo, meta);
 
             to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s\x0", G_FILE_TYPE_DIRECTORY, owner, dates, mode, dirname);
-            to_store = g_strdup(to_print);
+
 
             g_async_queue_push(main_struct->print_queue, to_print);
-            g_async_queue_push(main_struct->store_queue, to_store);
+            g_async_queue_push(main_struct->store_queue, meta);
 
             free_variable(owner);
             free_variable(dates);
@@ -141,7 +141,7 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
  * @param a_file : the GFile opened
  * @param filename the filename of the opened GFile
  */
-static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filename, GFileInfo *fileinfo)
+static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filename, GFileInfo *fileinfo, meta_data_t *meta)
 {
     GFileInputStream *stream = NULL;
     GError *error = NULL;
@@ -162,18 +162,18 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                 }
             else
                 {
-                    owner = get_username_owner_from_gfile(fileinfo);
-                    dates = get_dates_from_gfile(fileinfo);
-                    mode = get_file_mode_from_gfile(fileinfo);
+                    owner = get_username_owner_from_gfile(fileinfo, meta);
+                    dates = get_dates_from_gfile(fileinfo, meta);
+                    mode = get_file_mode_from_gfile(fileinfo, meta);
 
                     to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s\x0", G_FILE_TYPE_REGULAR, owner, dates, mode, filename);
-                    to_store = g_strdup(to_print);
 
                     g_async_queue_push(main_struct->print_queue, to_print);
-                    g_async_queue_push(main_struct->store_queue, to_store);
 
-                    do_checksum(main_struct, stream, filename);
+                    do_checksum(main_struct, stream, filename, meta);
                     g_input_stream_close((GInputStream *) stream, NULL, NULL);
+
+                    g_async_queue_push(main_struct->store_queue, meta);
 
                     free_object(stream);
                     free_variable(owner);
@@ -201,7 +201,9 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
     GFileInfo *fileinfo = NULL;
     GError *error = NULL;
     GFileType filetype = G_FILE_TYPE_UNKNOWN;
+    meta_data_t *meta = NULL;
 
+    meta = new_meta_data_t();
 
     if (main_struct != NULL)
         {
@@ -215,6 +217,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                     if (g_strcmp0(filename, "$END$") != 0)
                         {
 
+                            meta->name = g_strdup(filename);
                             a_file = g_file_new_for_path(filename);
 
                             if (a_file != NULL)
@@ -229,14 +232,15 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                                     else if (fileinfo != NULL)
                                         {
                                             filetype = g_file_info_get_file_type(fileinfo);
+                                            meta->file_type = filetype;
 
                                             if (filetype == G_FILE_TYPE_REGULAR)
                                                 {
-                                                    it_is_a_file(main_struct, a_file, filename, fileinfo);
+                                                    it_is_a_file(main_struct, a_file, filename, fileinfo, meta);
                                                 }
                                             else if (filetype == G_FILE_TYPE_DIRECTORY)
                                                 {
-                                                    it_is_a_directory(main_struct, filename, fileinfo);
+                                                    it_is_a_directory(main_struct, filename, fileinfo, meta);
                                                 }
                                             else
                                                 {

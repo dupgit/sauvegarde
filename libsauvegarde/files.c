@@ -59,7 +59,7 @@ extern gchar *get_filename_from_gfile(GFile *a_file)
  * @returns the "user:group uid:gid" of the file or an empty string if an
  *          error occurs
  */
-extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo)
+extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 {
     gchar *owner = NULL;
     gchar *group = NULL;
@@ -77,6 +77,11 @@ extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo)
             uid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_UID);
             gid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_GID);
             ids = g_strdup_printf("%d:%d", uid, gid);
+
+            meta->owner = g_strdup(owner);
+            meta->group = g_strdup(group);
+            meta->uid = uid;
+            meta->gid = gid;
 
             result = g_strconcat(owner, ":", group, " ", ids, NULL);
 
@@ -99,7 +104,7 @@ extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo)
  *        (GFile *)
  * @returns "access_time changed_time modified_time" gchar *string
  */
-extern gchar *get_dates_from_gfile(GFileInfo *fileinfo)
+extern gchar *get_dates_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 {
     guint64 atime = 0;
     guint64 ctime = 0;
@@ -111,6 +116,10 @@ extern gchar *get_dates_from_gfile(GFileInfo *fileinfo)
             atime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_ACCESS);
             ctime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_CHANGED);
             mtime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+
+            meta->atime = atime;
+            meta->ctime = ctime;
+            meta->mtime = mtime;
 
             result = g_strdup_printf("%ld %ld %ld", atime, ctime, mtime);
         }
@@ -130,7 +139,7 @@ extern gchar *get_dates_from_gfile(GFileInfo *fileinfo)
  * @returns a newly allocated string with file mode in decimal
  *          representation.
  */
-extern gchar *get_file_mode_from_gfile(GFileInfo *fileinfo)
+extern gchar *get_file_mode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 {
     guint32 mode = 0;
     gchar *result = NULL;
@@ -138,6 +147,7 @@ extern gchar *get_file_mode_from_gfile(GFileInfo *fileinfo)
     if (fileinfo != NULL)
         {
             mode = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_MODE);
+            meta->mode = mode;
 
             result =  g_strdup_printf("%d", mode);
         }

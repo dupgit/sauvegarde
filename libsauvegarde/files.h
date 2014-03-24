@@ -29,6 +29,31 @@
 #define _FILES_H_
 
 /**
+ * @struct meta_data_t
+ * Structure to store all meta data associated with a file or a directory
+ * command line. We want to limit memory consumption and thus we use the
+ * guint instead of gchar *.
+ * @note Do we need to store the blocksize here ? Does it have any sense ?
+ *       Is it necessary to store the size read for each hashed buffer ? If
+ *       we do it has to be done into the GTree in insert_into_tree function
+ */
+typedef struct
+{
+    guint8 file_type;  /** type of the file : FILE, DIR, SYMLINK...             */
+    guint32 mode;      /** UNIX mode of the file : contains rights for the file */
+    guint64 atime;     /** access time                                          */
+    guint64 ctime;     /** changed time                                         */
+    guint64 mtime;     /** modified time                                        */
+    gchar *owner;      /** owner for the file ie root, apache, dup...           */
+    gchar *group;      /** group for the file ie root, apache, admin...         */
+    guint32 uid;       /** uid  (owner)                                         */
+    guint32 gid;       /** gid  (group owner)                                   */
+    gchar *name;       /** name for the file or the directory                   */
+    GSList hash_list;  /** List of hashs of the file                            */
+} meta_data_t;
+
+
+/**
  * Gets the filename of a  GFile
  * @param a_file : the GFile to get the filename from.
  * @returns the name of the GFile if any or "--" gchar * string that may be
