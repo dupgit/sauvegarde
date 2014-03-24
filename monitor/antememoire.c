@@ -95,7 +95,7 @@ static gchar *split_messages(main_struct_t *main_struct, gchar *to_store)
  * as default uid and gid to avoid using 0 which is dedicated to a
  * priviledged user.
  */
- meta_data_t *new_meta_data_t()
+ meta_data_t *new_meta_data_t(void)
  {
     meta_data_t *meta = NULL;
 
@@ -113,7 +113,7 @@ static gchar *split_messages(main_struct_t *main_struct, gchar *to_store)
             meta->uid = 65534;  /* nfsnobody on my system ie unpriviledged user */
             meta->gid = 65534;  /* nfsnobody on my system ie unpriviledged user */
             meta->name = NULL;
-            hash_list = NULL;
+            meta->hash_list = NULL;
         }
 
     return meta;
@@ -130,6 +130,9 @@ gpointer store_buffer_data(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
     meta_data_t *meta = NULL;
+    GSList *head = NULL;
+    gint i = 0;
+    guint8 *a_hash = NULL;
 
     if (main_struct != NULL)
         {
@@ -138,8 +141,22 @@ gpointer store_buffer_data(gpointer data)
 
                     meta = g_async_queue_pop(main_struct->store_queue);
 
+                    fprintf(stdout, "%s : ", meta->name);
+                    head = meta->hash_list;
+
+                    while (head != NULL)
+                        {
+                            a_hash = head->data;
+                            for(i = 0; i < HASH_LEN; i++)
+                                {
+                                    fprintf(stdout, "%02x", a_hash[i]);
+                                }
+                            fprintf(stdout, "\n");
+                            head = g_slist_next(head);
+                        }
+
                 }
-            while (1);
+            while (meta->name != NULL);
         }
 
     return NULL;

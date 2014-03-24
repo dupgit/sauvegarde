@@ -28,9 +28,9 @@
 
 #include "monitor.h"
 
-static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gchar *filename);
-static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileInfo *fileinfo);
-static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filename, GFileInfo *fileinfo);
+static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gchar *filename, meta_data_t *meta);
+static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileInfo *fileinfo, meta_data_t *meta);
+static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filename, GFileInfo *fileinfo, meta_data_t *meta);
 static gpointer calculate_hashs_on_a_file(gpointer data);
 static gpointer print_things(gpointer data);
 
@@ -49,7 +49,6 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
     GChecksum *checksum = NULL;
     GError *error = NULL;
     gchar *to_print = NULL;
-    gchar *to_store = NULL;
     guint8 *a_hash = NULL;
     gsize digest_len = HASH_LEN;
 
@@ -75,9 +74,8 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
                         {
                             g_checksum_update(checksum, buffer, read);
                             g_checksum_get_digest(checksum, a_hash, &digest_len);
-                            meta->hash_list = g_slist_prepend(meta->hash_list, meta);
 
-                            insert_into_tree(main_struct->hashs, a_hash, buffer, read);
+                            insert_into_tree(main_struct->hashs, a_hash, buffer, read, meta);
 
                             to_print = g_strdup_printf("-> %ld\n%ld\n%s", i, read, g_checksum_get_string(checksum));
                             g_async_queue_push(main_struct->print_queue, to_print);
@@ -108,7 +106,6 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
 static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileInfo *fileinfo, meta_data_t *meta)
 {
     gchar *to_print = NULL;
-    gchar *to_store = NULL;
     gchar *owner = NULL;
     gchar *dates = NULL;
     gchar *mode = NULL;
@@ -146,7 +143,6 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
     GFileInputStream *stream = NULL;
     GError *error = NULL;
     gchar *to_print = NULL;
-    gchar *to_store = NULL;
     gchar *owner = NULL;
     gchar *dates = NULL;
     gchar *mode = NULL;
@@ -203,7 +199,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
     GFileType filetype = G_FILE_TYPE_UNKNOWN;
     meta_data_t *meta = NULL;
 
-    meta = new_meta_data_t();
+
 
     if (main_struct != NULL)
         {
@@ -216,7 +212,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
 
                     if (g_strcmp0(filename, "$END$") != 0)
                         {
-
+                            meta = new_meta_data_t();
                             meta->name = g_strdup(filename);
                             a_file = g_file_new_for_path(filename);
 
@@ -254,6 +250,9 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                         }
                 }
             while (g_strcmp0(filename, "$END$") != 0);
+
+            meta = new_meta_data_t();
+            g_async_queue_push(main_struct->store_queue, meta);
 
             free_variable(filename);
         }

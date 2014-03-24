@@ -49,7 +49,7 @@ typedef struct
     guint32 uid;       /** uid  (owner)                                         */
     guint32 gid;       /** gid  (group owner)                                   */
     gchar *name;       /** name for the file or the directory                   */
-    GSList hash_list;  /** List of hashs of the file                            */
+    GSList *hash_list; /** List of hashs of the file                            */
 } meta_data_t;
 
 
@@ -69,7 +69,7 @@ extern gchar *get_filename_from_gfile(GFile *a_file);
  * @returns the "user:group uid:gid" of the file or an empty string if an
  *          error occurs
  */
-extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo);
+extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo, meta_data_t *meta);
 
 
 /**
@@ -78,7 +78,7 @@ extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo);
  *        (GFile *)
  * @returns "access_time changed_time created_time" gchar *string
  */
-extern gchar *get_dates_from_gfile(GFileInfo *fileinfo);
+extern gchar *get_dates_from_gfile(GFileInfo *fileinfo, meta_data_t *meta);
 
 
 /**
@@ -88,6 +88,6 @@ extern gchar *get_dates_from_gfile(GFileInfo *fileinfo);
  * @returns a newly allocated string with file mode in decimal
  *          representation.
  */
-extern gchar *get_file_mode_from_gfile(GFileInfo *fileinfo);
+extern gchar *get_file_mode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta);
 
 #endif /* #ifndef _FILES_H_ */

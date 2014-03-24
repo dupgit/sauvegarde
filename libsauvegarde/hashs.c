@@ -115,7 +115,7 @@ gint compare_two_hashs(gconstpointer a, gconstpointer b)
  * @param buffer is the data whom checksum is a_hashs
  * @param read is the number of bytes in guchar *buffer
  */
-void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize read)
+void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize read, meta_data_t *meta)
 {
     guint8 *a_hash_dup = NULL;  /** A hashs to be duplicated */
     guchar *buffer_dup = NULL;  /** A duplicated buffer      */
@@ -125,6 +125,8 @@ void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize rea
         {
             a_hash_dup = g_memdup(a_hash, HASH_LEN);
             buffer_dup = g_memdup(buffer, read);
+
+            meta->hash_list = g_slist_prepend(meta->hash_list, a_hash_dup);
 
             hashs->total_bytes = hashs->total_bytes + read;
 

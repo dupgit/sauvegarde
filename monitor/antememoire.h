@@ -32,7 +32,7 @@
  * as default uid and gid to avoid using 0 which is dedicated to a
  * priviledged user.
  */
- meta_data_t *new_meta_data_t();
+ meta_data_t *new_meta_data_t(void);
 
 
 /**
