@@ -137,3 +137,34 @@ void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize rea
                 }
         }
 }
+
+
+/**
+ * Transforms a binary hashs into a printable string (gchar *)
+ * @param a_hash is a hash in a binary form that we want to transform into
+ *        a string.
+ * @returns a string that conatins the hash in an hexadecimal form.
+ */
+gchar *hash_to_string(guint8 *a_hash)
+{
+    gchar *string = NULL;
+    gchar *octet = NULL;
+    guint i = 0;
+
+    if (a_hash != NULL)
+        {
+            string = (gchar *) g_malloc0(HASH_LEN*2 + 1); /* two char per bytes */
+            octet = (gchar *) g_malloc0(3);
+
+            for(i = 0; i < HASH_LEN; i++)
+                {
+                    octet = g_strdup_printf("%02x", a_hash[i]);
+                    g_memmove(string + i*2, octet, 2);
+                }
+        }
+
+    free_variable(octet);
+    return string;
+}
+
+

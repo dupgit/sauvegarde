@@ -75,4 +75,12 @@ extern gint compare_two_hashs(gconstpointer a, gconstpointer b);
  */
 void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize read, meta_data_t *meta);
 
+
+/**
+ * Transforms a binary hashs into a printable string (gchar *)
+ * @param a_hash is a hash in a binary form that we want to transform into
+ *        a string.
+ * @returns a string that conatins the hash in an hexadecimal form.
+ */
+gchar *hash_to_string(guint8 *a_hash);
 #endif /* #ifndef _HASHS_H_ */

@@ -70,6 +70,7 @@ gpointer store_buffer_data(gpointer data)
     GSList *head = NULL;
     gint i = 0;
     guint8 *a_hash = NULL;
+    gchar *string = NULL;
 
     if (main_struct != NULL)
         {
@@ -78,17 +79,17 @@ gpointer store_buffer_data(gpointer data)
 
                     meta = g_async_queue_pop(main_struct->store_queue);
 
-                    fprintf(stdout, "%s : ", meta->name);
+                    fprintf(stdout, "%s :\n", meta->name);
                     head = meta->hash_list;
 
                     while (head != NULL)
                         {
                             a_hash = head->data;
-                            for(i = 0; i < HASH_LEN; i++)
-                                {
-                                    fprintf(stdout, "%02x", a_hash[i]);
-                                }
-                            fprintf(stdout, "\n");
+
+                            string = hash_to_string(a_hash);
+                            fprintf(stdout, "%s\n", string);
+                            free_variable(string);
+
                             head = g_slist_next(head);
                         }
 
