@@ -81,6 +81,28 @@ I'll try to pass everything into strings.
         ]
 
 
+### Database
+
+May be we can store the informations in a scheme like the one below :
+
+    -- files --         -- buffers ---
+    | uniq id | <-1,n-> | uniq id    |
+    | type    |         | buff order |
+    | user    |         | checksum   |
+    | group   |         | data       |
+    | uid     |         --------------
+    | gid     |
+    | atime   |
+    | ctime   |
+    | mtime   |
+    | mode    |
+    | name    |
+    -----------
+
+Buffer order has to be kept. We can keep it in an explicit manner or try to
+keep it in an implicit manner (by storing the ordered list of checksums of
+a file).
+
 ## Coding into this project
 
 ### Comments
