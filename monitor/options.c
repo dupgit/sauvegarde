@@ -122,30 +122,13 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                         }
 
                     /* Reading the blocksize if any */
-                    opt->blocksize = g_key_file_get_int64(keyfile, GN_CISEAUX, KN_BLOCK_SIZE, &error);
-                    if (error != NULL && ENABLE_DEBUG == TRUE)
-                        {
-                            fprintf(stderr, _("Could not load blocksize from file %s : %s"), filename, error->message);
-                            error = free_error(error);
-                        }
+                    opt->blocksize = read_int64_from_file(keyfile, filename, GN_CISEAUX, KN_BLOCK_SIZE, N_("Could not load blocksize from file"));
 
                     /* Reading the cache directory if any */
-                    opt->dircache = free_variable(opt->dircache);
-                    opt->dircache = g_key_file_get_string(keyfile, GN_ANTEMEMOIRE, KN_CACHE_DIR, &error);
-                    if (error != NULL && ENABLE_DEBUG == TRUE)
-                        {
-                            fprintf(stderr, _("Could not load directory name %s : %s"), filename, error->message);
-                            error = free_error(error);
-                        }
+                    opt->dircache = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_CACHE_DIR, N_("Could not load directory name"));
 
                     /* Reading filename of the database if any */
-                    opt->dbname = free_variable(opt->dbname);
-                    opt->dbname = g_key_file_get_string(keyfile, GN_ANTEMEMOIRE, KN_DB_NAME, &error);
-                    if (error != NULL && ENABLE_DEBUG == TRUE)
-                        {
-                            fprintf(stderr, _("Could not load cache database name %s : %s"), filename, error->message);
-                            error = free_error(error);
-                        }
+                    opt->dbname = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_DB_NAME, N_("Could not load cache database name"));
 
                 }
             else if (error != NULL && ENABLE_DEBUG == TRUE)
