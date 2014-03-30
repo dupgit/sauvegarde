@@ -71,6 +71,7 @@ gpointer store_buffer_data(gpointer data)
     guint8 *a_hash = NULL;
     gchar *string = NULL;
     data_t *a_data = NULL;
+    gint i = 0;
 
     if (main_struct != NULL)
         {
@@ -82,19 +83,20 @@ gpointer store_buffer_data(gpointer data)
                     if (meta->name != NULL)   /* if name is null than it should not be processed */
                         {
 
-                            fprintf(stdout, "%d\n%d\n%ld\n%ld\n%ld\n%s\n%s\n%d\n%d\n%s\n", meta->file_type, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->owner, meta->group, meta->uid, meta->gid, meta->name);
+                            fprintf(stdout, "\n%s\n%d\n%d\n%ld\n%ld\n%ld\n%s\n%s\n%d\n%d\n",  meta->name, meta->file_type, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->owner, meta->group, meta->uid, meta->gid);
                             head = meta->hash_list;
-
+                            i = 0;
                             while (head != NULL)
                                 {
                                     a_hash = head->data;
                                     a_data = g_tree_lookup(main_struct->hashs->tree_hash, a_hash);
 
                                     string = hash_to_string(a_hash);
-                                    fprintf(stdout, "\t %ld, %s\n", a_data->read, string);
+                                    fprintf(stdout, "\t%d : %ld, %s\n", i, a_data->read, string);
                                     free_variable(string);
 
                                     head = g_slist_next(head);
+                                    i = i + 1;
                                 }
                         }
                 }
