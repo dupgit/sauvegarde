@@ -34,6 +34,7 @@
  */
 #define HASH_LEN (32)
 
+
 /**
  * @struct hashs_t
  * Structure that contains a balanced binary tree to store hashs in a
@@ -46,6 +47,19 @@ typedef struct
     guint64 total_bytes; /** Total number of bytes that passed into */
     guint64 in_bytes;    /** Number of bytes into the GTree (deduplicated) */
 } hashs_t;
+
+
+/**
+ * @struct data_t
+ * Structure that stores buffer data (buffer) and its size (read). It will
+ * be associated with the checksum into the GTree balanced binary tree of
+ * the hashs_t structure.
+ */
+typedef struct
+{
+    guchar *buffer; /** buffer data read from the file */
+    gssize read;    /** size of that buffer            */
+} data_t;
 
 
 /**
@@ -83,4 +97,21 @@ void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize rea
  * @returns a string that conatins the hash in an hexadecimal form.
  */
 gchar *hash_to_string(guint8 *a_hash);
+
+
+/**
+ * Creates a new data_t * structure populated with the buffer and its size
+ * @param buffer : the data to be stored
+ * @param read : the size of that buffer
+ */
+data_t *new_data_t_structure(guchar *buffer, gssize read);
+
+
+/**
+ * Frees data buffer
+ * @param a_data : the stucture that contains buffer data and its size to
+ * be freed
+ */
+gpointer free_data_t_structure(data_t *a_data);
+
 #endif /* #ifndef _HASHS_H_ */

@@ -251,6 +251,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                 }
             while (g_strcmp0(filename, "$END$") != 0);
 
+            /* Empty meta to close the queue and to stop the thread */
             meta = new_meta_data_t();
             g_async_queue_push(main_struct->store_queue, meta);
 

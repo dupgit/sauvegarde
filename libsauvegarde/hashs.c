@@ -117,8 +117,9 @@ gint compare_two_hashs(gconstpointer a, gconstpointer b)
  */
 void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize read, meta_data_t *meta)
 {
-    guint8 *a_hash_dup = NULL;  /** A hashs to be duplicated */
-    guchar *buffer_dup = NULL;  /** A duplicated buffer      */
+    guint8 *a_hash_dup = NULL;  /** A hashs to be duplicated  */
+    guchar *buffer_dup = NULL;  /** A duplicated buffer       */
+    data_t *a_data = NULL;      /** Struture to store buffers */
 
 
     if (hashs != NULL && a_hash != NULL)
@@ -133,7 +134,8 @@ void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize rea
             if (g_tree_lookup(hashs->tree_hash, a_hash_dup) == NULL)
                 {
                     hashs->in_bytes = hashs->in_bytes + read;
-                    g_tree_insert(hashs->tree_hash, a_hash_dup, buffer_dup);
+                    a_data = new_data_t_structure(buffer_dup, read);
+                    g_tree_insert(hashs->tree_hash, a_hash_dup, a_data); /* the checksum itself is the key to get buffer's data */
                 }
         }
 }
@@ -167,4 +169,40 @@ gchar *hash_to_string(guint8 *a_hash)
     return string;
 }
 
+
+/**
+ * Creates a new data_t * structure populated with the buffer and its size
+ * @param buffer : the data to be stored
+ * @param read : the size of that buffer
+ */
+data_t *new_data_t_structure(guchar *buffer, gssize read)
+{
+    data_t *a_data;
+
+    a_data = (data_t *) g_malloc0(sizeof(data_t));
+
+    a_data->buffer = buffer;
+    a_data->read = read;
+
+    return a_data;
+
+}
+
+
+/**
+ * Frees data buffer
+ * @param a_data : the stucture that contains buffer data and its size to
+ * be freed
+ */
+gpointer free_data_t_structure(data_t *a_data)
+{
+
+    if (a_data != NULL)
+        {
+            free_variable(a_data->buffer);
+            free_variable(a_data);
+        }
+
+    return NULL;
+}
 

@@ -71,6 +71,7 @@ gpointer store_buffer_data(gpointer data)
     gint i = 0;
     guint8 *a_hash = NULL;
     gchar *string = NULL;
+    data_t *a_data = NULL;
 
     if (main_struct != NULL)
         {
@@ -85,9 +86,10 @@ gpointer store_buffer_data(gpointer data)
                     while (head != NULL)
                         {
                             a_hash = head->data;
+                            a_data = g_tree_lookup(main_struct->hashs->tree_hash, a_hash);
 
                             string = hash_to_string(a_hash);
-                            fprintf(stdout, "%s\n", string);
+                            fprintf(stdout, "%ld, %s\n", a_data->read, string);
                             free_variable(string);
 
                             head = g_slist_next(head);
