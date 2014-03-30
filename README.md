@@ -89,9 +89,9 @@ May be we can store the informations in a scheme like the one below :
     | uniq id | <-1,n-> | uniq id    |
     | type    |         | buff order |         -- data ---
     | user    |         | checksum   | <-1,1-> | checksum |
-    | group   |         --------------         | data     |
-    | uid     |                                ------------
-    | gid     |
+    | group   |         --------------         | size     |
+    | uid     |                                | data     |
+    | gid     |                                ------------
     | atime   |
     | ctime   |
     | mtime   |

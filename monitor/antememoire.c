@@ -68,7 +68,6 @@ gpointer store_buffer_data(gpointer data)
     main_struct_t *main_struct = (main_struct_t *) data;
     meta_data_t *meta = NULL;
     GSList *head = NULL;
-    gint i = 0;
     guint8 *a_hash = NULL;
     gchar *string = NULL;
     data_t *a_data = NULL;
@@ -80,23 +79,26 @@ gpointer store_buffer_data(gpointer data)
 
                     meta = g_async_queue_pop(main_struct->store_queue);
 
-                    fprintf(stdout, "%s :\n", meta->name);
-                    head = meta->hash_list;
-
-                    while (head != NULL)
+                    if (meta->name != NULL)   /* if name is null than it should not be processed */
                         {
-                            a_hash = head->data;
-                            a_data = g_tree_lookup(main_struct->hashs->tree_hash, a_hash);
 
-                            string = hash_to_string(a_hash);
-                            fprintf(stdout, "%ld, %s\n", a_data->read, string);
-                            free_variable(string);
+                            fprintf(stdout, "%d\n%d\n%ld\n%ld\n%ld\n%s\n%s\n%d\n%d\n%s\n", meta->file_type, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->owner, meta->group, meta->uid, meta->gid, meta->name);
+                            head = meta->hash_list;
 
-                            head = g_slist_next(head);
+                            while (head != NULL)
+                                {
+                                    a_hash = head->data;
+                                    a_data = g_tree_lookup(main_struct->hashs->tree_hash, a_hash);
+
+                                    string = hash_to_string(a_hash);
+                                    fprintf(stdout, "\t %ld, %s\n", a_data->read, string);
+                                    free_variable(string);
+
+                                    head = g_slist_next(head);
+                                }
                         }
-
                 }
-            while (meta->name != NULL);
+            while (meta->name != NULL);   /* A null name means that we have to quit */
         }
 
     return NULL;
