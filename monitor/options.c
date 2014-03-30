@@ -67,6 +67,11 @@ static void print_selected_options(options_t *opt)
                 {
                     fprintf(stdout, _("Cache directory : %s\n"), opt->dircache);
                 }
+
+            if (opt->dbname != NULL)
+                {
+                    fprintf(stdout, _("Cache database name : %s\n"), opt->dbname);
+                }
         }
 }
 
@@ -125,13 +130,23 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                         }
 
                     /* Reading the cache directory if any */
-                    free_variable(opt->dircache);
+                    opt->dircache = free_variable(opt->dircache);
                     opt->dircache = g_key_file_get_string(keyfile, GN_ANTEMEMOIRE, KN_CACHE_DIR, &error);
                     if (error != NULL && ENABLE_DEBUG == TRUE)
                         {
-                            fprintf(stderr, _("Could not load blocksize from file %s : %s"), filename, error->message);
+                            fprintf(stderr, _("Could not load directory name %s : %s"), filename, error->message);
                             error = free_error(error);
                         }
+
+                    /* Reading filename of the database if any */
+                    opt->dbname = free_variable(opt->dbname);
+                    opt->dbname = g_key_file_get_string(keyfile, GN_ANTEMEMOIRE, KN_DB_NAME, &error);
+                    if (error != NULL && ENABLE_DEBUG == TRUE)
+                        {
+                            fprintf(stderr, _("Could not load cache database name %s : %s"), filename, error->message);
+                            error = free_error(error);
+                        }
+
                 }
             else if (error != NULL && ENABLE_DEBUG == TRUE)
                 {
@@ -245,6 +260,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->noprint = FALSE;
     opt->configfile = NULL;
     opt->dircache = g_strdup("/var/tmp/sauvegarde");
+    opt->dbname = g_strdup("filecache.db");
 
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME);
@@ -318,6 +334,7 @@ void free_options_t_structure(options_t *opt)
 
             free_variable(opt->dircache);
             free_variable(opt->configfile);
+            free_variable(opt->dbname);
             free_variable(opt);
         }
 

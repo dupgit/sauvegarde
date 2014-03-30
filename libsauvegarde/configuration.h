@@ -78,6 +78,14 @@
  */
 #define KN_CACHE_DIR ("cache-directory")
 
+
+/**
+ * @def KN_DB_NAME
+ * Defines the name of the database to be used for the local cache
+ */
+#define KN_DB_NAME ("cache-db-name")
+
+
 /**
  * Gets the probable filename for the configuration file of sauvegarde
  * project. This is needed when one wants to install the project in an
