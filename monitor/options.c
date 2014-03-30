@@ -214,12 +214,13 @@ static GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list)
  */
 options_t *manage_command_line_options(int argc, char **argv)
 {
-    gboolean version = FALSE;      /** True if -v was selected on the command line      */
-    gchar **dirname_array = NULL;  /** array of dirnames left on the command line       */
-    gchar *configfile = NULL;      /** filename for the configuration file if any       */
-    gint64 blocksize = 0;          /** computed block size in bytes                     */
-    gboolean noprint = FALSE;      /** True if we do not want to print will checksuming */
-    gchar *dircache = NULL;        /** Directory used to store cache files              */
+    gboolean version = FALSE;      /** True if -v was selected on the command line           */
+    gchar **dirname_array = NULL;  /** array of dirnames left on the command line            */
+    gchar *configfile = NULL;      /** filename for the configuration file if any            */
+    gint64 blocksize = 0;          /** computed block size in bytes                          */
+    gboolean noprint = FALSE;      /** True if we do not want to print will checksuming      */
+    gchar *dircache = NULL;        /** Directory used to store cache files                   */
+    gchar *dbname = NULL;          /** Database filename where data and meta data are cached */
 
     GOptionEntry entries[] =
     {
@@ -228,6 +229,7 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Block size used to compute hashs"), NULL},
         { "noprint", 'n', 0, G_OPTION_ARG_NONE, &noprint, N_("Quiets the program while calculating checksum"), NULL},
         { "dircache", 'd', 0, G_OPTION_ARG_STRING, &dircache, N_("Directory where to cache files"), NULL},
+        { "dbname", 'f', 0, G_OPTION_ARG_STRING, &dbname, N_("Database filename"), NULL},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
@@ -301,7 +303,15 @@ options_t *manage_command_line_options(int argc, char **argv)
             opt->dircache = g_strdup(dircache);
         }
 
+    if (dbname != NULL)
+        {
+            free_variable(opt->dbname);
+            opt->dbname = g_strdup(dbname);
+        }
+
     g_option_context_free(context);
+    free_variable(dbname);
+    free_variable(dircache);
     free_variable(bugreport);
     free_variable(summary);
 
