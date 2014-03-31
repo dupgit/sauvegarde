@@ -37,8 +37,28 @@
 
 
 /**
+ * @struct db_t
+ * Structure to store everything that is needed for the database
+ */
+typedef struct
+{
+    sqlite3 *db;  /** database connexion  */
+} db_t;
+
+
+/**
  * @returns a string containing the version of the database used.
  */
 extern gchar *db_version(void);
+
+
+/**
+ * Returns a database
+ * @param database_name is the filename of the file that contains the
+ *        database
+ * @result returns a db_t * filled with the database connexion or NULL
+ *         in case of an error.
+ */
+db_t *open_database(gchar *database_name);
 
 #endif /* #ifndef _DATABASE_H_ */

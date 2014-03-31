@@ -34,5 +34,40 @@
  */
 gchar *db_version(void)
 {
-    return sqlite3_libversion();
+    return (gchar *) sqlite3_libversion();
 }
+
+
+/**
+ * Returns a database connexion or NULL.
+ * @param database_name is the filename of the file that contains the
+ *        database
+ * @result returns a db_t * filled with the database connexion or NULL
+ *         in case of an error.
+ */
+db_t *open_database(gchar *database_name)
+{
+    db_t *database = NULL;
+    sqlite3 *db = NULL;
+    int result = 0;
+
+    database = (db_t *) g_malloc0(sizeof(db_t));
+
+    result = sqlite3_open(database_name, &db);
+
+    if (result == 0)
+        {
+            fprintf(stderr, _("Can not open database: %s\n"), sqlite3_errmsg(db));
+            sqlite3_close(db);
+            return NULL;
+        }
+    else
+        {
+            database->db = db;
+            return database;
+        }
+}
+
+
+
+
