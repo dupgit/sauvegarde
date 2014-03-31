@@ -111,3 +111,76 @@ gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
 }
 
 
+/**
+ * This functions converts a gchar ** array to a GSList of gchar *.
+ * The function appends to the list first_list (if it exists - it may be
+ * NULL) each entry of the array so elements are in the same order in the
+ * array and in the list.
+ * @param array is a gchar * array.
+ * @param first_list is a list that may allready contain some elements and
+ *        to which we will add all the elements of 'array' array.
+ * @returns a newly allocated GSList that may be freed when no longer
+ *          needed or NULL if array is NULL.
+ */
+GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list)
+{
+    gchar *a_string = NULL;    /** gchar * that is read in the array      */
+    GSList *list = first_list; /** The list to be returned (may be NULL)  */
+    gint i = 0;
+    gint num = 0;              /** Number of elements in the array if any */
+
+    if (array != NULL)
+        {
+            num = g_strv_length(array);
+
+            for (i = 0; i < num; i++)
+                {
+                    a_string = g_strdup(array[i]);
+                    list = g_slist_append(list, a_string);
+
+                    if (ENABLE_DEBUG == TRUE)
+                        {
+                            fprintf(stdout, "%s\n", a_string);
+                        }
+                }
+        }
+
+    return list;
+}
+
+
+/**
+ * Reads a list of gchar * from keyname key in the group grouname from
+ * keyfile file and displays errormsg in case of an error
+ * @param keyfile : the opened keyfile to read from
+ * @param filename : the filename of the keyfile file
+ * @param groupname : the groupname where to look for the key
+ * @param keyname : the key to read the list of gchar * from
+ * @param errormsg : the error message to be displayed in case of an error
+ * @returns the list of gchar * read at the keyname in the groupname of
+ *          keyfile file or NULL;
+ */
+GSList *read_list_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg)
+{
+    GSList *a_list = NULL;         /** list to be returned                                */
+    GError *error = NULL;          /** Glib error handling                                */
+    gchar **dirname_array = NULL;  /** array of dirnames read into the configuration file */
+
+    dirname_array = g_key_file_get_string_list(keyfile, groupname, keyname, NULL, &error);
+
+    if (dirname_array != NULL)
+        {
+            a_list = convert_gchar_array_to_GSList(dirname_array, a_list);
+            /* The array is no longer needed (everything has been copied with g_strdup) */
+            g_strfreev(dirname_array);
+        }
+    else if (error != NULL &&  ENABLE_DEBUG == TRUE)
+        {
+            fprintf(stderr, _("%s %s : %s\n"), errormsg, filename, error->message);
+            error = free_error(error);
+        }
+
+    return a_list;
+}
+
+

@@ -56,6 +56,7 @@
     return meta;
  }
 
+
 /**
  * This function is a thread that is waiting to receive messages from
  * the checksum function and whose aim is to store somewhere the data
@@ -77,7 +78,6 @@ gpointer store_buffer_data(gpointer data)
         {
             do
                 {
-
                     meta = g_async_queue_pop(main_struct->store_queue);
 
                     if (meta->name != NULL)   /* if name is null than it should not be processed */

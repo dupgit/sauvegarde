@@ -29,7 +29,6 @@
 
 static void print_selected_options(options_t *opt);
 static void read_from_configuration_file(options_t *opt, gchar *filename);
-static GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list);
 
 
 /**
@@ -86,7 +85,6 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 {
     GKeyFile *keyfile = NULL;      /** Configuration file parser                          */
     GError *error = NULL;          /** Glib error handling                                */
-    gchar **dirname_array = NULL;  /** array of dirnames read into the configuration file */
 
     if (filename != NULL)
         {
@@ -107,19 +105,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
                     /* Reading the directory list */
-                    dirname_array = g_key_file_get_string_list(keyfile, GN_MONITOR, KN_DIR_LIST, NULL, &error);
-
-                    if (dirname_array != NULL)
-                        {
-                            opt->dirname_list = convert_gchar_array_to_GSList(dirname_array, opt->dirname_list);
-                            /* The array is no longer needed (everything has been copied with g_strdup) */
-                            g_strfreev(dirname_array);
-                        }
-                    else if (error != NULL &&  ENABLE_DEBUG == TRUE)
-                        {
-                            fprintf(stderr, _("Could not load directory list from file %s : %s\n"), filename, error->message);
-                            error = free_error(error);
-                        }
+                    opt->dirname_list = read_list_from_file(keyfile, filename, GN_MONITOR, KN_DIR_LIST, N_("Could not load directory list from file"));
 
                     /* Reading the blocksize if any */
                     opt->blocksize = read_int64_from_file(keyfile, filename, GN_CISEAUX, KN_BLOCK_SIZE, N_("Could not load blocksize from file"));
@@ -140,45 +126,6 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
             g_key_file_free(keyfile);
         }
 }
-
-
-/**
- * This functions converts a gchar ** array to a GSList of gchar *.
- * The function appends to the list first_list (if it exists - it may be
- * NULL) each entry of the array so elements are in the same order in the
- * array and in the list.
- * @param array is a gchar * array.
- * @param first_list is a list that may allready contain some elements and
- *        to which we will add all the elements of 'array' array.
- * @returns a newly allocated GSList that may be freed when no longer
- *          needed or NULL if array is NULL.
- */
-static GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list)
-{
-    gchar *a_string = NULL;    /** gchar * that is read in the array      */
-    GSList *list = first_list; /** The list to be returned (may be NULL)  */
-    gint i = 0;
-    gint num = 0;              /** Number of elements in the array if any */
-
-    if (array != NULL)
-        {
-            num = g_strv_length(array);
-
-            for (i = 0; i < num; i++)
-                {
-                    a_string = g_strdup(array[i]);
-                    list = g_slist_append(list, a_string);
-
-                    if (ENABLE_DEBUG == TRUE)
-                        {
-                            fprintf(stdout, "%s\n", a_string);
-                        }
-                }
-        }
-
-    return list;
-}
-
 
 
 /**

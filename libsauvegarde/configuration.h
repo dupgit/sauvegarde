@@ -99,6 +99,20 @@ extern gchar *get_probable_etc_path(gchar *progname);
 
 
 /**
+ * This functions converts a gchar ** array to a GSList of gchar *.
+ * The function appends to the list first_list (if it exists - it may be
+ * NULL) each entry of the array so elements are in the same order in the
+ * array and in the list.
+ * @param array is a gchar * array.
+ * @param first_list is a list that may allready contain some elements and
+ *        to which we will add all the elements of 'array' array.
+ * @returns a newly allocated GSList that may be freed when no longer
+ *          needed or NULL if array is NULL.
+ */
+extern GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list);
+
+
+/**
  * Reads a string from keyname key in the group grouname from keyfile file
  * and displays errormsg in case of an error
  * @param keyfile : the opened keyfile to read from
@@ -110,6 +124,7 @@ extern gchar *get_probable_etc_path(gchar *progname);
  *          file.
  */
 gchar *read_string_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
+
 
 /**
  * Reads a gint64 from keyname key in the group grouname from keyfile file
@@ -123,5 +138,19 @@ gchar *read_string_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupnam
  *          file or 0;
  */
 gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
+
+
+/**
+ * Reads a list of gchar * from keyname key in the group grouname from
+ * keyfile file and displays errormsg in case of an error
+ * @param keyfile : the opened keyfile to read from
+ * @param filename : the filename of the keyfile file
+ * @param groupname : the groupname where to look for the key
+ * @param keyname : the key to read the list of gchar * from
+ * @param errormsg : the error message to be displayed in case of an error
+ * @returns the list of gchar * read at the keyname in the groupname of
+ *          keyfile file or NULL;
+ */
+GSList *read_list_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
 
 #endif /* #ifndef _CONFIGURATION_H_ */
