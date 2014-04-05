@@ -55,10 +55,11 @@ db_t *open_database(gchar *database_name)
 
     result = sqlite3_open(database_name, &db);
 
-    if (result == 0)
+    if (result != SQLITE_OK)
         {
-            fprintf(stderr, _("Can not open database: %s\n"), sqlite3_errmsg(db));
+            fprintf(stderr, _("Error while trying to open %s database: %s\n"), database_name, sqlite3_errmsg(db));
             sqlite3_close(db);
+            exit(EXIT_FAILURE);
             return NULL;
         }
     else
