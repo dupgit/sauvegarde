@@ -148,7 +148,8 @@ static gpointer first_directory_traversal(gpointer data)
 
 
 /**
- * Inits the main structure
+ * Inits the main structure.
+ * @note : With sqlite version > 3.7.7 we should use URI filename.
  * @returns a main_struct_t * pointer to the main structure
  */
 static main_struct_t *init_main_structure(options_t *opt)

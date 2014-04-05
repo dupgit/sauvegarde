@@ -28,6 +28,8 @@
 
 #include "libsauvegarde.h"
 
+static int table_callback(void *num, int nbCol, char **data, char **nomCol);
+static void verify_if_tables_exists(db_t *database);
 
 /**
  * @returns a string containing the version of the database used.
@@ -35,6 +37,58 @@
 gchar *db_version(void)
 {
     return (gchar *) sqlite3_libversion();
+}
+
+
+/**
+ * Counts the number of row that we have by incrementing i.
+ * @param i is an integer that will count the number of rows in the result.
+ * @param nb_col gives the number of columns in this row.
+ * @param data contains the data of each column.
+ * @param name_col contains the name of each column.
+ * @returns always 0.
+ */
+static int table_callback(void *num, int nb_col, char **data, char **name_col)
+{
+    int *i = (int *) num;
+
+    *i = *i + 1;
+
+    return 0;
+}
+
+
+/**
+ * Verifies if the tables are created whithin the database and creates
+ * them if there is no tables at all.
+ * @param database : the structure to manage database's connexion.
+ */
+static void verify_if_tables_exists(db_t *database)
+{
+    char *error_message = NULL;
+    int result = 0;
+    gchar *sql_cmd = NULL;
+    int *i = NULL;               /** Used to count the number of row */
+
+    i = (int *) g_malloc0(sizeof(int));
+    *i = 0;
+
+    sql_cmd = g_strdup("SELECT * FROM sqlite_master WHERE type='table';");
+    result = sqlite3_exec(database->db, sql_cmd, table_callback, i, &error_message);
+    free_variable(sql_cmd);
+
+    if (*i == 0)  /* No row (0) means that their is no table */
+        {
+            if (ENABLE_DEBUG == TRUE)
+                {
+                    fprintf(stdout, _("Creating tables into the database\n"));
+                }
+            /* The database does not contain any tables. So we have to create them.         */
+            /* Creation of checksum table that contains checksums and their associated data */
+            sql_cmd = g_strdup("CREATE TABLE data (checksum BLOB, size INTEGER, data BLOB);");
+            result = sqlite3_exec(database->db, sql_cmd, NULL, 0, &error_message);
+            free_variable(sql_cmd);
+        }
 }
 
 
@@ -65,6 +119,7 @@ db_t *open_database(gchar *database_name)
     else
         {
             database->db = db;
+            verify_if_tables_exists(database);
             return database;
         }
 }
