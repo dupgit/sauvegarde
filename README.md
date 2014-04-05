@@ -147,14 +147,16 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
 ## Usefull links
 
 * Filesystem events notifycation :
- * redirfs  : [http://www.redirfs.org/tiki-index.php](http://www.redirfs.org/tiki-index.php)
- * pluginfs : [http://www.pluginfs.org/](http://www.pluginfs.org/)
- * dazuko   : [http://dazuko.dnsalias.org/wiki/index.php/Main_Page](http://dazuko.dnsalias.org/wiki/index.php/Main_Page)
- * fanotify : [http://www.xypron.de/projects/fanotify-manpages/man7/fanotify.7.html](http://www.xypron.de/projects/fanotify-manpages/man7/fanotify.7.html)
-* sqlite    : [http://www.sqlite.org/cintro.html](http://www.sqlite.org/cintro.html)
-* zmq       : [http://czmq.zeromq.org/](http://czmq.zeromq.org/)
+ * redirfs   : [http://www.redirfs.org/tiki-index.php](http://www.redirfs.org/tiki-index.php)
+ * pluginfs  : [http://www.pluginfs.org/](http://www.pluginfs.org/)
+ * dazuko    : [http://dazuko.dnsalias.org/wiki/index.php/Main_Page](http://dazuko.dnsalias.org/wiki/index.php/Main_Page)
+ * fanotify  : [http://www.xypron.de/projects/fanotify-manpages/man7/fanotify.7.html](http://www.xypron.de/projects/fanotify-manpages/man7/fanotify.7.html)
+* sqlite     :
+ * main site :[http://www.sqlite.org/cintro.html](http://www.sqlite.org/cintro.html)
+ * firefox add on : [https://addons.mozilla.org/fr/firefox/addon/sqlite-manager/](https://addons.mozilla.org/fr/firefox/addon/sqlite-manager/)
+* zmq        : [http://czmq.zeromq.org/](http://czmq.zeromq.org/)
 * Software quality checkers :
- * lizard   : [https://github.com/terryyin/lizard](https://github.com/terryyin/lizard)
+ * lizard    : [https://github.com/terryyin/lizard](https://github.com/terryyin/lizard)
 
 
 
