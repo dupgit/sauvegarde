@@ -165,7 +165,7 @@ static main_struct_t *init_main_structure(options_t *opt)
     main_struct->store_queue = g_async_queue_new();
     main_struct->hashs = new_hash_struct();
 
-    db_uri = g_build_filename("file:///", opt->dircache, opt->dbname , NULL);
+    db_uri = g_build_filename(opt->dircache, opt->dbname , NULL);
     main_struct->database = open_database(db_uri);
 
     return main_struct;
