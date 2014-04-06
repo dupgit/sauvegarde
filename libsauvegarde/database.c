@@ -80,10 +80,8 @@ static void verify_if_tables_exists(db_t *database)
 
     if (*i == 0)  /* No row (0) means that their is no table */
         {
-            if (ENABLE_DEBUG == TRUE)
-                {
-                    fprintf(stdout, _("Creating tables into the database\n"));
-                }
+            print_debug(stdout, _("Creating tables into the database\n"));
+
             /* The database does not contain any tables. So we have to create them.         */
             /* Creation of checksum table that contains checksums and their associated data */
             sql_cmd = g_strdup("CREATE TABLE data (checksum BLOB, size INTEGER, data BLOB);");

@@ -95,10 +95,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                 }
             opt->configfile = g_strdup(filename);
 
-            if (ENABLE_DEBUG == TRUE)
-                {
-                    fprintf(stdout, _("Reading configuration from file %s\n"), filename);
-                }
+            print_debug(stdout, _("Reading configuration from file %s\n"), filename);
 
             keyfile = g_key_file_new();
 
@@ -117,9 +114,9 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                     opt->dbname = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_DB_NAME, N_("Could not load cache database name"));
 
                 }
-            else if (error != NULL && ENABLE_DEBUG == TRUE)
+            else if (error != NULL)
                 {
-                    fprintf(stderr, _("Failed to open %s configuration file : %s\n"), filename, error->message);
+                    print_debug(stderr, _("Failed to open %s configuration file : %s\n"), filename, error->message);
                     error = free_error(error);
                 }
 

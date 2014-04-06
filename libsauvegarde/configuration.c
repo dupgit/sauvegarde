@@ -74,9 +74,9 @@ gchar *read_string_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupnam
     GError *error = NULL;     /** Glib error handling   */
 
     a_string = g_key_file_get_string(keyfile, groupname, keyname, &error);
-    if (error != NULL && ENABLE_DEBUG == TRUE)
+    if (error != NULL)
         {
-            fprintf(stderr, "%s %s : %s", errormsg, filename, error->message);
+            print_debug(stderr, "%s %s : %s", errormsg, filename, error->message);
             error = free_error(error);
         }
 
@@ -101,9 +101,9 @@ gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
     GError *error = NULL; /** Glib error handling   */
 
     num =  g_key_file_get_int64(keyfile, groupname, keyname, &error);
-    if (error != NULL && ENABLE_DEBUG == TRUE)
+    if (error != NULL)
         {
-            fprintf(stderr, "%s %s : %s", errormsg, filename, error->message);
+            print_debug(stderr, "%s %s : %s", errormsg, filename, error->message);
             error = free_error(error);
         }
 
@@ -138,10 +138,7 @@ GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list)
                     a_string = g_strdup(array[i]);
                     list = g_slist_append(list, a_string);
 
-                    if (ENABLE_DEBUG == TRUE)
-                        {
-                            fprintf(stdout, "%s\n", a_string);
-                        }
+                    print_debug(stdout, "%s\n", a_string);
                 }
         }
 
@@ -174,9 +171,9 @@ GSList *read_list_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
             /* The array is no longer needed (everything has been copied with g_strdup) */
             g_strfreev(dirname_array);
         }
-    else if (error != NULL &&  ENABLE_DEBUG == TRUE)
+    else if (error != NULL)
         {
-            fprintf(stderr, _("%s %s : %s\n"), errormsg, filename, error->message);
+            print_debug(stderr, _("%s %s : %s\n"), errormsg, filename, error->message);
             error = free_error(error);
         }
 
