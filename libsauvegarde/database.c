@@ -41,6 +41,26 @@ gchar *db_version(void)
 
 
 /**
+ * Prints an error message to stderr and exit (db errors are considered as
+ * fatal for now.
+ * @param db : file connexion to the database.
+ * @param format : the format of the message (as in printf)
+ * @param ... : va_list of variable that are to be printed into format.
+ */
+void print_db_error(sqlite3 *db, const char *format, ...)
+{
+    va_list ap;
+
+    va_start(ap, format);
+    vfprintf(stderr, format, ap);
+    va_end(ap);
+
+    sqlite3_close(db);
+    exit(EXIT_FAILURE);
+}
+
+
+/**
  * Counts the number of row that we have by incrementing i.
  * @param i is an integer that will count the number of rows in the result.
  * @param nb_col gives the number of columns in this row.
@@ -78,14 +98,20 @@ static void verify_if_tables_exists(db_t *database)
     result = sqlite3_exec(database->db, sql_cmd, table_callback, i, &error_message);
     free_variable(sql_cmd);
 
-    if (*i == 0)  /* No row (0) means that their is no table */
+    if (*i == 0)  /* No row (0) means that there is no table */
         {
             print_debug(stdout, _("Creating tables into the database\n"));
 
             /* The database does not contain any tables. So we have to create them.         */
             /* Creation of checksum table that contains checksums and their associated data */
-            sql_cmd = g_strdup("CREATE TABLE data (checksum BLOB, size INTEGER, data BLOB);");
+            sql_cmd = g_strdup("CREATE TABLE data (checksum BLOB PRIMARY KEY, size INTEGER, data BLOB);");
             result = sqlite3_exec(database->db, sql_cmd, NULL, 0, &error_message);
+
+            if (result != SQLITE_OK)
+                {
+                    print_db_error(database->db, _("Error while creating database 'data': %s"), error_message);
+                }
+
             free_variable(sql_cmd);
         }
 }
@@ -110,9 +136,7 @@ db_t *open_database(gchar *database_name)
 
     if (result != SQLITE_OK)
         {
-            fprintf(stderr, _("Error while trying to open %s database: %s\n"), database_name, sqlite3_errmsg(db));
-            sqlite3_close(db);
-            exit(EXIT_FAILURE);
+            print_db_error(db, _("Error while trying to open %s database: %s\n"), database_name, sqlite3_errmsg(db));
             return NULL;
         }
     else
