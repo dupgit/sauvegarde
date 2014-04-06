@@ -47,7 +47,7 @@ gchar *db_version(void)
  * @param format : the format of the message (as in printf)
  * @param ... : va_list of variable that are to be printed into format.
  */
-void print_db_error(sqlite3 *db, const char *format, ...)
+static void print_db_error(sqlite3 *db, const char *format, ...)
 {
     va_list ap;
 
@@ -57,6 +57,26 @@ void print_db_error(sqlite3 *db, const char *format, ...)
 
     sqlite3_close(db);
     exit(EXIT_FAILURE);
+}
+
+
+/**
+ * Executes the SQL command onto the database without any callback
+ * @param database : the db_t * structure that contains the database connexion
+ * @param sql_cmd : a gchar * SQL command to be executed onto the database
+ * @param format_message : a gchar * format message to be used in case of an error
+ */
+static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message)
+{
+    char *error_message = NULL;
+    int result = 0;
+
+    result = sqlite3_exec(database->db, sql_cmd, NULL, 0, &error_message);
+
+    if (result != SQLITE_OK)
+        {
+            print_db_error(database->db, format_message, error_message);
+        }
 }
 
 
@@ -87,32 +107,27 @@ static void verify_if_tables_exists(db_t *database)
 {
     char *error_message = NULL;
     int result = 0;
-    gchar *sql_cmd = NULL;
     int *i = NULL;               /** Used to count the number of row */
 
     i = (int *) g_malloc0(sizeof(int));
     *i = 0;
 
     /* Trying to get all the tables that are in the database */
-    sql_cmd = g_strdup("SELECT * FROM sqlite_master WHERE type='table';");
-    result = sqlite3_exec(database->db, sql_cmd, table_callback, i, &error_message);
-    free_variable(sql_cmd);
+    result = sqlite3_exec(database->db, "SELECT * FROM sqlite_master WHERE type='table';", table_callback, i, &error_message);
 
     if (*i == 0)  /* No row (0) means that there is no table */
         {
-            print_debug(stdout, _("Creating tables into the database\n"));
+            print_debug(stdout, N_("Creating tables into the database\n"));
 
             /* The database does not contain any tables. So we have to create them.         */
             /* Creation of checksum table that contains checksums and their associated data */
-            sql_cmd = g_strdup("CREATE TABLE data (checksum BLOB PRIMARY KEY, size INTEGER, data BLOB);");
-            result = sqlite3_exec(database->db, sql_cmd, NULL, 0, &error_message);
+            exec_sql_cmd(database, "CREATE TABLE data (checksum BLOB PRIMARY KEY, size INTEGER, data BLOB);", N_("Error while creating database table 'data': %s\n"));
 
-            if (result != SQLITE_OK)
-                {
-                    print_db_error(database->db, _("Error while creating database 'data': %s"), error_message);
-                }
+            /* Creation of buffers table that contains checksums and their associated data */
+            exec_sql_cmd(database, "CREATE TABLE buffers (file_id INTEGER PRIMARY KEY, buf_order INTEGER, checksum BLOB);", N_("Error while creating database table 'buffers': %s\n"));
 
-            free_variable(sql_cmd);
+            /* Creation of files table that contains everything about a file */
+            exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, type INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, name TEXT);", N_("Error while creating database table 'files': %s\n"));
         }
 }
 

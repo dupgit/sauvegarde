@@ -85,19 +85,19 @@ I'll try to pass everything into strings.
 
 May be we can store the informations in a scheme like the one below :
 
-    -- files --         -- buffers ---
-    | uniq id | <-1,n-> | uniq id    |
-    | type    |         | buff order |         -- data ---
-    | user    |         | checksum   | <-1,1-> | checksum |
-    | group   |         --------------         | size     |
-    | uid     |                                | data     |
-    | gid     |                                ------------
-    | atime   |
-    | ctime   |
-    | mtime   |
-    | mode    |
-    | name    |
-    -----------
+    --- files ----         -- buffers ---
+    | file_id    | <-1,n-> | file_id    |
+    | type       |         | buf_order  |         --- data ---
+    | file_user  |         | checksum   | <-1,1-> | checksum |
+    | file_group |         --------------         | size     |
+    | uid        |                                | data     |
+    | gid        |                                ------------
+    | atime      |
+    | ctime      |
+    | mtime      |
+    | mode       |
+    | name       |
+    --------------
 
 Buffer order has to be kept. We can keep it in an explicit manner or try to
 keep it in an implicit manner (by storing the ordered list of checksums of
