@@ -73,6 +73,7 @@ static void verify_if_tables_exists(db_t *database)
     i = (int *) g_malloc0(sizeof(int));
     *i = 0;
 
+    /* Trying to get all the tables that are in the database */
     sql_cmd = g_strdup("SELECT * FROM sqlite_master WHERE type='table';");
     result = sqlite3_exec(database->db, sql_cmd, table_callback, i, &error_message);
     free_variable(sql_cmd);
