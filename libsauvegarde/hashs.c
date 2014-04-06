@@ -76,7 +76,7 @@ gint compare_two_hashs(gconstpointer a, gconstpointer b)
                             i = i + 1;
                         }
 
-                    if (i == HASH_LEN)
+                    if (i == HASH_LEN && first == second)
                         {
                             return 0;
                         }
