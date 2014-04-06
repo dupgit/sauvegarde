@@ -1,3 +1,4 @@
+docs/doxygen_docs/
 autom4te.cache/
 *.la
 *.lo
