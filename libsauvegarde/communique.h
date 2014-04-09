@@ -39,7 +39,8 @@
 
 /**
  * @struct comm_t
- * Structure that will contain everything needed to the communication layer.
+ * @brief Structure that will contain everything needed to the
+ *        communication layer.
  */
 typedef struct
 {

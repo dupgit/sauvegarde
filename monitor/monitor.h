@@ -72,7 +72,7 @@
 
 /**
  * @struct main_struct_t
- * Structure that will contain everything needed by the program
+ * @brief Structure that contains everything needed by the program.
  */
 typedef struct
 {
@@ -87,8 +87,9 @@ typedef struct
 
 
 /**
- * @struct thread_t
- * Structure to be passed to a thread that will traverse the directory list
+ * @struct thread_data_t
+ * @brief Structure to be passed to a thread that will traverse the
+ *        directory list.
  */
 typedef struct
 {

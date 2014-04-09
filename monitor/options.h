@@ -30,8 +30,10 @@
 
 /**
  * @struct options_t
+ * @brief Selected options.
+ *
  * Structure Options gives a way to store program options passed from the
- * command line.
+ * command line or read from a configuration file.
  */
 typedef struct
 {

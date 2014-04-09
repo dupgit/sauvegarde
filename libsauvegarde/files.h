@@ -30,6 +30,8 @@
 
 /**
  * @struct meta_data_t
+ * @brief Stores file's meta datas.
+ *
  * Structure to store all meta data associated with a file or a directory
  * command line. We want to limit memory consumption and thus we use the
  * guint instead of gchar *.

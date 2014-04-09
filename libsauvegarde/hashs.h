@@ -37,6 +37,8 @@
 
 /**
  * @struct hashs_t
+ * @brief Storing hashs and things related in a balanced binary tree.
+ *
  * Structure that contains a balanced binary tree to store hashs in a
  * binary form to save space. keys are hashs and value is the data that
  * generated the corresponding checksum.
@@ -51,9 +53,10 @@ typedef struct
 
 /**
  * @struct data_t
- * Structure that stores buffer data (buffer) and its size (read). It will
- * be associated with the checksum into the GTree balanced binary tree of
- * the hashs_t structure.
+ * @brief Structure that stores buffer data (buffer) and its size (read).
+ *
+ * It will be associated with the checksum into the GTree balanced binary
+ * tree of the hashs_t structure.
  */
 typedef struct
 {

@@ -38,7 +38,7 @@
 
 /**
  * @struct db_t
- * Structure to store everything that is needed for the database
+ * @brief Structure to store everything that is needed for the database.
  */
 typedef struct
 {
