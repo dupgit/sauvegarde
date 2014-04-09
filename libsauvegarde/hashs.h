@@ -89,6 +89,8 @@ extern gint compare_two_hashs(gconstpointer a, gconstpointer b);
  * @param a_hash is a hash in a binary form
  * @param buffer is the data whom checksum is a_hashs
  * @param read is the number of bytes in guchar *buffer
+ * @param meta : meta_data_t * structure that contains all meta data for
+ *        the corresponding file.
  */
 void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize read, meta_data_t *meta);
 

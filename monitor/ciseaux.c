@@ -40,6 +40,8 @@ static gpointer print_things(gpointer data);
  * @param stream the stream on which we want to calculate the checksum
  * @param filename is the filename of the opened stream (to be displayed in
  *        case of error.
+ * @param meta : meta_data_t * structure that contains all meta data for
+ *        the corresponding file.
  */
 static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gchar *filename, meta_data_t *meta)
 {
@@ -102,6 +104,10 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
  * @param main_struct : main structure (needed to know the queue to
  *        send the message.
  * @param dirname : a gchar * directory name.
+ * @param fileinfo is a pointer to a structure that contains all meta
+ *        information about the file (such as what a stat call gives back).
+ * @param meta : meta_data_t * structure that contains all meta data for
+ *        the corresponding file.
  */
 static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileInfo *fileinfo, meta_data_t *meta)
 {
@@ -136,7 +142,11 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
  *       the thread that will print it and is freed there.
  * @param main_struct : main structure that contains everything
  * @param a_file : the GFile opened
- * @param filename the filename of the opened GFile
+ * @param filename the filename of the opened GFile.
+ * @param fileinfo is a pointer to a structure that contains all meta
+ *        information about the file (such as what a stat call gives back).
+ * @param meta : meta_data_t * structure that contains all meta data for
+ *        the corresponding file.
  */
 static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filename, GFileInfo *fileinfo, meta_data_t *meta)
 {

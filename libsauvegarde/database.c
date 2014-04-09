@@ -82,7 +82,7 @@ static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message)
 
 /**
  * Counts the number of row that we have by incrementing i.
- * @param i is an integer that will count the number of rows in the result.
+ * @param num is an integer that will count the number of rows in the result.
  * @param nb_col gives the number of columns in this row.
  * @param data contains the data of each column.
  * @param name_col contains the name of each column.

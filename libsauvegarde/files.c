@@ -56,6 +56,8 @@ extern gchar *get_filename_from_gfile(GFile *a_file)
  * Returns the username of the owner of the a file
  * @param fileinfo : a GFileInfo pointer obtained from an opened file
  *        (GFile *)
+ * @param meta : meta_data_t * structure that contains all meta data for
+ *        the corresponding file.
  * @returns the "user:group uid:gid" of the file or an empty string if an
  *          error occurs
  */
@@ -67,7 +69,6 @@ extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo, meta_data_t *me
     gchar *ids = NULL;
     guint32 uid = 0;
     guint32 gid = 0;
-
 
     if (fileinfo != NULL)
         {
@@ -102,6 +103,8 @@ extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo, meta_data_t *me
  * Returns the dates of a file
  * @param fileinfo : a GFileInfo pointer obtained from an opened file
  *        (GFile *)
+ * @param meta : meta_data_t * structure that contains all meta data for
+ *        the corresponding file.
  * @returns "access_time changed_time modified_time" gchar *string
  */
 extern gchar *get_dates_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
@@ -136,6 +139,8 @@ extern gchar *get_dates_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
  * Get unix mode of a file
  * @param fileinfo : a GFileInfo pointer obtained from an opened file
  *        (GFile *)
+ * @param meta : meta_data_t * structure that contains all meta data for
+ *        the corresponding file.
  * @returns a newly allocated string with file mode in decimal
  *          representation.
  */
