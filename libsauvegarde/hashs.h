@@ -92,7 +92,7 @@ extern gint compare_two_hashs(gconstpointer a, gconstpointer b);
  * @param meta : meta_data_t * structure that contains all meta data for
  *        the corresponding file.
  */
-void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize read, meta_data_t *meta);
+extern void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize read, meta_data_t *meta);
 
 
 /**
@@ -101,7 +101,7 @@ void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize rea
  *        a string.
  * @returns a string that conatins the hash in an hexadecimal form.
  */
-gchar *hash_to_string(guint8 *a_hash);
+extern gchar *hash_to_string(guint8 *a_hash);
 
 
 /**
@@ -109,7 +109,7 @@ gchar *hash_to_string(guint8 *a_hash);
  * @param buffer : the data to be stored
  * @param read : the size of that buffer
  */
-data_t *new_data_t_structure(guchar *buffer, gssize read);
+extern data_t *new_data_t_structure(guchar *buffer, gssize read);
 
 
 /**
@@ -117,6 +117,6 @@ data_t *new_data_t_structure(guchar *buffer, gssize read);
  * @param a_data : the stucture that contains buffer data and its size to
  * be freed
  */
-gpointer free_data_t_structure(data_t *a_data);
+extern gpointer free_data_t_structure(data_t *a_data);
 
 #endif /* #ifndef _HASHS_H_ */

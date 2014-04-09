@@ -78,7 +78,7 @@ extern comm_t *create_push_socket(gchar *somewhere);
  *           be NULL and receiver should not be null but sender is set to
  *           NULL.
  */
-comm_t *create_pull_socket(gchar *somewhere);
+extern comm_t *create_pull_socket(gchar *somewhere);
 
 
 /**
@@ -89,7 +89,7 @@ comm_t *create_pull_socket(gchar *somewhere);
  * @returns size of the message sent. 0 may be returned if comm or message
  *          are NULL.
  */
-gint send_message(comm_t *comm, gchar *message);
+extern gint send_message(comm_t *comm, gchar *message);
 
 
 /**
@@ -99,7 +99,7 @@ gint send_message(comm_t *comm, gchar *message);
  * @returns a newly allocated gchar * message that can be freed when no
  *         longer needed.
  */
-gchar *receive_message(comm_t *comm);
+extern gchar *receive_message(comm_t *comm);
 
 
 

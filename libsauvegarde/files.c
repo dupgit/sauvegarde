@@ -35,7 +35,7 @@
  * @returns the name of the GFile if any or "--" gchar * string that may be
  *          freed when no longer needed
  */
-extern gchar *get_filename_from_gfile(GFile *a_file)
+gchar *get_filename_from_gfile(GFile *a_file)
 {
     gchar *filename = NULL;
 
@@ -61,7 +61,7 @@ extern gchar *get_filename_from_gfile(GFile *a_file)
  * @returns the "user:group uid:gid" of the file or an empty string if an
  *          error occurs
  */
-extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
+gchar *get_username_owner_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 {
     gchar *owner = NULL;
     gchar *group = NULL;
@@ -107,7 +107,7 @@ extern gchar *get_username_owner_from_gfile(GFileInfo *fileinfo, meta_data_t *me
  *        the corresponding file.
  * @returns "access_time changed_time modified_time" gchar *string
  */
-extern gchar *get_dates_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
+gchar *get_dates_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 {
     guint64 atime = 0;
     guint64 ctime = 0;
@@ -144,7 +144,7 @@ extern gchar *get_dates_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
  * @returns a newly allocated string with file mode in decimal
  *          representation.
  */
-extern gchar *get_file_mode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
+gchar *get_file_mode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 {
     guint32 mode = 0;
     gchar *result = NULL;

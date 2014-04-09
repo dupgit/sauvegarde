@@ -59,6 +59,6 @@ extern gchar *db_version(void);
  * @result returns a db_t * filled with the database connexion or NULL
  *         in case of an error.
  */
-db_t *open_database(gchar *database_name);
+extern db_t *open_database(gchar *database_name);
 
 #endif /* #ifndef _DATABASE_H_ */

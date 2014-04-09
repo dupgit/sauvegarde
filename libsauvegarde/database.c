@@ -28,6 +28,8 @@
 
 #include "libsauvegarde.h"
 
+static void print_db_error(sqlite3 *db, const char *format, ...);
+static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message);
 static int table_callback(void *num, int nbCol, char **data, char **nomCol);
 static void verify_if_tables_exists(db_t *database);
 
