@@ -42,7 +42,7 @@
  */
 typedef struct
 {
-    sqlite3 *db;  /** database connexion  */
+    sqlite3 *db;  /**< database connexion  */
 } db_t;
 
 

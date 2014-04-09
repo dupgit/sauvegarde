@@ -44,9 +44,9 @@
  */
 typedef struct
 {
-   void *context;   /** context to be used by the functions calling ZMQ */
-   void *sender;    /** "socket" for the sender                         */
-   void *receiver;  /** "socket" for the receiver                       */
+   void *context;   /**< context to be used by the functions calling ZMQ */
+   void *sender;    /**< "socket" for the sender                         */
+   void *receiver;  /**< "socket" for the receiver                       */
 } comm_t;
 
 

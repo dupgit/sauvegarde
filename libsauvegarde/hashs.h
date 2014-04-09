@@ -45,9 +45,9 @@
  */
 typedef struct
 {
-    GTree *tree_hash;    /** A balanced binary tree to strores hashs and data */
-    guint64 total_bytes; /** Total number of bytes that passed into */
-    guint64 in_bytes;    /** Number of bytes into the GTree (deduplicated) */
+    GTree *tree_hash;    /**< A balanced binary tree to strores hashs and data */
+    guint64 total_bytes; /**< Total number of bytes that passed into           */
+    guint64 in_bytes;    /**< Number of bytes into the GTree (deduplicated)    */
 } hashs_t;
 
 
@@ -60,8 +60,8 @@ typedef struct
  */
 typedef struct
 {
-    guchar *buffer; /** buffer data read from the file */
-    gssize read;    /** size of that buffer            */
+    guchar *buffer; /**< buffer data read from the file */
+    gssize read;    /**< size of that buffer            */
 } data_t;
 
 

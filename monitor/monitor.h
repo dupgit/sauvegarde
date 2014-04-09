@@ -76,13 +76,13 @@
  */
 typedef struct
 {
-    options_t *opt;           /** Options of the program from the command line                                              */
-    const gchar *hostname;    /** Name of the current machine                                                               */
-    GAsyncQueue *queue;       /** Communication queue between threads                                                       */
-    GAsyncQueue *print_queue; /** Communication queue between the threads pool and a thread that may print things to screen */
-    GAsyncQueue *store_queue; /** Communication queue with same messages than print_queue but that can not be shutdown !    */
-    hashs_t *hashs;           /** Calculated hashs stored in a balanced binary tree                                         */
-    db_t *database;           /** Database structure that stores everything that is related to the database                 */
+    options_t *opt;           /**< Options of the program from the command line                                              */
+    const gchar *hostname;    /**< Name of the current machine                                                               */
+    GAsyncQueue *queue;       /**< Communication queue between threads                                                       */
+    GAsyncQueue *print_queue; /**< Communication queue between the threads pool and a thread that may print things to screen */
+    GAsyncQueue *store_queue; /**< Communication queue with same messages than print_queue but that can not be shutdown !    */
+    hashs_t *hashs;           /**< Calculated hashs stored in a balanced binary tree                                         */
+    db_t *database;           /**< Database structure that stores everything that is related to the database                 */
 } main_struct_t;
 
 
@@ -93,8 +93,8 @@ typedef struct
  */
 typedef struct
 {
-    main_struct_t *main_struct; /** main structure for the program      */
-    GSList *dir_list;           /** List of directories to be monitored */
+    main_struct_t *main_struct; /**< main structure for the program      */
+    GSList *dir_list;           /**< List of directories to be monitored */
 } thread_data_t;
 
 #include "ciseaux.h"

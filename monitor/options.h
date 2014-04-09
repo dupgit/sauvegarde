@@ -37,13 +37,13 @@
  */
 typedef struct
 {
-    gboolean version;     /** TRUE if we have to display program's version                                      */
-    GSList *dirname_list; /** Directory names that were left in the command line                                */
-    gint64 blocksize;     /** block size in bytes                                                               */
-    gchar *configfile;    /** filename for the configuration file specified on the command line                 */
-    gboolean noprint;     /** FALSE by default, TRUE if we want to quiet the program while calculating checsums */
-    gchar *dircache;      /** Directory where we will cache files and temporary stuff to do the job             */
-    gchar *dbname;        /** File name of the database that is used to cache files and buffers localy          */
+    gboolean version;     /**< TRUE if we have to display program's version                                      */
+    GSList *dirname_list; /**< Directory names that were left in the command line                                */
+    gint64 blocksize;     /**< block size in bytes                                                               */
+    gchar *configfile;    /**< filename for the configuration file specified on the command line                 */
+    gboolean noprint;     /**< FALSE by default, TRUE if we want to quiet the program while calculating checsums */
+    gchar *dircache;      /**< Directory where we will cache files and temporary stuff to do the job             */
+    gchar *dbname;        /**< File name of the database that is used to cache files and buffers localy          */
 } options_t;
 
 
