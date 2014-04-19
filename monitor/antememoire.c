@@ -72,18 +72,26 @@ gpointer store_buffer_data(gpointer data)
     guint8 *a_hash = NULL;
     gchar *string = NULL;
     data_t *a_data = NULL;
+    db_t *database = NULL;
     gint i = 0;
 
     if (main_struct != NULL)
         {
+            database = main_struct->database;
+
             do
                 {
                     meta = g_async_queue_pop(main_struct->store_queue);
 
                     if (meta->name != NULL)   /* if name is null than it should not be processed */
                         {
+                            if (is_file_in_cache(database, meta) == FALSE)
+                                {
+                                    print_debug(stdout, "Inserting into database file %s\n", meta->name);
+                                    insert_file_into_cache(database, meta);
+                                }
 
-                            fprintf(stdout, "\n%s\n%d\n%d\n%ld\n%ld\n%ld\n%s\n%s\n%d\n%d\n",  meta->name, meta->file_type, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->owner, meta->group, meta->uid, meta->gid);
+
                             head = meta->hash_list;
                             i = 0;
                             while (head != NULL)
