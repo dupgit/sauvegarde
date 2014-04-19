@@ -148,16 +148,18 @@ gboolean is_file_in_cache(db_t *database, meta_data_t *meta)
     int db_result = 0;
     char *error_message = NULL;
     int *i = NULL;                 /**< Used to count the number of row */
-    gchar *sql_command = NULL;      /**< Command to be executed          */
+    gchar *sql_command = NULL;     /**< Command to be executed          */
 
     if (meta != NULL && database != NULL)
         {
             i = (int *) g_malloc0(sizeof(int));
             *i = 0;
 
-            sql_command = g_strdup_printf("SELECT file_id from files WHERE name='%s' AND type=%d AND uid=%d AND gid=%d AND atime=%ld AND ctime=%ld AND mtime=%ld AND mode=%d", meta->name, meta->file_type, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode);
+            sql_command = g_strdup_printf("SELECT file_id from files WHERE name='%s' AND type=%d AND uid=%d AND gid=%d AND atime=%ld AND ctime=%ld AND mtime=%ld AND mode=%d;", meta->name, meta->file_type, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode);
 
             db_result = sqlite3_exec(database->db, sql_command, table_callback, i, &error_message);
+
+            free_variable(sql_command);
 
             if (db_result == SQLITE_OK)
                 {
@@ -179,6 +181,31 @@ gboolean is_file_in_cache(db_t *database, meta_data_t *meta)
     else
         {
             return FALSE;
+        }
+}
+
+
+/**
+ * Insert file into cache. One should have verified that the file
+ * does not already exists in the database.
+ * @param database is the structure that contains everything that is
+ *        related to the database (it's connexion for instance).
+ * @param meta is the file's metadata that we want to insert into the
+ *        cache.
+ */
+void insert_file_into_cache(db_t *database, meta_data_t *meta)
+{
+    gchar *sql_command = NULL;     /**< Command to be executed          */
+
+
+    if (meta != NULL && database != NULL)
+        {
+
+            sql_command = g_strdup_printf("INSERT INTO files (type, file_user, file_group, uid, gid, atime, ctime, mtime, mode, name) VALUES (%d, '%s', '%s', %d, %d, %ld, %ld, %ld, %d, '%s');", meta->file_type, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->name);
+
+            exec_sql_cmd(database, sql_command,  N_("Error while inserting into the table 'files': %s\n"));
+
+            free_variable(sql_command);
         }
 }
 
