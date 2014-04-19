@@ -44,7 +44,7 @@ gchar *db_version(void)
 
 /**
  * Prints an error message to stderr and exit (db errors are considered as
- * fatal for now.
+ * fatal for now).
  * @param db : file connexion to the database.
  * @param format : the format of the message (as in printf)
  * @param ... : va_list of variable that are to be printed into format.
@@ -109,7 +109,7 @@ static void verify_if_tables_exists(db_t *database)
 {
     char *error_message = NULL;
     int result = 0;
-    int *i = NULL;               /** Used to count the number of row */
+    int *i = NULL;               /**< Used to count the number of row */
 
     i = (int *) g_malloc0(sizeof(int));
     *i = 0;
@@ -130,6 +130,55 @@ static void verify_if_tables_exists(db_t *database)
 
             /* Creation of files table that contains everything about a file */
             exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, type INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, name TEXT);", N_("Error while creating database table 'files': %s\n"));
+        }
+}
+
+
+/**
+ * Says whether a file is in allready in the cache or not
+ * @param database is the structure that contains everything that is
+ *        related to the database (it's connexion for instance).
+ * @param meta is the file's metadata that we want to know if it's already
+ *        in the cache.
+ * @returns a boolean that says TRUE if the file is already in the cache
+ *          and FALSE if not.
+ */
+gboolean is_file_in_cache(db_t *database, meta_data_t *meta)
+{
+    int db_result = 0;
+    char *error_message = NULL;
+    int *i = NULL;                 /**< Used to count the number of row */
+    gchar *sql_command = NULL;      /**< Command to be executed          */
+
+    if (meta != NULL && database != NULL)
+        {
+            i = (int *) g_malloc0(sizeof(int));
+            *i = 0;
+
+            sql_command = g_strdup_printf("SELECT file_id from files WHERE name='%s' AND type=%d AND uid=%d AND gid=%d AND atime=%ld AND ctime=%ld AND mtime=%ld AND mode=%d", meta->name, meta->file_type, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode);
+
+            db_result = sqlite3_exec(database->db, sql_command, table_callback, i, &error_message);
+
+            if (db_result == SQLITE_OK)
+                {
+                    if (*i == 0) /* No row has been returned. It means that the file isn't in the cache */
+                        {
+                            return FALSE;
+                        }
+                    else
+                        {
+                            return TRUE;
+                        }
+                }
+            else
+                {
+                    print_db_error(database->db, N_("Error while searching into the table 'files': %s\n"), error_message);
+                    return FALSE;
+                }
+        }
+    else
+        {
+            return FALSE;
         }
 }
 

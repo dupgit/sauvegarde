@@ -61,4 +61,16 @@ extern gchar *db_version(void);
  */
 extern db_t *open_database(gchar *database_name);
 
+
+/**
+ * Says whether a file is in allready in the cache or not
+ * @param database is the structure that contains everything that is
+ *        related to the database (it's connexion for instance).
+ * @param meta is the file's metadata that we want to know if it's already
+ *        in the cache.
+ * @returns a boolean that says TRUE if the file is already in the cache
+ *          and FALSE if not.
+ */
+extern gboolean is_file_in_cache(db_t *database, meta_data_t *meta);
+
 #endif /* #ifndef _DATABASE_H_ */
