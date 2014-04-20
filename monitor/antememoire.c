@@ -68,12 +68,7 @@ gpointer store_buffer_data(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
     meta_data_t *meta = NULL;
-    GSList *head = NULL;
-    guint8 *a_hash = NULL;
-    gchar *string = NULL;
-    data_t *a_data = NULL;
     db_t *database = NULL;
-    gint i = 0;
 
     if (main_struct != NULL)
         {
@@ -88,23 +83,7 @@ gpointer store_buffer_data(gpointer data)
                             if (is_file_in_cache(database, meta) == FALSE)
                                 {
                                     print_debug(stdout, "Inserting into database file %s\n", meta->name);
-                                    insert_file_into_cache(database, meta);
-                                }
-
-
-                            head = meta->hash_list;
-                            i = 0;
-                            while (head != NULL)
-                                {
-                                    a_hash = head->data;
-                                    a_data = g_tree_lookup(main_struct->hashs->tree_hash, a_hash);
-
-                                    string = hash_to_string(a_hash);
-                                    fprintf(stdout, "\t%d : %ld, %s\n", i, a_data->read, string);
-                                    free_variable(string);
-
-                                    head = g_slist_next(head);
-                                    i = i + 1;
+                                    insert_file_into_cache(database, meta, main_struct->hashs);
                                 }
                         }
                 }

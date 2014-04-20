@@ -36,7 +36,7 @@ static file_row_t *new_file_row_t(void);
 static void free_file_row_t(file_row_t *row);
 static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col);
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
-
+static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id);
 
 /**
  * @returns a string containing the version of the database used.
@@ -261,26 +261,87 @@ static void free_file_row_t(file_row_t *row)
 
 
 /**
+ * Inserts the checksums related to the file into the database.
+ * @param database is the structure that contains everything that is
+ *        related to the database (it's connexion for instance).
+ * @param meta is the file's metadata that we want to insert into the
+ *        cache.
+ * @param hashs : a balanced binary tree that stores hashs.
+ */
+static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id)
+{
+    GSList *head = NULL;
+    guint8 *a_hash = NULL;
+    data_t *a_data = NULL;
+    guint64 i = 0;
+    gchar *sql_command = NULL;
+
+    if (database != NULL && meta != NULL)
+        {
+            head = meta->hash_list;
+            i = 0;
+            while (head != NULL)
+                {
+                    a_hash = head->data;
+
+                    /* Inserting the hash and it's order into buffers table */
+                    sql_command = g_strdup_printf("INSERT INTO buffers (file_id, buf_order, checksum) VALUES (%ld, %ld, '%s');", file_id, i, a_hash);
+                    exec_sql_cmd(database, sql_command,  N_("Error while inserting into the table 'buffers': %s\n"));
+                    free_variable(sql_command);
+
+                    /* Inserting checksum and the corresponding data into data table */
+                    a_data = g_tree_lookup(hashs->tree_hash, a_hash);
+                    sql_command = g_strdup_printf("INSERT INTO data (checksum, size, data) VALUES ('%s', %ld, '%s');", a_hash, a_data->read, a_data->buffer);
+                    exec_sql_cmd(database, sql_command,  N_("Error while inserting into the table 'data': %s\n"));
+                    free_variable(sql_command);
+
+                    head = g_slist_next(head);
+                    i = i + 1;
+                }
+        }
+}
+
+
+/**
  * Insert file into cache. One should have verified that the file
  * does not already exists in the database.
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
  * @param meta is the file's metadata that we want to insert into the
  *        cache.
+ * @param hashs : a balanced binary tree that stores hashs.
  */
-void insert_file_into_cache(db_t *database, meta_data_t *meta)
+void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs)
 {
     gchar *sql_command = NULL;     /**< Command to be executed          */
-
+    file_row_t *row = NULL;
+    guint64 file_id = 0;
 
     if (meta != NULL && database != NULL)
         {
-
+            /* Inserting the file into the files table */
             sql_command = g_strdup_printf("INSERT INTO files (type, file_user, file_group, uid, gid, atime, ctime, mtime, mode, name) VALUES (%d, '%s', '%s', %d, %d, %ld, %ld, %ld, %d, '%s');", meta->file_type, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->name);
 
             exec_sql_cmd(database, sql_command,  N_("Error while inserting into the table 'files': %s\n"));
 
             free_variable(sql_command);
+
+            /* getting its autoincrement file_id */
+            row = get_file_id(database, meta); /* Seeking for the file_id which has been associated to this file */
+
+            if (row != NULL)
+                {
+                    print_debug(stdout, _("file_id = %s ; list length = %d\n"), row->file_id_list->data, g_slist_length(row->file_id_list));
+                    file_id = g_ascii_strtoull(row->file_id_list->data, NULL, 10);
+                    insert_file_checksums(database, meta, hashs, file_id);
+
+                }
+            else  /* if we have no answer that means that something went wrong */
+                {
+                    print_db_error(database->db, _("Error while trying to get file_id of %s file\n"), meta->name);
+                    exit(EXIT_FAILURE);
+                }
+
         }
 }
 

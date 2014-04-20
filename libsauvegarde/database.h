@@ -91,7 +91,8 @@ extern gboolean is_file_in_cache(db_t *database, meta_data_t *meta);
  *        related to the database (it's connexion for instance).
  * @param meta is the file's metadata that we want to insert into the
  *        cache.
+ * @param hashs : a balanced binary tree that stores hashs.
  */
-extern void insert_file_into_cache(db_t *database, meta_data_t *meta);
+void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs);
 
 #endif /* #ifndef _DATABASE_H_ */
