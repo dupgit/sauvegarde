@@ -165,6 +165,7 @@ gboolean is_file_in_cache(db_t *database, meta_data_t *meta)
                 }
             else
                 {
+                    free_file_row_t(row);
                     return TRUE;
                 }
 
@@ -274,7 +275,6 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta)
             sql_command = g_strdup_printf("INSERT INTO files (type, file_user, file_group, uid, gid, atime, ctime, mtime, mode, name) VALUES (%d, '%s', '%s', %d, %d, %ld, %ld, %ld, %d, '%s');", meta->file_type, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->name);
 
             exec_sql_cmd(database, sql_command,  N_("Error while inserting into the table 'files': %s\n"));
-
 
             free_variable(sql_command);
         }
