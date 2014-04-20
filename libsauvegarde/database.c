@@ -32,6 +32,12 @@ static void print_db_error(sqlite3 *db, const char *format, ...);
 static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message);
 static int table_callback(void *num, int nbCol, char **data, char **nomCol);
 static void verify_if_tables_exists(db_t *database);
+static file_row_t *new_file_row_t(void);
+static void free_file_row_t(file_row_t *row);
+static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col);
+static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
+
+
 
 /**
  * @returns a string containing the version of the database used.
@@ -145,42 +151,106 @@ static void verify_if_tables_exists(db_t *database)
  */
 gboolean is_file_in_cache(db_t *database, meta_data_t *meta)
 {
-    int db_result = 0;
-    char *error_message = NULL;
-    int *i = NULL;                 /**< Used to count the number of row */
-    gchar *sql_command = NULL;     /**< Command to be executed          */
+    file_row_t *row = NULL;
 
     if (meta != NULL && database != NULL)
         {
-            i = (int *) g_malloc0(sizeof(int));
-            *i = 0;
 
-            sql_command = g_strdup_printf("SELECT file_id from files WHERE name='%s' AND type=%d AND uid=%d AND gid=%d AND atime=%ld AND ctime=%ld AND mtime=%ld AND mode=%d;", meta->name, meta->file_type, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode);
+            row = get_file_id(database, meta);
 
-            db_result = sqlite3_exec(database->db, sql_command, table_callback, i, &error_message);
-
-            free_variable(sql_command);
-
-            if (db_result == SQLITE_OK)
+            if (row != NULL && row->nb_row == 0) /* No row has been returned. It means that the file isn't in the cache */
                 {
-                    if (*i == 0) /* No row has been returned. It means that the file isn't in the cache */
-                        {
-                            return FALSE;
-                        }
-                    else
-                        {
-                            return TRUE;
-                        }
+                    free_file_row_t(row);
+                    return FALSE;
                 }
             else
                 {
-                    print_db_error(database->db, N_("Error while searching into the table 'files': %s\n"), error_message);
-                    return FALSE;
+                    return TRUE;
                 }
+
         }
     else
         {
             return FALSE;
+        }
+}
+
+/**
+ * Gets file_ids from returned rows.
+ * @param a_row is a file_row_t * structure
+ * @param nb_col gives the number of columns in this row.
+ * @param data contains the data of each column.
+ * @param name_col contains the name of each column.
+ * @returns always 0.
+ */
+static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col)
+{
+    file_row_t *row = (file_row_t *) a_row;
+
+    row->nb_row = row->nb_row + 1;
+    row->file_id_list = g_slist_append(row->file_id_list, g_strdup(data[0]));
+
+    return 0;
+}
+
+
+/**
+ * Returns the file_id for the specified file.
+ */
+static file_row_t *get_file_id(db_t *database, meta_data_t *meta)
+{
+    file_row_t *row = NULL;
+    char *error_message = NULL;
+    gchar *sql_command = NULL;
+    int db_result = 0;
+
+    row = new_file_row_t();
+
+    sql_command = g_strdup_printf("SELECT file_id from files WHERE name='%s' AND type=%d AND uid=%d AND gid=%d AND atime=%ld AND ctime=%ld AND mtime=%ld AND mode=%d;", meta->name, meta->file_type, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode);
+
+    db_result = sqlite3_exec(database->db, sql_command, get_file_callback, row, &error_message);
+
+    free_variable(sql_command);
+
+    if (db_result == SQLITE_OK)
+        {
+           return row;
+        }
+    else
+        {
+            print_db_error(database->db, N_("Error while searching into the table 'files': %s\n"), error_message);
+            return NULL;
+        }
+}
+
+
+/**
+ * Creates and inits a new file_row_t * structure.
+ * @returns an empty file_row_t * structure.
+ */
+static file_row_t *new_file_row_t(void)
+{
+    file_row_t *row = NULL;
+
+    row = (file_row_t *) g_malloc0(sizeof(file_row_t));
+
+    row->nb_row = 0;
+    row->file_id_list = NULL;
+
+    return row;
+}
+
+
+/**
+ * Frees everything whithin the file_row_t structure
+ * @param row is the variable to be freed totaly
+ */
+static void free_file_row_t(file_row_t *row)
+{
+    if (row != NULL)
+        {
+            g_slist_free(row->file_id_list);
+            free_variable(row);
         }
 }
 
@@ -204,6 +274,7 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta)
             sql_command = g_strdup_printf("INSERT INTO files (type, file_user, file_group, uid, gid, atime, ctime, mtime, mode, name) VALUES (%d, '%s', '%s', %d, %d, %ld, %ld, %ld, %d, '%s');", meta->file_type, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->name);
 
             exec_sql_cmd(database, sql_command,  N_("Error while inserting into the table 'files': %s\n"));
+
 
             free_variable(sql_command);
         }

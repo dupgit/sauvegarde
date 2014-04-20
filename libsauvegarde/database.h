@@ -47,6 +47,17 @@ typedef struct
 
 
 /**
+ * @struct file_row_t
+ * @brief Structure that contains some fields of files's table row
+ */
+typedef struct
+{
+    guint nb_row;          /**< number of row    */
+    GSList *file_id_list;  /**< list of file_ids */
+} file_row_t;
+
+
+/**
  * @returns a string containing the version of the database used.
  */
 extern gchar *db_version(void);
