@@ -36,6 +36,7 @@ static file_row_t *new_file_row_t(void);
 static void free_file_row_t(file_row_t *row);
 static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col);
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
+static int get_data_callback(void *a_data, int nb_col, char **data, char **name_col);
 static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id);
 static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash);
 
@@ -262,6 +263,7 @@ static void free_file_row_t(file_row_t *row)
         }
 }
 
+
 /**
  * Gets file_ids from returned rows.
  * @param a_data is a data_t * structure
@@ -327,7 +329,9 @@ static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash)
  *        cache.
  * @param hashs : a balanced binary tree that stores hashs.
  * @todo find a more efficient way to know if a hash has already been
- *       inserted with it's data into the database.
+ *       inserted with it's data into the database. A way may be to store
+ *       inserted hashs into a balanced binary tree for the session and to
+ *       retreive them at the beginning of the session.
  */
 static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id)
 {
