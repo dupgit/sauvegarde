@@ -37,6 +37,7 @@ static void free_file_row_t(file_row_t *row);
 static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col);
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
 static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id);
+static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash);
 
 /**
  * @returns a string containing the version of the database used.
@@ -201,6 +202,8 @@ static int get_file_callback(void *a_row, int nb_col, char **data, char **name_c
  *        related to the database (it's connexion for instance).
  * @param meta is the file's metadata that we want to insert into the
  *        cache.
+ * @returns a file_row_t structure filed with values returned by the
+ *          database.
  */
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta)
 {
@@ -224,7 +227,7 @@ static file_row_t *get_file_id(db_t *database, meta_data_t *meta)
     else
         {
             print_db_error(database->db, N_("Error while searching into the table 'files': %s\n"), error_message);
-            return NULL;
+            return NULL; /* to avoid a compilation warning as we exited with failure in print_db_error */
         }
 }
 
@@ -259,6 +262,62 @@ static void free_file_row_t(file_row_t *row)
         }
 }
 
+/**
+ * Gets file_ids from returned rows.
+ * @param a_data is a data_t * structure
+ * @param nb_col gives the number of columns in this row.
+ * @param data contains the data of each column.
+ * @param name_col contains the name of each column.
+ * @returns always 0.
+ */
+static int get_data_callback(void *a_data, int nb_col, char **data, char **name_col)
+{
+    data_t *my_data = (data_t *) a_data;
+
+    if (data != NULL)
+        {
+            my_data->read = g_ascii_strtoull(data[0], NULL, 10);
+            my_data->buffer = g_strdup(data[1]);
+        }
+
+    return 0;
+}
+
+
+/**
+ * Gets data from a checksum
+ * @param database is the structure that contains everything that is
+ *        related to the database (it's connexion for instance).
+ * @param encoded_hash is the checksum base64 encoded.
+ * @returns a newly allocated data_t structure which may contain the data
+ *          for the specified base64 encoded hash (checksum).
+ */
+static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash)
+{
+    data_t *a_data = NULL;
+    char *error_message = NULL;
+    gchar *sql_command = NULL;
+    int db_result = 0;
+
+    a_data = new_data_t_structure(NULL, 0);
+
+    sql_command = g_strdup_printf("SELECT size, data FROM data WHERE checksum='%s' ;", encoded_hash);
+
+    db_result = sqlite3_exec(database->db, sql_command, get_data_callback, a_data, &error_message);
+
+    free_variable(sql_command);
+
+    if (db_result == SQLITE_OK)
+        {
+           return a_data;
+        }
+    else
+        {
+            print_db_error(database->db, N_("Error while searching into the table 'data': %s\n"), error_message);
+            return NULL; /* to avoid a compilation warning as we exited with failure in print_db_error */
+        }
+}
+
 
 /**
  * Inserts the checksums related to the file into the database.
@@ -267,11 +326,15 @@ static void free_file_row_t(file_row_t *row)
  * @param meta is the file's metadata that we want to insert into the
  *        cache.
  * @param hashs : a balanced binary tree that stores hashs.
+ * @todo find a more efficient way to know if a hash has already been
+ *       inserted with it's data into the database.
  */
 static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id)
 {
     GSList *head = NULL;
     guint8 *a_hash = NULL;
+    gchar *encoded_hash = NULL;  /**< base64 encoded hash */
+    gchar *encoded_data = NULL;  /**< base64 encoded data buffer */
     data_t *a_data = NULL;
     guint64 i = 0;
     gchar *sql_command = NULL;
@@ -283,17 +346,33 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
             while (head != NULL)
                 {
                     a_hash = head->data;
+                    encoded_hash = g_base64_encode((guchar*) a_hash, HASH_LEN);
 
                     /* Inserting the hash and it's order into buffers table */
-                    sql_command = g_strdup_printf("INSERT INTO buffers (file_id, buf_order, checksum) VALUES (%ld, %ld, '%s');", file_id, i, a_hash);
+                    sql_command = g_strdup_printf("INSERT INTO buffers (file_id, buf_order, checksum) VALUES (%ld, %ld, '%s');", file_id, i, encoded_hash);
+
                     exec_sql_cmd(database, sql_command,  N_("Error while inserting into the table 'buffers': %s\n"));
+
                     free_variable(sql_command);
 
-                    /* Inserting checksum and the corresponding data into data table */
-                    a_data = g_tree_lookup(hashs->tree_hash, a_hash);
-                    sql_command = g_strdup_printf("INSERT INTO data (checksum, size, data) VALUES ('%s', %ld, '%s');", a_hash, a_data->read, a_data->buffer);
-                    exec_sql_cmd(database, sql_command,  N_("Error while inserting into the table 'data': %s\n"));
-                    free_variable(sql_command);
+                    /* Is encoded hash already in the database ? */
+                    a_data = get_data_from_checksum(database, encoded_hash);
+
+                    if (a_data != NULL && (a_data->read == 0 && a_data->buffer == NULL)) /* encoded_hash is not in the database */
+                        {
+                            /* Inserting checksum and the corresponding data into data table */
+                            a_data = g_tree_lookup(hashs->tree_hash, a_hash);
+                            encoded_data = g_base64_encode((guchar*) a_data->buffer, a_data->read);
+
+                            sql_command = g_strdup_printf("INSERT INTO data (checksum, size, data) VALUES ('%s', %ld, '%s');", encoded_hash, a_data->read, encoded_data);
+
+                            exec_sql_cmd(database, sql_command,  N_("Error while inserting into the table 'data': %s\n"));
+
+                            free_variable(sql_command);
+                            free_variable(encoded_data);
+                        }
+
+                    free_variable(encoded_hash);
 
                     head = g_slist_next(head);
                     i = i + 1;
