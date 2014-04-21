@@ -88,7 +88,7 @@ May be we can store the informations in a scheme like the one below :
     --- files ----         -- buffers ---
     | file_id    | <-1,n-> | file_id    |
     | type       |         | buf_order  |         --- data ---
-    | file_user  |         | checksum   | <-1,1-> | checksum |
+    | file_user  |         | checksum   | <-n,1-> | checksum |
     | file_group |         --------------         | size     |
     | uid        |                                | data     |
     | gid        |                                ------------
