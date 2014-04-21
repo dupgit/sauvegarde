@@ -128,10 +128,10 @@ static void verify_if_tables_exists(db_t *database)
 
             /* The database does not contain any tables. So we have to create them.         */
             /* Creation of checksum table that contains checksums and their associated data */
-            exec_sql_cmd(database, "CREATE TABLE data (checksum BLOB PRIMARY KEY, size INTEGER, data BLOB);", N_("Error while creating database table 'data': %s\n"));
+            exec_sql_cmd(database, "CREATE TABLE data (checksum TEXT PRIMARY KEY, size INTEGER, data TEXT);", N_("Error while creating database table 'data': %s\n"));
 
             /* Creation of buffers table that contains checksums and their associated data */
-            exec_sql_cmd(database, "CREATE TABLE buffers (file_id INTEGER PRIMARY KEY, buf_order INTEGER, checksum BLOB);", N_("Error while creating database table 'buffers': %s\n"));
+            exec_sql_cmd(database, "CREATE TABLE buffers (file_id INTEGER, buf_order INTEGER, checksum TEXT);", N_("Error while creating database table 'buffers': %s\n"));
 
             /* Creation of files table that contains everything about a file */
             exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, type INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, name TEXT);", N_("Error while creating database table 'files': %s\n"));
