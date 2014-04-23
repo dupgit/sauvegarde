@@ -28,14 +28,6 @@
 #define _ANTEMEMOIRE_H_
 
 /**
- * @returns a newly allocated meta_data_t * empty structure. We use 65534
- * as default uid and gid to avoid using 0 which is dedicated to a
- * priviledged user.
- */
-extern meta_data_t *new_meta_data_t(void);
-
-
-/**
  * This function is a thread that is waiting to receive messages from
  * the checksum function and whose aim is to store somewhere the data
  * of a buffer that a been checksumed.

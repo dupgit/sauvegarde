@@ -27,34 +27,7 @@
 
 #include "monitor.h"
 
-/**
- * @returns a newly allocated meta_data_t * empty structure. We use 65534
- * as default uid and gid to avoid using 0 which is dedicated to a
- * priviledged user.
- */
-meta_data_t *new_meta_data_t(void)
-{
-    meta_data_t *meta = NULL;
 
-    meta = (meta_data_t *) g_malloc0(sizeof(meta_data_t));
-
-    if (meta != NULL)
-        {
-            meta->file_type = 0;
-            meta->mode = 0;
-            meta->atime = 0;
-            meta->ctime = 0;
-            meta->mtime = 0;
-            meta->owner = NULL;
-            meta->group = NULL;
-            meta->uid = 65534;  /* nfsnobody on my system ie unpriviledged user */
-            meta->gid = 65534;  /* nfsnobody on my system ie unpriviledged user */
-            meta->name = NULL;
-            meta->hash_list = NULL;
-        }
-
-    return meta;
-}
 
 
 /**

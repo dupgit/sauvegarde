@@ -98,4 +98,12 @@ extern gchar *get_dates_from_gfile(GFileInfo *fileinfo, meta_data_t *meta);
  */
 extern gchar *get_file_mode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta);
 
+
+/**
+ * @returns a newly allocated meta_data_t * empty structure. We use 65534
+ * as default uid and gid to avoid using 0 which is dedicated to a
+ * priviledged user.
+ */
+extern meta_data_t *new_meta_data_t(void);
+
 #endif /* #ifndef _FILES_H_ */
