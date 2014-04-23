@@ -37,7 +37,7 @@ static void free_file_row_t(file_row_t *row);
 static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col);
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
 static int get_data_callback(void *a_data, int nb_col, char **data, char **name_col);
-static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id);
+static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id, hashs_t *inserted_hashs);
 static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash);
 
 /**
@@ -279,7 +279,7 @@ static int get_data_callback(void *a_data, int nb_col, char **data, char **name_
     if (data != NULL)
         {
             my_data->read = g_ascii_strtoull(data[0], NULL, 10);
-            my_data->buffer = g_strdup(data[1]);
+            my_data->buffer = (guchar *) g_strdup(data[1]);
         }
 
     return 0;
@@ -320,6 +320,84 @@ static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash)
         }
 }
 
+/**
+ *
+ */
+static gboolean is_checksum_in_db(db_t *database, hashs_t *inserted_hashs, guint8 *a_hash)
+{
+    guint8 *hash = NULL;
+
+    if (inserted_hashs != NULL)
+        {
+            hash = g_tree_lookup(inserted_hashs->tree_hash, a_hash);
+
+            if (hash == NULL)
+                {
+                    return FALSE;
+                }
+            else
+                {
+                    return TRUE;
+                }
+        }
+
+}
+
+/**
+ * @param all_hashs is a hashs_t * structure
+ * @param nb_col gives the number of columns in this row.
+ * @param data contains the data of each column.
+ * @param name_col contains the name of each column.
+ * @returns always 0.
+ */
+static int get_all_checksum_callback(void *inserted_hashs, int nb_col, char **data, char **name_col)
+{
+    hashs_t *all_hashs = (hashs_t *) inserted_hashs;
+    guint8 *a_hash = NULL;
+    gsize len = 0;
+
+    if (data != NULL)
+        {
+            a_hash = g_base64_decode(data[0], &len);
+            g_tree_insert(all_hashs->tree_hash, a_hash, "1");
+        }
+
+    return 0;
+}
+
+
+/**
+ * Gets all encoded hashs allready inserted into the 'data' table from the
+ * database.
+ * @param database is the structure that contains everything that is
+ *        related to the database (it's connexion for instance).
+ */
+hashs_t *get_all_inserted_hashs(db_t *database)
+{
+    hashs_t *inserted_hashs = NULL;
+    char *error_message = NULL;
+    gchar *sql_command = NULL;
+    int db_result = 0;
+
+    inserted_hashs = new_hash_struct();
+
+    sql_command = g_strdup_printf("SELECT checksum FROM data;");
+
+    db_result = sqlite3_exec(database->db, sql_command, get_all_checksum_callback, inserted_hashs, &error_message);
+
+    free_variable(sql_command);
+
+    if (db_result == SQLITE_OK)
+        {
+           return inserted_hashs;
+        }
+    else
+        {
+            print_db_error(database->db, N_("Error while searching into the table 'data': %s\n"), error_message);
+            return NULL; /* to avoid a compilation warning as we exited with failure in print_db_error */
+        }
+}
+
 
 /**
  * Inserts the checksums related to the file into the database.
@@ -333,11 +411,11 @@ static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash)
  *       inserted hashs into a balanced binary tree for the session and to
  *       retreive them at the beginning of the session.
  */
-static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id)
+static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id, hashs_t *inserted_hashs)
 {
     GSList *head = NULL;
     guint8 *a_hash = NULL;
-    gchar *encoded_hash = NULL;  /**< base64 encoded hash */
+    gchar *encoded_hash = NULL;  /**< base64 encoded hash        */
     gchar *encoded_data = NULL;  /**< base64 encoded data buffer */
     data_t *a_data = NULL;
     guint64 i = 0;
@@ -360,9 +438,9 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                     free_variable(sql_command);
 
                     /* Is encoded hash already in the database ? */
-                    a_data = get_data_from_checksum(database, encoded_hash);
+                    /* a_data = get_data_from_checksum(database, encoded_hash); */
 
-                    if (a_data != NULL && (a_data->read == 0 && a_data->buffer == NULL)) /* encoded_hash is not in the database */
+                    if (is_checksum_in_db(database, inserted_hashs, a_hash) == FALSE) /* encoded_hash is not in the database */
                         {
                             /* Inserting checksum and the corresponding data into data table */
                             a_data = g_tree_lookup(hashs->tree_hash, a_hash);
@@ -394,7 +472,7 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
  *        cache.
  * @param hashs : a balanced binary tree that stores hashs.
  */
-void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs)
+void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, hashs_t *inserted_hashs)
 {
     gchar *sql_command = NULL;     /**< Command to be executed          */
     file_row_t *row = NULL;
@@ -416,8 +494,7 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs)
                 {
                     print_debug(stdout, _("file_id = %s ; list length = %d\n"), row->file_id_list->data, g_slist_length(row->file_id_list));
                     file_id = g_ascii_strtoull(row->file_id_list->data, NULL, 10);
-                    insert_file_checksums(database, meta, hashs, file_id);
-
+                    insert_file_checksums(database, meta, hashs, file_id, inserted_hashs);
                 }
             else  /* if we have no answer that means that something went wrong */
                 {
