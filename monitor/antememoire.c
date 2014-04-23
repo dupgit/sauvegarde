@@ -33,7 +33,7 @@
  * priviledged user.
  */
 meta_data_t *new_meta_data_t(void)
- {
+{
     meta_data_t *meta = NULL;
 
     meta = (meta_data_t *) g_malloc0(sizeof(meta_data_t));
@@ -54,7 +54,7 @@ meta_data_t *new_meta_data_t(void)
         }
 
     return meta;
- }
+}
 
 
 /**
@@ -80,6 +80,7 @@ gpointer store_buffer_data(gpointer data)
 
                     if (meta->name != NULL)   /* if name is null than it should not be processed */
                         {
+                            /* We should cache files only if we can not contact the server */
                             if (is_file_in_cache(database, meta) == FALSE)
                                 {
                                     print_debug(stdout, "Inserting into database file %s\n", meta->name);

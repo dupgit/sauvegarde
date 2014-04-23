@@ -86,12 +86,12 @@ I'll try to pass everything into strings.
 May be we can store the informations in a scheme like the one below :
 
     --- files ----         -- buffers ---
-    | file_id    | <-1,n-> | file_id    |
-    | type       |         | buf_order  |         --- data ---
-    | file_user  |         | checksum   | <-n,1-> | checksum |
-    | file_group |         --------------         | size     |
-    | uid        |                                | data     |
-    | gid        |                                ------------
+    | file_id *  | <-1,n-> | file_id    |
+    | type       |         | buf_order  |         --- data ----
+    | file_user  |         | checksum   | <-n,1-> | checksum *|
+    | file_group |         --------------         | size      |
+    | uid        |                                | data      |
+    | gid        |                                -------------
     | atime      |
     | ctime      |
     | mtime      |
@@ -101,7 +101,7 @@ May be we can store the informations in a scheme like the one below :
 
 Buffer order has to be kept. We can keep it in an explicit manner or try to
 keep it in an implicit manner (by storing the ordered list of checksums of
-a file).
+a file). Fields marked with '*' are primary keys.
 
 ## Coding into this project
 
