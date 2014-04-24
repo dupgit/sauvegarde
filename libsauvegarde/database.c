@@ -39,6 +39,7 @@ static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
 static int get_data_callback(void *a_data, int nb_col, char **data, char **name_col);
 static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id, hashs_t *inserted_hashs);
 static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash);
+static gboolean is_checksum_in_db(hashs_t *inserted_hashs, guint8 *a_hash);
 
 /**
  * @returns a string containing the version of the database used.
@@ -321,9 +322,16 @@ static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash)
 }
 
 /**
- *
+ * Says wether a hash is already in the data table of the database (with
+ * it's datas).
+ * @param inserted_hashs is a hashs_t * structure that stores only hashs
+ * that has already been inserted into the database (it stores a "1" as
+ * it's fake data value).
+ * @param a_hash is the hash we want to look for.
+ * @returns a boolean that is TRUE if the hash is in the inserted_hashs
+ * structure and FALSE in all other cases.
  */
-static gboolean is_checksum_in_db(db_t *database, hashs_t *inserted_hashs, guint8 *a_hash)
+static gboolean is_checksum_in_db(hashs_t *inserted_hashs, guint8 *a_hash)
 {
     guint8 *hash = NULL;
 
@@ -445,7 +453,7 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
 
 
                     /* Is encoded hash already in the database ? */
-                    if (is_checksum_in_db(database, inserted_hashs, a_hash) == FALSE) /* encoded_hash is not in the database */
+                    if (is_checksum_in_db(inserted_hashs, a_hash) == FALSE) /* encoded_hash is not in the database */
                         {
                             /* Inserting checksum and the corresponding data into data table */
 
