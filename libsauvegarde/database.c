@@ -340,6 +340,10 @@ static gboolean is_checksum_in_db(db_t *database, hashs_t *inserted_hashs, guint
                     return TRUE;
                 }
         }
+    else
+        {
+            return FALSE;
+        }
 
 }
 
@@ -437,13 +441,14 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
 
                     free_variable(sql_command);
 
-                    /* Is encoded hash already in the database ? */
-                    /* a_data = get_data_from_checksum(database, encoded_hash); */
+                    a_data = g_tree_lookup(hashs->tree_hash, a_hash);
 
+
+                    /* Is encoded hash already in the database ? */
                     if (is_checksum_in_db(database, inserted_hashs, a_hash) == FALSE) /* encoded_hash is not in the database */
                         {
                             /* Inserting checksum and the corresponding data into data table */
-                            a_data = g_tree_lookup(hashs->tree_hash, a_hash);
+
                             encoded_data = g_base64_encode((guchar*) a_data->buffer, a_data->read);
 
                             sql_command = g_strdup_printf("INSERT INTO data (checksum, size, data) VALUES ('%s', %ld, '%s');", encoded_hash, a_data->read, encoded_data);
@@ -453,6 +458,13 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                             free_variable(sql_command);
                             free_variable(encoded_data);
                         }
+
+                    /* The hash is already in the database or has just been inserted.
+                     * We can safely free the data from the tree_hash structure but we
+                     * need to keep the key into the tree (the hash) and can keep the
+                     * old size of the data
+                     */
+                    free_variable(a_data->buffer);
 
                     free_variable(encoded_hash);
 
