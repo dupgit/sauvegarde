@@ -356,7 +356,11 @@ static gboolean is_checksum_in_db(hashs_t *inserted_hashs, guint8 *a_hash)
 }
 
 /**
- * @param all_hashs is a hashs_t * structure
+ * This function is a callback for SQLITE in order to retreive all
+ * checksums from the database.
+ * @param inserted_hashs is a hashs_t * structure that is filled here with
+ *        the results of the query (executed in get_all_inserted_hashs
+ *        function).
  * @param nb_col gives the number of columns in this row.
  * @param data contains the data of each column.
  * @param name_col contains the name of each column.
@@ -389,6 +393,9 @@ static int get_all_checksum_callback(void *inserted_hashs, int nb_col, char **da
  * database.
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
+ * @returns a hashs_t * structure that contains all hashs that are in the
+ *          'data' table of the database but without it's datas (the buffer
+ *          field is set to NULL but into_cache is set to TRUE).
  */
 hashs_t *get_all_inserted_hashs(db_t *database)
 {
@@ -426,10 +433,6 @@ hashs_t *get_all_inserted_hashs(db_t *database)
  * @param hashs : a balanced binary tree that stores hashs.
  * @param file_id : the file_id we are going to insert checksums into the
  *        database.
- * @todo find a more efficient way to know if a hash has already been
- *       inserted with it's data into the database. A way may be to store
- *       inserted hashs into a balanced binary tree for the session and to
- *       retreive them at the beginning of the session.
  */
 static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id)
 {
