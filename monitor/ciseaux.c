@@ -122,11 +122,19 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
             dates = get_dates_from_gfile(fileinfo, meta);
             mode = get_file_mode_from_gfile(fileinfo, meta);
 
-            to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_DIRECTORY, owner, dates, mode, dirname);
+            /* We assume that we are using the cache (and this may not be the case in the future */
+            if (is_file_in_cache(main_struct->database, meta) == FALSE)
+                {
+                    to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_DIRECTORY, owner, dates, mode, dirname);
 
 
-            g_async_queue_push(main_struct->print_queue, to_print);
-            g_async_queue_push(main_struct->store_queue, meta);
+                    g_async_queue_push(main_struct->print_queue, to_print);
+                    g_async_queue_push(main_struct->store_queue, meta);
+                }
+            else
+                {
+                    meta = free_meta_data_t(meta);
+                }
 
             free_variable(owner);
             free_variable(dates);
@@ -172,14 +180,22 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                     dates = get_dates_from_gfile(fileinfo, meta);
                     mode = get_file_mode_from_gfile(fileinfo, meta);
 
-                    to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_REGULAR, owner, dates, mode, filename);
+                     /* We assume that we are using the cache (and this may not be the case in the future */
+                    if (is_file_in_cache(main_struct->database, meta) == FALSE)
+                        {
+                            to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_REGULAR, owner, dates, mode, filename);
 
-                    g_async_queue_push(main_struct->print_queue, to_print);
+                            g_async_queue_push(main_struct->print_queue, to_print);
 
-                    do_checksum(main_struct, stream, filename, meta);
-                    g_input_stream_close((GInputStream *) stream, NULL, NULL);
+                            do_checksum(main_struct, stream, filename, meta);
+                            g_input_stream_close((GInputStream *) stream, NULL, NULL);
 
-                    g_async_queue_push(main_struct->store_queue, meta);
+                            g_async_queue_push(main_struct->store_queue, meta);
+                        }
+                    else
+                        {
+                            meta = free_meta_data_t(meta);
+                        }
 
                     free_object(stream);
                     free_variable(owner);

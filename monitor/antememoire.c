@@ -42,7 +42,6 @@ gpointer store_buffer_data(gpointer data)
     main_struct_t *main_struct = (main_struct_t *) data;
     meta_data_t *meta = NULL;
     db_t *database = NULL;
-    hashs_t *inserted_hashs = NULL;
 
     if (main_struct != NULL)
         {

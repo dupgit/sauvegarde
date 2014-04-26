@@ -125,7 +125,7 @@ static void verify_if_tables_exists(db_t *database)
     /* Trying to get all the tables that are in the database */
     result = sqlite3_exec(database->db, "SELECT * FROM sqlite_master WHERE type='table';", table_callback, i, &error_message);
 
-    if (*i == 0)  /* No row (0) means that there is no table */
+    if (result == SQLITE_OK && *i == 0)  /* No row (0) means that there is no table */
         {
             print_debug(stdout, N_("Creating tables into the database\n"));
 
@@ -381,7 +381,7 @@ static int get_all_checksum_callback(void *inserted_hashs, int nb_col, char **da
             a_data = new_data_t_structure(NULL, read, TRUE);  /* We keep the size of the data checksum but do not need the data itself has it is already in the cache */
             g_tree_insert(all_hashs->tree_hash, a_hash, a_data);
             all_hashs->total_bytes = all_hashs->total_bytes + read;
-            all_hashs->in_bytes = all_hashs->in_bytes +read;
+            all_hashs->in_bytes = all_hashs->in_bytes + read;
         }
 
     return 0;
@@ -407,6 +407,9 @@ hashs_t *get_all_inserted_hashs(db_t *database)
     inserted_hashs = new_hash_struct();
 
     sql_command = g_strdup_printf("SELECT checksum, size FROM data;");
+
+    inserted_hashs->total_bytes = 0;
+    inserted_hashs->in_bytes = 0;
 
     db_result = sqlite3_exec(database->db, sql_command, get_all_checksum_callback, inserted_hashs, &error_message);
 

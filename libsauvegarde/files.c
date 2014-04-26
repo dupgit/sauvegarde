@@ -60,6 +60,26 @@ meta_data_t *new_meta_data_t(void)
 
 
 /**
+ * Frees the meta_data_t * structure
+ * @param a_data is a meta_data_t * structure to be freed
+ * @returns always NULL
+ */
+gpointer free_meta_data_t(meta_data_t *meta)
+{
+    if (meta != NULL)
+        {
+            free_variable(meta->owner);
+            free_variable(meta->group);
+            free_variable(meta->name);
+            g_slist_free(meta->hash_list);
+            free_variable(meta);
+        }
+
+    return NULL;
+}
+
+
+/**
  * Gets the filename of a  GFile
  * @param a_file : the GFile to get the filename from.
  * @returns the name of the GFile if any or "--" gchar * string that may be

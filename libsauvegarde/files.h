@@ -106,4 +106,12 @@ extern gchar *get_file_mode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta);
  */
 extern meta_data_t *new_meta_data_t(void);
 
+
+/**
+ * Frees the meta_data_t * structure
+ * @param a_data is a meta_data_t * structure to be freed
+ * @returns always NULL
+ */
+extern gpointer free_meta_data_t(meta_data_t *meta);
+
 #endif /* #ifndef _FILES_H_ */
