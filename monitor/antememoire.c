@@ -53,12 +53,8 @@ gpointer store_buffer_data(gpointer data)
 
                     if (meta->name != NULL)   /* if name is null than it should not be processed */
                         {
-                            /* We should cache files only if we can not contact the server */
-                            if (is_file_in_cache(database, meta) == FALSE)
-                                {
-                                    print_debug(stdout, "Inserting into database file %s\n", meta->name);
-                                    insert_file_into_cache(database, meta, main_struct->hashs);
-                                }
+                            print_debug(stdout, "Inserting into database file %s\n", meta->name);
+                            insert_file_into_cache(database, meta, main_struct->hashs);
                         }
                 }
             while (meta->name != NULL);   /* A null name means that we have to quit */
