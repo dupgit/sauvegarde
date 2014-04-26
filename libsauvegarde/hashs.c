@@ -136,7 +136,7 @@ void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize rea
             if (g_tree_lookup(hashs->tree_hash, a_hash_dup) == NULL)
                 {
                     hashs->in_bytes = hashs->in_bytes + read;
-                    a_data = new_data_t_structure(buffer_dup, read);
+                    a_data = new_data_t_structure(buffer_dup, read, FALSE);
                     g_tree_insert(hashs->tree_hash, a_hash_dup, a_data); /* the checksum itself is the key to get buffer's data */
                 }
         }
@@ -177,7 +177,7 @@ gchar *hash_to_string(guint8 *a_hash)
  * @param buffer : the data to be stored
  * @param read : the size of that buffer
  */
-data_t *new_data_t_structure(guchar *buffer, gssize read)
+data_t *new_data_t_structure(guchar *buffer, gssize read, gboolean into_cache)
 {
     data_t *a_data;
 
@@ -185,9 +185,9 @@ data_t *new_data_t_structure(guchar *buffer, gssize read)
 
     a_data->buffer = buffer;
     a_data->read = read;
+    a_data->into_cache = into_cache;
 
     return a_data;
-
 }
 
 

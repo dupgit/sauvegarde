@@ -37,7 +37,7 @@ static void free_file_row_t(file_row_t *row);
 static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col);
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
 static int get_data_callback(void *a_data, int nb_col, char **data, char **name_col);
-static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id, hashs_t *inserted_hashs);
+static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id);
 static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash);
 static gboolean is_checksum_in_db(hashs_t *inserted_hashs, guint8 *a_hash);
 
@@ -302,7 +302,7 @@ static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash)
     gchar *sql_command = NULL;
     int db_result = 0;
 
-    a_data = new_data_t_structure(NULL, 0);
+    a_data = new_data_t_structure(NULL, 0, TRUE); /* TRUE as we are retreiving from the cache */
 
     sql_command = g_strdup_printf("SELECT size, data FROM data WHERE checksum='%s' ;", encoded_hash);
 
@@ -365,13 +365,19 @@ static gboolean is_checksum_in_db(hashs_t *inserted_hashs, guint8 *a_hash)
 static int get_all_checksum_callback(void *inserted_hashs, int nb_col, char **data, char **name_col)
 {
     hashs_t *all_hashs = (hashs_t *) inserted_hashs;
+    data_t *a_data = NULL;
     guint8 *a_hash = NULL;
+    gssize read = 0;
     gsize len = 0;
 
     if (data != NULL)
         {
             a_hash = g_base64_decode(data[0], &len);
-            g_tree_insert(all_hashs->tree_hash, a_hash, "1");
+            read = g_ascii_strtoull(data[1], NULL, 10);
+            a_data = new_data_t_structure(NULL, read, TRUE);  /* We keep the size of the data checksum but do not need the data itself has it is already in the cache */
+            g_tree_insert(all_hashs->tree_hash, a_hash, a_data);
+            all_hashs->total_bytes = all_hashs->total_bytes + read;
+            all_hashs->in_bytes = all_hashs->in_bytes +read;
         }
 
     return 0;
@@ -393,7 +399,7 @@ hashs_t *get_all_inserted_hashs(db_t *database)
 
     inserted_hashs = new_hash_struct();
 
-    sql_command = g_strdup_printf("SELECT checksum FROM data;");
+    sql_command = g_strdup_printf("SELECT checksum, size FROM data;");
 
     db_result = sqlite3_exec(database->db, sql_command, get_all_checksum_callback, inserted_hashs, &error_message);
 
@@ -418,12 +424,14 @@ hashs_t *get_all_inserted_hashs(db_t *database)
  * @param meta is the file's metadata that we want to insert into the
  *        cache.
  * @param hashs : a balanced binary tree that stores hashs.
+ * @param file_id : the file_id we are going to insert checksums into the
+ *        database.
  * @todo find a more efficient way to know if a hash has already been
  *       inserted with it's data into the database. A way may be to store
  *       inserted hashs into a balanced binary tree for the session and to
  *       retreive them at the beginning of the session.
  */
-static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id, hashs_t *inserted_hashs)
+static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id)
 {
     GSList *head = NULL;
     guint8 *a_hash = NULL;
@@ -450,11 +458,12 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
 
                     free_variable(sql_command);
 
+                    a_data = g_tree_lookup(hashs->tree_hash, a_hash);
+
                     /* Is encoded hash already in the database ? */
-                    if (is_checksum_in_db(inserted_hashs, a_hash) == FALSE) /* encoded_hash is not in the database */
+                    if (a_data != NULL && a_data->into_cache == FALSE) /* encoded_hash is not in the database */
                         {
-                            /* Inserting checksum and the corresponding data into data table */
-                            a_data = g_tree_lookup(hashs->tree_hash, a_hash);
+                            /* Inserting checksum and the corresponding data into 'data' table */
                             encoded_data = g_base64_encode((guchar*) a_data->buffer, a_data->read);
 
                             sql_command = g_strdup_printf("INSERT INTO data (checksum, size, data) VALUES ('%s', %ld, '%s');", encoded_hash, a_data->read, encoded_data);
@@ -467,9 +476,10 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                             /* The hash is already in the database or has just been inserted.
                              * We can safely free the data from the tree_hash structure but we
                              * need to keep the key into the tree (the hash) and can keep the
-                             * old size of the data
+                             * old size of the data. 'buffer' is set to NULL.
                              */
                             a_data->buffer = free_variable(a_data->buffer);
+                            a_data->into_cache = TRUE;
                         }
 
                     free_variable(encoded_hash);
@@ -490,7 +500,7 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
  *        cache.
  * @param hashs : a balanced binary tree that stores hashs.
  */
-void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, hashs_t *inserted_hashs)
+void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs)
 {
     gchar *sql_command = NULL;     /**< Command to be executed          */
     file_row_t *row = NULL;
@@ -512,7 +522,7 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, h
                 {
                     print_debug(stdout, _("file_id = %s ; list length = %d\n"), row->file_id_list->data, g_slist_length(row->file_id_list));
                     file_id = g_ascii_strtoull(row->file_id_list->data, NULL, 10);
-                    insert_file_checksums(database, meta, hashs, file_id, inserted_hashs);
+                    insert_file_checksums(database, meta, hashs, file_id);
                 }
             else  /* if we have no answer that means that something went wrong */
                 {

@@ -45,9 +45,9 @@
  */
 typedef struct
 {
-    GTree *tree_hash;    /**< A balanced binary tree to strores hashs and data */
-    guint64 total_bytes; /**< Total number of bytes that passed into           */
-    guint64 in_bytes;    /**< Number of bytes into the GTree (deduplicated)    */
+    GTree *tree_hash;    /**< A balanced binary tree to stores hashs and data               */
+    guint64 total_bytes; /**< Total number of bytes that were computed to get the checksums */
+    guint64 in_bytes;    /**< Number of bytes into the GTree (deduplicated)                 */
 } hashs_t;
 
 
@@ -60,8 +60,9 @@ typedef struct
  */
 typedef struct
 {
-    guchar *buffer; /**< buffer data read from the file */
-    gssize read;    /**< size of that buffer            */
+    guchar *buffer;      /**< buffer data read from the file              */
+    gssize read;         /**< size of that buffer                         */
+    gboolean into_cache; /**< TRUE if it has been inserted into the cache */
 } data_t;
 
 
@@ -108,8 +109,12 @@ extern gchar *hash_to_string(guint8 *a_hash);
  * Creates a new data_t * structure populated with the buffer and its size
  * @param buffer : the data to be stored
  * @param read : the size of that buffer
+ * @param into_cache : says wether it is already into the cache (TRUE) or
+ *        not (FALSE)
+ * @returns a newly allocated data_t * structure that can be freed when no
+ *         longer needed.
  */
-extern data_t *new_data_t_structure(guchar *buffer, gssize read);
+extern data_t *new_data_t_structure(guchar *buffer, gssize read, gboolean into_cache);
 
 
 /**

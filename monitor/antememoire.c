@@ -48,8 +48,6 @@ gpointer store_buffer_data(gpointer data)
         {
             database = main_struct->database;
 
-            inserted_hashs = get_all_inserted_hashs(database);
-
             do
                 {
                     meta = g_async_queue_pop(main_struct->store_queue);
@@ -60,7 +58,7 @@ gpointer store_buffer_data(gpointer data)
                             if (is_file_in_cache(database, meta) == FALSE)
                                 {
                                     print_debug(stdout, "Inserting into database file %s\n", meta->name);
-                                    insert_file_into_cache(database, meta, main_struct->hashs, inserted_hashs);
+                                    insert_file_into_cache(database, meta, main_struct->hashs);
                                 }
                         }
                 }

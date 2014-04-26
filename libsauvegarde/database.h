@@ -93,7 +93,7 @@ extern gboolean is_file_in_cache(db_t *database, meta_data_t *meta);
  *        cache.
  * @param hashs : a balanced binary tree that stores hashs.
  */
-void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, hashs_t *inserted_hashs);
+void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs);
 
 
 /**
