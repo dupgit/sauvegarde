@@ -380,8 +380,6 @@ static int get_all_checksum_callback(void *inserted_hashs, int nb_col, char **da
             read = g_ascii_strtoull(data[1], NULL, 10);
             a_data = new_data_t_structure(NULL, read, TRUE);  /* We keep the size of the data checksum but do not need the data itself has it is already in the cache */
             g_tree_insert(all_hashs->tree_hash, a_hash, a_data);
-            all_hashs->total_bytes = all_hashs->total_bytes + read;
-            all_hashs->in_bytes = all_hashs->in_bytes + read;
         }
 
     return 0;

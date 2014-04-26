@@ -189,7 +189,15 @@ static void print_tree_hashs_stats(hashs_t *hashs)
             fprintf(stdout, _("Tree height           : %d\n"), g_tree_height(hashs->tree_hash));
             fprintf(stdout, _("Total size in bytes   : %ld\n"), hashs->total_bytes);
             fprintf(stdout, _("Dedup size in bytes   : %ld\n"), hashs->total_bytes - hashs->in_bytes);
-            fprintf(stdout, _("Deduplication %%       : %.2f\n"), 100*(hashs->total_bytes - hashs->in_bytes)/ (float) hashs->total_bytes);
+
+            if (hashs->total_bytes != 0)
+                {
+                    fprintf(stdout, _("Deduplication %%       : %.2f\n"), 100*(hashs->total_bytes - hashs->in_bytes)/ (float) hashs->total_bytes);
+                }
+            else
+                {
+                    fprintf(stdout, _("Deduplication in bytes : %.2ld\n"), hashs->in_bytes);
+                }
         }
 }
 
