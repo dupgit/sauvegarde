@@ -29,3 +29,6 @@ po/POTFILES
 po/fr.gmo
 po/stamp-it
 stamp-h1
+serveur/.deps/
+serveur/.libs/
+serveur/serveur
