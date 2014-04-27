@@ -163,7 +163,7 @@ gchar *hash_to_string(guint8 *a_hash)
             for(i = 0; i < HASH_LEN; i++)
                 {
                     octet = g_strdup_printf("%02x", a_hash[i]);
-                    g_memmove(string + i*2, octet, 2);
+                    memmove(string + i*2, octet, 2);
                 }
         }
 
