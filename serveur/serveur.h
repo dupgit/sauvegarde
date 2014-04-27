@@ -42,5 +42,28 @@
 
 #include <libsauvegarde.h>
 
+#include "options.h"
+
+
+/**
+ * @def SERVEUR_DATE
+ * Defines serveur's creation date
+ *
+ * @def SERVEUR_AUTHORS
+ * Defines monitor's main authors
+ *
+ * @def SERVEUR_LICENSE
+ * Defines monitor's license (at least GPL v2)
+
+ * @def PROGRAM_NAME
+ * Defines the main program name (serveur - server in french)
+ */
+#define SERVEUR_AUTHORS ("Olivier Delhomme")
+#define SERVEUR_DATE N_("27 04 2014")
+#define SERVEUR_LICENSE N_("GPL v3 or later")
+#define PROGRAM_NAME ("serveur")
+
+
+
 
 #endif /* #ifndef _SERVEUR_H_ */

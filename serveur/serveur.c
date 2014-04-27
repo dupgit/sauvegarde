@@ -38,6 +38,7 @@
  */
 int main(int argc, char **argv)
 {
+    options_t *opt = NULL;  /** Structure to manage options from the command line can be freed when no longer needed */
 
     g_type_init();
 
