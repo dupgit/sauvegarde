@@ -7,7 +7,7 @@ Some experiments around backup and continuous data protection (CDP).
 
 This is free software an real open source as GPLv3 is used for this
 collection of programs. Feel free to contibute and/or give help to the
-projects used here (see dependencies section)
+projects used here (see dependencies section).
 
 
 ## Dependencies
@@ -18,6 +18,11 @@ This project depends on :
 * glib and gio  (2.26)
 * 0MQ           (3.2.4)
 * sqlite        (3.6.20)
+
+
+## Roadmap
+
+As I'm coding on spare hours I have no roadmap for now.
 
 
 ## Infrastucture
@@ -81,7 +86,7 @@ I'll try to pass everything into strings.
         ]
 
 
-### Database
+### Database (local cache)
 
 May be we can store the informations in a scheme like the one below :
 
@@ -109,7 +114,9 @@ a file). Fields marked with '*' are primary keys.
 
 Sauvegarde uses Javadoc comment style to be parsed by doxygen. Please
 continue to use this style into comments in the whole project as it will
-be parsed by doxygen.
+be parsed by doxygen. doxygen has been configured to figure out which
+parameters are not documented. Please have a look at doxygen output and
+avoid any warning.
 
 
 ### Verifying complexity
