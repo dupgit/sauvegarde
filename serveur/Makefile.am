@@ -1,15 +1,15 @@
 bin_PROGRAMS = serveur
 
 DEFS =	-I../libsauvegarde $(GLIB_CFLAGS) $(GIO_CFLAGS) $(ZMQ_CFLAGS) \
-		$(SQLITE_CFLAGS)
+	    $(SQLITE_CFLAGS)
 
 serveur_LDFLAGS = $(LDFLAGS)
 serveur_LDADD = $(GLIB_LIBS) $(GIO_LIBS)  -L../libsauvegarde -lsauvegarde \
-				$(ZMQ_LIBS) $(SQLITE_LIBS)
+		        $(ZMQ_LIBS) $(SQLITE_LIBS)
 
-SERVEUR_HEADERFILES = serveur.h
+SER_HEADERFILES = serveur.h
 
-serveur_SOURCES = monitor.c                \
-				  $(SERVEUR_HEADERFILES)
+serveur_SOURCES = serveur.c                \
+		          $(SER_HEADERFILES)
 
 AM_CPPFLAGS = $(GLIB_CFLAGS) $(GIO_CFLAGS)

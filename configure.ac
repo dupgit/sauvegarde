@@ -183,6 +183,7 @@ AC_CONFIG_FILES([
 Makefile
 libsauvegarde/Makefile
 monitor/Makefile
+serveur/Makefile
 po/Makefile.in
 ])
 AC_OUTPUT
