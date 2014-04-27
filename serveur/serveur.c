@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
     init_international_languages();
 
-
+    opt = do_what_is_needed_from_command_line_options(argc, argv);
 
     return 0;
 }

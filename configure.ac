@@ -1,7 +1,7 @@
 AC_PREREQ(2.59)
 
 AC_INIT([Sauvegarde], [0.0.1],
-        [Olivier Delhomme <olivier.delhomme@free.fr>],
+        [Olivier DELHOMME <olivier.delhomme@free.fr>],
         [Sauvegarde])
 
 AM_INIT_AUTOMAKE([$PACKAGE_TARNAME], [$PACKAGE_VERSION])

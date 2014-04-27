@@ -42,7 +42,7 @@ static void print_selected_options(options_t *opt)
 
     if (opt != NULL)
         {
-            fprintf(stdout, _("\nOptions are :\n"));
+            fprintf(stdout, _("\n%s options are :\n"), PROGRAM_NAME);
 
             if (opt->dirname_list != NULL)
                 {
