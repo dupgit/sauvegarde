@@ -63,7 +63,7 @@
  * Defines the main program name for this part (monitor + ciseaux +
  * antememoire).
  */
-#define MONITOR_AUTHORS ("Olivier Delhomme")
+#define MONITOR_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
 #define MONITOR_DATE N_("15 02 2014")
 #define MONITOR_LICENSE N_("GPL v3 or later")
 #define MONITOR_TIME (5)

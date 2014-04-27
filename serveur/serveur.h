@@ -58,7 +58,7 @@
  * @def PROGRAM_NAME
  * Defines the main program name (serveur - server in french)
  */
-#define SERVEUR_AUTHORS ("Olivier Delhomme")
+#define SERVEUR_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
 #define SERVEUR_DATE N_("27 04 2014")
 #define SERVEUR_LICENSE N_("GPL v3 or later")
 #define PROGRAM_NAME ("serveur")
