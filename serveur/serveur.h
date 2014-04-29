@@ -63,6 +63,7 @@
 #define SERVEUR_LICENSE N_("GPL v3 or later")
 #define PROGRAM_NAME ("serveur")
 
+
 /**
  * @struct serveur_struct_t
  * @brief Structure that contains everything needed by the program.
@@ -75,8 +76,6 @@ typedef struct
 {
     options_t *opt;           /**< Options of the program from the command line                                              */
 } serveur_struct_t;
-
-
 
 
 #endif /* #ifndef _SERVEUR_H_ */
