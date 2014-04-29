@@ -31,6 +31,23 @@
 
 
 /**
+ * Inits main serveur's structure
+ * @param argc : number of arguments given on the command line.
+ * @param argv : an array of strings that contains command line arguments.
+ * @returns a serveur_struct_t * structure that contains everything that is
+ *          needed for 'serveur' program.
+ */
+serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
+{
+    serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program. */
+
+    serveur_struct = (serveur_struct_t *) g_malloc0(sizeof(serveur_struct_t));
+
+    serveur_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
+
+}
+
+/**
  * Main function
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
@@ -38,13 +55,15 @@
  */
 int main(int argc, char **argv)
 {
-    options_t *opt = NULL;  /** Structure to manage options from the command line can be freed when no longer needed */
+    serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program. */
 
     g_type_init();
 
     init_international_languages();
 
-    opt = do_what_is_needed_from_command_line_options(argc, argv);
+    serveur_struct = init_serveur_main_structure(argc, argc);
+
+
 
     return 0;
 }
