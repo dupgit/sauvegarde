@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 
     init_international_languages();
 
-    serveur_struct = init_serveur_main_structure(argc, argc);
+    serveur_struct = init_serveur_main_structure(argc, argv);
 
 
 
