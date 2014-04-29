@@ -29,6 +29,8 @@
 
 #include "serveur.h"
 
+static serveur_struct_t *init_serveur_main_structure(int argc, char **argv);
+
 
 /**
  * Inits main serveur's structure
@@ -37,7 +39,7 @@
  * @returns a serveur_struct_t * structure that contains everything that is
  *          needed for 'serveur' program.
  */
-serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
+static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 {
     serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program. */
 
@@ -45,7 +47,9 @@ serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 
     serveur_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
 
+    return serveur_struct;
 }
+
 
 /**
  * Main function
@@ -62,8 +66,6 @@ int main(int argc, char **argv)
     init_international_languages();
 
     serveur_struct = init_serveur_main_structure(argc, argv);
-
-
 
     return 0;
 }
