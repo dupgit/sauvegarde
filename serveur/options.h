@@ -39,8 +39,9 @@
  */
 typedef struct
 {
-    gboolean version;     /**< TRUE if we have to display program's version                                      */
-    gchar *configfile;    /**< filename for the configuration file specified on the command line                 */
+    gboolean version;   /**< TRUE if we have to display program's version                        */
+    gchar *configfile;  /**< filename for the configuration file specified on the command line   */
+    gint port;         /**< port number on which the serveur program will listen for connexions */
 } options_t;
 
 

@@ -62,6 +62,11 @@ static void print_selected_options(options_t *opt)
                 {
                     fprintf(stdout, _("Configuration file : %s\n"), opt->configfile);
                 }
+
+            if (opt->port != 0)
+                {
+                    fprintf(stdout, _("Port number : %d\n"), opt->port);
+                }
         }
 }
 
@@ -92,7 +97,19 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
-                  /* No keys for now */
+                    if (g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
+                        {
+                            /* Reading the port number if any */
+                            if (g_key_file_has_key(keyfile, GN_SERVEUR, KN_SERVEUR_PORT, &error) == TRUE)
+                                {
+                                    opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, N_("Could not load serveur port number from file"));
+                                }
+                            else if (error != NULL)
+                                {
+                                    print_debug(stderr, _("Failed to open %s configuration file : %s\n"), filename, error->message);
+                                    error = free_error(error);
+                                }
+                        }
                 }
             else if (error != NULL)
                 {
@@ -121,13 +138,15 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
  */
 options_t *manage_command_line_options(int argc, char **argv)
 {
-    gboolean version = FALSE;      /** True if -v was selected on the command line  */
-    gchar *configfile = NULL;      /** Filename for the configuration file if any   */
+    gboolean version = FALSE;   /** True if -v was selected on the command line  */
+    gchar *configfile = NULL;   /** Filename for the configuration file if any   */
+    gint port = 0;              /** Port number on which to listen               */
 
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
+        { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port number on which to listen"), NULL},
         { NULL }
     };
 
@@ -155,6 +174,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt = (options_t *) g_malloc0(sizeof(options_t));
 
     opt->configfile = NULL;
+    opt->port = 0;
 
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME);
@@ -174,6 +194,11 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     /* 3) retrieving other options from the command line.
      */
+
+    if (port != 0)
+        {
+            opt->port = port;
+        }
 
     g_option_context_free(context);
     free_variable(bugreport);
