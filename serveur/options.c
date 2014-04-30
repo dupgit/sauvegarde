@@ -183,7 +183,6 @@ options_t *manage_command_line_options(int argc, char **argv)
 }
 
 
-
 /**
  * Decides what to do upon command lines options passed to the program
  * @param argc : number of arguments given on the command line.

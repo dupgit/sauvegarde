@@ -74,7 +74,7 @@
  */
 typedef struct
 {
-    options_t *opt;           /**< Options of the program from the command line                                              */
+    options_t *opt;           /**< Options of the program from the command line */
 } serveur_struct_t;
 
 

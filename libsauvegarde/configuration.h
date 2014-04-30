@@ -39,17 +39,26 @@
  */
  /**
   * @def GN_MONITOR
-  * Defines the group name for all preferences related to "monitor" program
+  * Defines the group name for all preferences related to "monitor"
+  * program.
   *
   * @def GN_CISEAUX
-  * Defines the group name for all preferences related to "ciseaux" program
+  * Defines the group name for all preferences related to "ciseaux"
+  * program.
   *
   * @def GN_ANTEMEMOIRE
-  * Defines the group name for all preferences related to "antememoire" program
+  * Defines the group name for all preferences related to "antememoire"
+  * program.
+  *
+  * @def GN_SERVEUR
+  * Defines the group name for all preferences related to "serveur"
+  * program.
+  *
   */
 #define GN_MONITOR ("Monitor")
 #define GN_CISEAUX ("Ciseaux")
 #define GN_ANTEMEMOIRE ("AnteMemoire")
+#define GN_SERVEUR ("Serveur")
 
 
 /** Below you'll find some definitions for the ciseaux program */
@@ -84,6 +93,15 @@
  * Defines the name of the database to be used for the local cache
  */
 #define KN_DB_NAME ("cache-db-name")
+
+
+/** Below you'll find some definitions for the serveur program */
+/**
+ * @def KN_SERVEUR_PORT
+ * Defines the port number on which serveur program will listen for
+ * connexions
+ */
+#define KN_SERVEUR_PORT ("serveur-port")
 
 
 /**
