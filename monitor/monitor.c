@@ -169,6 +169,9 @@ static main_struct_t *init_main_structure(options_t *opt)
 
     main_struct->hashs = get_all_inserted_hashs(main_struct->database);
 
+    /* Testing things */
+    main_struct->comm = create_push_socket("tcp://localhost:5468");
+
     print_debug(stdout, _("Main structure initialized !\n"));
 
     return main_struct;

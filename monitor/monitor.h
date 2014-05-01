@@ -83,6 +83,7 @@ typedef struct
     GAsyncQueue *store_queue; /**< Communication queue with same messages than print_queue but that can not be shutdown !    */
     hashs_t *hashs;           /**< Calculated hashs stored in a balanced binary tree                                         */
     db_t *database;           /**< Database structure that stores everything that is related to the database                 */
+    comm_t *comm;             /**< This is used to communicate with the 'serveur' program (which is the server)              */
 } main_struct_t;
 
 

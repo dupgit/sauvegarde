@@ -28,8 +28,6 @@
 #include "monitor.h"
 
 
-
-
 /**
  * This function is a thread that is waiting to receive messages from
  * the checksum function and whose aim is to store somewhere the data
@@ -42,6 +40,7 @@ gpointer store_buffer_data(gpointer data)
     main_struct_t *main_struct = (main_struct_t *) data;
     meta_data_t *meta = NULL;
     db_t *database = NULL;
+    gint size = 0;
 
     if (main_struct != NULL)
         {
@@ -50,6 +49,13 @@ gpointer store_buffer_data(gpointer data)
             do
                 {
                     meta = g_async_queue_pop(main_struct->store_queue);
+
+                    /* This does not work ! --> we need something to pack the datas before sending them
+                     * size = 1 + 4 + 8 + 8 + 8 + strlen(meta->owner) + strlen(meta->group) + 4 + 4 + strlen(meta->name) + (HASH_LEN + 8)*g_slist_length(meta->hash_list);
+                     *
+                     * send_message(main_struct->comm, (guchar *) meta, size);
+                     * print_debug(stdout, "meta size = %d\n", size);
+                     */
 
                     if (meta->name != NULL)   /* if name is null than it should not be processed */
                         {

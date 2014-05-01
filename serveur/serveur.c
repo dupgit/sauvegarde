@@ -60,12 +60,30 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 int main(int argc, char **argv)
 {
     serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program. */
+    gchar *somewhere = NULL;
+    comm_t *comm = NULL;
+    meta_data_t *meta = NULL;
 
     g_type_init();
 
     init_international_languages();
 
     serveur_struct = init_serveur_main_structure(argc, argv);
+
+    if (serveur_struct != NULL && serveur_struct->opt != NULL)
+        {
+            somewhere = g_strdup_printf("tcp://*:%d", serveur_struct->opt->port);
+            comm = create_pull_socket(somewhere);
+
+            while (1)
+                {
+                  /* This does not work : we need something to unpack the transmited datas
+                   *  meta = (meta_data_t *) receive_message(comm);
+                   *
+                   *  print_debug(stdout, "filename = %s\n", meta->name);
+                   */
+                }
+        }
 
     return 0;
 }
