@@ -202,12 +202,18 @@ echo "LDFLAGS       : ${LDFLAGS}"
 echo
 echo "GLIB CFLAGS   : ${GLIB_CFLAGS}"
 echo "GLIB LIBS     : ${GLIB_LIBS}"
+echo
 echo "GIO CFLAGS    : ${GIO_CFLAGS}"
 echo "GIO LIBS      : ${GIO_LIBS}"
+echo
 echo "SQLITE CFLAGS : ${SQLITE_CFLAGS}"
 echo "SQLITE LIBS   : ${SQLITE_LIBS}"
+echo
 echo "LIBZMQ CFLAGS : ${ZMQ_CFLAGS}"
 echo "LIBZMP LIBS   : ${ZMQ_LIBS}"
+echo
+echo "MSGPACK CFLAGS: ${MSGPACK_CFLAGS}"
+echo "MSGPACK LIBS  : ${MSGPACK_LIBS}"
 echo
 echo
 echo "*** Dumping configuration ***"
