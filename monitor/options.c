@@ -76,6 +76,104 @@ static void print_selected_options(options_t *opt)
 
 
 /**
+ * Reads keys in keyfile if group GN_MONITOR is in that keyfile and fills
+ * options_t *opt structure accordingly.
+ * @param opt[in,out] : options_t * structure to store options read from the
+ *        configuration file "filename".
+ * @param keyfile is the GKeyFile structure that is used by glib to read
+ *        groups and keys from.
+ * @param filename : the filename of the configuration file to read from
+ */
+static void read_from_group_monitor(options_t *opt, GKeyFile *keyfile, gchar *filename)
+{
+    GError *error = NULL;  /** Glib error handling */
+
+    if (g_key_file_has_group(keyfile, GN_MONITOR) == TRUE)
+        {
+            if (g_key_file_has_key(keyfile, GN_MONITOR, KN_DIR_LIST, &error) == TRUE)
+                {
+                    /* Reading the directory list */
+                    opt->dirname_list = read_list_from_file(keyfile, filename, GN_MONITOR, KN_DIR_LIST, N_("Could not load directory list from file"));
+                }
+            else if (error != NULL)
+                {
+                    print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), KN_DIR_LIST, error->message);
+                    error = free_error(error);
+                }
+        }
+}
+
+
+/**
+ * Reads keys in keyfile if group GN_CISEAUX is in that keyfile and fills
+ * options_t *opt structure accordingly.
+ * @param opt[in,out] : options_t * structure to store options read from the
+ *        configuration file "filename".
+ * @param keyfile is the GKeyFile structure that is used by glib to read
+ *        groups and keys from.
+ * @param filename : the filename of the configuration file to read from
+ */
+static void read_from_group_ciseaux(options_t *opt, GKeyFile *keyfile, gchar *filename)
+{
+    GError *error = NULL;  /** Glib error handling  */
+
+    if (g_key_file_has_group(keyfile, GN_CISEAUX) == TRUE)
+        {
+            if (g_key_file_has_key(keyfile, GN_CISEAUX, KN_BLOCK_SIZE, &error) == TRUE)
+                {
+                    /* Reading the blocksize if any */
+                    opt->blocksize = read_int64_from_file(keyfile, filename, GN_CISEAUX, KN_BLOCK_SIZE, N_("Could not load blocksize from file"));
+                }
+            else if (error != NULL)
+                {
+                    print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), KN_BLOCK_SIZE, error->message);
+                    error = free_error(error);
+                }
+        }
+}
+
+
+/**
+ * Reads keys in keyfile if group GN_ANTEMEMOIRE is in that keyfile and fills
+ * options_t *opt structure accordingly.
+ * @param opt[in,out] : options_t * structure to store options read from the
+ *        configuration file "filename".
+ * @param keyfile is the GKeyFile structure that is used by glib to read
+ *        groups and keys from.
+ * @param filename : the filename of the configuration file to read from
+ */
+static void read_from_group_antememoire(options_t *opt, GKeyFile *keyfile, gchar *filename)
+{
+    GError *error = NULL;  /** Glib error handling  */
+
+    if (g_key_file_has_group(keyfile, GN_ANTEMEMOIRE) == TRUE)
+        {
+            if (g_key_file_has_key(keyfile, GN_ANTEMEMOIRE, KN_CACHE_DIR, &error) == TRUE)
+                {
+                    /* Reading the cache directory if any */
+                    opt->dircache = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_CACHE_DIR, N_("Could not load directory name"));
+                }
+            else if (error != NULL)
+                {
+                    print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), KN_CACHE_DIR, error->message);
+                    error = free_error(error);
+                }
+
+            if (g_key_file_has_key(keyfile, GN_ANTEMEMOIRE, KN_DB_NAME, &error) == TRUE)
+                {
+                    /* Reading filename of the database if any */
+                    opt->dbname = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_DB_NAME, N_("Could not load cache database name"));
+                }
+            else if (error != NULL)
+                {
+                    print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), KN_DB_NAME, error->message);
+                    error = free_error(error);
+                }
+        }
+}
+
+
+/**
  * Reads from the configuration file "filename"
  * @param opt : options_t * structure to store options read from the
  *              configuration file "filename"
@@ -101,18 +199,9 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
-                    /* Reading the directory list */
-                    opt->dirname_list = read_list_from_file(keyfile, filename, GN_MONITOR, KN_DIR_LIST, N_("Could not load directory list from file"));
-
-                    /* Reading the blocksize if any */
-                    opt->blocksize = read_int64_from_file(keyfile, filename, GN_CISEAUX, KN_BLOCK_SIZE, N_("Could not load blocksize from file"));
-
-                    /* Reading the cache directory if any */
-                    opt->dircache = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_CACHE_DIR, N_("Could not load directory name"));
-
-                    /* Reading filename of the database if any */
-                    opt->dbname = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_DB_NAME, N_("Could not load cache database name"));
-
+                    read_from_group_monitor(opt, keyfile, filename);
+                    read_from_group_ciseaux(opt, keyfile, filename);
+                    read_from_group_antememoire(opt, keyfile, filename);
                 }
             else if (error != NULL)
                 {
