@@ -19,6 +19,9 @@ This project depends on :
 * 0MQ           (3.2.4)
 * sqlite        (3.6.20)
 
+doxygen (1.6.1) is used to generate code's documentation but is not
+required to build the project.
+
 
 ## Roadmap
 
