@@ -28,6 +28,9 @@
 #include "monitor.h"
 
 static void print_selected_options(options_t *opt);
+static void read_from_group_monitor(options_t *opt, GKeyFile *keyfile, gchar *filename);
+static void read_from_group_ciseaux(options_t *opt, GKeyFile *keyfile, gchar *filename);
+static void read_from_group_antememoire(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static void read_from_configuration_file(options_t *opt, gchar *filename);
 
 
