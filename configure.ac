@@ -10,6 +10,11 @@ AC_PROG_CC
 AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INTLTOOL([0.23])
 
+dnl **************************************************
+dnl * If we are running automake >= 1.11, we can     *
+dnl * have nicer compilation output.                 *
+dnl **************************************************
+AM_SILENT_RULES([yes])
 
 dnl **************************************************
 dnl * Put the preprocessor macros in a header file   *
