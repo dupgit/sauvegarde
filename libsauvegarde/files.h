@@ -109,7 +109,7 @@ extern meta_data_t *new_meta_data_t(void);
 
 /**
  * Frees the meta_data_t * structure
- * @param a_data is a meta_data_t * structure to be freed
+ * @param meta is a meta_data_t * structure to be freed
  * @returns always NULL
  */
 extern gpointer free_meta_data_t(meta_data_t *meta);
