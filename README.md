@@ -111,6 +111,7 @@ Buffer order has to be kept. We can keep it in an explicit manner or try to
 keep it in an implicit manner (by storing the ordered list of checksums of
 a file). Fields marked with '*' are primary keys.
 
+
 ## Coding into this project
 
 ### Comments
