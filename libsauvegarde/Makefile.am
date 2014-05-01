@@ -6,6 +6,7 @@ headerfiles = libsauvegarde.h	\
 			  communique.h		\
 			  files.h			\
 			  hashs.h			\
+			  packing.h			\
 			  database.h
 
 libsauvegarde_la_SOURCES =	libsauvegarde.c 	\
@@ -14,6 +15,7 @@ libsauvegarde_la_SOURCES =	libsauvegarde.c 	\
 							files.c				\
 							hashs.c				\
 							database.c			\
+							packing.c			\
 							$(headerfiles)
 
 libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)	\
