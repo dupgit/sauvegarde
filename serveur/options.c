@@ -72,6 +72,37 @@ static void print_selected_options(options_t *opt)
 
 
 /**
+ * Reads keys in keyfile if groupname is in that keyfile and fills
+ * options_t *opt structure accordingly.
+ * @param opt[in,out] : options_t * structure to store options read from the
+ *        configuration file "filename".
+ * @param keyfile is the GKeyFile structure that is used by glib to read
+ *        groups and keys from.
+ * @param filename : the filename of the configuration file to read from
+ * @param groupname is the name of the group from which we want to read
+ *        keys. It must exists to be able to effectively read keys.
+ */
+static void read_from_group(options_t *opt, GKeyFile *keyfile, gchar *filename, gchar *groupname)
+{
+    GError *error = NULL;          /** Glib error handling       */
+
+    if (g_key_file_has_group(keyfile, groupname) == TRUE)
+        {
+            /* Reading the port number if any */
+            if (g_key_file_has_key(keyfile, groupname, KN_SERVEUR_PORT, &error) == TRUE)
+                {
+                    opt->port = read_int_from_file(keyfile, filename, groupname, KN_SERVEUR_PORT, N_("Could not load serveur port number from file"));
+                }
+            else if (error != NULL)
+                {
+                    print_debug(stderr, _("Failed to open %s configuration file : %s\n"), filename, error->message);
+                    error = free_error(error);
+                }
+        }
+}
+
+
+/**
  * Reads from the configuration file "filename"
  * @param opt : options_t * structure to store options read from the
  *              configuration file "filename"
@@ -79,8 +110,8 @@ static void print_selected_options(options_t *opt)
  */
 static void read_from_configuration_file(options_t *opt, gchar *filename)
 {
-    GKeyFile *keyfile = NULL;      /** Configuration file parser                          */
-    GError *error = NULL;          /** Glib error handling                                */
+    GKeyFile *keyfile = NULL;      /** Configuration file parser */
+    GError *error = NULL;          /** Glib error handling       */
 
     if (filename != NULL)
         {
@@ -97,19 +128,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
-                    if (g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
-                        {
-                            /* Reading the port number if any */
-                            if (g_key_file_has_key(keyfile, GN_SERVEUR, KN_SERVEUR_PORT, &error) == TRUE)
-                                {
-                                    opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, N_("Could not load serveur port number from file"));
-                                }
-                            else if (error != NULL)
-                                {
-                                    print_debug(stderr, _("Failed to open %s configuration file : %s\n"), filename, error->message);
-                                    error = free_error(error);
-                                }
-                        }
+                    read_from_group(opt, keyfile, filename, GN_SERVEUR);
                 }
             else if (error != NULL)
                 {
