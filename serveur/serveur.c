@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program. */
     gchar *somewhere = NULL;
     comm_t *comm = NULL;
-    meta_data_t *meta = NULL;
+   /* meta_data_t *meta = NULL; */
 
     g_type_init();
 
