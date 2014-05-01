@@ -74,8 +74,8 @@ static void print_selected_options(options_t *opt)
 /**
  * Reads keys in keyfile if groupname is in that keyfile and fills
  * options_t *opt structure accordingly.
- * @param opt[in,out] : options_t * structure to store options read from the
- *        configuration file "filename".
+ * @param[in,out] opt : options_t * structure to store options read from the
+ *                configuration file "filename".
  * @param keyfile is the GKeyFile structure that is used by glib to read
  *        groups and keys from.
  * @param filename : the filename of the configuration file to read from
@@ -102,8 +102,8 @@ static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *fi
 
 /**
  * Reads from the configuration file "filename"
- * @param opt : options_t * structure to store options read from the
- *              configuration file "filename"
+ * @param[in,out] opt : options_t * structure to store options read from the
+ *                configuration file "filename"
  * @param filename : the filename of the configuration file to read from
  */
 static void read_from_configuration_file(options_t *opt, gchar *filename)
