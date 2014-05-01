@@ -20,7 +20,7 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file options.h
+ * @file serveur/options.h
  *
  * This file contains all the definitions for the options of the command
  * line for 'serveur' program. It is very similar to monitor's options.h

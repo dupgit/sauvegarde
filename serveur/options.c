@@ -20,7 +20,7 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file options.c
+ * @file serveur/options.c
  *
  *  This file contains all the functions to manage command line options for
  *  'serveur' program.
