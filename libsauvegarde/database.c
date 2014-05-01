@@ -321,6 +321,7 @@ static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash)
         }
 }
 
+
 /**
  * Says wether a hash is already in the data table of the database (with
  * it's datas).

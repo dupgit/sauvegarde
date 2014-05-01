@@ -103,7 +103,7 @@ static void create_new_pull_receiver(comm_t *comm)
 
 
 /**
- * Connects a socket somewhere eg : tcp://localhost:5558
+ * Connects a socket somewhere eg : tcp://localhost:5468
  * @param socket is the socket to be connected to somewhere
  * @param somewhere is the string that will define the connection we want
  *        eg "tcp://localhost:5468" or "tcp://10.1.1.60:3128"...
@@ -118,7 +118,7 @@ static void connect_socket_somewhere(void *socket, gchar *somewhere)
 
 
 /**
- * Binds a socket somewhere eg : tcp:// *:5558
+ * Binds a socket somewhere eg : tcp:// *:5468
  * @param socket is the socket to be bind from somewhere
  * @param somewhere is the string that will define the connection we want
  *        to be bind on.
@@ -183,20 +183,22 @@ comm_t *create_pull_socket(gchar *somewhere)
  * Sends a message throught sender socket
  * @param comm : the communication structure that handles sockets. sender
  *        field is the one used to send message.
- * @param message is a gchar * message to be sent.
+ * @param message is a guchar * message to be sent.
+ * @param size is the size of message buffer to be sent.
  * @returns size of the message sent. 0 may be returned if comm or message
  *          are NULL.
  */
-gint send_message(comm_t *comm, gchar *message)
+gint send_message(comm_t *comm, guchar *message, gint size)
 {
-    gint size = 0;
-
-    if  (comm != NULL && message != NULL)
+    if  (comm != NULL && message != NULL && size > 0)
         {
-            size = zmq_send(comm->sender, message, strlen(message), 0);
+            size = zmq_send(comm->sender, message, size, 0);
+            return size;
         }
-
-    return size;
+    else
+        {
+            return 0;
+        }
 }
 
 
@@ -204,15 +206,15 @@ gint send_message(comm_t *comm, gchar *message)
  * Waits to receive a message.
  * @param comm : the communication structure that handles sockets. receiver
  *        field is the one used to receive message.
- * @returns a newly allocated gchar * message that can be freed when no
+ * @returns a newly allocated guchar * message that can be freed when no
  *          longer needed.
  */
-gchar *receive_message(comm_t *comm)
+guchar *receive_message(comm_t *comm)
 {
     gint size = 0;
-    char buffer[MAX_MESSAGE_SIZE + 1]; /* +1 to be sure to be able to have a final trailing \0x0 ! */
+    guchar buffer[MAX_MESSAGE_SIZE];
 
-    gchar *message = NULL;
+    guchar *message = NULL;
 
     if  (comm != NULL)
         {
@@ -220,7 +222,7 @@ gchar *receive_message(comm_t *comm)
 
              if (size != -1)
                 {
-                    message = g_strndup(buffer, size); /* g_strndup adds the trailing \0x0 */
+                    message = g_memdup(buffer, size);
                 }
         }
 
