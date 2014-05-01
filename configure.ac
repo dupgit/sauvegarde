@@ -197,41 +197,43 @@ monitor/Makefile
 serveur/Makefile
 po/Makefile.in
 ])
+
 AC_OUTPUT
-echo
-echo
-echo "*** Flags that will be used to compile Sauvegarde ***"
-echo
-echo "CFLAGS        : ${CFLAGS}"
-echo "LDFLAGS       : ${LDFLAGS}"
-echo
-echo "GLIB CFLAGS   : ${GLIB_CFLAGS}"
-echo "GLIB LIBS     : ${GLIB_LIBS}"
-echo
-echo "GIO CFLAGS    : ${GIO_CFLAGS}"
-echo "GIO LIBS      : ${GIO_LIBS}"
-echo
-echo "SQLITE CFLAGS : ${SQLITE_CFLAGS}"
-echo "SQLITE LIBS   : ${SQLITE_LIBS}"
-echo
-echo "LIBZMQ CFLAGS : ${ZMQ_CFLAGS}"
-echo "LIBZMP LIBS   : ${ZMQ_LIBS}"
-echo
-echo "MSGPACK CFLAGS: ${MSGPACK_CFLAGS}"
-echo "MSGPACK LIBS  : ${MSGPACK_LIBS}"
-echo
-echo
-echo "*** Dumping configuration ***"
-echo
-echo "    - Build For OS             : $build_os"
-echo "    - Compiler                 : ${CC}"
-echo "    - Options"
-echo "      . is code profiling on ? : $gprof"
-echo "      . Code coverage is on ?  : $gcov"
-echo "      . debbuging is on ?      : $debug"
-echo "    - Prefix                   : $prefix"
-echo "    - Exec prefix              : ${exec_prefix}"
-echo "    - Locale dir               : ${LOCALE_DIR}"
-echo
-echo "    You can now run 'make -s' to compile Sauvegarde"
-echo
+
+AC_MSG_NOTICE([
+ *** Flags that will be used to compile Sauvegarde ***
+
+ CFLAGS        : ${CFLAGS}
+ LDFLAGS       : ${LDFLAGS}
+
+ GLIB CFLAGS   : ${GLIB_CFLAGS}
+ GLIB LIBS     : ${GLIB_LIBS}
+
+ GIO CFLAGS    : ${GIO_CFLAGS}
+ GIO LIBS      : ${GIO_LIBS}
+
+ SQLITE CFLAGS : ${SQLITE_CFLAGS}
+ SQLITE LIBS   : ${SQLITE_LIBS}
+
+ LIBZMQ CFLAGS : ${ZMQ_CFLAGS}
+ LIBZMP LIBS   : ${ZMQ_LIBS}
+
+ MSGPACK CFLAGS: ${MSGPACK_CFLAGS}
+ MSGPACK LIBS  : ${MSGPACK_LIBS}
+
+
+ *** Dumping configuration ***
+
+     - Build For OS             : $build_os
+     - Compiler                 : ${CC}
+     - Options
+       . is code profiling on ? : $gprof
+       . Code coverage is on ?  : $gcov
+       . debbuging is on ?      : $debug
+     - Prefix                   : $prefix
+     - Exec prefix              : ${exec_prefix}
+     - Locale dir               : ${LOCALE_DIR}
+
+You can now run 'make' to compile Sauvegarde.
+
+])
