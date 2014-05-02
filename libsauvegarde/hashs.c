@@ -67,45 +67,46 @@ gint compare_two_hashs(gconstpointer a, gconstpointer b)
 
     if (a != NULL)
         {
-            if (b != NULL)
+            if (b != NULL) /* a and b are not NULL -> we can compare them */
                 {
-                    while (first == second && i < HASH_LEN)
+                    while (first == second && i < HASH_LEN)  /* we compare bytes from the hashs (byte to byte) */
                         {
                             first = (guint) hash_a[i];
                             second = (guint) hash_b[i];
                             i = i + 1;
                         }
 
-                    if (i == HASH_LEN && first == second)
+                    if (i == HASH_LEN && first == second) /* a is equal to b */
                         {
                             return 0;
                         }
-                    if (first < second)
+                    if (first < second) /* a is first */
                         {
                             return -1;
                         }
-                    else
+                    else /* b is first */
                         {
                             return 1;
                         }
                 }
-            else
+            else  /* a is not NULL but b is NULL (a is first) */
                 {
                     return -1;
                 }
         }
     else
         {
-            if (b != NULL)
+            if (b != NULL)  /* a is NULL and b is not NULL (b is first) */
                 {
                     return 1;
                 }
-            else
+            else  /* a and b are NULL (they are equal) */
                 {
                     return 0;
                 }
         }
 }
+
 
 /**
  * A function to insert a binary hash into the GTree structure
