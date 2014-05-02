@@ -29,4 +29,12 @@
 #ifndef _PACKING_H_
 #define _PACKING_H_
 
+/**
+ * Packs into a buffer the meta_data_t structure
+ * @param meta is the meta data to be serialized into buffer
+ * @returns a serialized buffer (msgpack_sbuffer *)
+ */
+msgpack_sbuffer *pack_meta_data_t(meta_data_t *meta);
+
+
 #endif /* #ifndef _PACKING_H_ */
