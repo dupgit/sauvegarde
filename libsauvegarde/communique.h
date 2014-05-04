@@ -111,5 +111,12 @@ extern guchar *receive_message(comm_t *comm);
 gint send_packed_message(comm_t *comm, msgpack_sbuffer *buffer);
 
 
+/**
+ * Receives a packed message
+ * @param comm : the communication structure that handles sockets. receiver
+ *        field is the one used to receive message.
+ */
+msgpack_unpacked *receive_packed_message(comm_t *comm);
+
 
 #endif /* #ifndef _COMMUNIQUE_H_ */

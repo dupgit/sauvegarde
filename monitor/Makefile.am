@@ -1,11 +1,11 @@
 bin_PROGRAMS = client
 
 DEFS =	-I../libsauvegarde $(GLIB_CFLAGS) $(GIO_CFLAGS) $(ZMQ_CFLAGS) \
-		$(SQLITE_CFLAGS)
+		$(SQLITE_CFLAGS) $(MSGPACK_CFLAGS)
 
 client_LDFLAGS = $(LDFLAGS)
 client_LDADD =  $(GLIB_LIBS) $(GIO_LIBS)  -L../libsauvegarde -lsauvegarde \
-				$(ZMQ_LIBS) $(SQLITE_LIBS)
+				$(ZMQ_LIBS) $(SQLITE_LIBS) $(MSGPACK_LIBS)
 
 MON_HEADERFILES = monitor.h               \
                   options.h				  \

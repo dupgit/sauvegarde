@@ -269,4 +269,29 @@ gint send_packed_message(comm_t *comm, msgpack_sbuffer *buffer)
 }
 
 
+/**
+ * Receives a packed message
+ * @param comm : the communication structure that handles sockets. receiver
+ *        field is the one used to receive message.
+ */
+msgpack_unpacked *receive_packed_message(comm_t *comm)
+{
+    zmq_msg_t *message = NULL;
+    msgpack_unpacked *buffer = NULL;
+    gint size = 0;
 
+    if (comm != NULL && comm->receiver != NULL)
+        {
+            zmq_msg_init(message);
+            zmq_msg_recv(message, comm->receiver, 0);
+            msgpack_unpacked_init(buffer);
+            size = zmq_msg_size(message);
+            msgpack_unpack_next(buffer, zmq_msg_data(message), size, NULL);
+
+            return buffer;
+        }
+    else
+        {
+            return NULL;
+        }
+}
