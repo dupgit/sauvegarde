@@ -156,6 +156,7 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
   demand, maximum filesystem size and low memory consumption.
 * It seems that it will be difficult to get things via 'simple' message
   passing between threads.
+* I do not feel confortable with msgpack library. I miss documentation.
 
 
 ## Usefull links
@@ -169,7 +170,9 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
  * main site :[http://www.sqlite.org/cintro.html](http://www.sqlite.org/cintro.html)
  * firefox add on : [https://addons.mozilla.org/fr/firefox/addon/sqlite-manager/](https://addons.mozilla.org/fr/firefox/addon/sqlite-manager/)
 * zmq        : [http://czmq.zeromq.org/](http://czmq.zeromq.org/)
-* msgpack    : [http://msgpack.org/](http://msgpack.org/)
+* data packing over the wire :
+ * msgpack    : [http://msgpack.org/](http://msgpack.org/)
+ * jansson    : [http://www.digip.org/jansson/](http://www.digip.org/jansson/)
 * doxygen    : [http://www.stack.nl/~dimitri/doxygen/index.html](http://www.stack.nl/~dimitri/doxygen/index.html)
 * Software quality checkers :
  * lizard    : [https://github.com/terryyin/lizard](https://github.com/terryyin/lizard)
