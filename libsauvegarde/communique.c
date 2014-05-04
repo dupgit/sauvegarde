@@ -258,6 +258,7 @@ gint send_packed_message(comm_t *comm, msgpack_sbuffer *buffer)
         {
             zmq_msg_init_data(message, buffer->data, buffer->size, free_sbuffer, buffer);
             size = zmq_msg_send(comm->sender, message, 0);
+            zmq_msg_close(message);
 
             return size;
         }
