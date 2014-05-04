@@ -33,6 +33,7 @@ static void create_new_push_sender(comm_t *comm);
 static void create_new_pull_receiver(comm_t *comm);
 static void connect_socket_somewhere(void *socket, gchar *somewhere);
 static void bind_socket_somewhere(void *socket, gchar *somewhere);
+static void free_sbuffer(void *data, void *hint);
 
 /**
  * gets the version for the communication library (ZMQ for now)
@@ -227,6 +228,43 @@ guchar *receive_message(comm_t *comm)
         }
 
     return message;
+}
+
+
+/**
+ * Destroys a sbuffer within zmq send
+ * @param data is the buffer data
+ * @param hint is a msgpack_sbuffer * structure that we want to free
+ */
+static void free_sbuffer(void *data, void *hint)
+{
+    msgpack_sbuffer *buffer = (msgpack_sbuffer *) hint;
+
+    msgpack_sbuffer_destroy(buffer);
+}
+
+
+/**
+ * Sends a packed message (into buffer) and frees memory
+ * @param comm is the structure that stores sockets
+ * @param buffer is the packed buffer to transmit to the wire
+ */
+gint send_packed_message(comm_t *comm, msgpack_sbuffer *buffer)
+{
+    zmq_msg_t *message = NULL;
+    gint size = 0;
+
+    if (comm != NULL && comm->sender != NULL && buffer != NULL)
+        {
+            zmq_msg_init_data(message, buffer->data, buffer->size, free_sbuffer, buffer);
+            size = zmq_msg_send(comm->sender, message, 0);
+
+            return size;
+        }
+    else
+        {
+            return 0;
+        }
 }
 
 
