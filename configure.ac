@@ -11,12 +11,6 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INTLTOOL([0.23])
 
 dnl **************************************************
-dnl * If we are running automake >= 1.11, we can     *
-dnl * have nicer compilation output.                 *
-dnl **************************************************
-AM_SILENT_RULES([yes])
-
-dnl **************************************************
 dnl * Put the preprocessor macros in a header file   *
 dnl * instead of command line                        *
 dnl **************************************************
@@ -123,7 +117,7 @@ dnl * At this early stage debugging IS activated     *
 dnl * by default                                     *
 dnl **************************************************
 AC_ARG_ENABLE([debug],
-     [  --enable-debug         Turn on debugging],
+     [  --enable-debug          Turn on debugging],
      [case "${enableval}" in
        yes) debug=true ;;
        no)  debug=false ;;
@@ -140,10 +134,29 @@ fi
 
 
 dnl **************************************************
+dnl * If we are running automake >= 1.11, we can     *
+dnl * have nicer compilation output. silent option   *
+dnl **************************************************
+AC_ARG_ENABLE([silent],
+     [  --disable-silent        Disable quiet compilation],
+     [case "${enableval}" in
+       yes) silent=false ;;
+       no)  silent=true ;;
+       *) AC_MSG_ERROR([bad value ${enableval} for --disable-silent]) ;;
+     esac],[silent=false])
+if test x$silent = xtrue
+then
+    AM_SILENT_RULES([no])
+else
+    AM_SILENT_RULES([yes])
+fi
+
+
+dnl **************************************************
 dnl * gcov option                                    *
 dnl **************************************************
 AC_ARG_ENABLE([gcov],
-     [  --enable-gcov          Enables gcov coverage tests],
+     [  --enable-gcov           Enables gcov coverage tests],
      [case "${enableval}" in
        yes) gcov=true ;;
        no)  gcov=false ;;
@@ -161,7 +174,7 @@ dnl **************************************************
 dnl * gprof option                                   *
 dnl **************************************************
 AC_ARG_ENABLE([gprof],
-     [  --enable-gprof         Enables gprof profiling],
+     [  --enable-gprof          Enables gprof profiling],
      [case "${enableval}" in
        yes) gprof=true ;;
        no)  gprof=false ;;
@@ -226,13 +239,15 @@ AC_MSG_NOTICE([
 
      - Build For OS             : $build_os
      - Compiler                 : ${CC}
-     - Options
-       . is code profiling on ? : $gprof
-       . Code coverage is on ?  : $gcov
-       . debbuging is on ?      : $debug
      - Prefix                   : $prefix
      - Exec prefix              : ${exec_prefix}
      - Locale dir               : ${LOCALE_DIR}
+
+     - Options
+       . is code profiling on ?       : $gprof
+       . Code coverage is on ?        : $gcov
+       . debbuging is on ?            : $debug
+       . Disabled quiet compilation ? : $silent
 
 You can now run 'make' to compile Sauvegarde.
 
