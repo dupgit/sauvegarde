@@ -40,7 +40,6 @@ gpointer store_buffer_data(gpointer data)
     main_struct_t *main_struct = (main_struct_t *) data;
     meta_data_t *meta = NULL;
     db_t *database = NULL;
-    msgpack_sbuffer *buffer = NULL;
 
     if (main_struct != NULL)
         {
@@ -52,12 +51,6 @@ gpointer store_buffer_data(gpointer data)
 
                     if (meta->name != NULL)   /* if name is null than it should not be processed */
                         {
-                            buffer = pack_meta_data_t(meta);
-                            if (buffer != NULL)
-                                {
-                                    send_packed_message(main_struct->comm, buffer);
-                                }
-
                             print_debug(stdout, "Inserting into database file %s\n", meta->name);
                             insert_file_into_cache(database, meta, main_struct->hashs);
                         }

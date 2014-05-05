@@ -62,7 +62,6 @@ int main(int argc, char **argv)
     serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program. */
     gchar *somewhere = NULL;
     comm_t *comm = NULL;
-    msgpack_unpacked *buffer = NULL;
 
     g_type_init();
 
@@ -77,11 +76,10 @@ int main(int argc, char **argv)
 
             while (1)
                 {
-                    buffer = receive_packed_message(comm);
                     /* print_debug(stdout, _("buffer size = %d\n"), buffer->size); */
 
-                  /* print_debug(stdout, "filename = %s\n", meta->name);
-                   */
+                    /* print_debug(stdout, "filename = %s\n", meta->name); */
+
                 }
         }
 

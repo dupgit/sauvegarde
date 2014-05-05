@@ -46,7 +46,6 @@ void print_libraries_versions(void)
             free_variable(comm_version);
         }
     fprintf(stdout, _("\t. %s version : %s\n"), DATABASE_NAME, db_version());
-    fprintf(stdout, _("\t. MSGPACK version : %s\n"), MSGPACK_VERSION);
 }
 
 

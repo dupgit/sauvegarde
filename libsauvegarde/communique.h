@@ -103,20 +103,4 @@ extern gint send_message(comm_t *comm, guchar *message, gint size);
 extern guchar *receive_message(comm_t *comm);
 
 
-/**
- * Sends a packed message (into buffer) and frees memory
- * @param comm is the structure that stores sockets
- * @param buffer is the packed buffer to transmit to the wire
- */
-gint send_packed_message(comm_t *comm, msgpack_sbuffer *buffer);
-
-
-/**
- * Receives a packed message
- * @param comm : the communication structure that handles sockets. receiver
- *        field is the one used to receive message.
- */
-msgpack_unpacked *receive_packed_message(comm_t *comm);
-
-
 #endif /* #ifndef _COMMUNIQUE_H_ */
