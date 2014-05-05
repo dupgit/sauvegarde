@@ -172,7 +172,7 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
 * zmq        : [http://czmq.zeromq.org/](http://czmq.zeromq.org/)
 * data packing over the wire :
  * msgpack    : [http://msgpack.org/](http://msgpack.org/)
- * jansson    : [http://www.digip.org/jansson/](http://www.digip.org/jansson/)
+ * jansson    : [http://www.digip.org/jansson/](http://www.digip.org/jansson/) See also the RFC 4627: [http://tools.ietf.org/html/rfc4627.html](http://tools.ietf.org/html/rfc4627.html)
 * doxygen    : [http://www.stack.nl/~dimitri/doxygen/index.html](http://www.stack.nl/~dimitri/doxygen/index.html)
 * Software quality checkers :
  * lizard    : [https://github.com/terryyin/lizard](https://github.com/terryyin/lizard)
