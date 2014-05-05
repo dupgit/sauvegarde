@@ -29,7 +29,21 @@
 #ifndef _PACKING_H_
 #define _PACKING_H_
 
+/**
+ * @def JANSSON_SUCCESS
+ * Defines jansson success answer
+ */
+#define JANSSON_SUCCESS (0)
 
+
+/**
+ * This function should return a JSON string with all informations from
+ * the meta_data_t structure.
+ * @param meta is the structure that contains all meta data for a file or
+ *        a directory.
+ * @returns a JSON formated string
+ */
+gchar *convert_meta_data_to_json(meta_data_t *meta);
 
 
 #endif /* #ifndef _PACKING_H_ */

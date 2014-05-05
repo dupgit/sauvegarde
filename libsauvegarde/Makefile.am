@@ -23,7 +23,7 @@ libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS) \
 						  $(JANSSON_CFLAGS)
 
 AM_LDFLAGS = $(LDFLAGS) $(GLIB_LIBS) $(GIO_LIBS) $(ZMQ_LIBS) \
-             $(SQLITE_LIBS) $(JANSSON_CFLAGS)
+             $(SQLITE_LIBS) $(JANSSON_LIBS)
 
 include_HEADERS = $(headerfiles)
 

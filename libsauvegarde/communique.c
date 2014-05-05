@@ -33,7 +33,7 @@ static void create_new_push_sender(comm_t *comm);
 static void create_new_pull_receiver(comm_t *comm);
 static void connect_socket_somewhere(void *socket, gchar *somewhere);
 static void bind_socket_somewhere(void *socket, gchar *somewhere);
-static void free_sbuffer(void *data, void *hint);
+
 
 /**
  * gets the version for the communication library (ZMQ for now)

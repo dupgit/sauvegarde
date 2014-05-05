@@ -51,6 +51,7 @@ gpointer store_buffer_data(gpointer data)
 
                     if (meta->name != NULL)   /* if name is null than it should not be processed */
                         {
+                            convert_meta_data_to_json(meta);
                             print_debug(stdout, "Inserting into database file %s\n", meta->name);
                             insert_file_into_cache(database, meta, main_struct->hashs);
                         }
