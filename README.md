@@ -18,7 +18,7 @@ This project depends on :
 * glib and gio  (2.26)
 * 0MQ           (3.2.4)
 * sqlite        (3.6.20)
-* msgpack       (0.5.8)
+* jansson       (2.6)
 
 doxygen (1.6.1) is used to generate code's documentation but is not
 required to build the project.
