@@ -40,6 +40,7 @@ gpointer store_buffer_data(gpointer data)
     main_struct_t *main_struct = (main_struct_t *) data;
     meta_data_t *meta = NULL;
     db_t *database = NULL;
+    gchar *json_str = NULL;
 
     if (main_struct != NULL)
         {
@@ -51,8 +52,10 @@ gpointer store_buffer_data(gpointer data)
 
                     if (meta->name != NULL)   /* if name is null than it should not be processed */
                         {
-                            convert_meta_data_to_json(meta);
+                            json_str = convert_meta_data_to_json(meta);
                             print_debug(stdout, "Inserting into database file %s\n", meta->name);
+                            print_debug(stdout, "json string is : \n%s\n", json_str);
+                            free(json_str);
                             insert_file_into_cache(database, meta, main_struct->hashs);
                         }
                 }
