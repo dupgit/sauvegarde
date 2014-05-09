@@ -38,7 +38,7 @@ static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 
 
 /**
  * Inserts a json_t *value into the json_t *root array.
- * @param[in,out] root is the root that will contain all meta data value
+ * @param[in,out] root is the root that will contain all meta data values
  * @param keyname is the keyname associated with the value (in fact it is
  *        variable's name)
  * @param value is the json_t "encoded" value to insert into the root

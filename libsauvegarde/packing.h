@@ -46,4 +46,14 @@
 gchar *convert_meta_data_to_json(meta_data_t *meta);
 
 
+/**
+ * This function should return a newly allocated meta_data_t * structure
+ * with all informations included from the json string.
+ * @param json_str is a gchar * contianing the JSON formated string.
+ * @returns a newly_allocated meta_data_t * structure that can be freed
+ *          with free_meta_data_t() function when no longer needed. This
+ *          function can return NULL if json_str is NULL itself.
+ */
+meta_data_t *convert_json_to_meta_data(gchar *json_str);
+
 #endif /* #ifndef _PACKING_H_ */
