@@ -30,6 +30,10 @@
 
 static void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_t *value);
 static void append_hash_to_array(json_t *array, gchar *encoded_hash);
+static void insert_string_into_json_root(json_t *root, gchar *keyname, gchar *a_string);
+static void insert_guint8_into_json_root(json_t *root, gchar *keyname, guint8 number);
+static void insert_guint32_into_json_root(json_t *root, gchar *keyname, guint32 number);
+static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 number);
 
 
 /**
@@ -43,12 +47,15 @@ static void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_
 {
     int result = 0;
 
-    result = json_object_set_new(root, keyname, value);
-
-    if (result != JANSSON_SUCCESS)
+    if (root != NULL && keyname != NULL && value != NULL)
         {
-            fprintf(stderr, _("Error while converting to JSON\n"));
-            exit(EXIT_FAILURE); /* An error here means that we will do nothing good */
+            result = json_object_set_new(root, keyname, value);
+
+            if (result != JANSSON_SUCCESS)
+                {
+                    fprintf(stderr, _("Error while converting to JSON\n"));
+                    exit(EXIT_FAILURE); /* An error here means that we will do nothing good */
+                }
         }
 }
 
@@ -63,8 +70,83 @@ static void append_hash_to_array(json_t *array, gchar *encoded_hash)
 {
     json_t *string = NULL;
 
-    string = json_string_nocheck((const char *) encoded_hash);
-    json_array_append_new(array, string);
+    if (array != NULL && encoded_hash != NULL)
+        {
+            string = json_string_nocheck((const char *) encoded_hash);
+            json_array_append_new(array, string);
+        }
+}
+
+
+/**
+ * Inserts the string a_string into the json tree root with key keyname.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we will insert a new value
+ * @param a_string is the value to be inserted with key keyname.
+ */
+static void insert_string_into_json_root(json_t *root, gchar *keyname, gchar *a_string)
+{
+    json_t *str = NULL;
+
+    if (root != NULL && keyname != NULL && a_string != NULL)
+        {
+            str = json_string_nocheck((const char *) a_string);
+            insert_json_value_into_json_root(root, keyname, str);
+        }
+}
+
+
+/**
+ * Inserts the guint8 number into the json tree root with key keyname.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we will insert a new value
+ * @param number is the value to be inserted with key keyname.
+ */
+static void insert_guint8_into_json_root(json_t *root, gchar *keyname, guint8 number)
+{
+    json_t *value = NULL;
+
+    if (root != NULL && keyname != NULL)
+        {
+            value = json_integer(number);
+            insert_json_value_into_json_root(root, keyname, value);
+        }
+}
+
+
+/**
+ * Inserts the guint32 number into the json tree root with key keyname.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we will insert a new value
+ * @param number is the value to be inserted with key keyname.
+ */
+static void insert_guint32_into_json_root(json_t *root, gchar *keyname, guint32 number)
+{
+    json_t *value = NULL;
+
+    if (root != NULL && keyname != NULL)
+        {
+            value = json_integer(number);
+            insert_json_value_into_json_root(root, keyname, value);
+        }
+}
+
+
+/**
+ * Inserts the guint64 number into the json tree root with key keyname.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we will insert a new value
+ * @param number is the value to be inserted with key keyname.
+ */
+static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 number)
+{
+    json_t *value = NULL;
+
+    if (root != NULL && keyname != NULL)
+        {
+            value = json_integer(number);
+            insert_json_value_into_json_root(root, keyname, value);
+        }
 }
 
 
@@ -73,13 +155,11 @@ static void append_hash_to_array(json_t *array, gchar *encoded_hash)
  * the meta_data_t structure.
  * @param meta is the structure that contains all meta data for a file or
  *        a directory.
- * @returns a JSON formated string
+ * @returns a JSON formated string or NULL
  */
 gchar *convert_meta_data_to_json(meta_data_t *meta)
 {
     json_t *root = NULL;        /**< the root that will contain all meta data json */
-    json_t *string = NULL;      /**< temporary variable for strings                */
-    json_t *value = NULL;       /**< temporary variable for integers and numbers   */
     json_t *array = NULL;       /**< array that will receive base64 encoded hashs  */
     gchar *encoded_hash = NULL; /**< hash base64 encoded                           */
     GSList *head = NULL;        /**< list to iter over                             */
@@ -89,39 +169,27 @@ gchar *convert_meta_data_to_json(meta_data_t *meta)
         {
             root = json_object();
 
-            value = json_integer(meta->file_type);
-            insert_json_value_into_json_root(root, "filetype", value);
+            insert_guint8_into_json_root(root, "filetype", meta->file_type);
 
-            value = json_integer(meta->mode);
-            insert_json_value_into_json_root(root, "mode", value);
+            insert_guint32_into_json_root(root, "mode", meta->mode);
 
-            value = json_integer(meta->atime);
-            insert_json_value_into_json_root(root, "atime", value);
+            insert_guint64_into_json_root(root, "atime", meta->atime);
+            insert_guint64_into_json_root(root, "ctime", meta->ctime);
+            insert_guint64_into_json_root(root, "mtime", meta->mtime);
 
-            value = json_integer(meta->ctime);
-            insert_json_value_into_json_root(root, "ctime", value);
+            insert_string_into_json_root(root, "owner", meta->owner);
 
-            value = json_integer(meta->mtime);
-            insert_json_value_into_json_root(root, "mtime", value);
+            insert_string_into_json_root(root, "group", meta->group);
 
-            string = json_string_nocheck((const char *) meta->owner);
-            insert_json_value_into_json_root(root, "owner", string);
+            insert_guint32_into_json_root(root, "uid", meta->uid);
+            insert_guint32_into_json_root(root, "gid", meta->uid);
 
-            string = json_string_nocheck((const char *) meta->group);
-            insert_json_value_into_json_root(root, "group", string);
+            insert_string_into_json_root(root, "name", meta->name);
 
-            value = json_integer(meta->uid);
-            insert_json_value_into_json_root(root, "uid", value);
 
-            value = json_integer(meta->gid);
-            insert_json_value_into_json_root(root, "gid", value);
-
-            string = json_string_nocheck((const char *) meta->name);
-            insert_json_value_into_json_root(root, "name", string);
-
-            /* creating an array with the hash list */
-            head = meta->hash_list;
+            /* creating an array with the whole hash list */
             array = json_array();
+            head = meta->hash_list;
 
             while (head != NULL)
                 {
@@ -132,7 +200,6 @@ gchar *convert_meta_data_to_json(meta_data_t *meta)
                     g_free(encoded_hash);
 
                     head = g_slist_next(head);
-
                 }
 
             insert_json_value_into_json_root(root, "hash_list", array);
