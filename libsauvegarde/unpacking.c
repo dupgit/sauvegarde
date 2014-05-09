@@ -82,6 +82,74 @@ static gchar *get_string_from_json_root(json_t *root, gchar *keyname)
 
 
 /**
+ * returns the guint8 value associated with key keyname from the json tree
+ * root.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we seek the guint8 value.
+ * @returns a guint8 number that is the value associated with key keyname.
+ */
+static guint8 get_guint8_from_json_root(json_t *root, gchar *keyname)
+{
+    json_t *value = NULL;
+    guint8 number = 0;
+
+    if (root != NULL && keyname != NULL)
+        {
+            value = get_json_value_from_json_root(root, keyname);
+            number = (guint8) json_integer_value(value);
+        }
+
+    return number;
+}
+
+
+/**
+ * returns the guint32 value associated with key keyname from the json tree
+ * root.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we seek the guint32 value.
+ * @returns a guint32 number that is the value associated with key keyname.
+ */
+static guint32 get_guint32_from_json_root(json_t *root, gchar *keyname)
+{
+    json_t *value = NULL;
+    guint32 number = 0;
+
+    if (root != NULL && keyname != NULL)
+        {
+            value = get_json_value_from_json_root(root, keyname);
+            number = (guint32) json_integer_value(value);
+        }
+
+    return number;
+}
+
+
+/**
+ * returns the guint64 value associated with key keyname from the json tree
+ * root.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we seek the guint64 value.
+ * @returns a guint64 number that is the value associated with key keyname.
+ */
+static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname)
+{
+    json_t *value = NULL;
+    guint64 number = 0;
+
+    if (root != NULL && keyname != NULL)
+        {
+            value = get_json_value_from_json_root(root, keyname);
+            number = (guint64) json_integer_value(value);
+        }
+
+    return number;
+}
+
+
+
+
+/**
  * This function should return a newly allocated meta_data_t * structure
  * with all informations included from the json string.
  * @param json_str is a gchar * contianing the JSON formated string.
@@ -94,6 +162,12 @@ meta_data_t *convert_json_to_meta_data(gchar *json_str)
     json_t *root = NULL;        /**< the json tree from which we will extract everything */
     json_error_t *error = NULL; /**< json error handling                                 */
     meta_data_t *meta = NULL;   /**< meta_data that will be returned                     */
+    json_t *array =  NULL;      /**< retrieved array */
+    size_t index = 0;           /**< index to iter over the array */
+    json_t *value = NULL;       /**< value = array[index] when iterating with json_array_foreach */
+    GSList *head = NULL;        /**< the list to build */
+    guchar *a_hash = NULL;      /**< one base64 decoded hash */
+    gsize hash_len = 0;         /**< length of the decoded hash */
 
     if (json_str != NULL)
         {
@@ -105,7 +179,32 @@ meta_data_t *convert_json_to_meta_data(gchar *json_str)
                 {
                     meta = new_meta_data_t();
 
+                    meta->file_type = get_guint8_from_json_root(root, "filetype");
+                    meta->mode = get_guint32_from_json_root(root, "mode");
+
+                    meta->atime = get_guint64_from_json_root(root, "atime");
+                    meta->ctime = get_guint64_from_json_root(root, "ctime");
+                    meta->mtime = get_guint64_from_json_root(root, "mtime");
+
+                    meta->owner = get_string_from_json_root(root, "owner");
+                    meta->group = get_string_from_json_root(root, "group");
+
+                    meta->uid = get_guint32_from_json_root(root, "uid");
+                    meta->gid = get_guint32_from_json_root(root, "gid");
+
                     meta->name = get_string_from_json_root(root, "name");
+
+                    /* creating a list with JSON array */
+                    array = get_json_value_from_json_root(root, "hash_list");
+
+                    /* This is a loop from jansson library for the array */
+                    json_array_foreach(array, index, value)
+                        {
+                            a_hash = g_base64_decode(json_string_value(value), &hash_len);
+                            head = g_slist_append(head, a_hash);
+                        }
+
+                    meta->hash_list = head;
 
                 }
             else

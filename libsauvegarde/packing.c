@@ -170,7 +170,6 @@ gchar *convert_meta_data_to_json(meta_data_t *meta)
             root = json_object();
 
             insert_guint8_into_json_root(root, "filetype", meta->file_type);
-
             insert_guint32_into_json_root(root, "mode", meta->mode);
 
             insert_guint64_into_json_root(root, "atime", meta->atime);
@@ -178,7 +177,6 @@ gchar *convert_meta_data_to_json(meta_data_t *meta)
             insert_guint64_into_json_root(root, "mtime", meta->mtime);
 
             insert_string_into_json_root(root, "owner", meta->owner);
-
             insert_string_into_json_root(root, "group", meta->group);
 
             insert_guint32_into_json_root(root, "uid", meta->uid);
