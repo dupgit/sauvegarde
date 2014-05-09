@@ -62,6 +62,8 @@ int main(int argc, char **argv)
     serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program. */
     gchar *somewhere = NULL;
     comm_t *comm = NULL;
+    gchar *message = NULL;
+    meta_data_t *meta = NULL;
 
     g_type_init();
 
@@ -76,10 +78,11 @@ int main(int argc, char **argv)
 
             while (1)
                 {
-                    /* print_debug(stdout, _("buffer size = %d\n"), buffer->size); */
+                    message = receive_message(comm);
 
-                    /* print_debug(stdout, "filename = %s\n", meta->name); */
+                    meta = convert_json_to_meta_data(message);
 
+                    meta = free_meta_data_t(meta);
                 }
         }
 

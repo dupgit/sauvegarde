@@ -90,17 +90,17 @@ extern comm_t *create_pull_socket(gchar *somewhere);
  * @returns size of the message sent. 0 may be returned if comm or message
  *          are NULL.
  */
-extern gint send_message(comm_t *comm, guchar *message, gint size);
+extern gint send_message(comm_t *comm, gchar *message, gint size);
 
 
 /**
  * Waits the arrival of a message
  * @param comm : the communication structure that handles sockets. receiver
  *        field is the one used to receive message.
- * @returns a newly allocated guchar * message that can be freed when no
+ * @returns a newly allocated gchar * message that can be freed when no
  *         longer needed.
  */
-extern guchar *receive_message(comm_t *comm);
+extern gchar *receive_message(comm_t *comm);
 
 
 #endif /* #ifndef _COMMUNIQUE_H_ */

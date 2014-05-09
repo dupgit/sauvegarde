@@ -189,7 +189,7 @@ comm_t *create_pull_socket(gchar *somewhere)
  * @returns size of the message sent. 0 may be returned if comm or message
  *          are NULL.
  */
-gint send_message(comm_t *comm, guchar *message, gint size)
+gint send_message(comm_t *comm, gchar *message, gint size)
 {
     if  (comm != NULL && message != NULL && size > 0)
         {
@@ -210,21 +210,27 @@ gint send_message(comm_t *comm, guchar *message, gint size)
  * @returns a newly allocated guchar * message that can be freed when no
  *          longer needed.
  */
-guchar *receive_message(comm_t *comm)
+gchar *receive_message(comm_t *comm)
 {
     gint size = 0;
-    guchar buffer[MAX_MESSAGE_SIZE];
+    gchar *buffer = NULL;
+    gchar *message = NULL;
 
-    guchar *message = NULL;
+
 
     if  (comm != NULL)
         {
-             size = zmq_recv(comm->receiver, buffer, MAX_MESSAGE_SIZE, 0);
+            buffer = (gchar *) g_malloc0(sizeof(gchar)*(MAX_MESSAGE_SIZE+1));
 
-             if (size != -1)
+            size = zmq_recv(comm->receiver, buffer, MAX_MESSAGE_SIZE, 0);
+
+            if (size != -1)
                 {
-                    message = g_memdup(buffer, size);
+                    message = g_strndup(buffer, size);
+                    print_debug(stdout, "Message of size %d received : %s\n", size, message);
                 }
+
+            g_free(buffer);
         }
 
     return message;
