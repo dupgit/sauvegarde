@@ -16,6 +16,7 @@ libsauvegarde_la_SOURCES =	libsauvegarde.c 	\
 							hashs.c				\
 							database.c			\
 							packing.c			\
+							unpacking.c			\
 							$(headerfiles)
 
 libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS) \

@@ -22,7 +22,7 @@
 
 /**
  * @file packing.c
- * This file contains the functions to pack and unpack messages for all the
+ * This file contains the functions to pack messages for all the
  * programs of "Sauvegarde" project.
  */
 
