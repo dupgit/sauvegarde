@@ -149,8 +149,6 @@ static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname)
 }
 
 
-
-
 /**
  * This function should return a newly allocated meta_data_t * structure
  * with all informations included from the json string.
