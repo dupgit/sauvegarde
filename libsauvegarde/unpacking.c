@@ -30,7 +30,9 @@
 
 static json_t *get_json_value_from_json_root(json_t *root, gchar *keyname);
 static gchar *get_string_from_json_root(json_t *root, gchar *keyname);
-
+static guint8 get_guint8_from_json_root(json_t *root, gchar *keyname);
+static guint32 get_guint32_from_json_root(json_t *root, gchar *keyname);
+static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname);
 
 /**
  * gets a json_t *value into the json_t *root array.
