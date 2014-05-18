@@ -156,6 +156,8 @@ static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname)
  * @returns a newly_allocated meta_data_t * structure that can be freed
  *          with free_meta_data_t() function when no longer needed. This
  *          function can return NULL if json_str is NULL itself.
+ * @todo Add the hostname (at least) so that the serveur knows from which
+ *       host this comes from.
  */
 meta_data_t *convert_json_to_meta_data(gchar *json_str)
 {
