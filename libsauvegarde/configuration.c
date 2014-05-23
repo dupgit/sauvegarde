@@ -73,11 +73,20 @@ gchar *read_string_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupnam
     gchar *a_string = NULL;   /** the string to be read */
     GError *error = NULL;     /** Glib error handling   */
 
-    a_string = g_key_file_get_string(keyfile, groupname, keyname, &error);
-
-    if (error != NULL)
+     if (g_key_file_has_key(keyfile, groupname, keyname, &error) == TRUE)
         {
-            print_debug(stderr, "%s %s : %s", errormsg, filename, error->message);
+
+            a_string = g_key_file_get_string(keyfile, groupname, keyname, &error);
+
+            if (error != NULL)
+                {
+                    print_debug(stderr, "%s %s : %s", errormsg, filename, error->message);
+                    error = free_error(error);
+                }
+        }
+    else if (error != NULL)
+        {
+            print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), keyname, error->message);
             error = free_error(error);
         }
 
@@ -101,10 +110,19 @@ gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
     gint64 num = 0;        /** Number to be read     */
     GError *error = NULL;  /** Glib error handling   */
 
-    num =  g_key_file_get_int64(keyfile, groupname, keyname, &error);
-    if (error != NULL)
+     if (g_key_file_has_key(keyfile, groupname, keyname, &error) == TRUE)
         {
-            print_debug(stderr, "%s %s : %s", errormsg, filename, error->message);
+            num =  g_key_file_get_int64(keyfile, groupname, keyname, &error);
+
+            if (error != NULL)
+                {
+                    print_debug(stderr, "%s %s : %s", errormsg, filename, error->message);
+                    error = free_error(error);
+                }
+        }
+    else if (error != NULL)
+        {
+            print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), keyname, error->message);
             error = free_error(error);
         }
 
@@ -128,10 +146,19 @@ gint read_int_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gc
     gint num = 0;          /** Number to be read     */
     GError *error = NULL;  /** Glib error handling   */
 
-    num =  g_key_file_get_integer(keyfile, groupname, keyname, &error);
-    if (error != NULL)
+    if (g_key_file_has_key(keyfile, groupname, keyname, &error) == TRUE)
         {
-            print_debug(stderr, "%s %s : %s", errormsg, filename, error->message);
+            num =  g_key_file_get_integer(keyfile, groupname, keyname, &error);
+
+            if (error != NULL)
+                {
+                    print_debug(stderr, "%s %s : %s", errormsg, filename, error->message);
+                    error = free_error(error);
+                }
+        }
+    else if (error != NULL)
+        {
+            print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), keyname, error->message);
             error = free_error(error);
         }
 
@@ -191,17 +218,26 @@ GSList *read_list_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
     GError *error = NULL;          /** Glib error handling                                */
     gchar **dirname_array = NULL;  /** array of dirnames read into the configuration file */
 
-    dirname_array = g_key_file_get_string_list(keyfile, groupname, keyname, NULL, &error);
 
-    if (dirname_array != NULL)
+    if (g_key_file_has_key(keyfile, groupname, keyname, &error) == TRUE)
         {
-            a_list = convert_gchar_array_to_GSList(dirname_array, a_list);
-            /* The array is no longer needed (everything has been copied with g_strdup) */
-            g_strfreev(dirname_array);
+            dirname_array = g_key_file_get_string_list(keyfile, groupname, keyname, NULL, &error);
+
+            if (dirname_array != NULL)
+                {
+                    a_list = convert_gchar_array_to_GSList(dirname_array, a_list);
+                    /* The array is no longer needed (everything has been copied with g_strdup) */
+                    g_strfreev(dirname_array);
+                }
+            else if (error != NULL)
+                {
+                    print_debug(stderr, _("%s %s : %s\n"), errormsg, filename, error->message);
+                    error = free_error(error);
+                }
         }
     else if (error != NULL)
         {
-            print_debug(stderr, _("%s %s : %s\n"), errormsg, filename, error->message);
+            print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), keyname, error->message);
             error = free_error(error);
         }
 

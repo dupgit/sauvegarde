@@ -96,20 +96,10 @@ static void print_selected_options(options_t *opt)
  */
 static void read_from_group_monitor(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
-    GError *error = NULL;  /** Glib error handling */
-
-    if (g_key_file_has_group(keyfile, GN_MONITOR) == TRUE)
+    if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_MONITOR) == TRUE)
         {
-            if (g_key_file_has_key(keyfile, GN_MONITOR, KN_DIR_LIST, &error) == TRUE)
-                {
-                    /* Reading the directory list */
-                    opt->dirname_list = read_list_from_file(keyfile, filename, GN_MONITOR, KN_DIR_LIST, N_("Could not load directory list from file"));
-                }
-            else if (error != NULL)
-                {
-                    print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), KN_DIR_LIST, error->message);
-                    error = free_error(error);
-                }
+            /* Reading the directory list */
+            opt->dirname_list = read_list_from_file(keyfile, filename, GN_MONITOR, KN_DIR_LIST, N_("Could not load directory list from file"));
         }
 }
 
@@ -125,20 +115,10 @@ static void read_from_group_monitor(options_t *opt, GKeyFile *keyfile, gchar *fi
  */
 static void read_from_group_ciseaux(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
-    GError *error = NULL;  /** Glib error handling  */
-
-    if (g_key_file_has_group(keyfile, GN_CISEAUX) == TRUE)
+    if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_CISEAUX) == TRUE)
         {
-            if (g_key_file_has_key(keyfile, GN_CISEAUX, KN_BLOCK_SIZE, &error) == TRUE)
-                {
-                    /* Reading the blocksize if any */
-                    opt->blocksize = read_int64_from_file(keyfile, filename, GN_CISEAUX, KN_BLOCK_SIZE, N_("Could not load blocksize from file"));
-                }
-            else if (error != NULL)
-                {
-                    print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), KN_BLOCK_SIZE, error->message);
-                    error = free_error(error);
-                }
+            /* Reading the blocksize if any */
+            opt->blocksize = read_int64_from_file(keyfile, filename, GN_CISEAUX, KN_BLOCK_SIZE, N_("Could not load blocksize from file"));
         }
 }
 
@@ -154,42 +134,16 @@ static void read_from_group_ciseaux(options_t *opt, GKeyFile *keyfile, gchar *fi
  */
 static void read_from_group_antememoire(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
-    GError *error = NULL;  /** Glib error handling  */
-
-    if (g_key_file_has_group(keyfile, GN_ANTEMEMOIRE) == TRUE)
+    if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_ANTEMEMOIRE) == TRUE)
         {
             /* Reading the cache directory if any */
-            if (g_key_file_has_key(keyfile, GN_ANTEMEMOIRE, KN_CACHE_DIR, &error) == TRUE)
-                {
-                    opt->dircache = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_CACHE_DIR, N_("Could not load directory name"));
-                }
-            else if (error != NULL)
-                {
-                    print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), KN_CACHE_DIR, error->message);
-                    error = free_error(error);
-                }
+            opt->dircache = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_CACHE_DIR, N_("Could not load directory name"));
 
             /* Reading filename of the database if any */
-            if (g_key_file_has_key(keyfile, GN_ANTEMEMOIRE, KN_DB_NAME, &error) == TRUE)
-                {
-                    opt->dbname = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_DB_NAME, N_("Could not load cache database name"));
-                }
-            else if (error != NULL)
-                {
-                    print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), KN_DB_NAME, error->message);
-                    error = free_error(error);
-                }
+            opt->dbname = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_DB_NAME, N_("Could not load cache database name"));
 
             /* Reading IP address of serveur's host if any */
-            if (g_key_file_has_key(keyfile, GN_ANTEMEMOIRE, KN_SERVEUR_IP, &error) == TRUE)
-                {
-                    opt->ip = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_SERVEUR_IP, N_("Could not load cache database name"));
-                }
-            else if (error != NULL)
-                {
-                    print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), KN_SERVEUR_IP, error->message);
-                    error = free_error(error);
-                }
+            opt->ip = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_SERVEUR_IP, N_("Could not load cache database name"));
         }
 }
 

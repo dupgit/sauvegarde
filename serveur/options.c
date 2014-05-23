@@ -96,20 +96,10 @@ static void print_selected_options(options_t *opt)
  */
 static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
-    GError *error = NULL;          /** Glib error handling       */
-
-    if (g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
+    if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
         {
             /* Reading the port number if any */
-            if (g_key_file_has_key(keyfile, GN_SERVEUR, KN_SERVEUR_PORT, &error) == TRUE)
-                {
-                    opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, N_("Could not load serveur port number from file"));
-                }
-            else if (error != NULL)
-                {
-                    print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), KN_SERVEUR_PORT, error->message);
-                    error = free_error(error);
-                }
+            opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, N_("Could not load serveur port number from file"));
         }
 }
 
@@ -131,6 +121,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                 {
                     free_variable(opt->configfile);
                 }
+
             opt->configfile = g_strdup(filename);
 
             print_debug(stdout, _("Reading configuration from file %s\n"), filename);
