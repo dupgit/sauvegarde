@@ -310,6 +310,7 @@ options_t *manage_command_line_options(int argc, char **argv)
         }
 
     g_option_context_free(context);
+    free_variable(ip);
     free_variable(dbname);
     free_variable(dircache);
     free_variable(bugreport);
