@@ -45,11 +45,11 @@ static void print_selected_options(options_t *opt)
 
     if (opt != NULL)
         {
-            fprintf(stdout, _("\n%s options are :\n"), PROGRAM_NAME);
+            fprintf(stdout, _("\n%s options are:\n"), PROGRAM_NAME);
 
             if (opt->dirname_list != NULL)
                 {
-                    fprintf(stdout, _("Directory list :\n"));
+                    fprintf(stdout, _("Directory list:\n"));
                     head = opt->dirname_list;
                     while (head != NULL)
                         {
@@ -58,21 +58,26 @@ static void print_selected_options(options_t *opt)
                         }
                 }
 
-            fprintf(stdout, _("Blocksize : %ld\n"), opt->blocksize);
+            fprintf(stdout, _("Blocksize: %ld\n"), opt->blocksize);
 
             if (opt->configfile != NULL)
                 {
-                    fprintf(stdout, _("Configuration file : %s\n"), opt->configfile);
+                    fprintf(stdout, _("Configuration file: %s\n"), opt->configfile);
                 }
 
             if (opt->dircache != NULL)
                 {
-                    fprintf(stdout, _("Cache directory : %s\n"), opt->dircache);
+                    fprintf(stdout, _("Cache directory: %s\n"), opt->dircache);
                 }
 
             if (opt->dbname != NULL)
                 {
-                    fprintf(stdout, _("Cache database name : %s\n"), opt->dbname);
+                    fprintf(stdout, _("Cache database name: %s\n"), opt->dbname);
+                }
+
+            if (opt->ip != NULL)
+                {
+                    fprintf(stdout, _("serveur's IP address: %s\n"), opt->ip);
                 }
         }
 }
@@ -151,9 +156,9 @@ static void read_from_group_antememoire(options_t *opt, GKeyFile *keyfile, gchar
 
     if (g_key_file_has_group(keyfile, GN_ANTEMEMOIRE) == TRUE)
         {
+            /* Reading the cache directory if any */
             if (g_key_file_has_key(keyfile, GN_ANTEMEMOIRE, KN_CACHE_DIR, &error) == TRUE)
                 {
-                    /* Reading the cache directory if any */
                     opt->dircache = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_CACHE_DIR, N_("Could not load directory name"));
                 }
             else if (error != NULL)
@@ -162,14 +167,25 @@ static void read_from_group_antememoire(options_t *opt, GKeyFile *keyfile, gchar
                     error = free_error(error);
                 }
 
+            /* Reading filename of the database if any */
             if (g_key_file_has_key(keyfile, GN_ANTEMEMOIRE, KN_DB_NAME, &error) == TRUE)
                 {
-                    /* Reading filename of the database if any */
                     opt->dbname = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_DB_NAME, N_("Could not load cache database name"));
                 }
             else if (error != NULL)
                 {
                     print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), KN_DB_NAME, error->message);
+                    error = free_error(error);
+                }
+
+            /* Reading IP address of serveur's host if any */
+            if (g_key_file_has_key(keyfile, GN_ANTEMEMOIRE, KN_SERVEUR_IP, &error) == TRUE)
+                {
+                    opt->ip = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_SERVEUR_IP, N_("Could not load cache database name"));
+                }
+            else if (error != NULL)
+                {
+                    print_debug(stderr, _("Error while looking for %s key in configuration file : %s\n"), KN_SERVEUR_IP, error->message);
                     error = free_error(error);
                 }
         }
@@ -240,6 +256,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     gboolean noprint = FALSE;      /** True if we do not want to print will checksuming      */
     gchar *dircache = NULL;        /** Directory used to store cache files                   */
     gchar *dbname = NULL;          /** Database filename where data and meta data are cached */
+    gchar *ip =  NULL;             /** IP address where is located serveur's program         */
 
     GOptionEntry entries[] =
     {
@@ -249,6 +266,7 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "noprint", 'n', 0, G_OPTION_ARG_NONE, &noprint, N_("Quiets the program while calculating checksum"), NULL},
         { "dircache", 'd', 0, G_OPTION_ARG_STRING, &dircache, N_("Directory where to cache files"), NULL},
         { "dbname", 'f', 0, G_OPTION_ARG_STRING, &dbname, N_("Database filename"), NULL},
+        { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), NULL},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
@@ -282,6 +300,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->configfile = NULL;
     opt->dircache = g_strdup("/var/tmp/sauvegarde");
     opt->dbname = g_strdup("filecache.db");
+    opt->ip = g_strdup("localhost:5468");
 
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME);
@@ -328,6 +347,12 @@ options_t *manage_command_line_options(int argc, char **argv)
             opt->dbname = g_strdup(dbname);
         }
 
+    if (ip != NULL)
+        {
+            free_variable(opt->ip);
+            opt->ip = g_strdup(ip);
+        }
+
     g_option_context_free(context);
     free_variable(dbname);
     free_variable(dircache);
@@ -364,6 +389,7 @@ void free_options_t_structure(options_t *opt)
             free_variable(opt->dircache);
             free_variable(opt->configfile);
             free_variable(opt->dbname);
+            free_variable(opt->ip);
             free_variable(opt);
         }
 

@@ -95,6 +95,13 @@
 #define KN_DB_NAME ("cache-db-name")
 
 
+/**
+ * @def KN_SERVEUR_IP
+ * Defines server's IP address for the client.
+ */
+#define KN_SERVEUR_IP ("127.0.0.1")
+
+
 /** Below you'll find some definitions for the serveur program */
 /**
  * @def KN_SERVEUR_PORT

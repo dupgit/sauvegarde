@@ -170,7 +170,15 @@ static main_struct_t *init_main_structure(options_t *opt)
     main_struct->hashs = get_all_inserted_hashs(main_struct->database);
 
     /* Testing things */
-    main_struct->comm = create_push_socket("tcp://localhost:5468");
+    if (opt != NULL && opt->ip != NULL)
+        {
+            /* We must ensure that opt->ip is correct before doing this ! */
+            main_struct->comm = create_push_socket(g_strconcat("tcp://", opt->ip, NULL));
+        }
+    else
+        {
+            main_struct->comm = create_push_socket("tcp://localhost:5468");
+        }
 
     print_debug(stdout, _("Main structure initialized !\n"));
 

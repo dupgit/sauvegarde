@@ -74,6 +74,7 @@ gchar *read_string_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupnam
     GError *error = NULL;     /** Glib error handling   */
 
     a_string = g_key_file_get_string(keyfile, groupname, keyname, &error);
+
     if (error != NULL)
         {
             print_debug(stderr, "%s %s : %s", errormsg, filename, error->message);
