@@ -32,6 +32,23 @@ static void read_from_group_monitor(options_t *opt, GKeyFile *keyfile, gchar *fi
 static void read_from_group_ciseaux(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static void read_from_group_antememoire(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static void read_from_configuration_file(options_t *opt, gchar *filename);
+static void print_string_option(gchar *description, gchar *string);
+
+
+/**
+ * Prints if string is not NULL then prints it to stdout right in the
+ * 'description' printf format.
+ * @param description is a fprintf format string that must contain a %s
+ *        in order to include the string 'string'
+ * @param string is the string to be printed.
+ */
+static void print_string_option(gchar *description, gchar *string)
+{
+    if (string != NULL)
+    {
+        fprintf(stdout, description, string);
+    }
+}
 
 
 /**
@@ -60,25 +77,10 @@ static void print_selected_options(options_t *opt)
 
             fprintf(stdout, _("Blocksize: %ld\n"), opt->blocksize);
 
-            if (opt->configfile != NULL)
-                {
-                    fprintf(stdout, _("Configuration file: %s\n"), opt->configfile);
-                }
-
-            if (opt->dircache != NULL)
-                {
-                    fprintf(stdout, _("Cache directory: %s\n"), opt->dircache);
-                }
-
-            if (opt->dbname != NULL)
-                {
-                    fprintf(stdout, _("Cache database name: %s\n"), opt->dbname);
-                }
-
-            if (opt->ip != NULL)
-                {
-                    fprintf(stdout, _("serveur's IP address: %s\n"), opt->ip);
-                }
+            print_string_option(N_("Configuration file: %s\n"), opt->configfile);
+            print_string_option(N_("Cache directory: %s\n"), opt->dircache);
+            print_string_option(N_("Cache database name: %s\n"), opt->dbname);
+            print_string_option(N_("serveur's IP address: %s\n"), opt->ip);
         }
 }
 

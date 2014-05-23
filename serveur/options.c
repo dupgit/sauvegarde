@@ -28,6 +28,7 @@
 
 #include "serveur.h"
 
+static void print_string_option(gchar *description, gchar *string);
 static void print_selected_options(options_t *opt);
 static void read_from_configuration_file(options_t *opt, gchar *filename);
 static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename);
@@ -48,6 +49,22 @@ void free_options_t_structure(options_t *opt)
 
 
 /**
+ * Prints if string is not NULL then prints it to stdout right in the
+ * 'description' printf format.
+ * @param description is a fprintf format string that must contain a %s
+ *        in order to include the string 'string'
+ * @param string is the string to be printed.
+ */
+static void print_string_option(gchar *description, gchar *string)
+{
+    if (string != NULL)
+    {
+        fprintf(stdout, description, string);
+    }
+}
+
+
+/**
  * Prints options as selected when invoking the program with -v option
  * @param opt the options_t * structure that contains all selected options
  *        from the command line and that will be used by the program.
@@ -58,10 +75,7 @@ static void print_selected_options(options_t *opt)
         {
             fprintf(stdout, _("\n%s options are :\n"), PROGRAM_NAME);
 
-            if (opt->configfile != NULL)
-                {
-                    fprintf(stdout, _("Configuration file : %s\n"), opt->configfile);
-                }
+            print_string_option(N_("Configuration file : %s\n"), opt->configfile);
 
             if (opt->port != 0)
                 {
