@@ -180,7 +180,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                 }
             else if (error != NULL)
                 {
-                    print_debug(stderr, _("Failed to open %s configuration file : %s\n"), filename, error->message);
+                    print_debug(stderr, _("[%s, %d] Failed to open %s configuration file : %s\n"), __FILE__, __LINE__, filename, error->message);
                     error = free_error(error);
                 }
 

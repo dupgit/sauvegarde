@@ -53,7 +53,7 @@ static void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_
 
             if (result != JANSSON_SUCCESS)
                 {
-                    fprintf(stderr, _("Error while converting to JSON\n"));
+                    fprintf(stderr, _("[%s, %d] Error while converting to JSON\n"), __FILE__, __LINE__);
                     exit(EXIT_FAILURE); /* An error here means that we will do nothing good */
                 }
         }

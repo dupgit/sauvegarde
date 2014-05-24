@@ -134,7 +134,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                 }
             else if (error != NULL)
                 {
-                    print_debug(stderr, _("Failed to open %s configuration file : %s\n"), filename, error->message);
+                    print_debug(stderr, _("[%s, %d] Failed to open %s configuration file : %s\n"), __FILE__, __LINE__, filename, error->message);
                     error = free_error(error);
                 }
 
@@ -186,7 +186,7 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     if (!g_option_context_parse(context, &argc, &argv, &error))
         {
-            g_print(_("Option parsing failed: %s\n"), error->message);
+            g_print(_("[%s, %d] Option parsing failed: %s\n"),  __FILE__, __LINE__, error->message);
             exit(EXIT_FAILURE);
         }
 

@@ -65,7 +65,7 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
 
             if (error != NULL)
                 {
-                    fprintf(stderr, _("Error while reading %s file: %s\n"), filename, error->message);
+                    fprintf(stderr, _("[%s, %d] Error while reading %s file: %s\n"), __FILE__, __LINE__, filename, error->message);
                     error = free_error(error);
                     read = 0;
                 }
@@ -171,7 +171,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
 
             if (error != NULL)
                 {
-                    fprintf(stderr, _("Error while opening %s file: %s\n"), filename, error->message);
+                    fprintf(stderr, _("[%s, %d] Error while opening %s file: %s\n"), __FILE__, __LINE__, filename, error->message);
                     free_error(error);
                 }
             else
@@ -248,7 +248,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
 
                                     if (error != NULL)
                                         {
-                                            fprintf(stderr, _("Can't get informations on %s file: %s\n"), filename, error->message);
+                                            fprintf(stderr, _("[%s, %d] Can't get informations on %s file: %s\n"), __FILE__, __LINE__, filename, error->message);
                                             error = free_error(error);
                                         }
                                     else if (fileinfo != NULL)
@@ -266,7 +266,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                                                 }
                                             else
                                                 {
-                                                    fprintf(stderr, _("%s is not a regular file\n"), filename);
+                                                    fprintf(stderr, _("[%s, %d] %s is not a regular file\n"), __FILE__, __LINE__, filename);
                                                 }
                                             fileinfo = free_object(fileinfo);
                                         }
