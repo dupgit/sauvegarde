@@ -129,7 +129,7 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
 
 
                     g_async_queue_push(main_struct->print_queue, to_print);
-                    g_async_queue_push(main_struct->store_queue, meta);
+                    g_async_queue_push(main_struct->store_queue, encapsulate_meta_data_t(meta));
                 }
             else
                 {
@@ -180,7 +180,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                     dates = get_dates_from_gfile(fileinfo, meta);
                     mode = get_file_mode_from_gfile(fileinfo, meta);
 
-                     /* We assume that we are using the cache (and this may not be the case in the future */
+                     /* We assume that we are using the cache (and this may not be the case in the future) */
                     if (is_file_in_cache(main_struct->database, meta) == FALSE)
                         {
                             to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_REGULAR, owner, dates, mode, filename);
@@ -190,7 +190,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                             do_checksum(main_struct, stream, filename, meta);
                             g_input_stream_close((GInputStream *) stream, NULL, NULL);
 
-                            g_async_queue_push(main_struct->store_queue, meta);
+                            g_async_queue_push(main_struct->store_queue, encapsulate_meta_data_t(meta));
                         }
                     else
                         {
@@ -277,9 +277,8 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                 }
             while (g_strcmp0(filename, "$END$") != 0);
 
-            /* Empty meta to close the queue and to stop the thread */
-            meta = new_meta_data_t();
-            g_async_queue_push(main_struct->store_queue, meta);
+            /* Ending the queue with END command */
+            g_async_queue_push(main_struct->store_queue, encapsulate_end());
 
             free_variable(filename);
         }

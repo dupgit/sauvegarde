@@ -258,7 +258,7 @@ int main(int argc, char **argv)
 
             g_thread_join(cut_thread);
 
-            g_async_queue_push(main_struct->store_queue, g_strdup("$END$"));
+            g_async_queue_push(main_struct->store_queue, encapsulate_end());
             g_thread_join(store_thread);
 
             print_tree_hashs_stats(main_struct->hashs);

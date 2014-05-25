@@ -38,6 +38,7 @@
 gpointer store_buffer_data(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
+    capsule_t *capsule = NULL;
     meta_data_t *meta = NULL;
     db_t *database = NULL;
     gchar *json_str = NULL;
@@ -48,22 +49,39 @@ gpointer store_buffer_data(gpointer data)
 
             do
                 {
-                    meta = g_async_queue_pop(main_struct->store_queue);
-
-                    if (meta->name != NULL)   /* if name is null than it should not be processed */
+                    if (capsule != NULL)
                         {
-                            json_str = convert_meta_data_to_json(meta);
-                            print_debug(stdout, "Inserting into database file %s\n", meta->name);
-                            print_debug(stdout, "json string is : %s\n", json_str);
-
-                            send_message(main_struct->comm, json_str, strlen(json_str));
-
-                            /* freeing json_str may only happen when the message has been received */
-                            /* free(json_str); */
-                            insert_file_into_cache(database, meta, main_struct->hashs);
+                            free_variable(capsule);
                         }
+
+                    capsule = g_async_queue_pop(main_struct->store_queue);
+
+                    switch (capsule->command)
+                        {
+                            case ENC_META_DATA:
+                                meta = (meta_data_t *) capsule->data;
+
+                                if (meta != NULL && meta->name != NULL)
+                                    {
+                                        json_str = convert_meta_data_to_json(meta);
+
+                                        print_debug(stdout, "Inserting into database file %s\n", meta->name);
+                                        print_debug(stdout, "json string is : %s\n", json_str);
+
+                                        send_message(main_struct->comm, json_str, strlen(json_str));
+
+                                        /* freeing json_str may only happen when the message has been received */
+                                        /* free(json_str); */
+                                        insert_file_into_cache(database, meta, main_struct->hashs);
+                                    }
+                            break;
+
+                            case ENC_END:
+                            break;
+                        }
+
                 }
-            while (meta->name != NULL);   /* A null name means that we have to quit */
+            while (capsule != NULL && capsule->command != ENC_END);
         }
 
     return NULL;

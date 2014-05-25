@@ -35,6 +35,34 @@
  */
 #define JANSSON_SUCCESS (0)
 
+/**
+ * @def ENC_META_DATA
+ * Indicates that the encapsulated data is a meta_data_t * variable.
+ */
+#define ENC_META_DATA (1)
+
+
+/**
+ * @def ENC_END
+ * Indicates that this is the end and that nothing else with occur after !
+ * 127 is the end of the ASCII table ;)
+ */
+#define ENC_END (127)
+
+
+/**
+ * @struct capsule_t
+ * @brief This structure will encapsulate some commands and data that has
+ *        to be transmited to antememoire's storing thread.
+ */
+typedef struct
+{
+    gint command; /**< Is an integer that says what to do.    */
+    void *data;   /**< Is a pointer to some structure. Type of the structure
+                   *   is determined by the command parameter */
+} capsule_t;
+
+
 
 /**
  * This function should return a JSON string with all informations from
@@ -55,5 +83,24 @@ gchar *convert_meta_data_to_json(meta_data_t *meta);
  *          function can return NULL if json_str is NULL itself.
  */
 meta_data_t *convert_json_to_meta_data(gchar *json_str);
+
+
+/**
+ * Function that encapsulate a meta_data_t * variable into a capsule_t *
+ * one. It does not check that meta is not NULL so it may encapsulate a
+ * NULL pointer !
+ * @param meta is the meta_data_t * variable to be encapsulated
+ * @returns a capsule_t * with command field set to ENC_META_DATA stating
+ *          that the data field is of type meta_data_t *.
+ */
+capsule_t *encapsulate_meta_data_t(meta_data_t *meta);
+
+
+/**
+ * Function that encapsulate an END command.
+ * @returns a capsule_t * with command field set to ENC_END stating
+ *          that this is the end my friend (some famous song) !
+ */
+capsule_t *encapsulate_end(void);
 
 #endif /* #ifndef _PACKING_H_ */
