@@ -43,6 +43,7 @@ gpointer store_buffer_data(gpointer data)
     db_t *database = NULL;
     gchar *json_str = NULL;
 
+
     if (main_struct != NULL)
         {
             database = main_struct->database;

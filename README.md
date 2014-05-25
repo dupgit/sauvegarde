@@ -60,11 +60,12 @@ evolve in the future.
 
 ### Messages contents
 
-I'll try to pass everything into strings.
+Between threads messages are passed via pointers to C structures into
+GAsyncQueue (glib). Binary data are not transformed and structures are
+passed in place (no copy in memory).
 
-* "\n" will be the delimiter for the fields in the string.
-* The last field is the filename and the last delimiter is \x0 (thus a file
-  can have a "\n" in its name).
+Between programs messages are passed via a JSON structured message
+(jansson). All binary data are transformed into some base64 encoded string.
 
 
 #### Directory
@@ -74,6 +75,15 @@ I'll try to pass everything into strings.
     access_time changed_time modified_time
     dir_mode
     dirname
+
+As an example a JSON structure for a directory looks like :
+
+    {
+    "hash_list": [], "filetype": 2, "group": "admin", "mode": 16877,
+    "owner": "dup", "atime": 1401024480, "uid": 530, "ctime": 1401024479,
+    "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/monitor/.deps",
+    "mtime": 1401024479, "gid": 530
+    }
 
 
 #### File
@@ -89,10 +99,18 @@ I'll try to pass everything into strings.
             checksum
         ]
 
+As an example a JSON structure for a file looks like :
+
+    {
+    "hash_list": ["0CVUtILbsnYD3Royz7Yu8sOSxjl9f/b+b6wPa9DCRTY=", "AAXUaflNSSHEbZnjVAiY1b2Fz7YvQHwle/iZUHct09U=", "MunCygnx7AU/49Kdo+H3s72OludZ7KjzfA4k1ui2NAw="],
+    "filetype": 1, "group": "admin", "mode": 33188, "owner": "dup", "atime": 1401023677, "uid": 530, "ctime": 1401023685,
+    "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/config.log", "mtime": 1401023685, "gid": 530
+    }
+
 
 ### Database (local cache)
 
-May be we can store the informations in a scheme like the one below :
+For now Information is stored with the following scheme :
 
     --- files ----         -- buffers ---
     | file_id *  | <-1,n-> | file_id    |
@@ -108,9 +126,12 @@ May be we can store the informations in a scheme like the one below :
     | name       |
     --------------
 
-Buffer order has to be kept. We can keep it in an explicit manner or try to
-keep it in an implicit manner (by storing the ordered list of checksums of
-a file). Fields marked with '*' are primary keys.
+Buffer order has to be kept. In the SQLITE cache we can keep it in an
+explicit manner (by storing the order of the buffer of the checksum). In
+the programs (when we pass things into memory with C structure or into
+JSON formatted message) We keep buffer order in an implicit manner (by
+storing the ordered list of checksums of a file). Fields marked with '*'
+are primary keys.
 
 
 ## Coding into this project
