@@ -99,7 +99,7 @@
  * @def KN_SERVEUR_IP
  * Defines server's IP address for the client.
  */
-#define KN_SERVEUR_IP ("127.0.0.1")
+#define KN_SERVEUR_IP ("serveur-ip")
 
 
 /** Below you'll find some definitions for the serveur program */
