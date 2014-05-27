@@ -52,7 +52,7 @@ gpointer store_buffer_data(gpointer data)
                 {
                     if (capsule != NULL)
                         {
-                            free_variable(capsule);
+                            capsule = free_variable(capsule);
                         }
 
                     capsule = g_async_queue_pop(main_struct->store_queue);
@@ -64,7 +64,7 @@ gpointer store_buffer_data(gpointer data)
 
                                 if (meta != NULL && meta->name != NULL)
                                     {
-                                        json_str = convert_meta_data_to_json(meta);
+                                        json_str = convert_meta_data_to_json(meta, main_struct->hostname);
 
                                         print_debug(stdout, "Inserting into database file %s\n", meta->name);
                                         print_debug(stdout, "json string is : %s\n", json_str);

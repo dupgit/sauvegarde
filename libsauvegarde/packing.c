@@ -155,9 +155,11 @@ static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 
  * the meta_data_t structure.
  * @param meta is the structure that contains all meta data for a file or
  *        a directory.
+ * @param hostname is the name of the host onw hich we are running and that
+ *        we want to include into the json string.
  * @returns a JSON formated string or NULL
  */
-gchar *convert_meta_data_to_json(meta_data_t *meta)
+gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
 {
     json_t *root = NULL;        /**< the root that will contain all meta data json */
     json_t *array = NULL;       /**< array that will receive base64 encoded hashs  */
@@ -183,6 +185,7 @@ gchar *convert_meta_data_to_json(meta_data_t *meta)
             insert_guint32_into_json_root(root, "gid", meta->uid);
 
             insert_string_into_json_root(root, "name", meta->name);
+            insert_string_into_json_root(root, "hostname", (gchar *) hostname);
 
 
             /* creating an array with the whole hash list */

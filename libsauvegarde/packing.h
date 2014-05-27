@@ -63,15 +63,16 @@ typedef struct
 } capsule_t;
 
 
-
 /**
  * This function should return a JSON string with all informations from
  * the meta_data_t structure.
  * @param meta is the structure that contains all meta data for a file or
  *        a directory.
- * @returns a JSON formated string
+ * @param hostname is the name of the host onw hich we are running and that
+ *        we want to include into the json string.
+ * @returns a JSON formated string or NULL
  */
-gchar *convert_meta_data_to_json(meta_data_t *meta);
+gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname);
 
 
 /**
