@@ -35,6 +35,7 @@
  */
 #define JANSSON_SUCCESS (0)
 
+
 /**
  * @def ENC_META_DATA
  * Indicates that the encapsulated data is a meta_data_t * variable.
@@ -52,7 +53,7 @@
 
 /**
  * @struct capsule_t
- * @brief This structure will encapsulate some commands and data that has
+ * @brief This structure encapsulate some commands and data that has
  *        to be transmited to antememoire's storing thread.
  */
 typedef struct
@@ -61,6 +62,18 @@ typedef struct
     void *data;   /**< Is a pointer to some structure. Type of the structure
                    *   is determined by the command parameter */
 } capsule_t;
+
+
+/**
+ * returns the string with key keyname from the json tree root. It is used
+ * by serveur to get the hostname from the json received message.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we seek the string value.
+ * @returns a newlly allocated gchar * string that is the value associated
+ *          with key keyname. It can be freed with g_free() when no longer
+ *          needed.
+ */
+gchar *get_string_from_json_root(json_t *root, gchar *keyname)
 
 
 /**

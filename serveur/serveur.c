@@ -63,13 +63,16 @@ int main(int argc, char **argv)
     gchar *somewhere = NULL;
     comm_t *comm = NULL;
     gchar *message = NULL;
-    meta_data_t *meta = NULL;
+    serveur_meta_data_t smeta = NULL;
+
 
     g_type_init();
 
     init_international_languages();
 
     serveur_struct = init_serveur_main_structure(argc, argv);
+
+    smeta = (serveur_meta_data_t *) g_malloc0(sizeof(serveur_meta_data_t));
 
     if (serveur_struct != NULL && serveur_struct->opt != NULL)
         {
@@ -80,9 +83,11 @@ int main(int argc, char **argv)
                 {
                     message = receive_message(comm);
 
-                    meta = convert_json_to_meta_data(message);
+                    smeta->hostname = get_string_from_json_root(message, "hostname");
+                    smeta->meta = convert_json_to_meta_data(message);
 
-                    meta = free_meta_data_t(meta);
+                    smeta->meta = free_meta_data_t(smeta->meta);
+                    smeta->hostname = free_variable(smeta->hostname);
                 }
         }
 
