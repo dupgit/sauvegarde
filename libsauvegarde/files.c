@@ -60,6 +60,25 @@ meta_data_t *new_meta_data_t(void)
 
 
 /**
+ * @returns a newly allocated serveur_meta_data_t * empty structure.
+ */
+serveur_meta_data_t *new_smeta_data_t(void)
+{
+    serveur_meta_data_t *smeta = NULL;
+
+    smeta = (serveur_meta_data_t *) g_malloc0(sizeof(serveur_meta_data_t));
+
+    if (smeta != NULL)
+        {
+            smeta->hostname = NULL;
+            smeta->meta = NULL;
+        }
+
+    return smeta;
+}
+
+
+/**
  * Frees the meta_data_t * structure
  * @param meta is a meta_data_t * structure to be freed
  * @returns always NULL
@@ -73,6 +92,24 @@ gpointer free_meta_data_t(meta_data_t *meta)
             free_variable(meta->name);
             g_slist_free(meta->hash_list);
             free_variable(meta);
+        }
+
+    return NULL;
+}
+
+
+/**
+ * Frees the serveur_meta_data_t * structure
+ * @param smeta is a meta_data_t * structure to be freed
+ * @returns always NULL
+ */
+gpointer free_smeta_data_t(serveur_meta_data_t *smeta)
+{
+    if (smeta != NULL)
+        {
+            smeta->meta = free_meta_data_t(smeta->meta);
+            smeta->hostname = free_variable(smeta->hostname);
+            smeta = free_variable(smeta);
         }
 
     return NULL;

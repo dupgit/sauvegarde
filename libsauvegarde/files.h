@@ -56,6 +56,19 @@ typedef struct
 
 
 /**
+ * @struct serveur_meta_data_t
+ * @brief This structure contains a meta_data_t * field with all
+ *        informations about a file's metadata and a hostname field that
+ *        says from which machine the file comes from.
+ */
+typedef struct
+{
+    gchar *hostname;    /** machine's hostname from which comes the metadata below */
+    meta_data_t *meta;  /** metadata of a file of the 'hostname' machine           */
+} serveur_meta_data_t;
+
+
+/**
  * Gets the filename of a  GFile
  * @param a_file : the GFile to get the filename from.
  * @returns the name of the GFile if any or "--" gchar * string that may be
@@ -108,10 +121,25 @@ extern meta_data_t *new_meta_data_t(void);
 
 
 /**
+ * @returns a newly allocated serveur_meta_data_t * empty structure.
+ */
+extern serveur_meta_data_t *new_smeta_data_t(void);
+
+
+/**
  * Frees the meta_data_t * structure
  * @param meta is a meta_data_t * structure to be freed
  * @returns always NULL
  */
 extern gpointer free_meta_data_t(meta_data_t *meta);
+
+
+/**
+ * Frees the serveur_meta_data_t * structure
+ * @param smeta is a meta_data_t * structure to be freed
+ * @returns always NULL
+ */
+extern gpointer free_smeta_data_t(serveur_meta_data_t *smeta);
+
 
 #endif /* #ifndef _FILES_H_ */

@@ -73,7 +73,7 @@ typedef struct
  *          with key keyname. It can be freed with g_free() when no longer
  *          needed.
  */
-gchar *get_string_from_json_root(json_t *root, gchar *keyname);
+extern gchar *get_string_from_json_root(json_t *root, gchar *keyname);
 
 
 /**
@@ -85,7 +85,7 @@ gchar *get_string_from_json_root(json_t *root, gchar *keyname);
  *        we want to include into the json string.
  * @returns a JSON formated string or NULL
  */
-gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname);
+extern gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname);
 
 
 /**
@@ -96,7 +96,7 @@ gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname);
  *          with free_meta_data_t() function when no longer needed. This
  *          function can return NULL if json_str is NULL itself.
  */
-meta_data_t *convert_json_to_meta_data(gchar *json_str);
+extern serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str);
 
 
 /**
@@ -107,7 +107,7 @@ meta_data_t *convert_json_to_meta_data(gchar *json_str);
  * @returns a capsule_t * with command field set to ENC_META_DATA stating
  *          that the data field is of type meta_data_t *.
  */
-capsule_t *encapsulate_meta_data_t(meta_data_t *meta);
+extern capsule_t *encapsulate_meta_data_t(meta_data_t *meta);
 
 
 /**
@@ -115,6 +115,6 @@ capsule_t *encapsulate_meta_data_t(meta_data_t *meta);
  * @returns a capsule_t * with command field set to ENC_END stating
  *          that this is the end my friend (some famous song) !
  */
-capsule_t *encapsulate_end(void);
+extern capsule_t *encapsulate_end(void);
 
 #endif /* #ifndef _PACKING_H_ */

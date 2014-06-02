@@ -150,26 +150,26 @@ static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname)
 
 
 /**
- * This function should return a newly allocated meta_data_t * structure
- * with all informations included from the json string.
+ * This function should return a newly allocated serveur_meta_data_t *
+ * structure with all informations included from the json string.
  * @param json_str is a gchar * contianing the JSON formated string.
- * @returns a newly_allocated meta_data_t * structure that can be freed
- *          with free_meta_data_t() function when no longer needed. This
- *          function can return NULL if json_str is NULL itself.
- * @todo Add the hostname (at least) so that the serveur knows from which
- *       host this comes from.
+ * @returns a newly_allocated serveur_meta_data_t * structure that can be
+ *         freed when no longer needed with free_smeta_data_t() function.
+ *         This function can return NULL if json_str is NULL itself.
  */
-meta_data_t *convert_json_to_meta_data(gchar *json_str)
+serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
 {
-    json_t *root = NULL;        /**< the json tree from which we will extract everything */
-    json_error_t *error = NULL; /**< json error handling                                 */
-    meta_data_t *meta = NULL;   /**< meta_data that will be returned                     */
-    json_t *array =  NULL;      /**< retrieved array */
-    size_t index = 0;           /**< index to iter over the array */
-    json_t *value = NULL;       /**< value = array[index] when iterating with json_array_foreach */
-    GSList *head = NULL;        /**< the list to build */
-    guchar *a_hash = NULL;      /**< one base64 decoded hash */
-    gsize hash_len = 0;         /**< length of the decoded hash */
+    json_t *root = NULL;                 /**< the json tree from which we will extract everything */
+    json_error_t *error = NULL;          /**< json error handling                                 */
+    meta_data_t *meta = NULL;            /**< meta_data that will be returned  in smeta           */
+    serveur_meta_data_t *smeta = NULL;
+    json_t *array =  NULL;               /**< retrieved array */
+    size_t index = 0;                    /**< index to iter over the array */
+    json_t *value = NULL;                /**< value = array[index] when iterating with json_array_foreach */
+    GSList *head = NULL;                 /**< the list to build */
+    guchar *a_hash = NULL;               /**< one base64 decoded hash */
+    gsize hash_len = 0;                  /**< length of the decoded hash */
+
 
     if (json_str != NULL)
         {
@@ -179,6 +179,7 @@ meta_data_t *convert_json_to_meta_data(gchar *json_str)
 
             if (root != NULL)
                 {
+                    smeta = new_smeta_data_t();
                     meta = new_meta_data_t();
 
                     meta->file_type = get_guint8_from_json_root(root, "filetype");
@@ -207,6 +208,9 @@ meta_data_t *convert_json_to_meta_data(gchar *json_str)
                         }
 
                     meta->hash_list = head;
+
+                    smeta->meta = meta;
+                    smeta->hostname =  get_string_from_json_root(root, "hostname");
                 }
             else
                 {
@@ -216,5 +220,5 @@ meta_data_t *convert_json_to_meta_data(gchar *json_str)
         }
 
 
-    return meta;
+    return smeta;
 }

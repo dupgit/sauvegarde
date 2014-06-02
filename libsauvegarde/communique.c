@@ -217,7 +217,6 @@ gchar *receive_message(comm_t *comm)
     gchar *message = NULL;
 
 
-
     if  (comm != NULL)
         {
             buffer = (gchar *) g_malloc0(sizeof(gchar)*(MAX_MESSAGE_SIZE+1));

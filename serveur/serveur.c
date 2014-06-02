@@ -72,8 +72,6 @@ int main(int argc, char **argv)
 
     serveur_struct = init_serveur_main_structure(argc, argv);
 
-    smeta = (serveur_meta_data_t *) g_malloc0(sizeof(serveur_meta_data_t));
-
     if (serveur_struct != NULL && serveur_struct->opt != NULL)
         {
             somewhere = g_strdup_printf("tcp://*:%d", serveur_struct->opt->port);
@@ -83,13 +81,9 @@ int main(int argc, char **argv)
                 {
                     message = receive_message(comm);
 
-                    smeta->hostname = get_string_from_json_root(message, "hostname");
-                    smeta->meta = convert_json_to_meta_data(message);
+                    smeta = convert_json_to_smeta_data(message);
 
-                    print_debug(stdout, "hostname: %s ; file: %s\n", smeta->hostname, smeta->meta->name);
-
-                    smeta->meta = free_meta_data_t(smeta->meta);
-                    smeta->hostname = free_variable(smeta->hostname);
+                    smeta = free_smeta_data_t(smeta);
                 }
         }
 

@@ -78,17 +78,4 @@ typedef struct
 } serveur_struct_t;
 
 
-/**
- * @struct serveur_meta_data_t
- * @brief This structure contains a meta_data_t * field with all
- *        informations about a file's metadata and a hostname field that
- *        says from which machine the file comes from.
- */
-typedef struct
-{
-    gchar *hostname;    /** machine's hostname from which comes the metadata below */
-    meta_data_t *meta;  /** metadata of a file of the 'hostname' machine           */
-} serveur_meta_data_t;
-
-
 #endif /* #ifndef _SERVEUR_H_ */

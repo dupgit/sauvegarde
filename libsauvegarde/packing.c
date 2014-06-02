@@ -187,7 +187,6 @@ gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
             insert_string_into_json_root(root, "name", meta->name);
             insert_string_into_json_root(root, "hostname", (gchar *) hostname);
 
-
             /* creating an array with the whole hash list */
             array = json_array();
             head = meta->hash_list;
