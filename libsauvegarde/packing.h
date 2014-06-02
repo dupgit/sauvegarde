@@ -73,7 +73,7 @@ typedef struct
  *          with key keyname. It can be freed with g_free() when no longer
  *          needed.
  */
-gchar *get_string_from_json_root(json_t *root, gchar *keyname)
+gchar *get_string_from_json_root(json_t *root, gchar *keyname);
 
 
 /**

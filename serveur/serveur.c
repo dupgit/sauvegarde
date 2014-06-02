@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     gchar *somewhere = NULL;
     comm_t *comm = NULL;
     gchar *message = NULL;
-    serveur_meta_data_t smeta = NULL;
+    serveur_meta_data_t *smeta = NULL;
 
 
     g_type_init();
