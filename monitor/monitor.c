@@ -173,7 +173,7 @@ static main_struct_t *init_main_structure(options_t *opt)
     if (opt != NULL && opt->ip != NULL)
         {
             /* We must ensure that opt->ip is correct before doing this ! */
-            main_struct->comm = create_push_socket(g_strconcat("tcp://", opt->ip, NULL));
+            main_struct->comm = create_push_socket(g_strconcat("tcp://", opt->ip, ":5468", NULL));
         }
     else
         {

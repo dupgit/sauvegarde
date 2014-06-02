@@ -86,6 +86,8 @@ int main(int argc, char **argv)
                     smeta->hostname = get_string_from_json_root(message, "hostname");
                     smeta->meta = convert_json_to_meta_data(message);
 
+                    print_debug(stdout, "hostname: %s ; file: %s\n", smeta->hostname, smeta->meta->name);
+
                     smeta->meta = free_meta_data_t(smeta->meta);
                     smeta->hostname = free_variable(smeta->hostname);
                 }

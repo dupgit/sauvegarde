@@ -207,7 +207,6 @@ meta_data_t *convert_json_to_meta_data(gchar *json_str)
                         }
 
                     meta->hash_list = head;
-
                 }
             else
                 {
