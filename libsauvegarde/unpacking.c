@@ -159,16 +159,16 @@ static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname)
  */
 serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
 {
-    json_t *root = NULL;                 /**< the json tree from which we will extract everything */
-    json_error_t *error = NULL;          /**< json error handling                                 */
-    meta_data_t *meta = NULL;            /**< meta_data that will be returned  in smeta           */
-    serveur_meta_data_t *smeta = NULL;
-    json_t *array =  NULL;               /**< retrieved array */
-    size_t index = 0;                    /**< index to iter over the array */
-    json_t *value = NULL;                /**< value = array[index] when iterating with json_array_foreach */
-    GSList *head = NULL;                 /**< the list to build */
-    guchar *a_hash = NULL;               /**< one base64 decoded hash */
-    gsize hash_len = 0;                  /**< length of the decoded hash */
+    json_t *root = NULL;                 /** json_t *root is the json tree from which we will extract everything         */
+    json_error_t *error = NULL;          /** json_error_t *error will handle json errors                                 */
+    meta_data_t *meta = NULL;            /** meta_data_t *meta will be returned in smeta and contain file's metadata     */
+    serveur_meta_data_t *smeta = NULL;   /** serveur_meta_data_t *smeta will be returned at the end                      */
+    json_t *array =  NULL;               /** json_t *array is the retrieved array used to iter over to fill the list     */
+    size_t index = 0;                    /** size_t index is the iterator to iter over the array                         */
+    json_t *value = NULL;                /** json_t *value : value = array[index] when iterating with json_array_foreach */
+    GSList *head = NULL;                 /** GSList *head the list to build and iclude into meta_data_t *meta            */
+    guchar *a_hash = NULL;               /** guchar *a_hash is one base64 decoded hash (binary format)                   */
+    gsize hash_len = 0;                  /** gsize hash_len is the length of the decoded hash (must alwas be HASH_LEN)   */
 
 
     if (json_str != NULL)

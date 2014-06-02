@@ -161,11 +161,11 @@ static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 
  */
 gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
 {
-    json_t *root = NULL;        /**< the root that will contain all meta data json */
-    json_t *array = NULL;       /**< array that will receive base64 encoded hashs  */
-    gchar *encoded_hash = NULL; /**< hash base64 encoded                           */
-    GSList *head = NULL;        /**< list to iter over                             */
-    gchar *json_str = NULL;     /**< the string to be returned                     */
+    json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json       */
+    json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs   */
+    gchar *encoded_hash = NULL; /** gchar encoded_hash is an hash base64 encoded                        */
+    GSList *head = NULL;        /** GSList *head is a list to iter over that will contain the hash list */
+    gchar *json_str = NULL;     /** gchar *json_str is the string to be returned at the end             */
 
     if (meta != NULL)
         {
