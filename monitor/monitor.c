@@ -162,7 +162,7 @@ static gchar *make_connexion_string(gchar *ip, gint port)
     if (ip != NULL && port > 1024 && port < 65535)
         {
             /* We must ensure that ip is correct before doing this ! */
-            g_strdup_printf("tcp://%s:%d", ip, port);
+            conn = g_strdup_printf("tcp://%s:%d", ip, port);
         }
 
     return conn;
@@ -199,6 +199,7 @@ static main_struct_t *init_main_structure(options_t *opt)
     if (opt != NULL)
         {
             conn = make_connexion_string(opt->ip, 5468);
+
             if (conn != NULL)
                 {
                     main_struct->comm = create_push_socket(conn);
