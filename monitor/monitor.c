@@ -35,6 +35,7 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory);
 static gpointer first_directory_traversal(gpointer data);
 static main_struct_t *init_main_structure(options_t *opt);
 static void print_tree_hashs_stats(hashs_t *hashs);
+static gchar *make_connexion_string(gchar *ip, gint port)
 
 
 /**
@@ -145,6 +146,30 @@ static gpointer first_directory_traversal(gpointer data)
 
 
 /**
+ * Makes the connexion string that is used by ZMQ to create a new socket
+ * and verifies that port number is between 1025 and 65534 included.
+ * @param ip : a gchar * that contains either an ip address or a hostname
+ * @param port : a gint that is comprised between 1025 and 65534 included
+ * @todo check the ip string to be sure that it correspond to something that
+ *       we can join (IP or hostname).
+ * @returns a newly allocated string that may be freed with free_variable()
+ *          function.
+ */
+static gchar *make_connexion_string(gchar *ip, gint port)
+{
+    gchar *conn = NULL;
+
+    if (ip != NULL && port > 1024 && port < 65535)
+        {
+            /* We must ensure that ip is correct before doing this ! */
+            g_strdup_printf("tcp://%s:%d", ip, port);
+        }
+
+    return conn;
+}
+
+
+/**
  * Inits the main structure.
  * @note : With sqlite version > 3.7.7 we should use URI filename.
  * @returns a main_struct_t * pointer to the main structure
@@ -153,6 +178,7 @@ static main_struct_t *init_main_structure(options_t *opt)
 {
     main_struct_t *main_struct = NULL;
     gchar *db_uri = NULL;
+    gchar *conn = NULL;
 
     print_debug(stdout, _("Please wait while initializing main structure...\n"));
 
@@ -170,13 +196,18 @@ static main_struct_t *init_main_structure(options_t *opt)
     main_struct->hashs = get_all_inserted_hashs(main_struct->database);
 
     /* Testing things */
-    if (opt != NULL && opt->ip != NULL)
+    if (opt != NULL)
         {
-            /* We must ensure that opt->ip is correct before doing this ! */
-            main_struct->comm = create_push_socket(g_strconcat("tcp://", opt->ip, ":5468", NULL));
+            conn = make_connexion_string(opt->ip, 5468);
+            if (conn != NULL)
+                {
+                    main_struct->comm = create_push_socket(conn);
+                    free_variable(conn);
+                }
         }
     else
         {
+            /* Will this behavior correspond to something in real life ? */
             main_struct->comm = create_push_socket("tcp://localhost:5468");
         }
 
