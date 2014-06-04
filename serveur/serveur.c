@@ -81,11 +81,10 @@ int main(int argc, char **argv)
                 {
                     message = receive_message(comm);
 
+                    /** message variable is freed in convert_json_to_smeta_data() function : no need to free it again elsewhere ! */
                     smeta = convert_json_to_smeta_data(message);
 
                     smeta = free_smeta_data_t(smeta);
-
-                    free_variable(message);
                 }
         }
 

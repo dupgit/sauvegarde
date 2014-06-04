@@ -219,7 +219,7 @@ gchar *receive_message(comm_t *comm)
 
     if  (comm != NULL)
         {
-            buffer = (gchar *) g_malloc0(sizeof(gchar)*(MAX_MESSAGE_SIZE+1));
+            buffer = (gchar *) g_malloc0(MAX_MESSAGE_SIZE + 1);
 
             size = zmq_recv(comm->receiver, buffer, MAX_MESSAGE_SIZE, 0);
 
@@ -229,7 +229,7 @@ gchar *receive_message(comm_t *comm)
                     print_debug(stdout, "Message of size %d received : %s\n", size, message);
                 }
 
-            free_variable(buffer);
+            buffer = free_variable(buffer);
         }
 
     return message;

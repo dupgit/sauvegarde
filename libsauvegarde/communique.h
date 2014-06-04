@@ -33,9 +33,9 @@
 /**
  * @def MAX_MESSAGE_SIZE
  * Defines the maximum message size that we will be able to send or receive
- * default is 32768
+ * default is 131072
  */
-#define MAX_MESSAGE_SIZE (32768)
+#define MAX_MESSAGE_SIZE (131072)
 
 /**
  * @struct comm_t
