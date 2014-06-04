@@ -35,7 +35,7 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory);
 static gpointer first_directory_traversal(gpointer data);
 static main_struct_t *init_main_structure(options_t *opt);
 static void print_tree_hashs_stats(hashs_t *hashs);
-static gchar *make_connexion_string(gchar *ip, gint port)
+static gchar *make_connexion_string(gchar *ip, gint port);
 
 
 /**
