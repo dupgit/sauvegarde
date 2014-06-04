@@ -91,8 +91,8 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
 
     meta->hash_list = g_slist_reverse(meta->hash_list);
 
-    g_free(a_hash);
-    g_free(buffer);
+    free_variable(a_hash);
+    free_variable(buffer);
     g_checksum_free(checksum);
 }
 

@@ -84,6 +84,8 @@ int main(int argc, char **argv)
                     smeta = convert_json_to_smeta_data(message);
 
                     smeta = free_smeta_data_t(smeta);
+
+                    free_variable(message);
                 }
         }
 

@@ -38,7 +38,7 @@ static void bind_socket_somewhere(void *socket, gchar *somewhere);
 /**
  * gets the version for the communication library (ZMQ for now)
  * @returns a newly allocated string that contains the version and that
- *          may be freed with g_free when no longer needed.
+ *          may be freed with free_variable() when no longer needed.
  */
 gchar *get_communication_library_version(void)
 {
@@ -229,7 +229,7 @@ gchar *receive_message(comm_t *comm)
                     print_debug(stdout, "Message of size %d received : %s\n", size, message);
                 }
 
-            g_free(buffer);
+            free_variable(buffer);
         }
 
     return message;

@@ -70,7 +70,7 @@ typedef struct
  * @param[in,out] root is the main json tree
  * @param keyname is the key for which we seek the string value.
  * @returns a newlly allocated gchar * string that is the value associated
- *          with key keyname. It can be freed with g_free() when no longer
+ *          with key keyname. It can be freed with free_variable() when no longer
  *          needed.
  */
 extern gchar *get_string_from_json_root(json_t *root, gchar *keyname);

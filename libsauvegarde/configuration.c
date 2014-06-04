@@ -49,7 +49,7 @@ gchar *get_probable_etc_path(gchar *progname)
             if (abs_path != NULL)
                 {
                     path =  g_build_path(G_DIR_SEPARATOR_S, g_path_get_dirname(abs_path), "..", "etc", "sauvegarde", "sauvegarde.conf", NULL);
-                    g_free(abs_path);
+                    free_variable(abs_path);
                 }
         }
 

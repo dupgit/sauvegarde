@@ -197,7 +197,7 @@ gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
 
                     append_hash_to_array(array, encoded_hash);
 
-                    g_free(encoded_hash);
+                    free_variable(encoded_hash);
 
                     head = g_slist_next(head);
                 }

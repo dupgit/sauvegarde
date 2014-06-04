@@ -65,7 +65,7 @@ static json_t *get_json_value_from_json_root(json_t *root, gchar *keyname)
  * @param[in,out] root is the main json tree
  * @param keyname is the key for which we seek the string value.
  * @returns a newlly allocated gchar * string that is the value associated
- *          with key keyname. It can be freed with g_free() when no longer
+ *          with key keyname. It can be freed with free_variable() when no longer
  *          needed.
  */
 gchar *get_string_from_json_root(json_t *root, gchar *keyname)
@@ -175,7 +175,7 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
         {
 
             root = json_loads(json_str, 0, error);
-            g_free(json_str);
+            free_variable(json_str);
 
             if (root != NULL)
                 {

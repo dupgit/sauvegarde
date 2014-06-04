@@ -54,7 +54,7 @@ typedef struct
 /**
  * gets the version for the communication library (ZMQ for now)
  * @returns a newly allocated string that contains the version and that
- *          may be freed with g_free when no longer needed.
+ *          may be freed with free_variable() when no longer needed.
  */
 extern gchar *get_communication_library_version(void);
 
