@@ -21,7 +21,8 @@ This project depends on :
 * jansson       (2.6)
 
 doxygen (1.6.1) is used to generate code's documentation but is not
-required to build the project.
+required to build the project. jansson's library version is quite recent
+but it compiles nicely and depends on nothing (as far as I know).
 
 
 ## Roadmap
