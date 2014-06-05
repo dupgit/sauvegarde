@@ -174,12 +174,13 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
   bytes). But if the blocksize is smaller than cpu overhead is higher and
   the maximum filesystem size is smaller... For the default value we will
   have to find a value that will fit best intra-deduplication rate, cpu
-  demand, maximum filesystem size and low memory consumption. The choosen
-  value is 16384 bytes.
+  demand, maximum filesystem size and low memory consumption. For now the
+  choosen value is 16384 bytes.
 * It seems that it will be difficult to get things via 'simple' message
-  passing between threads.
+  passing between threads -> Use of GAsyncQueue that does all that is
+  needed.
 * I do not feel confortable with msgpack library. I miss documentation. I
-  switched to jansson that is better documented.
+  switched to jansson that is better documented and fills my needs.
 
 
 ## Usefull links
