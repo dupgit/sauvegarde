@@ -68,12 +68,9 @@ gpointer store_buffer_data(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
     capsule_t *capsule = NULL;
-    db_t *database = NULL;
 
     if (main_struct != NULL)
         {
-            database = main_struct->database;
-
             do
                 {
                     if (capsule != NULL)
