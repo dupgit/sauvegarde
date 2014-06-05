@@ -149,9 +149,29 @@ static void read_from_group_antememoire(options_t *opt, GKeyFile *keyfile, gchar
 
 
 /**
- * Reads from the configuration file "filename"
+ * Reads keys in keyfile if groupname is in that keyfile and fills
+ * options_t *opt structure accordingly.
  * @param[in,out] opt : options_t * structure to store options read from the
- *                configuration file "filename"
+ *                configuration file "filename".
+ * @param keyfile is the GKeyFile structure that is used by glib to read
+ *        groups and keys from.
+ * @param filename : the filename of the configuration file to read from
+ */
+static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename)
+{
+    if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
+        {
+            /* Reading the port number if any */
+            opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, N_("Could not load serveur port number from file."));
+        }
+}
+
+
+/**
+ * Reads from the configuration file "filename" and fills the options_t *
+ * opt structure.
+ * @param[in,out] opt : options_t * structure to store options read from
+ *                the configuration file "filename"
  * @param filename : the filename of the configuration file to read from
  */
 static void read_from_configuration_file(options_t *opt, gchar *filename)
@@ -177,6 +197,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                     read_from_group_monitor(opt, keyfile, filename);
                     read_from_group_ciseaux(opt, keyfile, filename);
                     read_from_group_antememoire(opt, keyfile, filename);
+                    read_from_group_serveur(opt, keyfile, filename);
                 }
             else if (error != NULL)
                 {
@@ -213,6 +234,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     gchar *dircache = NULL;        /** Directory used to store cache files                   */
     gchar *dbname = NULL;          /** Database filename where data and meta data are cached */
     gchar *ip =  NULL;             /** IP address where is located serveur's program         */
+    gint port = 0;                 /** Port number on which to send things to the server     */
 
     GOptionEntry entries[] =
     {
@@ -223,6 +245,7 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "dircache", 'd', 0, G_OPTION_ARG_STRING, &dircache, N_("Directory where to cache files"), NULL},
         { "dbname", 'f', 0, G_OPTION_ARG_STRING, &dbname, N_("Database filename"), NULL},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), NULL},
+        { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port number on which to listen"), NULL},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
@@ -256,7 +279,8 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->configfile = NULL;
     opt->dircache = g_strdup("/var/tmp/sauvegarde");
     opt->dbname = g_strdup("filecache.db");
-    opt->ip = g_strdup("localhost:5468");
+    opt->ip = g_strdup("localhost");
+    opt->port = 5468;
 
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME);
@@ -266,7 +290,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->version = version; /* only TRUE if -v or --version was invoked */
 
     /* 2) Reading the configuration from the configuration file specified
-     *    on the command line
+     *    on the command line (if any).
      */
     if (configfile != NULL)
         {
@@ -307,6 +331,11 @@ options_t *manage_command_line_options(int argc, char **argv)
         {
             free_variable(opt->ip);
             opt->ip = g_strdup(ip);
+        }
+
+    if (port > 1024 && port < 65535)
+        {
+            opt->port = port;
         }
 
     g_option_context_free(context);

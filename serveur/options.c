@@ -96,10 +96,10 @@ static void print_selected_options(options_t *opt)
  */
 static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
-    if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
+    if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
         {
             /* Reading the port number if any */
-            opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, N_("Could not load serveur port number from file"));
+            opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, N_("Could not load serveur port number from file."));
         }
 }
 
