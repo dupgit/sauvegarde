@@ -22,10 +22,39 @@
 
 /**
  * @file antememoire.c
- * Here on should find everything that will deal with the cache.
+ * Here on should find everything that will deal with the cache. All writes
+ * to the cache should only occur in store_buffer_data()'s thread.
  */
 
 #include "monitor.h"
+
+/**
+ * This function saves meta_data_t structure into the cache or to the
+ * serveur's server (it then inserts hostname into the message that is
+ * send.
+ * @param meta : the meta_data_t * structure to be saved.
+ * @param main_struct : main structure of the program (contains pointers
+ *        to the communication socket, the cache database connexion and the
+ *        balanced binary tree that contains hashs.
+ */
+static void insert_meta_data_into_cache_or_send_to_serveur(meta_data_t *meta, main_struct_t *main_struct)
+{
+    gchar *json_str = NULL;
+
+    if (main_struct != NULL && meta != NULL && meta->name != NULL)
+        {
+            json_str = convert_meta_data_to_json(meta, main_struct->hostname);
+
+            print_debug(stdout, "Inserting into database file %s\n", meta->name);
+            print_debug(stdout, "json string is : %s\n", json_str);
+
+            send_message(main_struct->comm, json_str, strlen(json_str));
+
+            /* freeing json_str may only happen when the message has been received */
+            /* free(json_str); */
+            insert_file_into_cache(main_struct->database, meta, main_struct->hashs);
+        }
+}
 
 
 /**
@@ -39,10 +68,7 @@ gpointer store_buffer_data(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
     capsule_t *capsule = NULL;
-    meta_data_t *meta = NULL;
     db_t *database = NULL;
-    gchar *json_str = NULL;
-
 
     if (main_struct != NULL)
         {
@@ -60,21 +86,7 @@ gpointer store_buffer_data(gpointer data)
                     switch (capsule->command)
                         {
                             case ENC_META_DATA:
-                                meta = (meta_data_t *) capsule->data;
-
-                                if (meta != NULL && meta->name != NULL)
-                                    {
-                                        json_str = convert_meta_data_to_json(meta, main_struct->hostname);
-
-                                        print_debug(stdout, "Inserting into database file %s\n", meta->name);
-                                        print_debug(stdout, "json string is : %s\n", json_str);
-
-                                        send_message(main_struct->comm, json_str, strlen(json_str));
-
-                                        /* freeing json_str may only happen when the message has been received */
-                                        /* free(json_str); */
-                                        insert_file_into_cache(database, meta, main_struct->hashs);
-                                    }
+                                insert_meta_data_into_cache_or_send_to_serveur((meta_data_t *) capsule->data, main_struct);
                             break;
 
                             case ENC_END:
