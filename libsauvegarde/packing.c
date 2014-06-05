@@ -24,6 +24,8 @@
  * @file packing.c
  * This file contains the functions to pack messages for all the
  * programs of "Sauvegarde" project.
+ * @todo : add a field that will say what is the message packed into the
+ * string (meta_data_t * or a some sort of data_t * or something else ?).
  */
 
 #include "libsauvegarde.h"
