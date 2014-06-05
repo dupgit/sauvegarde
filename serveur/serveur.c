@@ -64,6 +64,7 @@ int main(int argc, char **argv)
     comm_t *comm = NULL;
     gchar *message = NULL;
     serveur_meta_data_t *smeta = NULL;
+    gint msg_id = ENC_NOT_FOUND;
 
 
     g_type_init();
@@ -81,10 +82,25 @@ int main(int argc, char **argv)
                 {
                     message = receive_message(comm);
 
-                    /** message variable is freed in convert_json_to_smeta_data() function : no need to free it again elsewhere ! */
-                    smeta = convert_json_to_smeta_data(message);
+                    msg_id = get_json_message_id(message);
 
-                    smeta = free_smeta_data_t(smeta);
+                    switch (msg_id)
+                        {
+                            case ENC_META_DATA:
+
+                                /** message variable is freed in convert_json_to_smeta_data() function : no need to free it again elsewhere ! */
+                                smeta = convert_json_to_smeta_data(message);
+                                smeta = free_smeta_data_t(smeta);
+
+                            break;
+
+                            case ENC_NOT_FOUND:
+                            case ENC_END:
+                                /** We should never end the server with a
+                                 *  message from a client !
+                                 */
+                            break;
+                        }
                 }
         }
 
