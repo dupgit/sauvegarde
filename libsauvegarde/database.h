@@ -93,7 +93,7 @@ extern gboolean is_file_in_cache(db_t *database, meta_data_t *meta);
  *        cache.
  * @param hashs : a balanced binary tree that stores hashs.
  */
-void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs);
+extern void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs);
 
 
 /**
@@ -102,7 +102,7 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs);
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
  */
-hashs_t *get_all_inserted_hashs(db_t *database);
+extern hashs_t *get_all_inserted_hashs(db_t *database);
 
 
 #endif /* #ifndef _DATABASE_H_ */

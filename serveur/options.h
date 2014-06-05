@@ -67,7 +67,7 @@ extern void free_options_t_structure(options_t *opt);
  * @returns options_t structure malloc'ed and filled upon choosen command
  *          line's option
  */
-options_t *manage_command_line_options(int argc, char **argv);
+extern options_t *manage_command_line_options(int argc, char **argv);
 
 
 /**
@@ -77,7 +77,7 @@ options_t *manage_command_line_options(int argc, char **argv);
  * @returns options_t structure malloc'ed and filled upon choosen command
  *          line's option (in manage_command_line_options function).
  */
-options_t *do_what_is_needed_from_command_line_options(int argc, char **argv);
+extern options_t *do_what_is_needed_from_command_line_options(int argc, char **argv);
 
 
 #endif /* #IFNDEF _SERVEUR_OPTIONS_H_ */

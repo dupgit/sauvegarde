@@ -148,7 +148,7 @@ extern GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list);
  * @returns the string read at the keyname in the groupname of keyfile
  *          file.
  */
-gchar *read_string_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
+extern gchar *read_string_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
 
 
 /**
@@ -162,7 +162,7 @@ gchar *read_string_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupnam
  * @returns the gint64 read at the keyname in the groupname of keyfile
  *          file or 0;
  */
-gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
+extern gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
 
 
 /**
@@ -176,7 +176,7 @@ gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
  * @returns the gint read at the keyname in the groupname of keyfile
  *          file or 0;
  */
-gint read_int_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
+extern gint read_int_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
 
 
 /**
@@ -190,6 +190,6 @@ gint read_int_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gc
  * @returns the list of gchar * read at the keyname in the groupname of
  *          keyfile file or NULL;
  */
-GSList *read_list_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
+extern GSList *read_list_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
 
 #endif /* #ifndef _CONFIGURATION_H_ */
