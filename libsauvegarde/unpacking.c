@@ -150,6 +150,34 @@ static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname)
 
 
 /**
+ * This function returns the MESSAGE_ID from msg_id JSON field
+ * @param json_str : a gchar * containing the JSON formated string.
+ * @returns a gint that correspond to the msg_id field found in json_str.
+ *          If the field is not found it returns ENC_NOT_FOUND. This field
+ *          is based on ENC_* constants that are also used for the
+ *          communication between threads in client
+ */
+gint get_json_message_id(gchar *json_str)
+{
+    json_t *root = NULL;           /** json_t *root is the json tree from which we will extract msg_id                   */
+    json_error_t *error = NULL;    /** json_error_t *error handle json errors if any                                     */
+    gint msg_id = ENC_NOT_FOUND;   /** gint msg_id is the message id from the JSON string by default it is ENC_NOT_FOUND */
+
+    if (json_str != NULL)
+        {
+            root = json_loads(json_str, 0, error);
+
+            if (root != NULL)
+                {
+                    msg_id = get_guint8_from_json_root(root, "msg_id");
+                }
+        }
+
+    return msg_id;
+}
+
+
+/**
  * This function should return a newly allocated serveur_meta_data_t *
  * structure with all informations included from the json string.
  * @param json_str is a gchar * containing the JSON formated string. This

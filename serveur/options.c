@@ -216,7 +216,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     /* 3) retrieving other options from the command line.
      */
 
-    if (port != 0)
+    if (port > 1024 && port < 65535)
         {
             opt->port = port;
         }

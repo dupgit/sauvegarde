@@ -37,6 +37,14 @@
 
 
 /**
+ * @def ENC_NOT_FOUND
+ * Indicates that something is wrong :
+ *  - msg_id was not found into the JSON string.
+ */
+#define ENC_NOT_FOUND (0)
+
+
+/**
  * @def ENC_META_DATA
  * Indicates that the encapsulated data is a meta_data_t * variable.
  */
@@ -58,9 +66,12 @@
  */
 typedef struct
 {
-    gint command; /**< Is an integer that says what to do.    */
+    gint command; /**< Is an integer that says what to do based on ENC_*
+                   *   macros
+                   */
     void *data;   /**< Is a pointer to some structure. Type of the structure
-                   *   is determined by the command parameter */
+                   *   is determined by the command parameter
+                   */
 } capsule_t;
 
 
@@ -116,5 +127,16 @@ extern capsule_t *encapsulate_meta_data_t(meta_data_t *meta);
  *          that this is the end my friend (some famous song) !
  */
 extern capsule_t *encapsulate_end(void);
+
+
+/**
+ * This function returns the MESSAGE_ID from msg_id JSON field
+ * @param json_str : a gchar * containing the JSON formated string.
+ * @returns a gint that correspond to the msg_id field found in json_str.
+ *          If the field is not found it returns ENC_NOT_FOUND. This field
+ *          is based on ENC_* constants that are also used for the
+ *          communication between threads in client
+ */
+extern gint get_json_message_id(gchar *json_str);
 
 #endif /* #ifndef _PACKING_H_ */

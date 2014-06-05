@@ -173,6 +173,7 @@ gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
         {
             root = json_object();
 
+            insert_guint8_into_json_root(root, "msg_id", ENC_META_DATA);
             insert_guint8_into_json_root(root, "filetype", meta->file_type);
             insert_guint32_into_json_root(root, "mode", meta->mode);
 
