@@ -67,6 +67,10 @@ passed in place (no copy in memory).
 Between programs messages are passed via a JSON structured message
 (jansson). All binary data are transformed into some base64 encoded string.
 
+msg_id field is used to identify message type. It is based on ENC_* macros
+defined in packing.h. ENC_META_DATA indicates that the JSON string contains
+a serveur_meta_data_t structure.
+
 
 #### Directory
 
@@ -79,7 +83,7 @@ Between programs messages are passed via a JSON structured message
 As an example a JSON structure for a directory looks like :
 
     {
-    "hash_list": [], "filetype": 2, "group": "admin", "mode": 16877,
+    "msg_id": 1, "hash_list": [], "filetype": 2, "group": "admin", "mode": 16877,
     "owner": "dup", "atime": 1401024480, "uid": 530, "ctime": 1401024479,
     "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/monitor/.deps",
     "mtime": 1401024479, "gid": 530
@@ -103,7 +107,7 @@ As an example a JSON structure for a file looks like :
 
     {
     "hash_list": ["0CVUtILbsnYD3Royz7Yu8sOSxjl9f/b+b6wPa9DCRTY=", "AAXUaflNSSHEbZnjVAiY1b2Fz7YvQHwle/iZUHct09U=", "MunCygnx7AU/49Kdo+H3s72OludZ7KjzfA4k1ui2NAw="],
-    "filetype": 1, "group": "admin", "mode": 33188, "owner": "dup", "atime": 1401023677, "uid": 530, "ctime": 1401023685,
+    "msg_id": 1, "filetype": 1, "group": "admin", "mode": 33188, "owner": "dup", "atime": 1401023677, "uid": 530, "ctime": 1401023685,
     "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/config.log", "mtime": 1401023685, "gid": 530
     }
 
