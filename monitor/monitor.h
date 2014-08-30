@@ -31,6 +31,7 @@
 #include "config.h"
 
 #include <zmq.h>
+#include <czmq.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

@@ -37,6 +37,7 @@
 #include <gio/gio.h>
 #include <glib/gi18n-lib.h>
 #include <zmq.h>
+#include <czmq.h>
 #include <sqlite3.h>
 #include <jansson.h>
 
