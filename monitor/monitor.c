@@ -260,7 +260,6 @@ int main(int argc, char **argv)
     GThread *cut_thread = NULL;
     GThread *store_thread = NULL;
 
-
     g_type_init();
 
     init_international_languages();

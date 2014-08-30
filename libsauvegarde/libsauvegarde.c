@@ -81,6 +81,7 @@ void init_international_languages(void)
     codeset = bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
     text_domain = textdomain(GETTEXT_PACKAGE);
 
+    print_debug(stdout, _("Debug mode is activated.\n"));
     print_debug(stdout, "Gettext package : %s\n", GETTEXT_PACKAGE);
     print_debug(stdout, "Bindtextdomain : %s\n", result);
     print_debug(stdout, "Code set : %s\n", codeset);
