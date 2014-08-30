@@ -63,7 +63,6 @@ void print_program_version(gchar *date, gchar *authors, gchar *license)
     fprintf(stdout, _("Author(s) : %s\n"), authors);
     fprintf(stdout, _("License : %s\n"), license);
     fprintf(stdout, "\n");
-
 }
 
 
@@ -82,10 +81,10 @@ void init_international_languages(void)
     text_domain = textdomain(GETTEXT_PACKAGE);
 
     print_debug(stdout, _("Debug mode is activated.\n"));
-    print_debug(stdout, "Gettext package : %s\n", GETTEXT_PACKAGE);
-    print_debug(stdout, "Bindtextdomain : %s\n", result);
-    print_debug(stdout, "Code set : %s\n", codeset);
-    print_debug(stdout, "Text domain : %s\n", text_domain);
+    print_debug(stdout, _("Gettext package : %s\n"), GETTEXT_PACKAGE);
+    print_debug(stdout, _("Bindtextdomain : %s\n"), result);
+    print_debug(stdout, _("Code set : %s\n"), codeset);
+    print_debug(stdout, _("Text domain : %s\n"), text_domain);
 }
 
 
