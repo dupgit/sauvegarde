@@ -1,24 +1,11 @@
 # monitor
 
-* Need something different from GFileMonitor because we hit _SC_OPEN_MAX
-  limit too quickly. inotify suffer the same problem. Some project that
-  may be of interest :
-    - http://www.redirfs.org/tiki-index.php
-    - http://www.pluginfs.org/
+* integrates fanotify
 
 * Retreive meta informations about a file : size, owner, group, creation
-  date, rights
+  date, rights (in progress).
 
 * Need a cache for the monitored directory to avoid a whole disk traversal
-  each time we restart the process
+  each time we restart the process (in progress).
 
-* Need command line options.
-
-# ciseaux
-
-* Need a configuration file (and a command line option to specify a
-  configuration file).
-
-
-# libsauvegarde
 
