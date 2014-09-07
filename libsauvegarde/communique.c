@@ -28,7 +28,7 @@
 
 #include "libsauvegarde.h"
 
-static comm_t *create_new_context(void);
+static comm_t *init_comm_struct(void);
 static void create_new_push_sender(comm_t *comm);
 static void create_new_pull_receiver(comm_t *comm);
 static void connect_socket_somewhere(void *socket, gchar *somewhere);
@@ -53,20 +53,15 @@ gchar *get_communication_library_version(void)
 
 
 /**
- * Creates a new communication context within ZMQ
- * @returns a newly allocated comm_t * structure where context should not
- *          be NULL. sender and receiver are set to NULL.
+ * Creates a new communication comm_t * structure.
+ * @returns a newly allocated comm_t * structure where sender and receiver
+ *          are set to NULL.
  */
-static comm_t *create_new_context(void)
+static comm_t *init_comm_struct(void)
 {
     comm_t *comm = NULL;
 
     comm = (comm_t *) g_malloc0(sizeof(comm_t));
-
-    if (comm != NULL)
-        {
-            comm->context = zmq_ctx_new();
-        }
 
     comm->sender = NULL;
     comm->receiver = NULL;
@@ -82,9 +77,9 @@ static comm_t *create_new_context(void)
  */
 static void create_new_push_sender(comm_t *comm)
 {
-    if (comm != NULL && comm->context != NULL)
+    if (comm != NULL)
         {
-            comm->sender = zmq_socket(comm->context, ZMQ_PUSH);
+            comm->sender = zsock_new(ZMQ_PUSH);
         }
 }
 
@@ -96,9 +91,9 @@ static void create_new_push_sender(comm_t *comm)
  */
 static void create_new_pull_receiver(comm_t *comm)
 {
-    if (comm != NULL && comm->context != NULL)
+    if (comm != NULL)
         {
-            comm->receiver = zmq_socket(comm->context, ZMQ_PULL);
+            comm->receiver = zsock_new(ZMQ_PULL);
         }
 }
 
@@ -113,7 +108,7 @@ static void connect_socket_somewhere(void *socket, gchar *somewhere)
 {
     if (socket != NULL && somewhere != NULL)
         {
-            zmq_connect(socket, somewhere);
+            zsock_connect(socket, somewhere);
         }
 }
 
@@ -128,7 +123,7 @@ static void bind_socket_somewhere(void *socket, gchar *somewhere)
 {
     if (socket != NULL && somewhere != NULL)
         {
-            zmq_bind(socket, somewhere);
+            zsock_bind(socket, somewhere);
         }
 }
 
@@ -147,7 +142,7 @@ comm_t *create_push_socket(gchar *somewhere)
 
     if (somewhere != NULL)
         {
-            comm = create_new_context();
+            comm = init_comm_struct();
             create_new_push_sender(comm);
             connect_socket_somewhere(comm->sender, somewhere);
         }
@@ -171,7 +166,7 @@ comm_t *create_pull_socket(gchar *somewhere)
 
     if (somewhere != NULL)
         {
-            comm = create_new_context();
+            comm = init_comm_struct();
             create_new_pull_receiver(comm);
             bind_socket_somewhere(comm->receiver, somewhere);
         }
@@ -191,9 +186,12 @@ comm_t *create_pull_socket(gchar *somewhere)
  */
 gint send_message(comm_t *comm, gchar *message, gint size)
 {
+    char *msg = NULL;
+
     if  (comm != NULL && message != NULL && size > 0)
         {
-            size = zmq_send(comm->sender, message, size, 0);
+            msg = g_strdup(message);
+            size = zstr_send(comm->sender, msg);
             return size;
         }
     else
@@ -212,21 +210,19 @@ gint send_message(comm_t *comm, gchar *message, gint size)
  */
 gchar *receive_message(comm_t *comm)
 {
-    gint size = 0;
-    gchar *buffer = NULL;
+    size_t size = 0;
+    char *buffer = NULL;
     gchar *message = NULL;
 
 
     if  (comm != NULL)
         {
-            buffer = (gchar *) g_malloc0(MAX_MESSAGE_SIZE + 1);
+            buffer = zstr_recv(comm->receiver);
 
-            size = zmq_recv(comm->receiver, buffer, MAX_MESSAGE_SIZE, 0);
-
-            if (size != -1)
+            if (buffer != NULL)
                 {
-                    message = g_strndup(buffer, size);
-                    print_debug(stdout, "Message of size %d received : %s\n", size, message);
+                    message = g_strdup(buffer);
+                    print_debug(stdout, "Message of size %d received : %s\n", strlen(message), message);
                 }
 
             buffer = free_variable(buffer);
