@@ -99,6 +99,32 @@ static void create_new_pull_receiver(comm_t *comm)
 
 
 /**
+ * Creates a new DEALER sender and set sender field accordingly
+ * @param comm : an allocated comm_t struct.
+ */
+static void create_new_dealer_sender(comm_t *comm)
+{
+    if (comm != NULL)
+        {
+            comm->sender = zsock_new(ZMQ_DEALER);
+        }
+}
+
+
+/**
+ * Creates a new ROUTER receiver and set receiver field accordingly
+ * @param comm : an allocated comm_t struct.
+ */
+static void create_new_routerl_receiver(comm_t *comm)
+{
+    if (comm != NULL)
+        {
+            comm->receiver = zsock_new(ZMQ_ROUTER);
+        }
+}
+
+
+/**
  * Connects a socket somewhere eg : tcp://localhost:5468
  * @param socket is the socket to be connected to somewhere
  * @param somewhere is the string that will define the connection we want
