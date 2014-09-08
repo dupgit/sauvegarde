@@ -236,7 +236,6 @@ gint send_message(comm_t *comm, gchar *message, gint size)
  */
 gchar *receive_message(comm_t *comm)
 {
-    size_t size = 0;
     char *buffer = NULL;
     gchar *message = NULL;
 
