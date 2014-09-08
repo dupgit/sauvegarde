@@ -169,7 +169,7 @@ comm_t *create_push_socket(gchar *somewhere)
     if (somewhere != NULL)
         {
             comm = init_comm_struct();
-            create_new_push_sender(comm);
+            create_new_dealer_sender(comm);
             connect_socket_somewhere(comm->sender, somewhere);
         }
 
@@ -193,7 +193,7 @@ comm_t *create_pull_socket(gchar *somewhere)
     if (somewhere != NULL)
         {
             comm = init_comm_struct();
-            create_new_pull_receiver(comm);
+            create_new_router_receiver(comm);
             bind_socket_somewhere(comm->receiver, somewhere);
         }
 
@@ -236,6 +236,7 @@ gint send_message(comm_t *comm, gchar *message, gint size)
  */
 gchar *receive_message(comm_t *comm)
 {
+    size_t size = 0;
     char *buffer = NULL;
     gchar *message = NULL;
 
@@ -246,8 +247,13 @@ gchar *receive_message(comm_t *comm)
 
             if (buffer != NULL)
                 {
-                    message = g_strdup(buffer);
-                    print_debug(stdout, "Message of size %d received : %s\n", strlen(message), message);
+                    size = strlen(buffer);
+
+                    if (size > 0)
+                        {
+                            message = g_strdup(buffer);
+                            print_debug(stdout, "Message of size %d received : %s\n", size, message);
+                        }
                 }
 
             buffer = free_variable(buffer);
