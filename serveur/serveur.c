@@ -88,7 +88,14 @@ int main(int argc, char **argv)
                         {
                             case ENC_META_DATA:
 
-                                /** message variable is freed in convert_json_to_smeta_data() function : no need to free it again elsewhere ! */
+                                /** message variable is freed in convert_json_to_smeta_data()
+                                 *  function : no need to free it again elsewhere !
+                                 *  Use of message variable is safe here because it is known
+                                 *  not to be NULL
+                                 */
+
+                                print_debug(stdout, "Message of size %d received : %s\n", strlen(message), message);
+
                                 smeta = convert_json_to_smeta_data(message);
                                 smeta = free_smeta_data_t(smeta);
 

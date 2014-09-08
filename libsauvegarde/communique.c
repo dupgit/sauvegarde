@@ -252,7 +252,6 @@ gchar *receive_message(comm_t *comm)
                     if (size > 0)
                         {
                             message = g_strdup(buffer);
-                            print_debug(stdout, "Message of size %d received : %s\n", size, message);
                         }
                 }
 
