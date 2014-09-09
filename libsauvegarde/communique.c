@@ -212,6 +212,7 @@ comm_t *create_pull_socket(gchar *somewhere)
 gint send_message(comm_t *comm, gchar *message)
 {
     char *msg = NULL;
+    gint size = 0;
 
     if  (comm != NULL && message != NULL)
         {
