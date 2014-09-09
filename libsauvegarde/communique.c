@@ -206,15 +206,14 @@ comm_t *create_pull_socket(gchar *somewhere)
  * @param comm : the communication structure that handles sockets. sender
  *        field is the one used to send message.
  * @param message is a guchar * message to be sent.
- * @param size is the size of message buffer to be sent.
  * @returns size of the message sent. 0 may be returned if comm or message
  *          are NULL.
  */
-gint send_message(comm_t *comm, gchar *message, gint size)
+gint send_message(comm_t *comm, gchar *message)
 {
     char *msg = NULL;
 
-    if  (comm != NULL && message != NULL && size > 0)
+    if  (comm != NULL && message != NULL)
         {
             msg = g_strdup(message);
             size = zstr_send(comm->sender, msg);

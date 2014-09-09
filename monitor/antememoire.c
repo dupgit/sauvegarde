@@ -48,7 +48,7 @@ static void insert_meta_data_into_cache_or_send_to_serveur(meta_data_t *meta, ma
 
             print_debug(stdout, "json string (%d bytes) is : %s\n", strlen(json_str), json_str);
 
-            send_message(main_struct->comm, json_str, strlen(json_str));
+            send_message(main_struct->comm, json_str);
 
             /* freeing json_str may only happen when the message has been received */
             /* free(json_str); */
