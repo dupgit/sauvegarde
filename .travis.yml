@@ -16,7 +16,7 @@ before_install:
 - ( cd libzmq; ./autogen.sh; ./configure; make; sudo make install )
 
 # czmq bindings
-- git clone ://github.com/zeromq/czmq.git
+- git clone git://github.com/zeromq/czmq.git
 - ( cd czmq; ./autogen.sh; ./configure; make; sudo make install )
 
 # Building sauvegarde
