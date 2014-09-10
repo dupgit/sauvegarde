@@ -29,16 +29,14 @@
 #include "libsauvegarde.h"
 
 static comm_t *init_comm_struct(void);
-static void create_new_push_sender(comm_t *comm);
-static void create_new_pull_receiver(comm_t *comm);
-static void create_new_dealer_sender(comm_t *comm);
-static void create_new_router_receiver(comm_t *comm);
+static void create_new_sender(comm_t *comm, int socket_type);
+static void create_new_receiver(comm_t *comm, int socket_type);
 static void connect_socket_somewhere(void *socket, gchar *somewhere);
 static void bind_socket_somewhere(void *socket, gchar *somewhere);
 
 
 /**
- * gets the version for the communication library (ZMQ for now)
+ * Gets the version for the communication library (ZMQ for now)
  * @returns a newly allocated string that contains the version and that
  *          may be freed with free_variable() when no longer needed.
  */
@@ -73,53 +71,29 @@ static comm_t *init_comm_struct(void)
 
 
 /**
- * Creates a new PUSH sender and set sender field accordingly
- * @param comm : an allocated comm_t struct.
+ * Creates a new sender and set sender field accordingly
+ * @param[in,out] comm : an allocated comm_t struct.
+ * @param socket_type : type of socket (from libzmq) we want to create.
  */
-static void create_new_push_sender(comm_t *comm)
+static void create_new_sender(comm_t *comm, int socket_type)
 {
     if (comm != NULL)
         {
-            comm->sender = zsock_new(ZMQ_PUSH);
+            comm->sender = zsock_new(socket_type);
         }
 }
 
 
 /**
- * Creates a new PULL receiver and set receiver field accordingly
- * @param comm : an allocated comm_t struct.
+ * Creates a new receiver and set receiver field accordingly
+ * @param[in,out] comm : an allocated comm_t struct.
+ * @param socket_type : type of socket (from libzmq) we want to create.
  */
-static void create_new_pull_receiver(comm_t *comm)
+static void create_new_receiver(comm_t *comm, int socket_type)
 {
     if (comm != NULL)
         {
-            comm->receiver = zsock_new(ZMQ_PULL);
-        }
-}
-
-
-/**
- * Creates a new DEALER sender and set sender field accordingly
- * @param comm : an allocated comm_t struct.
- */
-static void create_new_dealer_sender(comm_t *comm)
-{
-    if (comm != NULL)
-        {
-            comm->sender = zsock_new(ZMQ_DEALER);
-        }
-}
-
-
-/**
- * Creates a new ROUTER receiver and set receiver field accordingly
- * @param comm : an allocated comm_t struct.
- */
-static void create_new_router_receiver(comm_t *comm)
-{
-    if (comm != NULL)
-        {
-            comm->receiver = zsock_new(ZMQ_ROUTER);
+            comm->receiver = zsock_new(socket_type);
         }
 }
 
@@ -155,21 +129,22 @@ static void bind_socket_somewhere(void *socket, gchar *somewhere)
 
 
 /**
- * Creates and connects a new DEALER socket to somewhere
+ * Creates a new socket to send messages and connects it to "somewhere"
  * @param somewhere is the string that will define the connection we want
  *        eg "tcp://localhost:5468" or "tcp://10.1.1.60:3128"...
+ * @param socket_type : type of socket (from libzmq) we want to create.
  * @returns  a newly allocated comm_t * structure where context should not
  *           be NULL and sender should not be null but receiver is set to
  *           NULL.
  */
-comm_t *create_dealer_socket(gchar *somewhere)
+comm_t *create_sender_socket(gchar *somewhere, int socket_type)
 {
     comm_t *comm = NULL;
 
     if (somewhere != NULL)
         {
             comm = init_comm_struct();
-            create_new_dealer_sender(comm);
+            create_new_sender(comm, socket_type);
             connect_socket_somewhere(comm->sender, somewhere);
         }
 
@@ -179,21 +154,22 @@ comm_t *create_dealer_socket(gchar *somewhere)
 
 
 /**
- * Creates and binds a new ROUTER socket to somewhere
+ * Creates a new socket to receive messages and binds it to "somewhere"
  * @param somewhere is the string that will define the connection we want
  *        eg "tcp:// *:5468" for instance.
+ * @param socket_type : type of socket (from libzmq) we want to create.
  * @returns  a newly allocated comm_t * structure where context should not
  *           be NULL and receiver should not be null but sender is set to
  *           NULL.
  */
-comm_t *create_router_socket(gchar *somewhere)
+comm_t *create_receiver_socket(gchar *somewhere, int socket_type)
 {
     comm_t *comm = NULL;
 
     if (somewhere != NULL)
         {
             comm = init_comm_struct();
-            create_new_router_receiver(comm);
+            create_new_receiver(comm, socket_type);
             bind_socket_somewhere(comm->receiver, somewhere);
         }
 
