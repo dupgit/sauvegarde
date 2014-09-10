@@ -31,7 +31,7 @@
 /**
  * This function saves meta_data_t structure into the cache or to the
  * serveur's server (it then inserts hostname into the message that is
- * send.
+ * sent).
  * @param meta : the meta_data_t * structure to be saved.
  * @param main_struct : main structure of the program (contains pointers
  *        to the communication socket, the cache database connexion and the
@@ -44,7 +44,6 @@ static void insert_meta_data_into_cache_or_send_to_serveur(meta_data_t *meta, ma
     if (main_struct != NULL && meta != NULL && meta->name != NULL)
         {
             json_str = convert_meta_data_to_json(meta, main_struct->hostname);
-
 
             print_debug(stdout, "json string (%d bytes) is : %s\n", strlen(json_str), json_str);
 

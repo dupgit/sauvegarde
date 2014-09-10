@@ -202,14 +202,14 @@ static main_struct_t *init_main_structure(options_t *opt)
 
             if (conn != NULL)
                 {
-                    main_struct->comm = create_push_socket(conn);
+                    main_struct->comm = create_dealer_socket(conn);
                     free_variable(conn);
                 }
         }
     else
         {
             /* Will this behavior correspond to something in real life ? */
-            main_struct->comm = create_push_socket("tcp://localhost:5468");
+            main_struct->comm = create_dealer_socket("tcp://localhost:5468");
         }
 
     print_debug(stdout, _("Main structure initialized !\n"));

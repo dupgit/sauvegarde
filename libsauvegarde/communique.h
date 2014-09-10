@@ -59,25 +59,25 @@ extern gchar *get_communication_library_version(void);
 
 
 /**
- * Creates and connects a new typesocket socket to somewhere
+ * Creates and connects a new DEALER socket to somewhere
  * @param somewhere is the string that will define the connection we want
  *        eg "tcp://localhost:5468" or "tcp://10.1.1.60:3128"...
  * @returns  a newly allocated comm_t * structure where context should not
  *           be NULL and sender should not be null but receiver is set to
  *           NULL.
  */
-extern comm_t *create_push_socket(gchar *somewhere);
+extern comm_t *create_dealer_socket(gchar *somewhere);
 
 
 /**
- * Creates and connects a new PULL socket to somewhere
+ * Creates and connects a new ROUTER socket to somewhere
  * @param somewhere is the string that will define the connection we want
  *        eg "tcp://localhost:5468" or "tcp://10.1.1.60:3128"...
  * @returns  a newly allocated comm_t * structure where context should not
  *           be NULL and receiver should not be null but sender is set to
  *           NULL.
  */
-extern comm_t *create_pull_socket(gchar *somewhere);
+extern comm_t *create_router_socket(gchar *somewhere);
 
 
 /**

@@ -155,14 +155,14 @@ static void bind_socket_somewhere(void *socket, gchar *somewhere)
 
 
 /**
- * Creates and connects a new PUSH socket to somewhere
+ * Creates and connects a new DEALER socket to somewhere
  * @param somewhere is the string that will define the connection we want
  *        eg "tcp://localhost:5468" or "tcp://10.1.1.60:3128"...
  * @returns  a newly allocated comm_t * structure where context should not
  *           be NULL and sender should not be null but receiver is set to
  *           NULL.
  */
-comm_t *create_push_socket(gchar *somewhere)
+comm_t *create_dealer_socket(gchar *somewhere)
 {
     comm_t *comm = NULL;
 
@@ -179,14 +179,14 @@ comm_t *create_push_socket(gchar *somewhere)
 
 
 /**
- * Creates and binds a new PULL socket to somewhere
+ * Creates and binds a new ROUTER socket to somewhere
  * @param somewhere is the string that will define the connection we want
  *        eg "tcp:// *:5468" for instance.
  * @returns  a newly allocated comm_t * structure where context should not
  *           be NULL and receiver should not be null but sender is set to
  *           NULL.
  */
-comm_t *create_pull_socket(gchar *somewhere)
+comm_t *create_router_socket(gchar *somewhere)
 {
     comm_t *comm = NULL;
 

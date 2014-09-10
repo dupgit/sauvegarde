@@ -76,7 +76,7 @@ int main(int argc, char **argv)
     if (serveur_struct != NULL && serveur_struct->opt != NULL)
         {
             somewhere = g_strdup_printf("tcp://*:%d", serveur_struct->opt->port);
-            comm = create_pull_socket(somewhere);
+            comm = create_router_socket(somewhere);
 
             while (1)
                 {
