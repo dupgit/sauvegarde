@@ -2,6 +2,7 @@
 
 Some experiments around backup and continuous data protection (CDP).
 
+[![Build Status](https://travis-ci.org/dupgit/sauvegarde.png?branch=master)](https://travis-ci.org/dupgit/sauvegarde)
 
 ## License
 
