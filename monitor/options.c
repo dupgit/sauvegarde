@@ -159,10 +159,17 @@ static void read_from_group_antememoire(options_t *opt, GKeyFile *keyfile, gchar
  */
 static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
+    gint port = 0;
+
     if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
         {
             /* Reading the port number if any */
-            opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, N_("Could not load serveur port number from file."));
+            port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, N_("Could not load serveur port number from file."));
+
+            if (port > 1024 && port < 65535)
+                {
+                    opt->port = port;
+                }
         }
 }
 

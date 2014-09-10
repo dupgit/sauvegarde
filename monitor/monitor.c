@@ -196,9 +196,9 @@ static main_struct_t *init_main_structure(options_t *opt)
     main_struct->hashs = get_all_inserted_hashs(main_struct->database);
 
     /* Testing things */
-    if (opt != NULL)
+    if (opt != NULL && opt->ip != NULL)
         {
-            conn = make_connexion_string(opt->ip, 5468);
+            conn = make_connexion_string(opt->ip, opt->port);
 
             if (conn != NULL)
                 {
