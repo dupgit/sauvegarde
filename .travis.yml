@@ -9,19 +9,19 @@ before_install:
 
 # libsodium
 - git clone git://github.com/jedisct1/libsodium.git
-- ( cd libsodium; ./autogen.sh; ./configure; make check; sudo make install; sudo ldconfig )
+- (cd libsodium; ./autogen.sh; ./configure; make check; sudo make install; sudo ldconfig)
 
 # libzmq
 - git clone git://github.com/zeromq/libzmq.git
-- ( cd libzmq; ./autogen.sh; ./configure; make; sudo make install )
+- (cd libzmq; ./autogen.sh; ./configure; make; sudo make install; sudo ldconfig)
 
 # czmq bindings
 - git clone git://github.com/zeromq/czmq.git
-- ( cd czmq; ./autogen.sh; ./configure; make; sudo make install )
+- (cd czmq; ./autogen.sh; ./configure; make; sudo make install; sudo ldconfig)
 
 # jansson
 - git clone git://github.com/akheron/jansson.git
-- (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure; make; sudo make install)
+- (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure; make; sudo make install; sudo ldconfig)
 
 # Building sauvegarde
 script:
