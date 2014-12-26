@@ -260,7 +260,10 @@ int main(int argc, char **argv)
     GThread *cut_thread = NULL;
     GThread *store_thread = NULL;
 
-    g_type_init();
+    if (glib_major_version <= 2 && glib_minor_version < 36)
+        {
+            g_type_init();
+        }
 
     init_international_languages();
 
