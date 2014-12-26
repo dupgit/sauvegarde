@@ -66,8 +66,10 @@ int main(int argc, char **argv)
     serveur_meta_data_t *smeta = NULL;
     gint msg_id = ENC_NOT_FOUND;
 
-
-    g_type_init();
+    if (glib_major_version <= 2 && glib_minor_version < 36)
+        {
+            g_type_init(); /** g_type_init() is deprecated since glib 2.36 */
+        }
 
     init_international_languages();
 
