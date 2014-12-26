@@ -37,18 +37,18 @@
  * @returns a gchar * which contain the filename of the configuration file
  *          relative to progname or NULL if something went wrong.
  */
-gchar *get_probable_etc_path(gchar *progname)
+gchar *get_probable_etc_path(gchar *progname, const gchar *configfile)
 {
     gchar *abs_path = NULL;
     gchar *path = NULL;
 
-    if (progname != NULL)
+    if (progname != NULL && configfile != NULL)
         {
             /* the first location of the program in the path */
             abs_path = g_find_program_in_path(progname);
             if (abs_path != NULL)
                 {
-                    path =  g_build_path(G_DIR_SEPARATOR_S, g_path_get_dirname(abs_path), "..", "etc", "sauvegarde", "sauvegarde.conf", NULL);
+                    path =  g_build_path(G_DIR_SEPARATOR_S, g_path_get_dirname(abs_path), "..", "etc", "sauvegarde", configfile, NULL);
                     free_variable(abs_path);
                 }
         }

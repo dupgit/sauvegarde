@@ -290,7 +290,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->port = 5468;
 
     /* 1) Reading options from default configuration file */
-    defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME);
+    defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "client.conf");
     read_from_configuration_file(opt,  defaultconfigfilename);
     defaultconfigfilename = free_variable(defaultconfigfilename);
 
