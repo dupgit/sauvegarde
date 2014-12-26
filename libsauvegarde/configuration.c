@@ -34,6 +34,7 @@
  * uncommon location such as a homedir for instance.
  * @param progname is the name of the program we want to search for in the
  *        user's path
+ * @param default configuration file name that should be a const string.
  * @returns a gchar * which contain the filename of the configuration file
  *          relative to progname or NULL if something went wrong.
  */
