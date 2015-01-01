@@ -60,10 +60,7 @@
  * @def MONITOR_VERSION
  * Defines monitor's version (which may be different of Sauvegarde's whole
  * project and programs that composes it).
- *
- * @def MONITOR_TIME
- * Defines monitor default rate limit in minutes
- *
+
  * @def PROGRAM_NAME
  * Defines the main program name for this part (monitor + ciseaux +
  * antememoire).
@@ -72,8 +69,14 @@
 #define MONITOR_DATE N_("15 02 2014")
 #define MONITOR_LICENSE N_("GPL v3 or later")
 #define MONITOR_VERSION N_("0.0.1")
-#define MONITOR_TIME (5)
 #define PROGRAM_NAME ("client")
+
+
+/**
+ * @def MONITOR_TIME
+ * Defines monitor default rate limit in minutes.
+ */
+#define MONITOR_TIME (5)
 
 
 /**
