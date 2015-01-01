@@ -61,11 +61,14 @@ void print_libraries_versions(void)
  */
 void print_program_version(gchar *name, gchar *date, gchar *version, gchar *authors, gchar *license)
 {
+    if (name != NULL && date != NULL && version != NULL && authors != NULL && license != NULL)
+        {
 
-    fprintf(stdout, _("%s version : %s (%s)\n"), name, version, date);
-    fprintf(stdout, _("Author(s) : %s\n"), authors);
-    fprintf(stdout, _("License : %s\n"), license);
-    fprintf(stdout, "\n");
+            fprintf(stdout, _("%s version : %s (%s)\n"), name, version, date);
+            fprintf(stdout, _("Author(s) : %s\n"), authors);
+            fprintf(stdout, _("License : %s\n"), license);
+            fprintf(stdout, "\n");
+        }
 }
 
 
@@ -85,9 +88,21 @@ void init_international_languages(void)
 
     print_debug(stdout, _("Debug mode is activated.\n"));
     print_debug(stdout, _("Gettext package : %s\n"), GETTEXT_PACKAGE);
-    print_debug(stdout, _("Bindtextdomain : %s\n"), result);
-    print_debug(stdout, _("Code set : %s\n"), codeset);
-    print_debug(stdout, _("Text domain : %s\n"), text_domain);
+
+    if (result != NULL)
+        {
+            print_debug(stdout, _("Bindtextdomain : %s\n"), result);
+        }
+
+    if (codeset != NULL)
+        {
+            print_debug(stdout, _("Code set : %s\n"), codeset);
+        }
+
+    if (text_domain != NULL)
+        {
+            print_debug(stdout, _("Text domain : %s\n"), text_domain);
+        }
 }
 
 
@@ -106,10 +121,13 @@ void init_international_languages(void)
  */
 void set_option_context_options(GOptionContext *context, GOptionEntry entries[], gboolean help, gchar *bugreport, gchar *summary)
 {
-    g_option_context_add_main_entries(context, entries, GETTEXT_PACKAGE);
-    g_option_context_set_help_enabled(context, help);
-    g_option_context_set_description(context, bugreport);
-    g_option_context_set_summary(context, summary);
+    if (context != NULL && bugreport != NULL && summary != NULL)
+        {
+            g_option_context_add_main_entries(context, entries, GETTEXT_PACKAGE);
+            g_option_context_set_help_enabled(context, help);
+            g_option_context_set_description(context, bugreport);
+            g_option_context_set_summary(context, summary);
+        }
 }
 
 
