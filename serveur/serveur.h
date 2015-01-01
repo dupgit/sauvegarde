@@ -51,17 +51,22 @@
  * Defines serveur's creation date
  *
  * @def SERVEUR_AUTHORS
- * Defines monitor's main authors
+ * Defines serveur's main authors
  *
  * @def SERVEUR_LICENSE
- * Defines monitor's license (at least GPL v2)
-
+ * Defines serveur's license (at least GPL v2)
+ *
+ * @def SERVEUR_VERSION
+ * Defines serveur's version (which may be different of Sauvegarde's whole
+ * project and programs that composes it).
+ *
  * @def PROGRAM_NAME
  * Defines the main program name (serveur - server in french)
  */
 #define SERVEUR_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
 #define SERVEUR_DATE N_("27 04 2014")
 #define SERVEUR_LICENSE N_("GPL v3 or later")
+#define SERVEUR_VERSION N_("0.0.1")
 #define PROGRAM_NAME ("serveur")
 
 

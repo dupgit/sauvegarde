@@ -57,6 +57,10 @@
  * @def MONITOR_LICENSE
  * Defines monitor's license (at least GPL v2)
  *
+ * @def MONITOR_VERSION
+ * Defines monitor's version (which may be different of Sauvegarde's whole
+ * project and programs that composes it).
+ *
  * @def MONITOR_TIME
  * Defines monitor default rate limit in minutes
  *
@@ -67,6 +71,7 @@
 #define MONITOR_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
 #define MONITOR_DATE N_("15 02 2014")
 #define MONITOR_LICENSE N_("GPL v3 or later")
+#define MONITOR_VERSION N_("0.0.1")
 #define MONITOR_TIME (5)
 #define PROGRAM_NAME ("client")
 

@@ -406,7 +406,7 @@ options_t *do_what_is_needed_from_command_line_options(int argc, char **argv)
         {
             if (opt->version == TRUE)
                 {
-                    print_program_version(MONITOR_DATE, MONITOR_AUTHORS, MONITOR_LICENSE);
+                    print_program_version(PROGRAM_NAME, MONITOR_DATE, MONITOR_VERSION, MONITOR_AUTHORS, MONITOR_LICENSE);
                     print_libraries_versions();
                     print_selected_options(opt);
                     exit(EXIT_SUCCESS);

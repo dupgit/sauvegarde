@@ -12,7 +12,7 @@ MON_HEADERFILES = monitor.h               \
                   ciseaux.h				  \
                   antememoire.h
 
-client_SOURCES = monitor.c                \
+client_SOURCES =  monitor.c               \
 				  options.c				  \
 				  ciseaux.c				  \
 				  antememoire.c		      \

@@ -56,11 +56,14 @@ extern void print_libraries_versions(void);
 
 /**
  * Prints the version of the program.
+ * All parameters are of (gchar *) type.
+ * @param name : name of the program of which we want to print the version.
  * @param date : publication date of this version
+ * @param version : version of the program.
  * @param authors : authors that contributed to this program
  * @param license : license in use for this program and its sources
  */
-extern void print_program_version(gchar *date, gchar *authors, gchar *license);
+extern void print_program_version(gchar *name, gchar *date, gchar *version, gchar *authors, gchar *license);
 
 
 /**
@@ -83,7 +86,6 @@ extern void init_international_languages(void);
  *        what the program does.
  */
 extern void set_option_context_options(GOptionContext *context, GOptionEntry entries[], gboolean help, gchar *bugreport, gchar *summary);
-
 
 
 /**
@@ -109,6 +111,7 @@ extern gpointer free_object(gpointer object_to_unref);
  * @returns NULL
  */
 extern gpointer free_error(gpointer error);
+
 
 /**
  * Prints a message if the debug flag is set

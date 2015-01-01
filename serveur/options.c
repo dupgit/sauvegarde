@@ -246,7 +246,7 @@ options_t *do_what_is_needed_from_command_line_options(int argc, char **argv)
         {
             if (opt->version == TRUE)
                 {
-                    print_program_version(SERVEUR_DATE, SERVEUR_AUTHORS, SERVEUR_LICENSE);
+                    print_program_version(PROGRAM_NAME, SERVEUR_DATE, SERVEUR_VERSION, SERVEUR_AUTHORS, SERVEUR_LICENSE);
                     print_libraries_versions();
                     print_selected_options(opt);
                     exit(EXIT_SUCCESS);
