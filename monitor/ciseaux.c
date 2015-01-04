@@ -337,8 +337,8 @@ gpointer ciseaux(gpointer data)
 
     if (main_struct != NULL)
         {
-            print_thread = g_thread_create(print_things, main_struct, TRUE, NULL);
-            calc_thread = g_thread_create(calculate_hashs_on_a_file, main_struct, TRUE, NULL);
+            print_thread = g_thread_new("printing", print_things, main_struct);
+            calc_thread = g_thread_new("hashs", calculate_hashs_on_a_file, main_struct);
 
             g_thread_join(calc_thread);
             g_async_queue_push(main_struct->print_queue, "$END$");

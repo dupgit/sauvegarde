@@ -200,3 +200,22 @@ void print_debug(FILE *stream, const char *format, ...)
             va_end(ap);
         }
 }
+
+
+#if !GLIB_CHECK_VERSION(2, 31, 0)
+/**
+ * defines a wrapper to the g_thread_create function used in glib before
+ * 2.31
+ */
+GThread *g_thread_new(const gchar *unused, GThreadFunc func, gpointer data)
+{
+    GThread *thread = g_thread_create(func, data, TRUE, NULL);
+
+    if (thread == NULL)
+        {
+            g_error(_("g_thread_create failed !"));
+        }
+
+    return thread;
+}
+#endif

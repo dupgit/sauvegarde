@@ -260,10 +260,9 @@ int main(int argc, char **argv)
     GThread *cut_thread = NULL;
     GThread *store_thread = NULL;
 
-    if (glib_major_version <= 2 && glib_minor_version < 36)
-        {
-            g_type_init();
-        }
+    #if !GLIB_CHECK_VERSION(2, 36, 0)
+        g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
+    #endif
 
     init_international_languages();
 
@@ -279,9 +278,9 @@ int main(int argc, char **argv)
             a_thread_data->main_struct = main_struct;
             a_thread_data->dir_list = opt->dirname_list;
 
-            a_thread = g_thread_create(first_directory_traversal, a_thread_data, TRUE, NULL);
-            cut_thread = g_thread_create(ciseaux, main_struct, TRUE, NULL);
-            store_thread = g_thread_create(store_buffer_data, main_struct, TRUE, NULL);
+            a_thread = g_thread_new("dir_traversal", first_directory_traversal, a_thread_data);
+            cut_thread = g_thread_new("cut", ciseaux, main_struct);
+            store_thread = g_thread_new("store", store_buffer_data, main_struct);
 
             /* As we are only testing things for now, we just wait for the
              * threads to join and then exits.

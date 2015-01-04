@@ -121,4 +121,14 @@ extern gpointer free_error(gpointer error);
  */
 extern void print_debug(FILE *stream, const char *format, ...);
 
+
+#if !GLIB_CHECK_VERSION(2, 31, 0)
+/**
+ * defines a wrapper to the g_thread_create function used in glib before
+ * 2.31
+ */
+extern GThread *g_thread_new(const gchar *unused, GThreadFunc func, gpointer data);
+#endif
+
+
 #endif /* #ifndef _LIBSAUVEGARDE_H_ */
