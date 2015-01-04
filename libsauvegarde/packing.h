@@ -54,7 +54,7 @@
 /**
  * @def ENC_END
  * Indicates that this is the end and that nothing else with occur after !
- * 127 is the end of the ASCII table ;)
+ * 127 is the end of the 7 bits ASCII table ;-)
  */
 #define ENC_END (127)
 

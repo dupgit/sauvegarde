@@ -356,6 +356,7 @@ static gboolean is_checksum_in_db(hashs_t *inserted_hashs, guint8 *a_hash)
 
 }
 
+
 /**
  * This function is a callback for SQLITE in order to retreive all
  * checksums from the database.

@@ -63,8 +63,8 @@ typedef struct
  */
 typedef struct
 {
-    gchar *hostname;    /** machine's hostname from which comes the metadata below */
-    meta_data_t *meta;  /** metadata of a file of the 'hostname' machine           */
+    gchar *hostname;    /**< machine's hostname from which comes the metadata below */
+    meta_data_t *meta;  /**< metadata of a file of the 'hostname' machine           */
 } serveur_meta_data_t;
 
 
