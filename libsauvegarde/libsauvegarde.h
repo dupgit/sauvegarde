@@ -50,8 +50,9 @@
 
 /**
  * Prints version of the libraries we are using.
+ * @param name : name of the program of which we want to print the version.
  */
-extern void print_libraries_versions(void);
+extern void print_libraries_versions(gchar *name);
 
 
 /**
