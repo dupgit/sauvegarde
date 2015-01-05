@@ -150,13 +150,15 @@ static gpointer first_directory_traversal(gpointer data)
  * and verifies that port number is between 1025 and 65534 included.
  * @param ip : a gchar * that contains either an ip address or a hostname
  * @param port : a gint that is comprised between 1025 and 65534 included
- * @todo check the ip string to be sure that it correspond to something that
- *       we can join (IP or hostname).
  * @returns a newly allocated string that may be freed with free_variable()
  *          function.
  */
 static gchar *make_connexion_string(gchar *ip, gint port)
 {
+    /**
+     * @todo check the ip string to be sure that it correspond to something that
+     *       we can join (IP or hostname).
+     */
     gchar *conn = NULL;
 
     if (ip != NULL && port > 1024 && port < 65535)

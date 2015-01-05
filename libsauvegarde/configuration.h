@@ -30,6 +30,7 @@
 
 /**
  * @note on key naming scheme :
+ *
  *  GN == Group Name that will group KN_* keys used for a same purpose or
  *        a same program. It should begin with an uppercase letter.
  *  KN == Key Name that will stor a value or a list of values. It should
@@ -37,6 +38,7 @@
  *
  * Thoses key names and group names should not be translated.
  */
+
  /**
   * @def GN_MONITOR
   * Defines the group name for all preferences related to "monitor"
