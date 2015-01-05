@@ -31,13 +31,12 @@
 
 /**
  * Prints version of the libraries we are using.
- * @param name : name of the program of which we want to print the version.
  */
-void print_libraries_versions(gchar *name)
+void print_libraries_versions(void)
 {
     gchar *comm_version = NULL;
 
-    fprintf(stdout, _("%s was compiled with the following libraries:\n"), name);
+    fprintf(stdout, _("%s was compiled with the following libraries:\n"), PACKAGE_NAME);
     fprintf(stdout, _("\t. GLIB version : %d.%d.%d\n"), glib_major_version, glib_minor_version, glib_micro_version);
 
     comm_version = get_communication_library_version();
