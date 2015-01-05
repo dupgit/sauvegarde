@@ -171,7 +171,9 @@ static gchar *make_connexion_string(gchar *ip, gint port)
 
 /**
  * Inits the main structure.
- * @note : With sqlite version > 3.7.7 we should use URI filename.
+ * @note With sqlite version > 3.7.7 we should use URI filename.
+ * @param opt : a filled options_t * structure that contains all options
+ *        by default, read into the file or selected in the command line.
  * @returns a main_struct_t * pointer to the main structure
  */
 static main_struct_t *init_main_structure(options_t *opt)
@@ -180,39 +182,45 @@ static main_struct_t *init_main_structure(options_t *opt)
     gchar *db_uri = NULL;
     gchar *conn = NULL;
 
-    print_debug(stdout, _("Please wait while initializing main structure...\n"));
-
-    main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
-
-    db_uri = g_build_filename(opt->dircache, opt->dbname , NULL);
-    main_struct->database = open_database(db_uri);
-
-    main_struct->opt = opt;
-    main_struct->hostname = g_get_host_name();
-    main_struct->queue = g_async_queue_new();
-    main_struct->print_queue = g_async_queue_new();
-    main_struct->store_queue = g_async_queue_new();
-
-    main_struct->hashs = get_all_inserted_hashs(main_struct->database);
-
-    /* Testing things */
-    if (opt != NULL && opt->ip != NULL)
+    if (opt != NULL)
         {
-            conn = make_connexion_string(opt->ip, opt->port);
 
-            if (conn != NULL)
+            print_debug(stdout, _("Please wait while initializing main structure...\n"));
+
+            main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
+
+            /** @todo we should test if the directory opt->dircache exists and try to create it if not. */
+            db_uri = g_build_filename(opt->dircache, opt->dbname , NULL);
+            main_struct->database = open_database(db_uri);
+
+            main_struct->opt = opt;
+            main_struct->hostname = g_get_host_name();
+            main_struct->queue = g_async_queue_new();
+            main_struct->print_queue = g_async_queue_new();
+            main_struct->store_queue = g_async_queue_new();
+
+            main_struct->hashs = get_all_inserted_hashs(main_struct->database);
+
+            /* Testing things */
+            if (opt != NULL && opt->ip != NULL)
                 {
-                    main_struct->comm = create_sender_socket(conn, ZMQ_DEALER);
-                    free_variable(conn);
-                }
-        }
-    else
-        {
-            /* Will this behavior correspond to something in real life ? */
-            main_struct->comm = create_sender_socket("tcp://localhost:5468", ZMQ_DEALER);
-        }
+                    conn = make_connexion_string(opt->ip, opt->port);
 
-    print_debug(stdout, _("Main structure initialized !\n"));
+                    if (conn != NULL)
+                        {
+                            main_struct->comm = create_sender_socket(conn, ZMQ_DEALER);
+                            free_variable(conn);
+                        }
+                }
+            else
+                {
+                    /* Will this behavior correspond to something in real life ? */
+                    main_struct->comm = create_sender_socket("tcp://localhost:5468", ZMQ_DEALER);
+                }
+
+            print_debug(stdout, _("Main structure initialized !\n"));
+
+        }
 
     return main_struct;
 }
