@@ -121,11 +121,12 @@ extern serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str);
  * Function that encapsulate a meta_data_t * variable into a capsule_t *
  * one. It does not check that meta is not NULL so it may encapsulate a
  * NULL pointer !
+ * @param command is the command to be used with the encapsulated data.
  * @param meta is the meta_data_t * variable to be encapsulated
  * @returns a capsule_t * with command field set to ENC_META_DATA stating
  *          that the data field is of type meta_data_t *.
  */
-extern capsule_t *encapsulate_meta_data_t(meta_data_t *meta);
+extern capsule_t *encapsulate_meta_data_t(gint command, meta_data_t *meta);
 
 
 /**

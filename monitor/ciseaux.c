@@ -129,7 +129,7 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
 
 
                     g_async_queue_push(main_struct->print_queue, to_print);
-                    g_async_queue_push(main_struct->store_queue, encapsulate_meta_data_t(meta));
+                    g_async_queue_push(main_struct->store_queue, encapsulate_meta_data_t(ENC_META_DATA, meta));
                 }
             else
                 {
@@ -190,7 +190,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                             do_checksum(main_struct, stream, filename, meta);
                             g_input_stream_close((GInputStream *) stream, NULL, NULL);
 
-                            g_async_queue_push(main_struct->store_queue, encapsulate_meta_data_t(meta));
+                            g_async_queue_push(main_struct->store_queue, encapsulate_meta_data_t(ENC_META_DATA, meta));
                         }
                     else
                         {
