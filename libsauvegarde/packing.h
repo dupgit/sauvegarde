@@ -52,6 +52,13 @@
 
 
 /**
+ * @def IS_SERVEUR_UP
+ * Indicates that we want to know if the serveur server is up.
+ */
+#define IS_SERVEUR_UP (2)
+
+
+/**
  * @def ENC_END
  * Indicates that this is the end and that nothing else with occur after !
  * 127 is the end of the 7 bits ASCII table ;-)
