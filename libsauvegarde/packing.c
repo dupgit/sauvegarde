@@ -244,15 +244,7 @@ capsule_t *encapsulate_meta_data_t(gint command, meta_data_t *meta)
  */
 capsule_t *encapsulate_end(void)
 {
-
-    capsule_t *capsule = NULL;
-
-    capsule = (capsule_t *) g_malloc0(sizeof(capsule_t));
-
-    capsule->command = ENC_END;
-    capsule->data = NULL;
-
-    return capsule;
+    return encapsulate_meta_data_t(ENC_END, NULL);
 }
 
 
