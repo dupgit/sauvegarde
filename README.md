@@ -192,20 +192,21 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
 ## Usefull links
 
 * Filesystem events notifycation :
- * redirfs   : [http://www.redirfs.org/tiki-index.php](http://www.redirfs.org/tiki-index.php)
- * pluginfs  : [http://www.pluginfs.org/](http://www.pluginfs.org/)
- * dazuko    : [http://dazuko.dnsalias.org/wiki/index.php/Main_Page](http://dazuko.dnsalias.org/wiki/index.php/Main_Page)
- * fanotify  : [http://www.xypron.de/projects/fanotify-manpages/man7/fanotify.7.html](http://www.xypron.de/projects/fanotify-manpages/man7/fanotify.7.html)
-* sqlite     :
- * main site :[http://www.sqlite.org/cintro.html](http://www.sqlite.org/cintro.html)
+ * redirfs        : [http://www.redirfs.org/tiki-index.php](http://www.redirfs.org/tiki-index.php)
+ * pluginfs       : [http://www.pluginfs.org/](http://www.pluginfs.org/)
+ * dazuko         : [http://dazuko.dnsalias.org/wiki/index.php/Main_Page](http://dazuko.dnsalias.org/wiki/index.php/Main_Page)
+ * fanotify       : [http://www.xypron.de/projects/fanotify-manpages/man7/fanotify.7.html](http://www.xypron.de/projects/fanotify-manpages/man7/fanotify.7.html)
+* sqlite          :
+ * main site      :[http://www.sqlite.org/cintro.html](http://www.sqlite.org/cintro.html)
  * firefox add on : [https://addons.mozilla.org/fr/firefox/addon/sqlite-manager/](https://addons.mozilla.org/fr/firefox/addon/sqlite-manager/)
-* zmq        : [http://czmq.zeromq.org/](http://czmq.zeromq.org/)
+* zmq             : [http://czmq.zeromq.org/](http://czmq.zeromq.org/)
 * data packing over the wire :
- * msgpack    : [http://msgpack.org/](http://msgpack.org/)
- * jansson    : [http://www.digip.org/jansson/](http://www.digip.org/jansson/). See also the RFC 7159: [http://tools.ietf.org/html/rfc7159.html](http://tools.ietf.org/html/rfc7159.html)
-* doxygen    : [http://www.stack.nl/~dimitri/doxygen/index.html](http://www.stack.nl/~dimitri/doxygen/index.html)
+ * msgpack        : [http://msgpack.org/](http://msgpack.org/)
+ * jansson        : [http://www.digip.org/jansson/](http://www.digip.org/jansson/). See also the RFC 7159: [http://tools.ietf.org/html/rfc7159.html](http://tools.ietf.org/html/rfc7159.html)
+* doxygen         : [http://www.stack.nl/~dimitri/doxygen/index.html](http://www.stack.nl/~dimitri/doxygen/index.html)
 * Software quality checkers :
- * lizard    : [https://github.com/terryyin/lizard](https://github.com/terryyin/lizard)
-
-
+ * lizard         : [https://github.com/terryyin/lizard](https://github.com/terryyin/lizard)
+* Third party libraries :
+* libmicrohttpd   : [https://www.gnu.org/software/libmicrohttpd/](https://www.gnu.org/software/libmicrohttpd/)
+* libevent        : [http://libevent.org/](http://libevent.org/)
 
