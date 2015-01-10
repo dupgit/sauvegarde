@@ -220,3 +220,29 @@ GThread *g_thread_new(const gchar *unused, GThreadFunc func, gpointer data)
     return thread;
 }
 #endif
+
+
+/**
+ * Tries to create a directory
+ * @param directory is the gchar * string that contains a directory name
+ *        to be created (does nothing if it exists).
+ */
+void create_directory(gchar *directory)
+{
+    GFile *dir = NULL;
+    GError *error = NULL;
+
+    if (directory != NULL)
+        {
+            dir = g_file_new_for_path(directory);
+            g_file_make_directory_with_parents(dir, NULL, &error);
+
+            if (error != NULL)
+                {
+                    print_debug(stderr,  _("[%s, %d] Failed to create directory %s : %s\n"), __FILE__, __LINE__, directory, error->message);
+                }
+
+            dir = free_object(dir);
+        }
+}
+

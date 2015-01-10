@@ -191,7 +191,7 @@ static main_struct_t *init_main_structure(options_t *opt)
 
             main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
 
-            /** @todo we should test if the directory opt->dircache exists and try to create it if not. */
+            create_directory(opt->dircache);
             db_uri = g_build_filename(opt->dircache, opt->dbname , NULL);
             main_struct->database = open_database(db_uri);
 
