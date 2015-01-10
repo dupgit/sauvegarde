@@ -178,6 +178,32 @@ comm_t *create_receiver_socket(gchar *somewhere, int socket_type)
 
 
 /**
+ * transforms the buffer into a gchar * message.
+ * @param buffer is the char * buffer that we gets from the zstr_* functions
+ * @returns a gchar * string if buffer is not NULL and strlen could be
+ *          determined properly.
+ */
+static gchar *get_message_from_buffer(char *buffer)
+{
+    gint size = 0;
+    gchar *message = NULL;
+
+    if (buffer != NULL)
+        {
+            size = strlen(buffer);
+
+            if (size > 0)
+                {
+                    message = g_strdup(buffer);
+                }
+        }
+
+    return message;
+
+}
+
+
+/**
  * Sends a message throught sender socket
  * @param comm : the communication structure that handles sockets. sender
  *        field is the one used to send message.
@@ -188,12 +214,16 @@ comm_t *create_receiver_socket(gchar *somewhere, int socket_type)
 gint send_message(comm_t *comm, gchar *message)
 {
     char *msg = NULL;
+    char *buffer = NULL;
+    gchar *answer = NULL;
     gint size = 0;
 
     if  (comm != NULL && message != NULL)
         {
+            /* Sending the message */
             msg = g_strdup(message);
             size = zstr_send(comm->sender, msg);
+
             return size;
         }
     else
@@ -220,16 +250,7 @@ gchar *receive_message(comm_t *comm)
     if  (comm != NULL)
         {
             buffer = zstr_recv(comm->receiver);
-
-            if (buffer != NULL)
-                {
-                    size = strlen(buffer);
-
-                    if (size > 0)
-                        {
-                            message = g_strdup(buffer);
-                        }
-                }
+            message = get_message_from_buffer(buffer);
 
             buffer = free_variable(buffer);
         }
