@@ -1,6 +1,11 @@
 # Travis CI script
 language: c
 
+# Compilers to test.
+compiler:
+- gcc
+- clang
+
 # Dependencies
 before_install:
 
