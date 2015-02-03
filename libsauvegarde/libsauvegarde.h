@@ -132,4 +132,13 @@ extern GThread *g_thread_new(const gchar *unused, GThreadFunc func, gpointer dat
 #endif
 
 
+/**
+ * Tries to create a directory
+ * @param directory is the gchar * string that contains a directory name
+ *        to be created (does nothing if it exists).
+ */
+extern void create_directory(gchar *directory);
+
+
+
 #endif /* #ifndef _LIBSAUVEGARDE_H_ */
