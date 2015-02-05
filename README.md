@@ -3,6 +3,10 @@
 Some experiments around backup and continuous data protection (CDP).
 
 [![Build Status](https://travis-ci.org/dupgit/sauvegarde.png?branch=master)](https://travis-ci.org/dupgit/sauvegarde)
+<a href="https://scan.coverity.com/projects/4150">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/4150/badge.svg"/>
+</a>
 
 ## License
 
