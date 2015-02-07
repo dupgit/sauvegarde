@@ -56,12 +56,30 @@
 #include "database.h"
 #include "packing.h"
 
+
+/**
+ * Returns a newly allocated buffer that contains all informations about
+ * the version of the libraries we are using.
+ * @param name : name of the program of which we want to print the version.
+ */
+extern gchar *buffer_libraries_versions(gchar *name);
+
 /**
  * Prints version of the libraries we are using.
  * @param name : name of the program of which we want to print the version.
  */
 extern void print_libraries_versions(gchar *name);
 
+/**
+ * returns a newly allocated buffer that contains all informations about
+ * program's version, authors and license.
+ * @param name : name of the program of which we want to print the version.
+ * @param date : publication date of this version
+ * @param version : version of the program.
+ * @param authors : authors that contributed to this program
+ * @param license : license in use for this program and its sources
+ */
+extern gchar *buffer_program_version(gchar *name, gchar *date, gchar *version, gchar *authors, gchar *license);
 
 /**
  * Prints the version of the program.

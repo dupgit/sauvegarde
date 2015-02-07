@@ -28,6 +28,7 @@
  */
 
 #include "serveur.h"
+#define PAGE_NOT_FOUND "Error not found"
 
 static serveur_struct_t *init_serveur_main_structure(int argc, char **argv);
 
@@ -46,8 +47,54 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
     serveur_struct = (serveur_struct_t *) g_malloc0(sizeof(serveur_struct_t));
 
     serveur_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
+    serveur_struct->d = NULL;
 
     return serveur_struct;
+}
+
+
+static int ahc_echo(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **ptr)
+{
+    static int aptr = 0;
+    struct MHD_Response *response = NULL;
+    int ret = 0;
+    gchar *answer = NULL;
+    gchar *buf1 = NULL;
+    gchar *buf2 = NULL;
+
+    if (strcmp (method, "GET") != 0)
+        {
+            return MHD_NO;              /* unexpected method */
+        }
+
+    if (&aptr != *ptr)
+        {
+            /* do never respond on first call */
+            *ptr = &aptr;
+            return MHD_YES;
+        }
+
+    if (g_strcmp0(url, "/Version") == 0)
+        {
+            buf1 = buffer_program_version(PROGRAM_NAME, SERVEUR_DATE, SERVEUR_VERSION, SERVEUR_AUTHORS, SERVEUR_LICENSE);
+            buf2 = buffer_libraries_versions(PROGRAM_NAME);
+            answer = g_strconcat(buf1, buf2, NULL);
+            buf1 = free_variable(buf1);
+            buf2 = free_variable(buf2);
+        }
+    else
+        {
+            answer = g_strdup_printf("%s\n", url);
+        }
+
+    *ptr = NULL;                  /* reset when done */
+    response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+    ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
+
+    MHD_destroy_response(response);
+    /* answer = free_variable(answer); */
+
+    return ret;
 }
 
 
@@ -60,17 +107,12 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 int main(int argc, char **argv)
 {
     serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program. */
-    gchar *somewhere = NULL;
-    comm_t *comm = NULL;
-    gchar *message = NULL;
-    serveur_meta_data_t *smeta = NULL;
-    gint msg_id = ENC_NOT_FOUND;
 
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
     #endif
 
-    ignore_sigpipe();
+    ignore_sigpipe(); /** into order to get libmicrohttpd portable */
 
     init_international_languages();
 
@@ -79,24 +121,30 @@ int main(int argc, char **argv)
 
     if (serveur_struct != NULL && serveur_struct->opt != NULL)
         {
-            somewhere = g_strdup_printf("tcp://*:%d", serveur_struct->opt->port);
-            comm = create_receiver_socket(somewhere, ZMQ_ROUTER);
+            /* Starting the libmicrohttpd daemon */
+            serveur_struct->d = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY | MHD_USE_DEBUG, serveur_struct->opt->port, NULL, NULL, &ahc_echo, PAGE_NOT_FOUND, MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
 
-            while (1)
+            if (serveur_struct->d == NULL)
                 {
-                    message = receive_message(comm);
+                    fprintf(stderr, _("[%s, %d] Error while trying to spawn libmicrohttpd daemon\n"), __FILE__, __LINE__);
+                    return 1;
+                }
 
+            (void) getc(stdin);
+            MHD_stop_daemon(serveur_struct->d);
+
+                /*
                     msg_id = get_json_message_id(message);
 
                     switch (msg_id)
                         {
                             case ENC_META_DATA:
 
-                                /** message variable is freed in convert_json_to_smeta_data()
+                                / ** message variable is freed in convert_json_to_smeta_data()
                                  *  function : no need to free it again elsewhere !
                                  *  Use of message variable is safe here because it is known
                                  *  not to be NULL
-                                 */
+                                 * /
 
                                 print_debug(stdout, "Message of size %d received : %s\n", strlen(message), message);
 
@@ -107,12 +155,12 @@ int main(int argc, char **argv)
 
                             case ENC_NOT_FOUND:
                             case ENC_END:
-                                /** We should never end the server with a
+                                / ** We should never end the server with a
                                  *  message from a client !
-                                 */
+                                 * /
                             break;
                         }
-                }
+                */
         }
 
     return 0;

@@ -29,6 +29,50 @@
 #include "libsauvegarde.h"
 
 static void catcher(int sig);
+static void print_buffer(gchar *buffer);
+
+
+/**
+ * Prints the buffer to stdout and free its memory !
+ * @param buffer : the buffer to be printed and then freed
+ */
+static void print_buffer(gchar *buffer)
+{
+    if (buffer != NULL)
+        {
+            fprintf(stdout, buffer);
+            buffer = free_variable(buffer);
+        }
+}
+
+
+/**
+ * Returns a newly allocated buffer that contains all informations about
+ * the version of the libraries we are using.
+ * @param name : name of the program of which we want to print the version.
+ */
+gchar *buffer_libraries_versions(gchar *name)
+{
+    gchar *buffer = NULL;
+    gchar *comm_version = NULL;
+
+    if (name != NULL)
+        {
+            buffer = g_strdup_printf(_("%s was compiled with the following libraries:\n\t. GLIB version : %d.%d.%d\n"), name, glib_major_version, glib_minor_version, glib_micro_version);
+
+            comm_version = get_communication_library_version();
+            if (comm_version != NULL)
+                {
+                    buffer = g_strdup_printf("%s%s", buffer, comm_version);
+                    free_variable(comm_version);
+                }
+            buffer = g_strdup_printf(_("%s\t. %s version : %s\n\t. JANSSON version : %d.%d.%d\n"), buffer, DATABASE_NAME, db_version(), JANSSON_MAJOR_VERSION, JANSSON_MINOR_VERSION, JANSSON_MICRO_VERSION);
+        }
+
+    return buffer;
+
+}
+
 
 /**
  * Prints version of the libraries we are using.
@@ -36,19 +80,32 @@ static void catcher(int sig);
  */
 void print_libraries_versions(gchar *name)
 {
-    gchar *comm_version = NULL;
+    gchar *buffer = NULL;
 
-    fprintf(stdout, _("%s was compiled with the following libraries:\n"), name);
-    fprintf(stdout, _("\t. GLIB version : %d.%d.%d\n"), glib_major_version, glib_minor_version, glib_micro_version);
+    buffer = buffer_libraries_versions(name);
+    print_buffer(buffer);
+}
 
-    comm_version = get_communication_library_version();
-    if (comm_version != NULL)
+
+/**
+ * Returns a newly allocated buffer that contains all informations about
+ * program's version, authors and license.
+ * @param name : name of the program of which we want to print the version.
+ * @param date : publication date of this version
+ * @param version : version of the program.
+ * @param authors : authors that contributed to this program
+ * @param license : license in use for this program and its sources
+ */
+gchar *buffer_program_version(gchar *name, gchar *date, gchar *version, gchar *authors, gchar *license)
+{
+    gchar *buffer = NULL;
+
+        if (name != NULL && date != NULL && version != NULL && authors != NULL && license != NULL)
         {
-            fprintf(stdout, "%s", comm_version);
-            free_variable(comm_version);
+            buffer = g_strdup_printf(_("%s version : %s (%s)\nAuthor(s) : %s\nLicense : %s\n\n"), name, version, date, authors, license);
         }
-    fprintf(stdout, _("\t. %s version : %s\n"), DATABASE_NAME, db_version());
-    fprintf(stdout, _("\t. JANSSON version : %d.%d.%d\n"), JANSSON_MAJOR_VERSION, JANSSON_MINOR_VERSION, JANSSON_MICRO_VERSION);
+
+    return buffer;
 }
 
 
@@ -63,14 +120,10 @@ void print_libraries_versions(gchar *name)
  */
 void print_program_version(gchar *name, gchar *date, gchar *version, gchar *authors, gchar *license)
 {
-    if (name != NULL && date != NULL && version != NULL && authors != NULL && license != NULL)
-        {
+    gchar *buffer = NULL;
 
-            fprintf(stdout, _("%s version : %s (%s)\n"), name, version, date);
-            fprintf(stdout, _("Author(s) : %s\n"), authors);
-            fprintf(stdout, _("License : %s\n"), license);
-            fprintf(stdout, "\n");
-        }
+    buffer = buffer_program_version(name, date, version, authors, license);
+    print_buffer(buffer);
 }
 
 
