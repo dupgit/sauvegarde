@@ -21,10 +21,10 @@ libsauvegarde_la_SOURCES =	libsauvegarde.c 	\
 
 libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)          \
                           $(ZMQ_CFLAGS) $(SQLITE_CFLAGS) $(JANSSON_CFLAGS)\
-                          $(MHD_CFLAGS)
+                          $(MHD_CFLAGS) $(CURL_CFLAGS)
 
 AM_LDFLAGS = $(LDFLAGS) $(GLIB_LIBS) $(GIO_LIBS) $(ZMQ_LIBS)              \
-             $(SQLITE_LIBS) $(JANSSON_LIBS) $(MHD_LIBS)
+             $(SQLITE_LIBS) $(JANSSON_LIBS) $(MHD_LIBS) $(CURL_LIBS)
 
 include_HEADERS = $(headerfiles)
 
