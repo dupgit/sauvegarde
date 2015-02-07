@@ -30,6 +30,7 @@
 
 #include "config.h"
 
+#define MHD_PLATFORM_H
 #include <zmq.h>
 #include <czmq.h>
 #include <stdio.h>
@@ -40,6 +41,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/socket.h>
+#include <microhttpd.h>
 #include <glib.h>
 #include <gio/gio.h>
 #include <glib/gi18n-lib.h>

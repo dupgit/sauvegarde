@@ -31,6 +31,7 @@
 /* Configuration from ./configure script */
 #include "config.h"
 
+#define MHD_PLATFORM_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -39,6 +40,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/socket.h>
+#include <microhttpd.h>
 #include <glib.h>
 #include <gio/gio.h>
 #include <glib/gi18n-lib.h>
