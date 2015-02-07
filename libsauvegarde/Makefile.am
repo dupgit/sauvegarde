@@ -19,12 +19,12 @@ libsauvegarde_la_SOURCES =	libsauvegarde.c 	\
 							unpacking.c			\
 							$(headerfiles)
 
-libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS) \
-						  $(ZMQ_CFLAGS) $(SQLITE_CFLAGS)         \
-						  $(JANSSON_CFLAGS)
+libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)          \
+                          $(ZMQ_CFLAGS) $(SQLITE_CFLAGS) $(JANSSON_CFLAGS)\
+                          $(MHD_CFLAGS)
 
-AM_LDFLAGS = $(LDFLAGS) $(GLIB_LIBS) $(GIO_LIBS) $(ZMQ_LIBS) \
-             $(SQLITE_LIBS) $(JANSSON_LIBS)
+AM_LDFLAGS = $(LDFLAGS) $(GLIB_LIBS) $(GIO_LIBS) $(ZMQ_LIBS)              \
+             $(SQLITE_LIBS) $(JANSSON_LIBS) $(MHD_LIBS)
 
 include_HEADERS = $(headerfiles)
 

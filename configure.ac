@@ -10,15 +10,17 @@ AC_PROG_CC
 AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_INTLTOOL([0.23])
 
-dnl **************************************************
-dnl * Put the preprocessor macros in a header file   *
-dnl * instead of command line                        *
-dnl **************************************************
+
+dnl ***********************************************************************
+dnl * Put the preprocessor macros in a header file                        *
+dnl * instead of command line                                             *
+dnl ***********************************************************************
 AC_CONFIG_HEADER([config.h])
 
-dnl **************************************************
-dnl * Libraries requirements                         *
-dnl **************************************************
+
+dnl ***********************************************************************
+dnl * Libraries requirements                                              *
+dnl ***********************************************************************
 PKG_PROG_PKG_CONFIG([0.10])
 GLIB_VERSION=2.26.0
 GIO_VERSION=2.26.0
@@ -26,56 +28,66 @@ SQLITE_VERSION=3.6.20
 ZMQ_VERSION=3.2.4
 CZMQ_VERSION=2.2.0
 JANSSON_VERSION=2.6
+MHD_VERSION=0.9.30
 
 AC_SUBST(GLIB_VERSION)
 AC_SUBST(GIO_VERSION)
 AC_SUBST(SQLITE_VERSION)
 AC_SUBST(ZMQ_VERSION)
 AC_SUBST(JANSSON_VERSION)
+AC_SUBST(MHD_VERSION)
 
-dnl **************************************************
-dnl * Build time sanity check                        *
-dnl **************************************************
+
+dnl ***********************************************************************
+dnl * Build time sanity check                                             *
+dnl ***********************************************************************
 AM_SANITY_CHECK
 
-dnl **************************************************
-dnl * Initialize maintainer mode                     *
-dnl **************************************************
+
+dnl ***********************************************************************
+dnl * Initialize maintainer mode                                          *
+dnl ***********************************************************************
 AM_MAINTAINER_MODE
 
-dnl **************************************************
-dnl * Checks for headers                             *
-dnl **************************************************
+
+dnl ***********************************************************************
+dnl * Checks for headers                                                  *
+dnl ***********************************************************************
 AC_HEADER_STDC
 
-dnl **************************************************
-dnl * Checks dynamic libraries capabilities          *
-dnl **************************************************
+
+dnl ***********************************************************************
+dnl * Checks dynamic libraries capabilities                               *
+dnl ***********************************************************************
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
-dnl **************************************************
-dnl * languages                                      *
-dnl **************************************************
+
+dnl ***********************************************************************
+dnl * languages                                                           *
+dnl ***********************************************************************
 ALL_LINGUAS="fr"
 
-dnl **************************************************
-dnl * triggers gettext                               *
-dnl **************************************************
+
+dnl ***********************************************************************
+dnl * triggers gettext                                                    *
+dnl ***********************************************************************
 GETTEXT_PACKAGE=sauvegarde
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Gettext Package used])
 AM_GLIB_GNU_GETTEXT
 
-dnl **************************************************
-dnl * checking for modules (glib, gio, sqlite, zmq)  *
-dnl **************************************************
+
+dnl ***********************************************************************
+dnl * checking for modules (glib, gio, sqlite, zmq...)                    *
+dnl ***********************************************************************
 PKG_CHECK_MODULES(GLIB, [glib-2.0 >= $GLIB_VERSION])
 PKG_CHECK_MODULES(GIO, [gio-2.0 >= $GIO_VERSION])
 PKG_CHECK_MODULES(SQLITE, [sqlite3 >= $SQLITE_VERSION])
 PKG_CHECK_MODULES(ZMQ, [libzmq >= $ZMQ_VERSION])
 PKG_CHECK_MODULES(CZMQ, [libczmq >= $CZMQ_VERSION])
 PKG_CHECK_MODULES(JANSSON, [jansson >= $JANSSON_VERSION])
+PKG_CHECK_MODULES(MHD, [libmicrohttpd >= $MHD_VERSION])
 
 AC_PROG_INSTALL
 
@@ -85,9 +97,9 @@ CFLAGS="$CFLAGS -Wall -Wstrict-prototypes -Wmissing-declarations \
 -DGSEAL_ENABLE -DG_DISABLE_DEPRECATED"
 
 
-dnl **************************************************
-dnl * checking OS                                    *
-dnl **************************************************
+dnl ***********************************************************************
+dnl * checking OS                                                         *
+dnl ***********************************************************************
 
 case $build_os in
     *linux*)
@@ -102,22 +114,21 @@ case $build_os in
 esac
 
 
-dnl **************************************************
-dnl * directories definitions                        *
-dnl **************************************************
+dnl ***********************************************************************
+dnl * directories definitions                                             *
+dnl ***********************************************************************
 LOCALE_DIR="$prefix/share/locale"
 AC_DEFINE_UNQUOTED(LOCALE_DIR, "$prefix/share/locale", [Locale Directory])
 
 
-dnl **************************************************
-dnl * ./configure options                            *
-dnl **************************************************
+dnl ***********************************************************************
+dnl * ./configure options                                                 *
+dnl ***********************************************************************
 
-dnl **************************************************
-dnl * debug option                                   *
-dnl * At this early stage debugging IS activated     *
-dnl * by default                                     *
-dnl **************************************************
+
+dnl ***********************************************************************
+dnl * debug option                                                        *
+dnl ***********************************************************************
 AC_ARG_ENABLE([debug],
      [  --enable-debug          Turn on debugging],
      [case "${enableval}" in
@@ -135,10 +146,10 @@ else
 fi
 
 
-dnl **************************************************
-dnl * If we are running automake >= 1.11, we can     *
-dnl * have nicer compilation output. silent option   *
-dnl **************************************************
+dnl ***********************************************************************
+dnl * If we are running automake >= 1.11, we can                          *
+dnl * have nicer compilation output. silent option                        *
+dnl ***********************************************************************
 AC_ARG_ENABLE([silent],
      [  --disable-silent        Disable quiet compilation],
      [case "${enableval}" in
@@ -154,9 +165,9 @@ else
 fi
 
 
-dnl **************************************************
-dnl * gcov option                                    *
-dnl **************************************************
+dnl ***********************************************************************
+dnl * gcov option                                                         *
+dnl ***********************************************************************
 AC_ARG_ENABLE([gcov],
      [  --enable-gcov           Enables gcov coverage tests],
      [case "${enableval}" in
@@ -172,9 +183,9 @@ else
 fi
 
 
-dnl **************************************************
-dnl * gprof option                                   *
-dnl **************************************************
+dnl ***********************************************************************
+dnl * gprof option                                                        *
+dnl ***********************************************************************
 AC_ARG_ENABLE([gprof],
      [  --enable-gprof          Enables gprof profiling],
      [case "${enableval}" in
@@ -189,9 +200,10 @@ else
  CFLAGS="$CFLAGS"
 fi
 
-dnl **************************************************
-dnl * exporting variables                            *
-dnl **************************************************
+
+dnl ***********************************************************************
+dnl * exporting variables                                                 *
+dnl ***********************************************************************
 AC_SUBST(LDFLAGS)
 AC_SUBST(CFLAGS)
 AC_SUBST(GLIB_CFLAGS)
@@ -206,6 +218,8 @@ AC_SUBST(CZMQ_CFLAGS)
 AC_SUBST(CZMQ_LIBS)
 AC_SUBST(JANSSON_CFLAGS)
 AC_SUBST(JANSSON_LIBS)
+AC_SUBST(MHD_CFLAGS)
+AC_SUBST(MHD_LIBS)
 
 AC_CONFIG_FILES([
 Makefile
@@ -240,6 +254,9 @@ AC_MSG_NOTICE([
 
  JANSSON CFLAGS : ${JANSSON_CFLAGS}
  JANSSON LIBS   : ${JANSSON_LIBS}
+
+ MHD CFLAGS     : ${MHD_CFLAGS}
+ MHD LIBS       : ${MHD_LIBS}
 
 
  *** Dumping configuration ***
