@@ -148,5 +148,11 @@ extern GThread *g_thread_new(const gchar *unused, GThreadFunc func, gpointer dat
 extern void create_directory(gchar *directory);
 
 
+/**
+ * A signal handler for SIGPIPE (needed by libmicrohttpd in order to be
+ * portable.
+ */
+extern void ignore_sigpipe(void);
+
 
 #endif /* #ifndef _LIBSAUVEGARDE_H_ */

@@ -70,9 +70,12 @@ int main(int argc, char **argv)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
     #endif
 
+    ignore_sigpipe();
+
     init_international_languages();
 
     serveur_struct = init_serveur_main_structure(argc, argv);
+
 
     if (serveur_struct != NULL && serveur_struct->opt != NULL)
         {

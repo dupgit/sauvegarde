@@ -28,6 +28,7 @@
 
 #include "libsauvegarde.h"
 
+static void catcher(int sig);
 
 /**
  * Prints version of the libraries we are using.
@@ -246,3 +247,36 @@ void create_directory(gchar *directory)
         }
 }
 
+
+/**
+ * A signal catcher that does nothing for SIGPIPE (needed by libmicrohttpd
+ * in order to be portable.
+ */
+static void catcher(int sig)
+{
+}
+
+
+/**
+ * A signal handler for SIGPIPE (needed by libmicrohttpd in order to be
+ * portable.
+ */
+void ignore_sigpipe(void)
+{
+    struct sigaction oldsig;
+    struct sigaction sig;
+
+    sig.sa_handler = &catcher;
+    sigemptyset (&sig.sa_mask);
+
+    #ifdef SA_INTERRUPT
+        sig.sa_flags = SA_INTERRUPT;  /* SunOS */
+    #else
+        sig.sa_flags = SA_RESTART;
+    #endif
+
+    if (0 != sigaction (SIGPIPE, &sig, &oldsig))
+        {
+            fprintf (stderr, "Failed to install SIGPIPE handler: %s\n", strerror (errno));
+        }
+}
