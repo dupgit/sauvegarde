@@ -33,6 +33,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
+#include <stdint.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <sys/socket.h>
 #include <glib.h>
 #include <gio/gio.h>
 #include <glib/gi18n-lib.h>
