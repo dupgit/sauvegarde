@@ -48,6 +48,7 @@
 #include <czmq.h>
 #include <sqlite3.h>
 #include <jansson.h>
+#include <curl/curl.h>
 
 #include "configuration.h"
 #include "communique.h"

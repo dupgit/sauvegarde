@@ -36,19 +36,17 @@ static void bind_socket_somewhere(void *socket, gchar *somewhere);
 
 
 /**
- * Gets the version for the communication library (ZMQ for now)
+ * Gets the version for the communication library
  * @returns a newly allocated string that contains the version and that
  *          may be freed with free_variable() when no longer needed.
  */
 gchar *get_communication_library_version(void)
 {
-    int zmq_major = 0;
-    int zmq_minor = 0;
-    int zmq_patch = 0;
+    curl_version_info_data *data = NULL;
 
-    zmq_version(&zmq_major, &zmq_minor, &zmq_patch);
+    data = curl_version_info(CURLVERSION_NOW);
 
-    return g_strdup_printf(_("\t. ZMQ version : %d.%d.%d\n"), zmq_major, zmq_minor, zmq_patch);
+    return g_strdup_printf(_("\t. LIBCURL version : %s\n"), data->version);
 }
 
 

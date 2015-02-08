@@ -54,23 +54,41 @@ static void print_buffer(gchar *buffer)
 gchar *buffer_libraries_versions(gchar *name)
 {
     gchar *buffer = NULL;
+    gchar *buf1 = NULL;
     gchar *comm_version = NULL;
 
     if (name != NULL)
         {
             buffer = g_strdup_printf(_("%s was compiled with the following libraries:\n\t. GLIB version : %d.%d.%d\n"), name, glib_major_version, glib_minor_version, glib_micro_version);
 
-            comm_version = get_communication_library_version();
-            if (comm_version != NULL)
+            if (g_strcmp0(name, "serveur") == 0)
                 {
-                    buffer = g_strdup_printf("%s%s", buffer, comm_version);
-                    free_variable(comm_version);
+                    /** @todo Do something about this version number that is so ugly ! like that */
+                    buf1 = g_strdup_printf("%s\t. LIBMHD : %d%d.%d%d.%d%d-%d%d\n", buffer, (MHD_VERSION >> 28) & 15, (MHD_VERSION >> 24) & 15, (MHD_VERSION >> 20) & 15, (MHD_VERSION >> 16) & 15, (MHD_VERSION >> 12) & 15, (MHD_VERSION >> 8) & 15, (MHD_VERSION >> 4 &15), MHD_VERSION & 15);
+                    buffer = free_variable(buffer);
                 }
-            buffer = g_strdup_printf(_("%s\t. %s version : %s\n\t. JANSSON version : %d.%d.%d\n"), buffer, DATABASE_NAME, db_version(), JANSSON_MAJOR_VERSION, JANSSON_MINOR_VERSION, JANSSON_MICRO_VERSION);
+            else
+                {
+                    comm_version = get_communication_library_version();
+
+                    if (comm_version != NULL)
+                        {
+                            buf1 = g_strdup_printf("%s%s", buffer, comm_version);
+                            comm_version = free_variable(comm_version);
+                            buffer = free_variable(buffer);
+                        }
+                }
+
+            if (buf1 == NULL && buffer != NULL)
+                {
+                    buf1 = g_strdup(buffer);
+                }
+
+            buffer = g_strdup_printf(_("%s\t. %s version : %s\n\t. JANSSON version : %d.%d.%d\n"), buf1, DATABASE_NAME, db_version(), JANSSON_MAJOR_VERSION, JANSSON_MINOR_VERSION, JANSSON_MICRO_VERSION);
+            buf1 = free_variable(buf1);
         }
 
     return buffer;
-
 }
 
 
