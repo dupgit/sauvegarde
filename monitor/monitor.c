@@ -210,14 +210,12 @@ static main_struct_t *init_main_structure(options_t *opt)
 
                     if (conn != NULL)
                         {
-                            main_struct->comm = create_sender_socket(conn, ZMQ_DEALER);
                             free_variable(conn);
                         }
                 }
             else
                 {
-                    /* Will this behavior correspond to something in real life ? */
-                    main_struct->comm = create_sender_socket("tcp://localhost:5468", ZMQ_DEALER);
+
                 }
 
             print_debug(stdout, _("Main structure initialized !\n"));

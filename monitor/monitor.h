@@ -31,8 +31,6 @@
 #include "config.h"
 
 #define MHD_PLATFORM_H
-#include <zmq.h>
-#include <czmq.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

@@ -58,49 +58,6 @@ typedef struct
 extern gchar *get_communication_library_version(void);
 
 
-/**
- * Creates a new socket to send messages and connects it to "somewhere"
- * @param somewhere is the string that will define the connection we want
- *        eg "tcp://localhost:5468" or "tcp://10.1.1.60:3128"...
- * @param socket_type : type of socket (from libzmq) we want to create.
- * @returns  a newly allocated comm_t * structure where context should not
- *           be NULL and sender should not be null but receiver is set to
- *           NULL.
- */
-extern comm_t *create_sender_socket(gchar *somewhere, int socket_type);
-
-
-/**
- * Creates a new socket to receive messages and binds it to "somewhere"
- * @param somewhere is the string that will define the connection we want
- *        eg "tcp:// *:5468" for instance.
- * @param socket_type : type of socket (from libzmq) we want to create.
- * @returns  a newly allocated comm_t * structure where context should not
- *           be NULL and receiver should not be null but sender is set to
- *           NULL.
- */
-extern comm_t *create_receiver_socket(gchar *somewhere, int socket_type);
-
-
-/**
- * Sends a message throught sender socket
- * @param comm : the communication structure that handles sockets. sender
- *        field is the one used to send message.
- * @param message is a gchar * message to be sent.
- * @returns size of the message sent. 0 may be returned if comm or message
- *          are NULL.
- */
-extern gint send_message(comm_t *comm, gchar *message);
-
-
-/**
- * Waits the arrival of a message
- * @param comm : the communication structure that handles sockets. receiver
- *        field is the one used to receive message.
- * @returns a newly allocated gchar * message that can be freed when no
- *         longer needed.
- */
-extern gchar *receive_message(comm_t *comm);
 
 
 #endif /* #ifndef _COMMUNIQUE_H_ */

@@ -40,12 +40,11 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <sys/socket.h>
+#include <errno.h>
 #include <microhttpd.h>
 #include <glib.h>
 #include <gio/gio.h>
 #include <glib/gi18n-lib.h>
-#include <zmq.h>
-#include <czmq.h>
 #include <sqlite3.h>
 #include <jansson.h>
 #include <curl/curl.h>
