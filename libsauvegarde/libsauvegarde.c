@@ -82,6 +82,7 @@ gchar *buffer_libraries_versions(gchar *name)
             if (buf1 == NULL && buffer != NULL)
                 {
                     buf1 = g_strdup(buffer);
+                    buffer = free_variable(buffer);
                 }
 
             buffer = g_strdup_printf(_("%s\t. %s version : %s\n\t. JANSSON version : %d.%d.%d\n"), buf1, DATABASE_NAME, db_version(), JANSSON_MAJOR_VERSION, JANSSON_MINOR_VERSION, JANSSON_MICRO_VERSION);
