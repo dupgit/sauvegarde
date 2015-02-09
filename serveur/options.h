@@ -52,6 +52,15 @@ typedef struct
  */
 extern void free_options_t_structure(options_t *opt);
 
+/**
+ * creates a buffer containing every selected options ...
+ * @param opt the options_t * structure that contains all selected options
+ *        from the command line and that will be used by the program.
+ * @returns options as selected when invoking the program with -v option
+ * into a newly allocated buffer that may be freed when no longer needed
+ */
+extern gchar *buffer_selected_option(options_t *opt);
+
 
 /**
  * This function parses command line options. It sets the options in this

@@ -84,6 +84,53 @@ static void print_selected_options(options_t *opt)
         }
 }
 
+/**
+ * creates a buffer containing every selected options ...
+ * @param opt the options_t * structure that contains all selected options
+ *        from the command line and that will be used by the program.
+ * @returns options as selected when invoking the program with -v option
+ * into a newly allocated buffer that may be freed when no longer needed
+ */
+gchar *buffer_selected_option(options_t *opt)
+{
+    gchar *buf1 = NULL;
+    gchar *buf2 = NULL;
+    gchar *buffer = NULL;
+
+    /** @todo : do something less memory time consuming ! */
+
+    if (opt != NULL)
+        {
+            buf1 = g_strdup_printf(_("\n%s options are :\n"), PROGRAM_NAME);
+
+            if (opt->configfile != NULL)
+                {
+                    buf2 = g_strdup_printf(_("Configuration file : %s\n"), opt->configfile);
+                    buffer = g_strconcat(buf1, buf2, NULL);
+                    buf2 = free_variable(buf2);
+                }
+            else
+                {
+                    buffer = g_strdup(buf1);
+                }
+
+            buf1 = free_variable(buf1);
+
+            if (opt->port != 0)
+                {
+                    buf1 = g_strdup_printf(_("Port number : %d\n"), opt->port);
+                }
+
+            if (buf1 != NULL)
+                {
+                    buffer = g_strconcat(buffer, buf1, NULL);
+                    buf1 = free_variable(buf1);
+                }
+        }
+
+    return buffer;
+}
+
 
 /**
  * Reads keys in keyfile if groupname is in that keyfile and fills

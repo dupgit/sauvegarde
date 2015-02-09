@@ -61,6 +61,8 @@ static int ahc_echo(void *cls, struct MHD_Connection *connection, const char *ur
     gchar *answer = NULL;
     gchar *buf1 = NULL;
     gchar *buf2 = NULL;
+    gchar *buf3 = NULL;
+    serveur_struct_t *serveur_struct = (serveur_struct_t *) cls;
 
     if (strcmp (method, "GET") != 0)
         {
@@ -78,9 +80,11 @@ static int ahc_echo(void *cls, struct MHD_Connection *connection, const char *ur
         {
             buf1 = buffer_program_version(PROGRAM_NAME, SERVEUR_DATE, SERVEUR_VERSION, SERVEUR_AUTHORS, SERVEUR_LICENSE);
             buf2 = buffer_libraries_versions(PROGRAM_NAME);
-            answer = g_strconcat(buf1, buf2, NULL);
+            buf3 = buffer_selected_option(serveur_struct->opt);
+            answer = g_strconcat(buf1, buf2, buf3, NULL);
             buf1 = free_variable(buf1);
             buf2 = free_variable(buf2);
+            buf3 = free_variable(buf3);
         }
     else
         {
@@ -122,7 +126,7 @@ int main(int argc, char **argv)
     if (serveur_struct != NULL && serveur_struct->opt != NULL)
         {
             /* Starting the libmicrohttpd daemon */
-            serveur_struct->d = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY | MHD_USE_DEBUG, serveur_struct->opt->port, NULL, NULL, &ahc_echo, PAGE_NOT_FOUND, MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
+            serveur_struct->d = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY | MHD_USE_DEBUG, serveur_struct->opt->port, NULL, NULL, &ahc_echo, serveur_struct, MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
 
             if (serveur_struct->d == NULL)
                 {
