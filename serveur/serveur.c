@@ -53,7 +53,52 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 }
 
 
-static int ahc_echo(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **ptr)
+/**
+ * Iterator over key-value pairs where the value
+ * maybe made available in increments and/or may
+ * not be zero-terminated.  Used for processing
+ * POST data.
+ *
+ * @param cls user-specified closure
+ * @param kind type of the value
+ * @param key 0-terminated key for the value
+ * @param filename name of the uploaded file, NULL if not known
+ * @param content_type mime-type of the data, NULL if not known
+ * @param transfer_encoding encoding of the data, NULL if not known
+ * @param data pointer to size bytes of data at the
+ *              specified offset
+ * @param off offset of data in the overall value
+ * @param size number of bytes in data available
+ * @return MHD_YES to continue iterating,
+ *         MHD_NO to abort the iteration
+ */
+static int post_iterator(void *cls, enum MHD_ValueKind kind, const char *key, const char *filename, const char *content_type, const char *transfer_encoding, const char *data, uint64_t off, size_t size)
+{
+    /* serveur_struct_t *serveur_struct = (serveur_struct_t *) cls; */
+
+
+    fprintf(stdout, "size = %ld\noff = %ld\n", size, off);
+
+    if (strcmp ("DONE", key) == 0)
+        {
+            fprintf(stdout, "Session terminated\n");
+            return MHD_YES;
+        }
+
+
+      fprintf(stderr, "Unsupported form value '%s'\n", key);
+
+      return MHD_YES;
+}
+
+
+
+/**
+ * MHD_AccessHandlerCallback function that manages all connections requests
+ * @param cls is the serveur_struct_t * serveur_struct main serveur
+ *        structure.
+ */
+static int ahc(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **con_cls)
 {
     static int aptr = 0;
     struct MHD_Response *response = NULL;
@@ -63,42 +108,93 @@ static int ahc_echo(void *cls, struct MHD_Connection *connection, const char *ur
     gchar *buf2 = NULL;
     gchar *buf3 = NULL;
     serveur_struct_t *serveur_struct = (serveur_struct_t *) cls;
+    struct MHD_PostProcessor *pp = *con_cls;
 
-    if (strcmp (method, "GET") != 0)
+
+    if (g_strcmp0(method, "GET") != 0)
         {
+            if (g_strcmp0(method, "POST") != 0)
+                {
+                    return MHD_NO;
+                }
+            else
+                {
+
+                    /* POST request processing */
+                    if (pp == NULL)
+                        {
+                            pp = MHD_create_post_processor(connection, 65536, post_iterator, serveur_struct);
+                            *con_cls = pp;
+                            return MHD_YES;
+                        }
+
+                    if (*upload_data_size)
+                        {
+                            fprintf(stdout, "%ld, %s, %s, %s, '%s'\n", *upload_data_size, url, method, version, upload_data);
+                            MHD_post_process(pp, upload_data, *upload_data_size);
+                            *upload_data_size = 0;
+                            return MHD_YES;
+                        }
+                      else
+                        {
+                            /* reset when done */
+                            *con_cls = NULL;
+
+                            answer = g_strdup_printf("Got it !\n");
+
+                            MHD_destroy_post_processor(pp);
+
+                            /* Do not free answer variable as MHD will do it for us ! */
+                            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+                            ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
+
+                            MHD_destroy_response(response);
+
+                            return ret;
+                        }
+                }
+
             return MHD_NO;              /* unexpected method */
-        }
-
-    if (&aptr != *ptr)
-        {
-            /* do never respond on first call */
-            *ptr = &aptr;
-            return MHD_YES;
-        }
-
-    if (g_strcmp0(url, "/Version") == 0)
-        {
-            buf1 = buffer_program_version(PROGRAM_NAME, SERVEUR_DATE, SERVEUR_VERSION, SERVEUR_AUTHORS, SERVEUR_LICENSE);
-            buf2 = buffer_libraries_versions(PROGRAM_NAME);
-            buf3 = buffer_selected_option(serveur_struct->opt);
-            answer = g_strconcat(buf1, buf2, buf3, NULL);
-            buf1 = free_variable(buf1);
-            buf2 = free_variable(buf2);
-            buf3 = free_variable(buf3);
         }
     else
         {
-            answer = g_strdup_printf("%s\n", url);
+            /* GET request processing */
+
+            if (&aptr != *con_cls)
+                {
+                    /* do never respond on first call */
+                    *con_cls = &aptr;
+                    return MHD_YES;
+                }
+
+            if (g_strcmp0(url, "/Version") == 0)
+                {
+                    buf1 = buffer_program_version(PROGRAM_NAME, SERVEUR_DATE, SERVEUR_VERSION, SERVEUR_AUTHORS, SERVEUR_LICENSE);
+                    buf2 = buffer_libraries_versions(PROGRAM_NAME);
+                    buf3 = buffer_selected_option(serveur_struct->opt);
+                    answer = g_strconcat(buf1, buf2, buf3, NULL);
+                    buf1 = free_variable(buf1);
+                    buf2 = free_variable(buf2);
+                    buf3 = free_variable(buf3);
+                }
+            else
+                {
+                    answer = g_strdup_printf("%s\n", url);
+                }
+
+            /* reset when done */
+            *con_cls = NULL;
+
+            /* Do not free answer variable as MHD will do it for us ! */
+            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+            ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
+
+            MHD_destroy_response(response);
+            /* answer = free_variable(answer); */
+
+            return ret;
         }
 
-    *ptr = NULL;                  /* reset when done */
-    response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
-    ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
-
-    MHD_destroy_response(response);
-    /* answer = free_variable(answer); */
-
-    return ret;
 }
 
 
@@ -126,7 +222,7 @@ int main(int argc, char **argv)
     if (serveur_struct != NULL && serveur_struct->opt != NULL)
         {
             /* Starting the libmicrohttpd daemon */
-            serveur_struct->d = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY | MHD_USE_DEBUG, serveur_struct->opt->port, NULL, NULL, &ahc_echo, serveur_struct, MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
+            serveur_struct->d = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY | MHD_USE_DEBUG, serveur_struct->opt->port, NULL, NULL, &ahc, serveur_struct, MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
 
             if (serveur_struct->d == NULL)
                 {
