@@ -21,7 +21,8 @@ This project depends on :
 
 * autotools     (2.59)
 * glib and gio  (2.26)
-* 0MQ           (3.2.4)
+* libmicrohttpd (0.9.3)
+* libcurl       (7.40.0)
 * sqlite        (3.6.20)
 * jansson       (2.6)
 
@@ -191,6 +192,7 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
   needed.
 * I do not feel confortable with msgpack library. I miss documentation. I
   switched to jansson that is better documented and fills my needs.
+* 0MQ is overkill for my needs. I switched to libcurl and libmicrohttpd.
 
 
 ## Usefull links
