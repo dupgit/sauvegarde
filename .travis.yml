@@ -3,37 +3,25 @@ language: c
 
 # Compilers to test.
 compiler:
-- gcc
-- clang
+    - gcc
+    - clang
 
 # Dependencies
 before_install:
-# update packages definitions
-- sudo apt-get update -qq
+    # update packages definitions
+    - sudo apt-get update -qq
 
 install:
-# Those handled by apt-get
-- sudo apt-get install -qq build-essential intltool gettext pkg-config libsqlite3-dev libglib2.0-dev
+    # Those handled by apt-get
+    - sudo apt-get install -qq build-essential intltool gettext pkg-config libsqlite3-dev libglib2.0-dev
 
-# libsodium
-- git clone git://github.com/jedisct1/libsodium.git
-- (cd libsodium; ./autogen.sh; ./configure; make check; sudo make install; sudo ldconfig)
-
-# libzmq
-- git clone git://github.com/zeromq/libzmq.git
-- (cd libzmq; ./autogen.sh; ./configure; make; sudo make install; sudo ldconfig)
-
-# czmq bindings
-- git clone git://github.com/zeromq/czmq.git
-- (cd czmq; ./autogen.sh; ./configure; make; sudo make install; sudo ldconfig)
-
-# jansson
-- git clone git://github.com/akheron/jansson.git
-- (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure; make; sudo make install; sudo ldconfig)
+    # jansson
+    - git clone git://github.com/akheron/jansson.git
+    - (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure; make; sudo make install; sudo ldconfig)
 
 # Building sauvegarde
 script:
 
-- ./autoclean.sh && ./autogen.sh && ./configure --prefix=/home/dup/local --enable-debug --disable-silent && make && sudo make install && /home/dup/local/bin/client --version
+    - ./autoclean.sh && ./autogen.sh && ./configure --prefix=/home/dup/local --enable-debug --disable-silent && make && sudo make install && /home/dup/local/bin/client --version
 
 
