@@ -47,6 +47,30 @@ static void print_buffer(gchar *buffer)
 
 
 /**
+ * @returns a newlly allocated gchar containing MHD version number with
+ *          the following format : major.minor.maint-build. It may me freed
+ *          when no longer needed.
+ */
+static gchar *make_MHD_version(void)
+{
+    gint build = 0;
+    gint maint = 0;
+    gint minor = 0;
+    gint major = 0;
+    gchar *version = NULL;
+
+    build = ((MHD_VERSION >> 4) & 15) * 10 + (MHD_VERSION & 15);
+    maint = ((MHD_VERSION >> 12) & 15) * 10 + ((MHD_VERSION >> 8) & 15);
+    minor = ((MHD_VERSION >> 20) & 15) * 10 + ((MHD_VERSION >> 16) & 15);
+    major = ((MHD_VERSION >> 28) & 15) * 10 + ((MHD_VERSION >> 24) & 15);
+
+    version = g_strdup_printf("%d.%d.%d-%d", major, minor, maint, build);
+
+    return version;
+}
+
+
+/**
  * Returns a newly allocated buffer that contains all informations about
  * the version of the libraries we are using.
  * @param name : name of the program of which we want to print the version.
@@ -63,9 +87,10 @@ gchar *buffer_libraries_versions(gchar *name)
 
             if (g_strcmp0(name, "serveur") == 0)
                 {
-                    /** @todo Do something about this version number that is so ugly ! like that */
-                    buf1 = g_strdup_printf("%s\t. LIBMHD : %d%d.%d%d.%d%d-%d%d\n", buffer, (MHD_VERSION >> 28) & 15, (MHD_VERSION >> 24) & 15, (MHD_VERSION >> 20) & 15, (MHD_VERSION >> 16) & 15, (MHD_VERSION >> 12) & 15, (MHD_VERSION >> 8) & 15, (MHD_VERSION >> 4 &15), MHD_VERSION & 15);
+                    comm_version = make_MHD_version();
+                    buf1 = g_strdup_printf("%s\t. LIBMHD : %s\n", buffer, comm_version);
                     buffer = free_variable(buffer);
+                    comm_version = free_variable(comm_version);
                 }
             else
                 {
