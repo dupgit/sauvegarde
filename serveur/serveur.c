@@ -115,6 +115,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
         {
             if (g_strcmp0(method, "POST") != 0)
                 {
+                    /* not a GET nor a POST -> we do not know what to do ! */
                     return MHD_NO;
                 }
             else
@@ -125,6 +126,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
                         {
                             pp = MHD_create_post_processor(connection, 65536, post_iterator, serveur_struct);
                             *con_cls = pp;
+
                             return MHD_YES;
                         }
 
@@ -133,9 +135,10 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
                             fprintf(stdout, "%ld, %s, %s, %s, '%s'\n", *upload_data_size, url, method, version, upload_data);
                             MHD_post_process(pp, upload_data, *upload_data_size);
                             *upload_data_size = 0;
+
                             return MHD_YES;
                         }
-                      else
+                    else
                         {
                             /* reset when done */
                             *con_cls = NULL;
@@ -154,7 +157,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
                         }
                 }
 
-            return MHD_NO;              /* unexpected method */
+            return MHD_NO;  /* unexpected method but we should never end here ! */
         }
     else
         {
@@ -164,6 +167,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
                 {
                     /* do never respond on first call */
                     *con_cls = &aptr;
+
                     return MHD_YES;
                 }
 
@@ -190,7 +194,6 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
             ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
 
             MHD_destroy_response(response);
-            /* answer = free_variable(answer); */
 
             return ret;
         }

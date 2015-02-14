@@ -28,10 +28,6 @@
 
 #include "libsauvegarde.h"
 
-static comm_t *init_comm_struct(void);
-
-
-
 /**
  * Gets the version for the communication library
  * @returns a newly allocated string that contains the version and that
@@ -52,14 +48,13 @@ gchar *get_communication_library_version(void)
  * @returns a newly allocated comm_t * structure where sender and receiver
  *          are set to NULL.
  */
-static comm_t *init_comm_struct(void)
+comm_t *init_comm_struct(void)
 {
     comm_t *comm = NULL;
 
     comm = (comm_t *) g_malloc0(sizeof(comm_t));
 
-    comm->sender = NULL;
-    comm->receiver = NULL;
+    comm->curl_handle = curl_easy_init();
 
     return comm;
 }

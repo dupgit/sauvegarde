@@ -44,8 +44,7 @@
  */
 typedef struct
 {
-   void *sender;    /**< "socket" for the sender                         */
-   void *receiver;  /**< "socket" for the receiver                       */
+    CURL *curl_handle;  /**< Curl easy handle for a connection*/
 } comm_t;
 
 
@@ -58,6 +57,12 @@ typedef struct
 extern gchar *get_communication_library_version(void);
 
 
+/**
+ * Creates a new communication comm_t * structure.
+ * @returns a newly allocated comm_t * structure where sender and receiver
+ *          are set to NULL.
+ */
+extern comm_t *init_comm_struct(void);
 
 
 #endif /* #ifndef _COMMUNIQUE_H_ */

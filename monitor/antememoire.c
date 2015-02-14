@@ -71,27 +71,36 @@ gpointer store_buffer_data(gpointer data)
 
     if (main_struct != NULL)
         {
-            do
+            main_struct->comm = init_comm_struct();
+
+            if (main_struct->comm != NULL)
                 {
-                    if (capsule != NULL)
+                    do
                         {
-                            capsule = free_variable(capsule);
+                            if (capsule != NULL)
+                                {
+                                    capsule = free_variable(capsule);
+                                }
+
+                            capsule = g_async_queue_pop(main_struct->store_queue);
+
+                            switch (capsule->command)
+                                {
+                                    case ENC_META_DATA:
+                                        insert_meta_data_into_cache_or_send_to_serveur((meta_data_t *) capsule->data, main_struct);
+                                    break;
+
+                                    case ENC_END:
+                                    break;
+                                }
+
                         }
-
-                    capsule = g_async_queue_pop(main_struct->store_queue);
-
-                    switch (capsule->command)
-                        {
-                            case ENC_META_DATA:
-                                insert_meta_data_into_cache_or_send_to_serveur((meta_data_t *) capsule->data, main_struct);
-                            break;
-
-                            case ENC_END:
-                            break;
-                        }
-
+                    while (capsule != NULL && capsule->command != ENC_END);
                 }
-            while (capsule != NULL && capsule->command != ENC_END);
+            else
+                {
+                    fprintf(stderr, _("[%s, %d] Error while initializing libcurl.\n"), __FILE__, __LINE__);
+                }
         }
 
     return NULL;
