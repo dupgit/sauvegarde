@@ -21,7 +21,7 @@ This project depends on :
 
 * autotools     (2.59)
 * glib and gio  (2.26)
-* libmicrohttpd (0.9.3)
+* libmicrohttpd (0.9.39)
 * libcurl       (7.40.0)
 * sqlite        (3.6.20)
 * jansson       (2.6)
@@ -71,8 +71,9 @@ Between threads messages are passed via pointers to C structures into
 GAsyncQueue (glib). Binary data are not transformed and structures are
 passed in place (no copy in memory).
 
-Between programs messages are passed via a JSON structured message
-(jansson). All binary data are transformed into some base64 encoded string.
+Between programs messages are passed throught HTTP protocol via JSON
+structured messages (jansson). All binary data are transformed into base64
+encoded strings.
 
 msg_id field is used to identify message type. It is based on ENC_* macros
 defined in packing.h. ENC_META_DATA indicates that the JSON string contains
