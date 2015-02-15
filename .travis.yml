@@ -19,6 +19,14 @@ install:
     - git clone git://github.com/akheron/jansson.git
     - (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure; make; sudo make install; sudo ldconfig)
 
+    # libcurl
+    - git clone https://github.com/bagder/curl.git
+    - (cd curl; ./buildconf; ./configure; make; sudo make install; sudo ldconfig)
+
+    # libmicrohttpd
+    - wget --quiet -c http://mirror.ibcp.fr/pub/gnu/libmicrohttpd/libmicrohttpd-0.9.39.tar.gz
+    - (tar zxf libmicrohttpd-0.9.39.tar.gz; cdlibmicrohttpd-0.9.39; ./configure; make; sudo make install; sudo ldconfig )
+
 # Building sauvegarde
 script:
 
