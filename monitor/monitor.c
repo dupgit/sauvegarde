@@ -202,6 +202,7 @@ static main_struct_t *init_main_structure(options_t *opt)
             main_struct->store_queue = g_async_queue_new();
 
             main_struct->hashs = get_all_inserted_hashs(main_struct->database);
+            main_struct->comm = NULL;
 
             /* Testing things */
             if (opt != NULL && opt->ip != NULL)
@@ -273,6 +274,7 @@ int main(int argc, char **argv)
     #endif
 
     init_international_languages();
+    curl_global_init(CURL_GLOBAL_ALL);
 
     opt = do_what_is_needed_from_command_line_options(argc, argv);
 
