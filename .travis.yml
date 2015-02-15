@@ -25,7 +25,7 @@ install:
 
     # libmicrohttpd
     - wget --quiet -c http://mirror.ibcp.fr/pub/gnu/libmicrohttpd/libmicrohttpd-0.9.39.tar.gz
-    - (tar zxf libmicrohttpd-0.9.39.tar.gz; cdlibmicrohttpd-0.9.39; ./configure; make; sudo make install; sudo ldconfig )
+    - (tar zxf libmicrohttpd-0.9.39.tar.gz; cd libmicrohttpd-0.9.39; ./configure; make; sudo make install; sudo ldconfig )
 
 # Building sauvegarde
 script:
