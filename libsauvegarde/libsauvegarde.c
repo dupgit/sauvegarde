@@ -40,7 +40,7 @@ static void print_buffer(gchar *buffer)
 {
     if (buffer != NULL)
         {
-            fprintf(stdout, buffer);
+            fprintf(stdout, "%s", buffer);
             buffer = free_variable(buffer);
         }
 }

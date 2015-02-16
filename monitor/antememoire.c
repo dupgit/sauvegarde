@@ -75,6 +75,7 @@ gpointer store_buffer_data(gpointer data)
 
             if (main_struct->comm != NULL)
                 {
+                    use_curl(main_struct->comm);
                     do
                         {
                             if (capsule != NULL)

@@ -44,7 +44,8 @@
  */
 typedef struct
 {
-    CURL *curl_handle;  /**< Curl easy handle for a connection*/
+    CURL *curl_handle;  /**< Curl easy handle for a connection                */
+    gchar *buffer;      /**< Buffer to pass things from the callback function */
 } comm_t;
 
 
@@ -64,5 +65,6 @@ extern gchar *get_communication_library_version(void);
  */
 extern comm_t *init_comm_struct(void);
 
+extern void use_curl(comm_t *comm);
 
 #endif /* #ifndef _COMMUNIQUE_H_ */

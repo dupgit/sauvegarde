@@ -44,6 +44,44 @@ gchar *get_communication_library_version(void)
 
 
 /**
+ * Used by libcurl to retrieve informations
+ */
+static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
+{
+    comm_t *comm = (comm_t *) userp;
+
+    fprintf(stdout, "%ld : %ld\n", size, nmemb);
+
+    comm->buffer = g_strdup(buffer);
+
+    return nmemb;
+}
+
+
+void use_curl(comm_t *comm)
+{
+    gint success = 0;
+
+    if (comm != NULL)
+        {
+            curl_easy_setopt(comm->curl_handle, CURLOPT_URL, "http://localhost:5468/Version");
+            curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEFUNCTION, write_data);
+            curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
+            success = curl_easy_perform(comm->curl_handle);
+
+            if (success == CURLE_OK && comm->buffer != NULL)
+                {
+                    fprintf(stdout, "%s\n", comm->buffer);
+                }
+            else
+                {
+                    fprintf(stderr, _("[%s, %d] Error while getting the datas\n"), __FILE__, __LINE__);
+                }
+        }
+}
+
+
+/**
  * Creates a new communication comm_t * structure.
  * @returns a newly allocated comm_t * structure where sender and receiver
  *          are set to NULL.
@@ -55,6 +93,7 @@ comm_t *init_comm_struct(void)
     comm = (comm_t *) g_malloc0(sizeof(comm_t));
 
     comm->curl_handle = curl_easy_init();
+    comm->buffer = NULL;
 
     return comm;
 }
