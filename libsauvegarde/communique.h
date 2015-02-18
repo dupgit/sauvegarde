@@ -44,8 +44,9 @@
  */
 typedef struct
 {
-    CURL *curl_handle;  /**< Curl easy handle for a connection                */
-    gchar *buffer;      /**< Buffer to pass things from the callback function */
+    CURL *curl_handle; /**< Curl easy handle for a connection                */
+    gchar *buffer;     /**< Buffer to pass things from the callback function */
+    gchar *conn;       /**< Connexion string that should be http://ip:port   */
 } comm_t;
 
 
@@ -60,11 +61,24 @@ extern gchar *get_communication_library_version(void);
 
 /**
  * Creates a new communication comm_t * structure.
+ * @param conn a gchar * connection string that should be some url like
+ *        string : http://ip:port or http://servername:port
  * @returns a newly allocated comm_t * structure where sender and receiver
  *          are set to NULL.
  */
-extern comm_t *init_comm_struct(void);
+comm_t *init_comm_struct(gchar *conn);
 
-extern void use_curl(comm_t *comm);
+
+/**
+ * Uses curl to send a GET command to the http url
+ * @param comm a comm_t * structure that must contain an initialized
+ *        curl_handle (must not be NULL)
+ * @param url a gchar * url where to send the command to (must not be NULL)
+ * @returns a CURLcode (http://curl.haxx.se/libcurl/c/libcurl-errors.html)
+ *          CURLE_OK upon success, any other error code in any other
+ *          situation. When CURLE_OK is returned, the datas that the server
+ *          sent is in the comm->buffer gchar * string.
+ */
+extern gint get_url(comm_t *comm, gchar *url);
 
 #endif /* #ifndef _COMMUNIQUE_H_ */

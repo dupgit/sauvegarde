@@ -71,11 +71,12 @@ gpointer store_buffer_data(gpointer data)
 
     if (main_struct != NULL)
         {
-            main_struct->comm = init_comm_struct();
+
 
             if (main_struct->comm != NULL)
                 {
-                    use_curl(main_struct->comm);
+                    get_url(main_struct->comm, "/Version");
+
                     do
                         {
                             if (capsule != NULL)

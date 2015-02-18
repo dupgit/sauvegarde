@@ -164,7 +164,7 @@ static gchar *make_connexion_string(gchar *ip, gint port)
     if (ip != NULL && port > 1024 && port < 65535)
         {
             /* We must ensure that ip is correct before doing this ! */
-            conn = g_strdup_printf("tcp://%s:%d", ip, port);
+            conn = g_strdup_printf("http://%s:%d", ip, port);
         }
 
     return conn;
@@ -202,21 +202,17 @@ static main_struct_t *init_main_structure(options_t *opt)
             main_struct->store_queue = g_async_queue_new();
 
             main_struct->hashs = get_all_inserted_hashs(main_struct->database);
-            main_struct->comm = NULL;
 
-            /* Testing things */
+
             if (opt != NULL && opt->ip != NULL)
                 {
                     conn = make_connexion_string(opt->ip, opt->port);
-
-                    if (conn != NULL)
-                        {
-                            free_variable(conn);
-                        }
+                    main_struct->comm = init_comm_struct(conn);
                 }
             else
                 {
-
+                    /* This should never happen because we have default values */
+                    main_struct->comm = NULL;
                 }
 
             print_debug(stdout, _("Main structure initialized !\n"));

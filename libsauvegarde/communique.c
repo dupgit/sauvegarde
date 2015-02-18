@@ -58,16 +58,34 @@ static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 }
 
 
-void use_curl(comm_t *comm)
+/**
+ * Uses curl to send a GET command to the http url
+ * @param comm a comm_t * structure that must contain an initialized
+ *        curl_handle (must not be NULL)
+ * @param url a gchar * url where to send the command to. It must NOT
+ *        contain the http://ip:port string. And must contain the first '/'
+ *        ie to get 'http://127.0.0.1:5468/Version' url must be '/Version'.
+ * @returns a CURLcode (http://curl.haxx.se/libcurl/c/libcurl-errors.html)
+ *          CURLE_OK upon success, any other error code in any other
+ *          situation. When CURLE_OK is returned, the datas that the server
+ *          sent is in the comm->buffer gchar * string.
+ */
+gint get_url(comm_t *comm, gchar *url)
 {
-    gint success = 0;
+    gint success = CURLE_FAILED_INIT;
+    gchar *real_url = NULL;
 
-    if (comm != NULL)
+    if (comm != NULL && url != NULL && comm->conn != NULL)
         {
-            curl_easy_setopt(comm->curl_handle, CURLOPT_URL, "http://localhost:5468/Version");
+            real_url = g_strdup_printf("%s%s", comm->conn, url);
+
+            curl_easy_setopt(comm->curl_handle, CURLOPT_URL, real_url);
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEFUNCTION, write_data);
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
+
             success = curl_easy_perform(comm->curl_handle);
+
+            real_url = free_variable(real_url);
 
             if (success == CURLE_OK && comm->buffer != NULL)
                 {
@@ -78,15 +96,19 @@ void use_curl(comm_t *comm)
                     fprintf(stderr, _("[%s, %d] Error while getting the datas\n"), __FILE__, __LINE__);
                 }
         }
+
+    return success;
 }
 
 
 /**
  * Creates a new communication comm_t * structure.
+ * @param conn a gchar * connection string that should be some url like
+ *        string : http://ip:port or http://servername:port
  * @returns a newly allocated comm_t * structure where sender and receiver
  *          are set to NULL.
  */
-comm_t *init_comm_struct(void)
+comm_t *init_comm_struct(gchar *conn)
 {
     comm_t *comm = NULL;
 
@@ -94,6 +116,7 @@ comm_t *init_comm_struct(void)
 
     comm->curl_handle = curl_easy_init();
     comm->buffer = NULL;
+    comm->conn = conn;
 
     return comm;
 }
