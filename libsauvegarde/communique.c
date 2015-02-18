@@ -93,7 +93,12 @@ gint get_url(comm_t *comm, gchar *url)
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, _("Error while getting the datas\n"));
+                    if (comm->buffer != NULL)
+                        {
+                            comm->buffer = free_variable(comm->buffer);
+                        }
+
+                    print_error(__FILE__, __LINE__, _("Error while sending GET command and receiving datas\n"));
                 }
         }
 
