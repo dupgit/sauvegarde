@@ -101,7 +101,7 @@ gpointer store_buffer_data(gpointer data)
                 }
             else
                 {
-                    fprintf(stderr, _("[%s, %d] Error while initializing libcurl.\n"), __FILE__, __LINE__);
+                    print_error(__FILE__, __LINE__, _("Error while initializing libcurl.\n"));
                 }
         }
 

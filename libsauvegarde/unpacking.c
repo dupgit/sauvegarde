@@ -50,7 +50,7 @@ static json_t *get_json_value_from_json_root(json_t *root, gchar *keyname)
 
             if (value == NULL)
                 {
-                    fprintf(stderr, _("[%s, %d] Error while converting to JSON from keyname %s\n"), __FILE__, __LINE__, keyname);
+                    print_error(__FILE__, __LINE__, _("Error while converting to JSON from keyname %s\n"), keyname);
                     exit(EXIT_FAILURE); /* An error here means that we will do nothing good */
                 }
         }
@@ -243,7 +243,7 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
                 }
             else
                 {
-                    fprintf(stderr, _("[%s, %d] Error while trying to load JSON : %s\n%s\nline: %d, column: %d, position: %d"), __FILE__, __LINE__, error->text, error->source, error->line, error->column, error->position);
+                    print_error(__FILE__, __LINE__,_("Error while trying to load JSON : %s\n%s\nline: %d, column: %d, position: %d"), error->text, error->source, error->line, error->column, error->position);
                     exit(EXIT_FAILURE); /* An error here means that we will do nothing good */
                 }
         }

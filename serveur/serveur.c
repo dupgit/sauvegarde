@@ -85,10 +85,9 @@ static int post_iterator(void *cls, enum MHD_ValueKind kind, const char *key, co
             return MHD_YES;
         }
 
+    print_error(__FILE__, __LINE__, _("Unsupported form value '%s'\n"), key);
 
-      fprintf(stderr, "Unsupported form value '%s'\n", key);
-
-      return MHD_YES;
+    return MHD_YES;
 }
 
 
@@ -229,7 +228,7 @@ int main(int argc, char **argv)
 
             if (serveur_struct->d == NULL)
                 {
-                    fprintf(stderr, _("[%s, %d] Error while trying to spawn libmicrohttpd daemon\n"), __FILE__, __LINE__);
+                    print_error(__FILE__, __LINE__, _("Error while trying to spawn libmicrohttpd daemon\n"));
                     return 1;
                 }
 

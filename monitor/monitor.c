@@ -104,7 +104,7 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
         }
     else
         {
-            fprintf(stderr, _("[%s, %d] Unable to enumerate directory %s: %s\n"), __FILE__, __LINE__, directory, error->message);
+            print_error(__FILE__, __LINE__, _("Unable to enumerate directory %s: %s\n"), directory, error->message);
             error = free_error(error);
         }
 

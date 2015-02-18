@@ -149,6 +149,16 @@ extern gpointer free_error(gpointer error);
 extern void print_debug(FILE *stream, const char *format, ...);
 
 
+/**
+ * Prints an error message
+ * @param char *filename
+ * @param int lineno
+ * @param format : the format of the message (as in printf)
+ * @param ... : va_list of variable that are to be printed into format.
+ */
+extern void print_error(char *filename, int lineno, const char *format, ...);
+
+
 #if !GLIB_CHECK_VERSION(2, 31, 0)
 /**
  * defines a wrapper to the g_thread_create function used in glib before

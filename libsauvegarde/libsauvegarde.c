@@ -301,6 +301,27 @@ void print_debug(FILE *stream, const char *format, ...)
 }
 
 
+/**
+ * Prints an error message
+ * @param char *filename
+ * @param int lineno
+ * @param format : the format of the message (as in printf)
+ * @param ... : va_list of variable that are to be printed into format.
+ */
+void print_error(char *filename, int lineno, const char *format, ...)
+{
+    va_list ap;
+
+    if (ENABLE_DEBUG == TRUE)
+        {
+            fprintf(stderr, "[%s, %d] ", filename, lineno);
+            va_start(ap, format);
+            vfprintf(stderr, format, ap);
+            va_end(ap);
+        }
+}
+
+
 #if !GLIB_CHECK_VERSION(2, 31, 0)
 /**
  * defines a wrapper to the g_thread_create function used in glib before

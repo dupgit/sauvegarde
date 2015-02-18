@@ -93,7 +93,7 @@ gint get_url(comm_t *comm, gchar *url)
                 }
             else
                 {
-                    fprintf(stderr, _("[%s, %d] Error while getting the datas\n"), __FILE__, __LINE__);
+                    print_error(__FILE__, __LINE__, _("Error while getting the datas\n"));
                 }
         }
 
