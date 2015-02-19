@@ -48,9 +48,13 @@ static void insert_meta_data_into_cache_or_send_to_serveur(meta_data_t *meta, ma
             print_debug(stdout, "json string (%d bytes) is : %s\n", strlen(json_str), json_str);
 
             /* send message here */
+            main_struct->comm->buffer = json_str;
+            post_url(main_struct->comm, "/Server/meta.json");
 
             /* freeing json_str may only happen when the message has been received */
-            /* free(json_str); */
+            json_str = free_variable(json_str);
+            main_struct->comm->buffer = NULL;
+
             print_debug(stdout, "Inserting into database cache file %s\n", meta->name);
             insert_file_into_cache(main_struct->database, meta, main_struct->hashs);
         }

@@ -82,7 +82,7 @@ gint get_url(comm_t *comm, gchar *url)
     gint success = CURLE_FAILED_INIT;
     gchar *real_url = NULL;
 
-    if (comm != NULL && url != NULL && comm->conn != NULL)
+    if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL)
         {
             real_url = g_strdup_printf("%s%s", comm->conn, url);
 
@@ -111,6 +111,46 @@ gint get_url(comm_t *comm, gchar *url)
 
     return success;
 }
+
+
+/**
+ * Uses curl to send a POST command to the http server url
+ * @param comm a comm_t * structure that must contain an initialized
+ *        curl_handle (must not be NULL). buffer field of this structure
+ *        is send as data in the POST command.
+ * @param url a gchar * url where to send the command to. It must NOT
+ *        contain the http://ip:port string. And must contain the first '/'
+ *        ie to get 'http://127.0.0.1:5468/Version' url must be '/Version'.
+ * @returns a CURLcode (http://curl.haxx.se/libcurl/c/libcurl-errors.html)
+ *          CURLE_OK upon success, any other error code in any other
+ *          situation. When CURLE_OK is returned, the datas that the server
+ *          sent is in the comm->buffer gchar * string.
+ */
+gint post_url(comm_t *comm, gchar *url)
+{
+    gint success = CURLE_FAILED_INIT;
+    gchar *real_url = NULL;
+
+    if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL && comm->buffer != NULL)
+        {
+            real_url = g_strdup_printf("%s%s", comm->conn, url);
+
+            curl_easy_setopt(comm->curl_handle, CURLOPT_POSTFIELDS, comm->buffer);
+            curl_easy_setopt(comm->curl_handle, CURLOPT_URL, real_url);
+
+            success = curl_easy_perform(comm->curl_handle);
+
+            real_url = free_variable(real_url);
+
+            if (success != CURLE_OK)
+                {
+                    print_error(__FILE__, __LINE__, _("Error while sending POST command and datas\n"));
+                }
+        }
+
+    return success;
+}
+
 
 
 /**
