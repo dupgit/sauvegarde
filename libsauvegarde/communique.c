@@ -45,16 +45,23 @@ gchar *get_communication_library_version(void)
 
 /**
  * Used by libcurl to retrieve informations
+ * @param buffer is the buffer where received data are written by libcurl
+ * @param size is the size of an element in buffer
+ * @param nmemb is the number of elements in buffer
+ * @param userp is a user pointer and MUST be a pointer to comm_t *
+ *        structure
+ * @returns should return the size of the data taken into account.
+ *          Everything different from the size passed to this function is
+ *          considered as an error by libcurl.
  */
 static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 {
     comm_t *comm = (comm_t *) userp;
 
-    fprintf(stdout, "%ld : %ld\n", size, nmemb);
-
+    /** @todo check that doing this is ok even if we have size == 8 and nmemb == 36 */
     comm->buffer = g_strdup(buffer);
 
-    return nmemb;
+    return (size * nmemb);
 }
 
 
