@@ -54,45 +54,6 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 
 
 /**
- * Iterator over key-value pairs where the value
- * maybe made available in increments and/or may
- * not be zero-terminated.  Used for processing
- * POST data.
- *
- * @param cls user-specified closure
- * @param kind type of the value
- * @param key 0-terminated key for the value
- * @param filename name of the uploaded file, NULL if not known
- * @param content_type mime-type of the data, NULL if not known
- * @param transfer_encoding encoding of the data, NULL if not known
- * @param data pointer to size bytes of data at the
- *              specified offset
- * @param off offset of data in the overall value
- * @param size number of bytes in data available
- * @return MHD_YES to continue iterating,
- *         MHD_NO to abort the iteration
- */
-static int post_iterator(void *cls, enum MHD_ValueKind kind, const char *key, const char *filename, const char *content_type, const char *transfer_encoding, const char *data, uint64_t off, size_t size)
-{
-    /* serveur_struct_t *serveur_struct = (serveur_struct_t *) cls; */
-
-
-    fprintf(stdout, "size = %ld\noff = %ld\n", size, off);
-
-    if (strcmp ("DONE", key) == 0)
-        {
-            fprintf(stdout, "Session terminated\n");
-            return MHD_YES;
-        }
-
-    print_error(__FILE__, __LINE__, _("Unsupported form value '%s'\n"), key);
-
-    return MHD_YES;
-}
-
-
-
-/**
  * MHD_AccessHandlerCallback function that manages all connections requests
  * @param cls is the serveur_struct_t * serveur_struct main serveur
  *        structure.
@@ -107,7 +68,8 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
     gchar *buf2 = NULL;
     gchar *buf3 = NULL;
     serveur_struct_t *serveur_struct = (serveur_struct_t *) cls;
-    struct MHD_PostProcessor *pp = *con_cls;
+    gchar *pp = *con_cls;
+    gchar *received_data = NULL;
 
 
     if (g_strcmp0(method, "GET") != 0)
@@ -119,21 +81,26 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
                 }
             else
                 {
-
+                    fprintf(stdout, "%ld, %s, %s, %s, %p\n", *upload_data_size, url, method, version, pp);
                     /* POST request processing */
                     if (pp == NULL)
                         {
-                            pp = MHD_create_post_processor(connection, 65536, post_iterator, serveur_struct);
+                            /* Initialzing the structure at first connection */
+                            pp = "";
                             *con_cls = pp;
 
                             return MHD_YES;
                         }
 
-                    if (*upload_data_size)
+                    if (*upload_data_size != 0)
                         {
-                            fprintf(stdout, "%ld, %s, %s, %s, '%s'\n", *upload_data_size, url, method, version, upload_data);
-                            MHD_post_process(pp, upload_data, *upload_data_size);
+
+                            buf1 = g_strndup(upload_data, *upload_data_size);
+                            pp = g_strconcat(pp, buf1, NULL);
+                            *con_cls = pp;
+
                             *upload_data_size = 0;
+
 
                             return MHD_YES;
                         }
@@ -144,7 +111,11 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
 
                             answer = g_strdup_printf("Got it !\n");
 
-                            MHD_destroy_post_processor(pp);
+                            received_data = g_strdup(pp);
+                            fprintf(stdout, "%ld : %s\n", strlen(received_data), received_data);
+
+                            pp = free_variable(pp);
+                            *con_cls = pp;
 
                             /* Do not free answer variable as MHD will do it for us ! */
                             response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
@@ -228,7 +199,7 @@ int main(int argc, char **argv)
 
             if (serveur_struct->d == NULL)
                 {
-                    print_error(__FILE__, __LINE__, _("Error while trying to spawn libmicrohttpd daemon\n"));
+                    print_error(__FILE__, __LINE__, _("Error while spawning libmicrohttpd daemon\n"));
                     return 1;
                 }
 
