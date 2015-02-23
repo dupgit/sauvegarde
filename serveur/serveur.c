@@ -95,7 +95,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
                     if (*upload_data_size != 0)
                         {
 
-                            buf1 = g_memdup(upload_data, *upload_data_size);
+                            buf1 = g_strndup(upload_data, *upload_data_size);
                             pp = g_strconcat(pp, buf1, NULL);
                             *con_cls = pp;
 
