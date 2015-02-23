@@ -79,8 +79,11 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
 
                             insert_into_tree(main_struct->hashs, a_hash, buffer, read, meta);
 
-                            to_print = g_strdup_printf("-> %ld\n%ld\n%s", i, read, g_checksum_get_string(checksum));
-                            g_async_queue_push(main_struct->print_queue, to_print);
+                            if (ENABLE_DEBUG == TRUE)
+                                {
+                                    to_print = g_strdup_printf("-> %ld\n%ld\n%s", i, read, g_checksum_get_string(checksum));
+                                    g_async_queue_push(main_struct->print_queue, to_print);
+                                }
 
                             g_checksum_reset(checksum);
                             i = i + 1;
@@ -125,10 +128,12 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
             /* We assume that we are using the cache (and this may not be the case in the future */
             if (is_file_in_cache(main_struct->database, meta) == FALSE)
                 {
-                    to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_DIRECTORY, owner, dates, mode, dirname);
+                    if (ENABLE_DEBUG == TRUE)
+                        {
+                            to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_DIRECTORY, owner, dates, mode, dirname);
+                            g_async_queue_push(main_struct->print_queue, to_print);
+                        }
 
-
-                    g_async_queue_push(main_struct->print_queue, to_print);
                     g_async_queue_push(main_struct->store_queue, encapsulate_meta_data_t(ENC_META_DATA, meta));
                 }
             else
@@ -183,9 +188,11 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                      /* We assume that we are using the cache (and this may not be the case in the future) */
                     if (is_file_in_cache(main_struct->database, meta) == FALSE)
                         {
-                            to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_REGULAR, owner, dates, mode, filename);
-
-                            g_async_queue_push(main_struct->print_queue, to_print);
+                             if (ENABLE_DEBUG == TRUE)
+                                {
+                                    to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_REGULAR, owner, dates, mode, filename);
+                                    g_async_queue_push(main_struct->print_queue, to_print);
+                                }
 
                             do_checksum(main_struct, stream, filename, meta);
                             g_input_stream_close((GInputStream *) stream, NULL, NULL);

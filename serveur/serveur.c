@@ -81,7 +81,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
                 }
             else
                 {
-                    fprintf(stdout, "%ld, %s, %s, %s, %p\n", *upload_data_size, url, method, version, pp);
+                    print_debug(stdout, "%ld, %s, %s, %s, %p\n", *upload_data_size, url, method, version, pp);
                     /* POST request processing */
                     if (pp == NULL)
                         {
@@ -112,7 +112,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
                             answer = g_strdup_printf("Got it !\n");
 
                             received_data = g_strdup(pp);
-                            fprintf(stdout, "%ld : %s\n", strlen(received_data), received_data);
+                            print_debug(stdout, "%ld : %s\n", strlen(received_data), received_data);
 
                             pp = free_variable(pp);
                             *con_cls = pp;
