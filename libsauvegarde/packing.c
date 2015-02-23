@@ -180,6 +180,7 @@ gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
             insert_guint64_into_json_root(root, "atime", meta->atime);
             insert_guint64_into_json_root(root, "ctime", meta->ctime);
             insert_guint64_into_json_root(root, "mtime", meta->mtime);
+            insert_guint64_into_json_root(root, "fsize", meta->size);
 
             insert_string_into_json_root(root, "owner", meta->owner);
             insert_string_into_json_root(root, "group", meta->group);

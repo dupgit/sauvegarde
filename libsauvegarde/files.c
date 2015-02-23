@@ -252,3 +252,32 @@ gchar *get_file_mode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 
 }
 
+
+/**
+ * Gets the size of a file
+ * @param fileinfo : a GFileInfo pointer obtained from an opened file
+ *        (GFile *)
+ * @param meta : meta_data_t * structure that contains all meta data for
+ *        the corresponding file.
+ * @returns a newly allocated string with file size in decimal
+ *          representation.
+ */
+extern gchar *get_file_size_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
+{
+    guint64 size = 0;
+    gchar *result = NULL;
+
+    if (fileinfo != NULL)
+        {
+            size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+            meta->size = size;
+
+            result = g_strdup_printf("%ld", size);
+        }
+    else
+        {
+            result = g_strdup("");
+        }
+
+    return result;
+}

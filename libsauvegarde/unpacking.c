@@ -217,6 +217,7 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
                     meta->atime = get_guint64_from_json_root(root, "atime");
                     meta->ctime = get_guint64_from_json_root(root, "ctime");
                     meta->mtime = get_guint64_from_json_root(root, "mtime");
+                    meta->size = get_guint64_from_json_root(root, "fsize");
 
                     meta->owner = get_string_from_json_root(root, "owner");
                     meta->group = get_string_from_json_root(root, "group");

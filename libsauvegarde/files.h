@@ -46,6 +46,7 @@ typedef struct
     guint64 atime;     /**< access time                                          */
     guint64 ctime;     /**< changed time                                         */
     guint64 mtime;     /**< modified time                                        */
+    guint64 size;      /**< size of the file                                     */
     gchar *owner;      /**< owner for the file ie root, apache, dup...           */
     gchar *group;      /**< group for the file ie root, apache, admin...         */
     guint32 uid;       /**< uid  (owner)                                         */
@@ -110,6 +111,18 @@ extern gchar *get_dates_from_gfile(GFileInfo *fileinfo, meta_data_t *meta);
  *          representation.
  */
 extern gchar *get_file_mode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta);
+
+
+/**
+ * Gets the size of a file
+ * @param fileinfo : a GFileInfo pointer obtained from an opened file
+ *        (GFile *)
+ * @param meta : meta_data_t * structure that contains all meta data for
+ *        the corresponding file.
+ * @returns a newly allocated string with file size in decimal
+ *          representation.
+ */
+extern gchar *get_file_size_from_gfile(GFileInfo *fileinfo, meta_data_t *meta);
 
 
 /**

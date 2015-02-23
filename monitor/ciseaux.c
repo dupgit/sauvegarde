@@ -118,19 +118,21 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
     gchar *owner = NULL;
     gchar *dates = NULL;
     gchar *mode = NULL;
+    gchar *size = NULL;
 
     if (main_struct != NULL && main_struct->print_queue != NULL)
         {
             owner = get_username_owner_from_gfile(fileinfo, meta);
             dates = get_dates_from_gfile(fileinfo, meta);
             mode = get_file_mode_from_gfile(fileinfo, meta);
+            size = get_file_size_from_gfile(fileinfo, meta);
 
             /* We assume that we are using the cache (and this may not be the case in the future */
             if (is_file_in_cache(main_struct->database, meta) == FALSE)
                 {
                     if (ENABLE_DEBUG == TRUE)
                         {
-                            to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_DIRECTORY, owner, dates, mode, dirname);
+                            to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s\n%s", G_FILE_TYPE_DIRECTORY, owner, dates, mode, size, dirname);
                             g_async_queue_push(main_struct->print_queue, to_print);
                         }
 
@@ -144,6 +146,7 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
             free_variable(owner);
             free_variable(dates);
             free_variable(mode);
+            free_variable(size);
         }
 }
 
@@ -169,6 +172,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
     gchar *owner = NULL;
     gchar *dates = NULL;
     gchar *mode = NULL;
+    gchar *size = NULL;
 
     if (a_file != NULL && main_struct != NULL && main_struct->print_queue != NULL)
         {
@@ -184,13 +188,14 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                     owner = get_username_owner_from_gfile(fileinfo, meta);
                     dates = get_dates_from_gfile(fileinfo, meta);
                     mode = get_file_mode_from_gfile(fileinfo, meta);
+                    size = get_file_size_from_gfile(fileinfo, meta);
 
                      /* We assume that we are using the cache (and this may not be the case in the future) */
                     if (is_file_in_cache(main_struct->database, meta) == FALSE)
                         {
                              if (ENABLE_DEBUG == TRUE)
                                 {
-                                    to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s", G_FILE_TYPE_REGULAR, owner, dates, mode, filename);
+                                    to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s\n%s", G_FILE_TYPE_REGULAR, owner, dates, mode, size, filename);
                                     g_async_queue_push(main_struct->print_queue, to_print);
                                 }
 
@@ -208,6 +213,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                     free_variable(owner);
                     free_variable(dates);
                     free_variable(mode);
+                    free_variable(size);
                 }
         }
 }
