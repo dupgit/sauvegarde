@@ -81,7 +81,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
                 }
             else
                 {
-                    print_debug(stdout, "%ld, %s, %s, %s, %p\n", *upload_data_size, url, method, version, pp);
+                    print_debug("%ld, %s, %s, %s, %p\n", *upload_data_size, url, method, version, pp);
                     /* POST request processing */
                     if (pp == NULL)
                         {
@@ -112,7 +112,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
                             answer = g_strdup_printf("Got it !\n");
 
                             received_data = g_strdup(pp);
-                            print_debug(stdout, "%ld : %s\n", strlen(received_data), received_data);
+                            print_debug("%ld : %s\n", strlen(received_data), received_data);
 
                             pp = free_variable(pp);
                             *con_cls = pp;
@@ -219,7 +219,7 @@ int main(int argc, char **argv)
                                  *  not to be NULL
                                  * /
 
-                                print_debug(stdout, "Message of size %d received : %s\n", strlen(message), message);
+                                print_debug("Message of size %d received : %s\n", strlen(message), message);
 
                                 smeta = convert_json_to_smeta_data(message);
                                 smeta = free_smeta_data_t(smeta);

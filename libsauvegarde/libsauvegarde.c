@@ -185,22 +185,22 @@ void init_international_languages(void)
     codeset = bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
     text_domain = textdomain(GETTEXT_PACKAGE);
 
-    print_debug(stdout, _("Debug mode is activated.\n"));
-    print_debug(stdout, _("Gettext package : %s\n"), GETTEXT_PACKAGE);
+    print_debug(_("Debug mode is activated.\n"));
+    print_debug(_("Gettext package : %s\n"), GETTEXT_PACKAGE);
 
     if (result != NULL)
         {
-            print_debug(stdout, _("Bindtextdomain : %s\n"), result);
+            print_debug(_("Bindtextdomain : %s\n"), result);
         }
 
     if (codeset != NULL)
         {
-            print_debug(stdout, _("Code set : %s\n"), codeset);
+            print_debug(_("Code set : %s\n"), codeset);
         }
 
     if (text_domain != NULL)
         {
-            print_debug(stdout, _("Text domain : %s\n"), text_domain);
+            print_debug(_("Text domain : %s\n"), text_domain);
         }
 }
 
@@ -284,18 +284,17 @@ gpointer free_error(gpointer error)
 
 /**
  * Prints a message if the debug flag is set
- * @param stream : a FILE * file to print into (stdout, stderr, ...)
  * @param format : the format of the message (as in printf)
  * @param ... : va_list of variable that are to be printed into format.
  */
-void print_debug(FILE *stream, const char *format, ...)
+void print_debug(const char *format, ...)
 {
     va_list ap;
 
     if (ENABLE_DEBUG == TRUE)
         {
             va_start(ap, format);
-            vfprintf(stream, format, ap);
+            vfprintf(stdout, format, ap);
             va_end(ap);
         }
 }

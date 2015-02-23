@@ -195,7 +195,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                 }
             opt->configfile = g_strdup(filename);
 
-            print_debug(stdout, _("Reading configuration from file %s\n"), filename);
+            print_debug(_("Reading configuration from file %s\n"), filename);
 
             keyfile = g_key_file_new();
 

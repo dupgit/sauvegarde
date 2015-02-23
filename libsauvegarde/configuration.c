@@ -194,7 +194,7 @@ GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list)
                     a_string = g_strdup(array[i]);
                     list = g_slist_append(list, a_string);
 
-                    print_debug(stdout, "%s\n", a_string);
+                    print_debug("%s\n", a_string);
                 }
         }
 

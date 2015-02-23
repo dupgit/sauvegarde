@@ -127,7 +127,7 @@ static void verify_if_tables_exists(db_t *database)
 
     if (result == SQLITE_OK && *i == 0)  /* No row (0) means that there is no table */
         {
-            print_debug(stdout, N_("Creating tables into the database\n"));
+            print_debug(N_("Creating tables into the database\n"));
 
             /* The database does not contain any tables. So we have to create them.         */
             /* Creation of checksum table that contains checksums and their associated data */
@@ -526,7 +526,7 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs)
 
             if (row != NULL)
                 {
-                    print_debug(stdout, _("file_id = %s ; list length = %d\n"), row->file_id_list->data, g_slist_length(row->file_id_list));
+                    print_debug(_("file_id = %s ; list length = %d\n"), row->file_id_list->data, g_slist_length(row->file_id_list));
                     file_id = g_ascii_strtoull(row->file_id_list->data, NULL, 10);
                     insert_file_checksums(database, meta, hashs, file_id);
                 }

@@ -88,7 +88,7 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
                                     g_async_queue_push(main_struct->queue, g_strdup(filename));
                                 }
 
-                            print_debug(stdout, _("%s passed to checksum's thread\n"), filename);
+                            print_debug(_("%s passed to checksum's thread\n"), filename);
 
                             filename = free_variable(filename);
                         }
@@ -187,7 +187,7 @@ static main_struct_t *init_main_structure(options_t *opt)
     if (opt != NULL)
         {
 
-            print_debug(stdout, _("Please wait while initializing main structure...\n"));
+            print_debug(_("Please wait while initializing main structure...\n"));
 
             main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
 
@@ -215,7 +215,7 @@ static main_struct_t *init_main_structure(options_t *opt)
                     main_struct->comm = NULL;
                 }
 
-            print_debug(stdout, _("Main structure initialized !\n"));
+            print_debug(_("Main structure initialized !\n"));
 
         }
 

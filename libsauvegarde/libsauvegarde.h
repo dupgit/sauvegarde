@@ -142,11 +142,10 @@ extern gpointer free_error(gpointer error);
 
 /**
  * Prints a message if the debug flag is set
- * @param stream : a FILE * file to print into (stdout, stderr, ...)
  * @param format : the format of the message (as in printf)
  * @param ... : va_list of variable that are to be printed into format.
  */
-extern void print_debug(FILE *stream, const char *format, ...);
+extern void print_debug(const char *format, ...);
 
 
 /**
