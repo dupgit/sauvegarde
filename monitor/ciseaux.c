@@ -239,7 +239,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
 
             do
                 {
-                    filename = free_variable(filename);
+
 
                     filename = g_async_queue_pop(main_struct->queue);
 
@@ -279,10 +279,16 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                                         }
 
                                     a_file = free_object(a_file);
+
                                 }
+
+                            filename = free_variable(filename);
                         }
+
                 }
             while (g_strcmp0(filename, "$END$") != 0);
+
+            filename = free_variable(filename);
 
             /* Ending the queue with END command */
             g_async_queue_push(main_struct->store_queue, encapsulate_end());
@@ -310,16 +316,17 @@ static gpointer print_things(gpointer data)
         {
             do
                 {
-                    to_print = free_variable(to_print);
-
                     to_print = g_async_queue_pop(main_struct->print_queue);
 
                     if (g_strcmp0(to_print, "$END$") != 0)
                         {
                             fprintf(stdout, "%s\n", to_print);
+                            to_print = free_variable(to_print);
                         }
                 }
             while (g_strcmp0(to_print, "$END$") != 0);
+
+            to_print = free_variable(to_print);
         }
 
     return NULL;
