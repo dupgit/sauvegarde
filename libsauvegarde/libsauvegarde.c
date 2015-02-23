@@ -358,7 +358,7 @@ void create_directory(gchar *directory)
 
             if (error != NULL)
                 {
-                    print_debug(stderr,  _("[%s, %d] Failed to create directory %s : %s\n"), __FILE__, __LINE__, directory, error->message);
+                    print_error(__FILE__, __LINE__, ("Failed to create directory %s : %s\n"), directory, error->message);
                 }
 
             dir = free_object(dir);
