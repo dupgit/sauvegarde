@@ -113,16 +113,16 @@ gint compare_two_hashs(gconstpointer a, gconstpointer b)
  * @param hashs : the hash structure that contains the binary tree in which
  *        we want to insert the second parameter
  * @param a_hash is a hash in a binary form
- * @param buffer is the data whom checksum is a_hashs
+ * @param buffer is the data whom checksum is a_hash
  * @param read is the number of bytes in guchar *buffer
  * @param meta : meta_data_t * structure that contains all meta data for
  *        the corresponding file.
  */
 void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize read, meta_data_t *meta)
 {
-    guint8 *a_hash_dup = NULL;  /** A hashs to be duplicated  */
-    guchar *buffer_dup = NULL;  /** A duplicated buffer       */
-    data_t *a_data = NULL;      /** Struture to store buffers */
+    guint8 *a_hash_dup = NULL;  /** A a_hash to be duplicated   */
+    guchar *buffer_dup = NULL;  /** A duplicated buffer         */
+    data_t *a_data = NULL;      /** Struture to store buffers   */
 
 
     if (hashs != NULL && a_hash != NULL)

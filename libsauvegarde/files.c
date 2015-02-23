@@ -47,6 +47,7 @@ meta_data_t *new_meta_data_t(void)
             meta->atime = 0;
             meta->ctime = 0;
             meta->mtime = 0;
+            meta->size = 0;
             meta->owner = NULL;
             meta->group = NULL;
             meta->uid = 65534;  /* nfsnobody on my system ie unpriviledged user */

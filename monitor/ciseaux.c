@@ -23,7 +23,8 @@
 /**
  * @file ciseaux.c
  * This program should receive filenames on which it has to calculate their
- * SHA256 checksums : checksums are calculated for a defined block size.
+ * SHA256 checksums : checksums are calculated for a defined block size
+ * (CISEAUX_BLOCK_SIZE).
  */
 
 #include "monitor.h"
