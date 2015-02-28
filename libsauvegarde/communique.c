@@ -117,7 +117,7 @@ gint get_url(comm_t *comm, gchar *url)
  * Uses curl to send a POST command to the http server url
  * @param comm a comm_t * structure that must contain an initialized
  *        curl_handle (must not be NULL). buffer field of this structure
- *        is send as data in the POST command.
+ *        is sent as data in the POST command.
  * @param url a gchar * url where to send the command to. It must NOT
  *        contain the http://ip:port string. And must contain the first '/'
  *        ie to get 'http://127.0.0.1:5468/Version' url must be '/Version'.
@@ -125,20 +125,32 @@ gint get_url(comm_t *comm, gchar *url)
  *          CURLE_OK upon success, any other error code in any other
  *          situation. When CURLE_OK is returned, the datas that the server
  *          sent is in the comm->buffer gchar * string.
+ * @todo . free some memory where needed
+ *       . manage errors codes
  */
 gint post_url(comm_t *comm, gchar *url)
 {
     gint success = CURLE_FAILED_INIT;
     gchar *real_url = NULL;
+    long response = 0L;
+    gchar *buffer = NULL;
 
     if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL && comm->buffer != NULL)
         {
             real_url = g_strdup_printf("%s%s", comm->conn, url);
+            buffer = g_strdup(comm->buffer);
 
-            curl_easy_setopt(comm->curl_handle, CURLOPT_POSTFIELDS, comm->buffer);
+            curl_easy_setopt(comm->curl_handle, CURLOPT_POSTFIELDS, buffer);
             curl_easy_setopt(comm->curl_handle, CURLOPT_URL, real_url);
+            curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEFUNCTION, write_data);
+            curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
 
             success = curl_easy_perform(comm->curl_handle);
+
+            if (comm->buffer != NULL)
+                {
+                    print_debug("Answer is : %s\n", comm->buffer);
+                }
 
             real_url = free_variable(real_url);
 

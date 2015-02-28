@@ -57,6 +57,9 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
  * MHD_AccessHandlerCallback function that manages all connections requests
  * @param cls is the serveur_struct_t * serveur_struct main serveur
  *        structure.
+ * @todo . simplify the code
+ *       . free some memory where needed
+ *       . manage errors codes
  */
 static int ahc(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **con_cls)
 {
@@ -176,6 +179,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
  * @returns always 0
+ * @todo do some real loop here.
  */
 int main(int argc, char **argv)
 {
