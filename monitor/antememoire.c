@@ -90,19 +90,19 @@ gpointer store_buffer_data(gpointer data)
                                 {
                                     case ENC_META_DATA:
                                         insert_meta_data_into_cache_or_send_to_serveur((meta_data_t *) capsule->data, main_struct);
-                                        capsule = free_variable(capsule);
+                                        /* capsule = free_variable(capsule); */
                                     break;
 
                                     case ENC_END:
                                     break;
 
                                     default :
-                                        capsule = free_variable(capsule);
+                                        print_debug(_("Default case !\n"));
                                     break;
                                 }
 
                         }
-                    while (capsule != NULL && capsule->command != ENC_END);
+                    while (capsule->command != ENC_END);
 
                     capsule = free_variable(capsule);
                 }

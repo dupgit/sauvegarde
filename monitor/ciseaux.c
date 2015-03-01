@@ -131,11 +131,11 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
                         }
 
                     g_async_queue_push(main_struct->store_queue, encapsulate_meta_data_t(ENC_META_DATA, meta));
-                     print_debug(_("%s passed to store's thread\n"), dirname);
+                    print_debug(_("%s passed to store's thread\n"), dirname);
                 }
             else
                 {
-                    meta = free_meta_data_t(meta);
+                    /* meta = free_meta_data_t(meta); */
                 }
 
             free_variable(owner);
@@ -202,7 +202,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                         }
                     else
                         {
-                            meta = free_meta_data_t(meta);
+                           /* meta = free_meta_data_t(meta); */
                         }
 
                     free_object(stream);
@@ -291,7 +291,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                 }
             while (g_strcmp0(filename, "$END$") != 0);
 
-            filename = free_variable(filename);
+            /*filename = free_variable(filename); */
 
             /* Ending the queue with END command */
             g_async_queue_push(main_struct->store_queue, encapsulate_end());
@@ -329,7 +329,7 @@ static gpointer print_things(gpointer data)
                 }
             while (g_strcmp0(to_print, "$END$") != 0);
 
-            to_print = free_variable(to_print);
+            /* to_print = free_variable(to_print); */
         }
 
     return NULL;
