@@ -72,6 +72,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
     gchar *buf3 = NULL;
     serveur_struct_t *serveur_struct = (serveur_struct_t *) cls;
     gchar *pp = *con_cls;
+    gchar *newpp = NULL;
     gchar *received_data = NULL;
 
 
@@ -89,7 +90,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
                     if (pp == NULL)
                         {
                             /* Initialzing the structure at first connection */
-                            pp = "";
+                            pp = g_strdup("");
                             *con_cls = pp;
 
                             return MHD_YES;
@@ -99,8 +100,11 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
                         {
 
                             buf1 = g_strndup(upload_data, *upload_data_size);
-                            pp = g_strconcat(pp, buf1, NULL);
-                            *con_cls = pp;
+                            newpp = g_strconcat(pp, buf1, NULL);
+                            buf1 = free_variable(buf1);
+                            pp = free_variable(pp);
+
+                            *con_cls = newpp;
 
                             *upload_data_size = 0;
 
@@ -118,7 +122,6 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
                             print_debug("%ld : %s\n", strlen(received_data), received_data);
 
                             pp = free_variable(pp);
-                            *con_cls = pp;
 
                             /* Do not free answer variable as MHD will do it for us ! */
                             response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);

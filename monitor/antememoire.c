@@ -84,6 +84,7 @@ gpointer store_buffer_data(gpointer data)
                     do
                         {
                             capsule = g_async_queue_pop(main_struct->store_queue);
+                            print_debug(_("A capsule (%d) has been received in store's thread\n"), capsule->command);
 
                             switch (capsule->command)
                                 {

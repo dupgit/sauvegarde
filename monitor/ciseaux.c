@@ -51,7 +51,6 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
     guint64 i = 0;
     GChecksum *checksum = NULL;
     GError *error = NULL;
-    gchar *to_print = NULL;
     guint8 *a_hash = NULL;
     gsize digest_len = HASH_LEN;
 
@@ -79,12 +78,6 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
                             g_checksum_get_digest(checksum, a_hash, &digest_len);
 
                             insert_into_tree(main_struct->hashs, a_hash, buffer, read, meta);
-
-                            if (ENABLE_DEBUG == TRUE)
-                                {
-                                    to_print = g_strdup_printf("-> %ld\n%ld\n%s", i, read, g_checksum_get_string(checksum));
-                                    g_async_queue_push(main_struct->print_queue, to_print);
-                                }
 
                             g_checksum_reset(checksum);
                             i = i + 1;
@@ -133,11 +126,12 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
                 {
                     if (ENABLE_DEBUG == TRUE)
                         {
-                            to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s\n%s", G_FILE_TYPE_DIRECTORY, owner, dates, mode, size, dirname);
+                            to_print = g_strdup_printf("%d\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_DIRECTORY, owner, dates, mode, size, dirname);
                             g_async_queue_push(main_struct->print_queue, to_print);
                         }
 
                     g_async_queue_push(main_struct->store_queue, encapsulate_meta_data_t(ENC_META_DATA, meta));
+                     print_debug(_("%s passed to store's thread\n"), dirname);
                 }
             else
                 {
@@ -196,7 +190,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                         {
                              if (ENABLE_DEBUG == TRUE)
                                 {
-                                    to_print = g_strdup_printf("%d\n%s\n%s\n%s\n%s\n%s", G_FILE_TYPE_REGULAR, owner, dates, mode, size, filename);
+                                    to_print = g_strdup_printf("%d\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_REGULAR, owner, dates, mode, size, filename);
                                     g_async_queue_push(main_struct->print_queue, to_print);
                                 }
 
@@ -204,6 +198,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                             g_input_stream_close((GInputStream *) stream, NULL, NULL);
 
                             g_async_queue_push(main_struct->store_queue, encapsulate_meta_data_t(ENC_META_DATA, meta));
+                            print_debug(_("%s passed to store's thread\n"), filename);
                         }
                     else
                         {
@@ -282,6 +277,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                                                 {
                                                     print_error(__FILE__, __LINE__, _("%s is not a regular file\n"), filename);
                                                 }
+
                                             fileinfo = free_object(fileinfo);
                                         }
 

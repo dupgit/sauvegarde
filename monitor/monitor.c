@@ -86,11 +86,9 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
                             if (filename != NULL)
                                 {
                                     g_async_queue_push(main_struct->queue, g_strdup(filename));
+                                    print_debug(_("%s passed to checksum's thread\n"), filename);
+                                    filename = free_variable(filename);
                                 }
-
-                            print_debug(_("%s passed to checksum's thread\n"), filename);
-
-                            filename = free_variable(filename);
                         }
 
                     fileinfo = free_object(fileinfo);
@@ -284,9 +282,9 @@ int main(int argc, char **argv)
             a_thread_data->main_struct = main_struct;
             a_thread_data->dir_list = opt->dirname_list;
 
-            a_thread = g_thread_new("dir_traversal", first_directory_traversal, a_thread_data);
-            cut_thread = g_thread_new("cut", ciseaux, main_struct);
             store_thread = g_thread_new("store", store_buffer_data, main_struct);
+            cut_thread = g_thread_new("cut", ciseaux, main_struct);
+            a_thread = g_thread_new("dir_traversal", first_directory_traversal, a_thread_data);
 
             /* As we are only testing things for now, we just wait for the
              * threads to join and then exits.
