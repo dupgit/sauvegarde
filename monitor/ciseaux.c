@@ -116,7 +116,7 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
     capsule_t *capsule = NULL;
 
 
-    if (main_struct != NULL && main_struct->print_queue != NULL)
+    if (main_struct != NULL && fileinfo != NULL && meta != NULL && dirname != NULL)
         {
             owner = get_username_owner_from_gfile(fileinfo, meta);
             dates = get_dates_from_gfile(fileinfo, meta);
@@ -126,14 +126,11 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
             /* We assume that we are using the cache (and this may not be the case in the future */
             if (is_file_in_cache(main_struct->database, meta) == FALSE)
                 {
-                    if (ENABLE_DEBUG == TRUE)
-                        {
-                            to_print = g_strdup_printf("%d\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_DIRECTORY, owner, dates, mode, size, dirname);
-                            g_async_queue_push(main_struct->print_queue, to_print);
-                        }
+                    print_debug("%d\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_DIRECTORY, owner, dates, mode, size, dirname);
 
                     capsule = encapsulate_meta_data_t(ENC_META_DATA, meta);
                     g_async_queue_push(main_struct->store_queue, capsule);
+
                     print_debug(_("%s passed to store's thread\n"), dirname);
                 }
             else
@@ -173,7 +170,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
     gchar *size = NULL;
     capsule_t *capsule = NULL;
 
-    if (a_file != NULL && main_struct != NULL && main_struct->print_queue != NULL)
+    if (a_file != NULL && main_struct != NULL && fileinfo != NULL && meta != NULL && filename != NULL)
         {
             stream = g_file_read(a_file, NULL, &error);
 
@@ -192,17 +189,14 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                      /* We assume that we are using the cache (and this may not be the case in the future) */
                     if (is_file_in_cache(main_struct->database, meta) == FALSE)
                         {
-                             if (ENABLE_DEBUG == TRUE)
-                                {
-                                    to_print = g_strdup_printf("%d\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_REGULAR, owner, dates, mode, size, filename);
-                                    g_async_queue_push(main_struct->print_queue, to_print);
-                                }
+                            print_debug("%d\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_REGULAR, owner, dates, mode, size, filename);
 
                             do_checksum(main_struct, stream, filename, meta);
                             g_input_stream_close((GInputStream *) stream, NULL, NULL);
 
                             capsule = encapsulate_meta_data_t(ENC_META_DATA, meta);
                             g_async_queue_push(main_struct->store_queue, capsule);
+
                             print_debug(_("%s passed to store's thread\n"), filename);
                         }
                     else
@@ -313,39 +307,6 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
 
 
 /**
- * This function waits for messages in the queue and then prints them to
- * screen. Messages are sent by do checksum function via the print_queue
- * queue. This function is running in a thread.
- * @param data : main_struct_t * structure.
- * @returns NULL to fullfill the template needed to create a GThread
- */
-static gpointer print_things(gpointer data)
-{
-    main_struct_t *main_struct = (main_struct_t *) data;
-    gchar *to_print = NULL;
-
-    if (main_struct != NULL && main_struct->opt != NULL && main_struct->opt->noprint == FALSE)
-        {
-            do
-                {
-                    to_print = g_async_queue_pop(main_struct->print_queue);
-
-                    if (g_strcmp0(to_print, "$END$") != 0)
-                        {
-                            fprintf(stdout, "%s\n", to_print);
-                            to_print = free_variable(to_print);
-                        }
-                }
-            while (g_strcmp0(to_print, "$END$") != 0);
-
-            /* to_print = free_variable(to_print); */
-        }
-
-    return NULL;
-}
-
-
-/**
  * This function creates one thread to print things and
  * one other thread to calculate the checksums. This function
  * is a thread itself.
@@ -358,18 +319,13 @@ static gpointer print_things(gpointer data)
 gpointer ciseaux(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
-    GThread *print_thread = NULL;
     GThread *calc_thread = NULL;
 
     if (main_struct != NULL)
         {
-            print_thread = g_thread_new("printing", print_things, main_struct);
             calc_thread = g_thread_new("hashs", calculate_hashs_on_a_file, main_struct);
 
             g_thread_join(calc_thread);
-            g_async_queue_push(main_struct->print_queue, "$END$");
-            g_thread_join(print_thread);
-
         }
 
     return NULL;
