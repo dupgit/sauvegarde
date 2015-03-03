@@ -40,23 +40,30 @@
 static void insert_meta_data_into_cache_or_send_to_serveur(meta_data_t *meta, main_struct_t *main_struct)
 {
     gchar *json_str = NULL;
+    gint success = CURLE_FAILED_INIT;
 
-    if (main_struct != NULL && meta != NULL && meta->name != NULL)
+    if (main_struct != NULL && meta != NULL && main_struct->hostname != NULL)
         {
             json_str = convert_meta_data_to_json(meta, main_struct->hostname);
 
             print_debug("json string (%d bytes) is : %s\n", strlen(json_str), json_str);
 
-            /* send message here */
+            /* sends message here */
             main_struct->comm->buffer = json_str;
-            post_url(main_struct->comm, "/Server/meta.json");
+            success = post_url(main_struct->comm, "/Server/meta.json");
 
-            /* freeing json_str may only happen when the message has been received */
-            json_str = free_variable(json_str);
-            main_struct->comm->buffer = NULL;
 
-            print_debug("Inserting into database cache file %s\n", meta->name);
-            insert_file_into_cache(main_struct->database, meta, main_struct->hashs);
+            if (success == CURLE_OK)
+                {   /* freeing json_str may only happen when the message has been received */
+                    json_str = free_variable(json_str);
+                }
+            else
+                {   /* Something went wrong when sending the datas and thus we have to store them localy. */
+
+                    /** @todo before using insert_file_into_cache do something to speed up the function ! */
+                    print_debug("Inserting into database cache file %s\n", meta->name);
+                    insert_file_into_cache(main_struct->database, meta, main_struct->hashs);
+                }
         }
 }
 
@@ -75,7 +82,6 @@ gpointer store_buffer_data(gpointer data)
 
     if (main_struct != NULL)
         {
-
 
             if (main_struct->comm != NULL)
                 {
@@ -104,7 +110,7 @@ gpointer store_buffer_data(gpointer data)
                         }
                     while (capsule->command != ENC_END);
 
-                    capsule = free_variable(capsule);
+                    /* capsule = free_variable(capsule); */
                 }
             else
                 {
