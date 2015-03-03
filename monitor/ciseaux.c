@@ -204,12 +204,13 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                            /* meta = free_meta_data_t(meta); */
                         }
 
-                    free_object(stream);
                     free_variable(owner);
                     free_variable(dates);
                     free_variable(mode);
                     free_variable(size);
                 }
+
+            free_object(stream);
         }
 }
 
