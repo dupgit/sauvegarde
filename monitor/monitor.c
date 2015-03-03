@@ -43,6 +43,7 @@ static gchar *make_connexion_string(gchar *ip, gint port);
  * path_t * structure in main_struct->path_tree balanced binary tree.
  * @param main_struct : main structure with everything needed
  * @param directory : the directory that we want to traverse
+ * @todo do something with symbolic links that must be saved as is.
  */
 static void traverse_directory(main_struct_t *main_struct, gchar *directory)
 {
@@ -68,8 +69,9 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
 
                     if ( filetype == G_FILE_TYPE_DIRECTORY)
                         {
-                            /* We've got a directory : we must go into it ! */
+                            /* We've got a directory : we must transmit to ciseaux and dig into it ! */
                             dirname = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
+
                             if (dirname != NULL)
                                 {
                                     g_async_queue_push(main_struct->queue, g_strdup(dirname));
@@ -77,9 +79,9 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
                                     dirname = free_variable(dirname);
                                 }
                         }
-                    else if (filetype == G_FILE_TYPE_REGULAR)
+                    else if (filetype == G_FILE_TYPE_REGULAR || filetype == G_FILE_TYPE_SYMBOLIC_LINK)
                         {
-                            /* We've got a regular file : we have to transmit it to ciseaux */
+                            /* We've got a regular file or a symlink : we have to transmit it to ciseaux */
 
                             filename = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
 
@@ -92,6 +94,8 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
                         }
 
                     fileinfo = free_object(fileinfo);
+
+                    /* wait_for_queue_to_flush(main_struct->queue, 16, 100); */
 
                     fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
                 }

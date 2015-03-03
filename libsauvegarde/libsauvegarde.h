@@ -182,4 +182,14 @@ extern void create_directory(gchar *directory);
 extern void ignore_sigpipe(void);
 
 
+/**
+ * Waits a number of micro seconds until the number of element in the
+ * queue is less than the specified number.
+ * @param queue : the queue to be tested
+ * @param nbelem : maximum number of element before waiting
+ * @param usecs : number of micro seconds to wait
+ */
+extern void wait_for_queue_to_flush(GAsyncQueue *queue, guint nbelem, useconds_t usecs);
+
+
 #endif /* #ifndef _LIBSAUVEGARDE_H_ */

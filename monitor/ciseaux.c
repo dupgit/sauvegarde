@@ -113,6 +113,8 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
     gchar *dates = NULL;
     gchar *mode = NULL;
     gchar *size = NULL;
+    capsule_t *capsule = NULL;
+
 
     if (main_struct != NULL && main_struct->print_queue != NULL)
         {
@@ -130,7 +132,8 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
                             g_async_queue_push(main_struct->print_queue, to_print);
                         }
 
-                    g_async_queue_push(main_struct->store_queue, encapsulate_meta_data_t(ENC_META_DATA, meta));
+                    capsule = encapsulate_meta_data_t(ENC_META_DATA, meta);
+                    g_async_queue_push(main_struct->store_queue, capsule);
                     print_debug(_("%s passed to store's thread\n"), dirname);
                 }
             else
@@ -168,6 +171,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
     gchar *dates = NULL;
     gchar *mode = NULL;
     gchar *size = NULL;
+    capsule_t *capsule = NULL;
 
     if (a_file != NULL && main_struct != NULL && main_struct->print_queue != NULL)
         {
@@ -197,7 +201,8 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                             do_checksum(main_struct, stream, filename, meta);
                             g_input_stream_close((GInputStream *) stream, NULL, NULL);
 
-                            g_async_queue_push(main_struct->store_queue, encapsulate_meta_data_t(ENC_META_DATA, meta));
+                            capsule = encapsulate_meta_data_t(ENC_META_DATA, meta);
+                            g_async_queue_push(main_struct->store_queue, capsule);
                             print_debug(_("%s passed to store's thread\n"), filename);
                         }
                     else
@@ -235,14 +240,11 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
     meta_data_t *meta = NULL;
 
 
-
     if (main_struct != NULL)
         {
 
             do
                 {
-
-
                     filename = g_async_queue_pop(main_struct->queue);
 
                     if (g_strcmp0(filename, "$END$") != 0)
@@ -265,7 +267,11 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                                             filetype = g_file_info_get_file_type(fileinfo);
                                             meta->file_type = filetype;
 
-                                            if (filetype == G_FILE_TYPE_REGULAR)
+                                            if (g_file_info_get_is_symlink(fileinfo))
+                                                {
+                                                    print_debug(_("%s is a symbolic link.\n"), filename);
+                                                }
+                                            else if (filetype == G_FILE_TYPE_REGULAR)
                                                 {
                                                     it_is_a_file(main_struct, a_file, filename, fileinfo, meta);
                                                 }
@@ -286,6 +292,9 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
                                 }
 
                             filename = free_variable(filename);
+
+                            /* wait_for_queue_to_flush(main_struct->store_queue, 16, 100); */
+
                         }
 
                 }

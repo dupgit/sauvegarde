@@ -376,7 +376,7 @@ static void catcher(int sig)
 
 /**
  * A signal handler for SIGPIPE (needed by libmicrohttpd in order to be
- * portable.
+ * portable).
  */
 void ignore_sigpipe(void)
 {
@@ -397,3 +397,29 @@ void ignore_sigpipe(void)
             fprintf (stderr, "Failed to install SIGPIPE handler: %s\n", strerror (errno));
         }
 }
+
+
+/**
+ * Waits a number of micro seconds until the number of element in the
+ * queue is less than the specified number.
+ * @param queue : the queue to be tested
+ * @param nbelem : maximum number of element before waiting
+ * @param usecs : number of micro seconds to wait
+ */
+void wait_for_queue_to_flush(GAsyncQueue *queue, guint nbelem, useconds_t usecs)
+{
+    if (queue != NULL && usecs < 1000000)
+        {
+            /**
+             * Checks if the queue length is less than 8 before
+             * continuing because we want to be sure that what we
+             * provide is processed...
+             */
+            while (g_async_queue_length(queue) > nbelem)
+                {
+                    usleep(usecs);
+                }
+        }
+}
+
+
