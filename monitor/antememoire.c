@@ -52,7 +52,6 @@ static void insert_meta_data_into_cache_or_send_to_serveur(meta_data_t *meta, ma
             main_struct->comm->buffer = json_str;
             success = post_url(main_struct->comm, "/Server/meta.json");
 
-
             if (success == CURLE_OK)
                 {   /* freeing json_str may only happen when the message has been received */
                     json_str = free_variable(json_str);

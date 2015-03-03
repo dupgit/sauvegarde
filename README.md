@@ -8,6 +8,9 @@ Some experiments around backup and continuous data protection (CDP).
        src="https://scan.coverity.com/projects/4150/badge.svg"/>
 </a>
 
+This code is still not usable for it's purpose. Please feel free to contribute !
+
+
 ## License
 
 This is free software an real open source as GPLv3 is used for this
@@ -148,6 +151,12 @@ are primary keys.
 
 
 ## Coding into this project
+
+### irc
+
+When I'm coding into this project I'm hanging onto #sauvegarde irc channel
+on oftc servers.
+
 
 ### Comments
 
