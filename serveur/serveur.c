@@ -112,25 +112,85 @@ static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Conn
 
 
 /**
+ * Function to process post requests.
+ * @param serveur_struct is the main structure for the server.
+ * @param connection is the connection in MHD
+ * @param url is the requested url
+ * @param con_cls is a pointer used to know if this is the first call or not
+ * @param upload_data is a char * pointer to the data being uploaded at this call
+ * @param upload_size is a pointer to an size_t value that says how many data
+ *        is ti be copied from upload_data string.
+ * @returns an int that is either MHD_NO or MHD_YES upon failure or not.
+ */
+static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size)
+{
+    int success = MHD_NO;
+    gchar *pp = *con_cls;
+    gchar *newpp = NULL;
+    gchar *received_data = NULL;
+    gchar *answer = NULL;
+    gchar *buf1 = NULL;
+    struct MHD_Response *response = NULL;
+
+
+    print_debug("%ld, %s, %p\n", *upload_data_size, url, pp);
+
+    if (pp == NULL)
+        {
+            /* Initialzing the structure at first connection */
+            pp = g_strdup("");
+            *con_cls = pp;
+
+            success = MHD_YES;
+        }
+    else if (*upload_data_size != 0)
+        {
+
+            buf1 = g_strndup(upload_data, *upload_data_size);
+            newpp = g_strconcat(pp, buf1, NULL);
+            buf1 = free_variable(buf1);
+            pp = free_variable(pp);
+
+            *con_cls = newpp;
+
+            *upload_data_size = 0;
+
+            success = MHD_YES;
+        }
+    else
+        {
+            /* reset when done */
+            *con_cls = NULL;
+
+            received_data = g_strdup(pp);
+            print_debug("%ld : %s\n", strlen(received_data), received_data);
+
+            pp = free_variable(pp);
+            /* Do something with received_data */
+            received_data = free_variable(received_data);
+
+            /* Do not free answer variable as MHD will do it for us ! */
+            answer = g_strdup_printf("Got it !\n");
+            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
+
+            MHD_destroy_response(response);
+        }
+
+    return success;
+}
+
+
+/**
  * MHD_AccessHandlerCallback function that manages all connections requests
  * @param cls is the serveur_struct_t * serveur_struct main serveur
  *        structure.
- * @todo . simplify the code
- *       . free some memory where needed
+ * @todo . free some memory where needed
  *       . manage errors codes
  */
 static int ahc(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **con_cls)
 {
-    static int aptr = 0;
-    struct MHD_Response *response = NULL;
-    gchar *answer = NULL;
-    gchar *buf1 = NULL;
-    gchar *buf2 = NULL;
-    gchar *buf3 = NULL;
     serveur_struct_t *serveur_struct = (serveur_struct_t *) cls;
-    gchar *pp = *con_cls;
-    gchar *newpp = NULL;
-    gchar *received_data = NULL;
     int success = MHD_NO;
 
 
@@ -141,50 +201,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
         }
     else if (g_strcmp0(method, "POST") == 0)
         {  /* We have a POST method that needs to be processed */
-
-            print_debug("%ld, %s, %s, %s, %p\n", *upload_data_size, url, method, version, pp);
-
-            if (pp == NULL)
-                {
-                    /* Initialzing the structure at first connection */
-                    pp = g_strdup("");
-                    *con_cls = pp;
-
-                    success = MHD_YES;
-                }
-            else if (*upload_data_size != 0)
-                {
-
-                    buf1 = g_strndup(upload_data, *upload_data_size);
-                    newpp = g_strconcat(pp, buf1, NULL);
-                    buf1 = free_variable(buf1);
-                    pp = free_variable(pp);
-
-                    *con_cls = newpp;
-
-                    *upload_data_size = 0;
-
-                    success = MHD_YES;
-                }
-            else
-                {
-                    /* reset when done */
-                    *con_cls = NULL;
-
-
-
-                    received_data = g_strdup(pp);
-                    print_debug("%ld : %s\n", strlen(received_data), received_data);
-
-                    pp = free_variable(pp);
-
-                    /* Do not free answer variable as MHD will do it for us ! */
-                    answer = g_strdup_printf("Got it !\n");
-                    response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
-                    success = MHD_queue_response(connection, MHD_HTTP_OK, response);
-
-                    MHD_destroy_response(response);
-                }
+            success = process_post_request(serveur_struct, connection, url, con_cls, upload_data, upload_data_size);
         }
     else
         { /* not a GET nor a POST -> we do not know what to do ! */
