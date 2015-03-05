@@ -34,6 +34,19 @@ required to build the project. jansson's library version is quite recent
 but it compiles nicely and depends on nothing (as far as I know).
 
 
+## Installation
+
+If you had the code from the git repository you may generate the configure
+script by invoking `./autogen.sh` script. It will execute aclocal, libtoolize
+automake, autoconf, glib-gettextize and intltoolize for you. If everything
+went ok you should have an executable configure script that you may use
+in the classic way :
+
+    ./configure --prefix=/my/local/install --enable-debug
+    make
+    make install
+
+
 ## Roadmap
 
 As I'm coding on spare hours I have no roadmap for now.
