@@ -31,7 +31,10 @@
 #define PAGE_NOT_FOUND "Error not found"
 
 static serveur_struct_t *init_serveur_main_structure(int argc, char **argv);
-
+static gchar *get_unformatted_answer(serveur_struct_t *serveur_struct, const char *url);
+static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, const char *url, void **con_cls);
+static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size);
+static int ahc(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **con_cls);
 
 /**
  * Inits main serveur's structure
@@ -54,6 +57,70 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 
 
 /**
+ * Function to answer to get requests in a json way. This mode should be
+ * prefered.
+ * @param serveur_struct is the main structure for the server.
+ * @param url is the requested url
+ * @note to translators all json requests MUST NOT be translated because
+ *       it is the protocol itself !
+ * @returns a newlly allocated gchar * string that contains the anwser to be
+ *          sent back to the client.
+ */
+static gchar *get_json_answer(serveur_struct_t *serveur_struct, const char *url)
+{
+    gchar *answer = NULL;
+
+    if (g_strcmp0(url, "/Version.json") == 0)
+        {
+            answer = g_strdup_printf("{\"Program\": %s}", PROGRAM_NAME);
+        }
+    else
+        { /* Some sort of echo to the invalid request */
+            answer = g_strdup_printf("{\"Invalid url\": %s\n}", url);
+        }
+
+    return answer;
+}
+
+
+/**
+ * Function to answer to get requests in an unformatted way. Only some urls
+ * May be like this. As we prefer to speak in json format in normal operation
+ * mode
+ * @param serveur_struct is the main structure for the server.
+ * @param url is the requested url
+ * @returns a newlly allocated gchar * string that contains the anwser to be
+ *          sent back to the client.
+ */
+static gchar *get_unformatted_answer(serveur_struct_t *serveur_struct, const char *url)
+{
+    gchar *answer = NULL;
+    gchar *buf1 = NULL;
+    gchar *buf2 = NULL;
+    gchar *buf3 = NULL;
+
+    if (g_strcmp0(url, "/Version") == 0)
+        {
+            buf1 = buffer_program_version(PROGRAM_NAME, SERVEUR_DATE, SERVEUR_VERSION, SERVEUR_AUTHORS, SERVEUR_LICENSE);
+            buf2 = buffer_libraries_versions(PROGRAM_NAME);
+            buf3 = buffer_selected_option(serveur_struct->opt);
+
+            answer = g_strconcat(buf1, buf2, buf3, NULL);
+
+            buf1 = free_variable(buf1);
+            buf2 = free_variable(buf2);
+            buf3 = free_variable(buf3);
+        }
+    else
+        { /* Some sort of echo to the invalid request */
+            answer = g_strdup_printf(_("Invalid url: %s\n"), url);
+        }
+
+    return answer;
+}
+
+
+/**
  * Function to process get requests received from clients.
  * @param serveur_struct is the main structure for the server.
  * @param connection is the connection in MHD
@@ -66,9 +133,6 @@ static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Conn
     static int aptr = 0;
     int success = MHD_NO;
     gchar *answer = NULL;
-    gchar *buf1 = NULL;
-    gchar *buf2 = NULL;
-    gchar *buf3 = NULL;
     struct MHD_Response *response = NULL;
 
 
@@ -81,29 +145,24 @@ static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Conn
         }
     else
         {
-            if (g_strcmp0(url, "/Version") == 0)
-                {
-                    buf1 = buffer_program_version(PROGRAM_NAME, SERVEUR_DATE, SERVEUR_VERSION, SERVEUR_AUTHORS, SERVEUR_LICENSE);
-                    buf2 = buffer_libraries_versions(PROGRAM_NAME);
-                    buf3 = buffer_selected_option(serveur_struct->opt);
-                    answer = g_strconcat(buf1, buf2, buf3, NULL);
-                    buf1 = free_variable(buf1);
-                    buf2 = free_variable(buf2);
-                    buf3 = free_variable(buf3);
+            if (g_str_has_suffix(url, ".json"))
+                { /* A json format answer was requested */
+                    answer = get_json_answer(serveur_struct, url);
                 }
             else
-                {
-                    answer = g_strdup_printf("%s\n", url);
+                { /* A "unformatted" answer was requested */
+                    answer = get_unformatted_answer(serveur_struct, url);
                 }
 
-            /* reset when done */
-            *con_cls = NULL;
+                /* reset when done */
+                *con_cls = NULL;
 
-            /* Do not free answer variable as MHD will do it for us ! */
-            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
-            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
+                /* Do not free answer variable as MHD will do it for us ! */
+                response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+                success = MHD_queue_response(connection, MHD_HTTP_OK, response);
 
-            MHD_destroy_response(response);
+                MHD_destroy_response(response);
+
         }
 
     return success;
