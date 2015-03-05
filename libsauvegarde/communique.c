@@ -132,7 +132,6 @@ gint post_url(comm_t *comm, gchar *url)
 {
     gint success = CURLE_FAILED_INIT;
     gchar *real_url = NULL;
-    long response = 0L;
     gchar *buffer = NULL;
 
     if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL && comm->buffer != NULL)

@@ -33,7 +33,6 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
 static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileInfo *fileinfo, meta_data_t *meta);
 static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filename, GFileInfo *fileinfo, meta_data_t *meta);
 static gpointer calculate_hashs_on_a_file(gpointer data);
-static gpointer print_things(gpointer data);
 
 /**
  * Does the checksum on the opened stream.
@@ -96,8 +95,6 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
 
 /**
  * This function transmits all information about the directory.
- * @note Do not free to_print variable here because it is transmited to
- *       the thread that will print it and is freed there.
  * @param main_struct : main structure (needed to know the queue to
  *        send the message.
  * @param dirname : a gchar * directory name.
@@ -108,7 +105,6 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
  */
 static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileInfo *fileinfo, meta_data_t *meta)
 {
-    gchar *to_print = NULL;
     gchar *owner = NULL;
     gchar *dates = NULL;
     gchar *mode = NULL;
@@ -149,8 +145,6 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
 /**
  * This functions is calling everything that is needed to calculate
  * the checksums of a file.
- * @note Do not free to_print variable here because it is transmited to
- *       the thread that will print it and is freed there.
  * @param main_struct : main structure that contains everything
  * @param a_file : the GFile opened
  * @param filename the filename of the opened GFile.
@@ -163,7 +157,6 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
 {
     GFileInputStream *stream = NULL;
     GError *error = NULL;
-    gchar *to_print = NULL;
     gchar *owner = NULL;
     gchar *dates = NULL;
     gchar *mode = NULL;
