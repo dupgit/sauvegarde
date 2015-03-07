@@ -113,7 +113,7 @@ static gchar *get_unformatted_answer(serveur_struct_t *serveur_struct, const cha
         }
     else
         { /* Some sort of echo to the invalid request */
-            answer = g_strdup_printf(_("Invalid url: %s\n"), url);
+            answer = g_strdup_printf(_("Error: invalid url: %s\n"), url);
         }
 
     return answer;
@@ -190,6 +190,7 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
     gchar *answer = NULL;
     gchar *buf1 = NULL;
     struct MHD_Response *response = NULL;
+    serveur_meta_data_t *smeta = NULL;
 
 
     print_debug("%ld, %s, %p\n", *upload_data_size, url, pp);
@@ -204,7 +205,7 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
         }
     else if (*upload_data_size != 0)
         {
-
+            /* Getting datas whatever they are */
             buf1 = g_strndup(upload_data, *upload_data_size);
             newpp = g_strconcat(pp, buf1, NULL);
             buf1 = free_variable(buf1);
@@ -222,17 +223,40 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
             *con_cls = NULL;
 
             received_data = g_strdup(pp);
-            print_debug("%ld : %s\n", strlen(received_data), received_data);
+            print_debug("%ld: %s\n", strlen(received_data), received_data);
+
+            /* Do something with received_data */
+            if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
+                {
+
+                    /* received_data is freed if everything went ok : do not reuse after this ! */
+                    smeta = convert_json_to_smeta_data(received_data);
+
+                    if (smeta != NULL)
+                        {
+                            /* Do not free answer variable as MHD will do it for us ! */
+                            answer = g_strdup_printf("Got meta data for %s host\n", smeta->hostname);
+                            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+                            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
+                            smeta = free_smeta_data_t(smeta);
+                        }
+                    else
+                        {
+                            answer = g_strdup_printf(_("Error: could not convert metadata to json\n"));
+                            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+                            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
+                            received_data = free_variable(received_data);
+                        }
+                }
+            else
+                {
+                    received_data = free_variable(received_data);
+                    answer = g_strdup_printf(_("Error: invalid url!\n"));
+                    response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+                    success = MHD_queue_response(connection, MHD_HTTP_OK, response);
+                }
 
             pp = free_variable(pp);
-            /* Do something with received_data */
-            received_data = free_variable(received_data);
-
-            /* Do not free answer variable as MHD will do it for us ! */
-            answer = g_strdup_printf("Got it !\n");
-            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
-            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
-
             MHD_destroy_response(response);
         }
 

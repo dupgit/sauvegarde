@@ -200,14 +200,21 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
     gsize hash_len = 0;                  /** gsize hash_len is the length of the decoded hash (must alwas be HASH_LEN)   */
 
 
+    /**
+     * @todo : validate that we have a json string and make
+     *         sure that this is a meta_data one.
+     */
+
+
     if (json_str != NULL)
         {
 
             root = json_loads(json_str, 0, error);
-            free_variable(json_str);
 
-            if (root != NULL)
+            if (root != NULL && error == NULL)
                 {
+                    free_variable(json_str);
+
                     smeta = new_smeta_data_t();
                     meta = new_meta_data_t();
 
@@ -242,7 +249,7 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
                     smeta->meta = meta;
                     smeta->hostname =  get_string_from_json_root(root, "hostname");
                 }
-            else
+            else if (error != NULL)
                 {
                     print_error(__FILE__, __LINE__,_("Error while trying to load JSON : %s\n%s\nline: %d, column: %d, position: %d"), error->text, error->source, error->line, error->column, error->position);
                     exit(EXIT_FAILURE); /* An error here means that we will do nothing good */
