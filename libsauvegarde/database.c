@@ -379,7 +379,7 @@ static int get_all_checksum_callback(void *inserted_hashs, int nb_col, char **da
     if (data != NULL)
         {
             a_hash = g_base64_decode(data[0], &len);
-            read = g_ascii_strtoull(data[1], NULL, 10);
+            read = g_ascii_strtoull(data[1], NULL, 10);       /* 10 is the base to be used to convert the number */
             a_data = new_data_t_structure(NULL, read, TRUE);  /* We keep the size of the data checksum but do not need the data itself has it is already in the cache */
             g_tree_insert(all_hashs->tree_hash, a_hash, a_data);
         }
@@ -487,9 +487,9 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                             a_data->buffer = free_variable(a_data->buffer);
                             a_data->into_cache = TRUE;
                         }
-                    else
+                    else if (a_data == NULL)
                         {
-                            print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash %s", encoded_hash);
+                            print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash %s\n", encoded_hash);
                         }
 
                     free_variable(encoded_hash);
@@ -519,6 +519,9 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs)
         {
             cache_time = g_get_real_time();
 
+            /* beginning a transaction */
+            exec_sql_cmd(database, "BEGIN;",  N_("Error openning the transaction: %s\n"));
+
             /* Inserting the file into the files table */
             sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name) VALUES (%ld, %d, '%s', '%s', %d, %d, %ld, %ld, %ld, %d, %ld, '%s');", cache_time, meta->file_type, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name);
 
@@ -527,6 +530,9 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs)
             free_variable(sql_command);
 
             insert_file_checksums(database, meta, hashs, cache_time);
+
+            /* ending the transaction here */
+            exec_sql_cmd(database, "COMMIT;",  N_("Error commiting to the database: %s\n"));
         }
 }
 

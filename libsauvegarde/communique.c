@@ -146,17 +146,16 @@ gint post_url(comm_t *comm, gchar *url)
 
             success = curl_easy_perform(comm->curl_handle);
 
-            if (comm->buffer != NULL)
+            if (success != CURLE_OK)
+                {
+                    print_error(__FILE__, __LINE__, _("Error while sending POST command (to %s) and datas\n"), real_url);
+                }
+            else if (comm->buffer != NULL)
                 {
                     print_debug("Answer is : %s\n", comm->buffer);
                 }
 
             real_url = free_variable(real_url);
-
-            if (success != CURLE_OK)
-                {
-                    print_error(__FILE__, __LINE__, _("Error while sending POST command and datas\n"));
-                }
         }
 
     return success;
