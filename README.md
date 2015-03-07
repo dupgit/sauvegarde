@@ -140,13 +140,14 @@ As an example a JSON structure for a file looks like :
 
 For now Information is stored with the following scheme :
 
-    --- files ----         -- buffers ---
-    | file_id *  | <-1,n-> | file_id    |
-    | type       |         | buf_order  |         --- data ----
-    | file_user  |         | checksum   | <-n,1-> | checksum *|
-    | file_group |         --------------         | size      |
-    | uid        |                                | data      |
-    | gid        |                                -------------
+    --- files ----          -- buffers ---
+    | file_id *  |     /n-> | cache_time |
+    | cache_time | <-1/     | buf_order  |         --- data ----
+    | type       |          | checksum   | <-n,1-> | checksum *|
+    | file_user  |          --------------         | size      |
+    | file_group |                                 | data      |
+    | uid        |                                 -------------
+    | gid        |
     | atime      |
     | ctime      |
     | mtime      |

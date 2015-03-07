@@ -134,10 +134,10 @@ static void verify_if_tables_exists(db_t *database)
             exec_sql_cmd(database, "CREATE TABLE data (checksum TEXT PRIMARY KEY, size INTEGER, data TEXT);", N_("Error while creating database table 'data': %s\n"));
 
             /* Creation of buffers table that contains checksums and their associated data */
-            exec_sql_cmd(database, "CREATE TABLE buffers (file_id INTEGER, buf_order INTEGER, checksum TEXT);", N_("Error while creating database table 'buffers': %s\n"));
+            exec_sql_cmd(database, "CREATE TABLE buffers (cache_time INTEGER, buf_order INTEGER, checksum TEXT);", N_("Error while creating database table 'buffers': %s\n"));
 
             /* Creation of files table that contains everything about a file */
-            exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, type INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT);", N_("Error while creating database table 'files': %s\n"));
+            exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT);", N_("Error while creating database table 'files': %s\n"));
         }
 }
 
@@ -437,7 +437,7 @@ hashs_t *get_all_inserted_hashs(db_t *database)
  * @param file_id : the file_id we are going to insert checksums into the
  *        database.
  */
-static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id)
+static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 cache_time)
 {
     GSList *head = NULL;
     guint8 *a_hash = NULL;
@@ -458,7 +458,7 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                     encoded_hash = g_base64_encode((guchar*) a_hash, HASH_LEN);
 
                     /* Inserting the hash and it's order into buffers table */
-                    sql_command = g_strdup_printf("INSERT INTO buffers (file_id, buf_order, checksum) VALUES (%ld, %ld, '%s');", file_id, i, encoded_hash);
+                    sql_command = g_strdup_printf("INSERT INTO buffers (cache_time, buf_order, checksum) VALUES (%ld, %ld, '%s');", cache_time, i, encoded_hash);
 
                     exec_sql_cmd(database, sql_command,  N_("Error while inserting into the table 'buffers': %s\n"));
 
@@ -481,11 +481,15 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
 
                             /* The hash is already in the database or has just been inserted.
                              * We can safely free the data from the tree_hash structure but we
-                             * need to keep the key into the tree (the hash) and can keep the
-                             * old size of the data. 'buffer' is set to NULL.
+                             * need to keep the key (the hash) into the tree and can keep the
+                             * old size of the data. 'buffer' is freed and set to NULL.
                              */
                             a_data->buffer = free_variable(a_data->buffer);
                             a_data->into_cache = TRUE;
+                        }
+                    else
+                        {
+                            print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash %s", encoded_hash);
                         }
 
                     free_variable(encoded_hash);
@@ -509,33 +513,20 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
 void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs)
 {
     gchar *sql_command = NULL;     /** gchar *sql_command is the command to be executed */
-    file_row_t *row = NULL;
-    guint64 file_id = 0;
+    guint64 cache_time = 0;
 
     if (meta != NULL && database != NULL)
         {
+            cache_time = g_get_real_time();
+
             /* Inserting the file into the files table */
-            sql_command = g_strdup_printf("INSERT INTO files (type, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name) VALUES (%d, '%s', '%s', %d, %d, %ld, %ld, %ld, %d, %ld, '%s');", meta->file_type, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name);
+            sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name) VALUES (%ld, %d, '%s', '%s', %d, %d, %ld, %ld, %ld, %d, %ld, '%s');", cache_time, meta->file_type, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name);
 
             exec_sql_cmd(database, sql_command,  N_("Error while inserting into the table 'files': %s\n"));
 
             free_variable(sql_command);
 
-            /* getting its autoincrement file_id */
-            row = get_file_id(database, meta); /* Seeking for the file_id which has been associated to this file */
-
-            if (row != NULL)
-                {
-                    print_debug(_("file_id = %s ; list length = %d\n"), row->file_id_list->data, g_slist_length(row->file_id_list));
-                    file_id = g_ascii_strtoull(row->file_id_list->data, NULL, 10);
-                    insert_file_checksums(database, meta, hashs, file_id);
-                }
-            else  /* if we have no answer that means that something went wrong */
-                {
-                    print_db_error(database->db, _("Error while trying to get file_id of %s file\n"), meta->name);
-                    exit(EXIT_FAILURE);
-                }
-
+            insert_file_checksums(database, meta, hashs, cache_time);
         }
 }
 
