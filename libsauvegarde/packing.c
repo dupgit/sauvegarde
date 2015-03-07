@@ -269,6 +269,13 @@ gchar *convert_version_to_json(gchar *name, gchar *date, gchar *version, gchar *
     json_array_append_new(libs, objs);
     free_variable(buffer);
 
+    /* sqlite */
+    buffer = g_strdup_printf("%s", db_version());
+    objs = json_object();
+    json_object_set_new(objs, "sqlite", json_string(buffer));
+    json_array_append_new(libs, objs);
+    free_variable(buffer);
+
     /* jansson ! */
     buffer = g_strdup_printf("%d.%d.%d", JANSSON_MAJOR_VERSION, JANSSON_MINOR_VERSION, JANSSON_MICRO_VERSION);
     objs = json_object();
