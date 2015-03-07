@@ -51,7 +51,7 @@ static void print_buffer(gchar *buffer)
  *          the following format : major.minor.maint-build. It may me freed
  *          when no longer needed.
  */
-static gchar *make_MHD_version(void)
+gchar *make_MHD_version(void)
 {
     gint build = 0;
     gint maint = 0;
@@ -392,7 +392,7 @@ void ignore_sigpipe(void)
         sig.sa_flags = SA_RESTART;
     #endif
 
-    if (0 != sigaction (SIGPIPE, &sig, &oldsig))
+    if (sigaction(SIGPIPE, &sig, &oldsig) != 0)
         {
             fprintf (stderr, "Failed to install SIGPIPE handler: %s\n", strerror (errno));
         }

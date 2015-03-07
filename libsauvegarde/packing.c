@@ -216,6 +216,78 @@ gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
 
 
 /**
+ * Converts to a json gchar * string. Used only by serveur's program
+ * @param name : name of the program of which we want to print the version.
+ * @param date : publication date of this version
+ * @param version : version of the program.
+ * @param authors : authors that contributed to this program
+ * @param license : license in use for this program and its sources
+ * @returns a newlly allocated gchar * string in json format that can be
+ *          freed when no longer needed.
+ */
+gchar *convert_version_to_json(gchar *name, gchar *date, gchar *version, gchar *authors, gchar *license)
+{
+    json_t *root = NULL;    /** json_t *root is the root that will contain all data in json format     */
+    json_t *libs = NULL;    /** json_t *libs is the array that will contain all libraries and versions */
+    json_t *auths = NULL;   /** json_t *auths is the array containing all authors                      */
+    json_t *objs = NULL;    /** json_t *objs will store version of libraries                           */
+    gchar *buffer = NULL;
+    gchar *json_str = NULL; /** gchar *json_str is the string to be returned at the end                */
+
+
+    root = json_object();
+
+    insert_string_into_json_root(root, "name", name);
+    insert_string_into_json_root(root, "date", date);
+    insert_string_into_json_root(root, "version", version);
+    insert_string_into_json_root(root, "revision", REVISION);
+    insert_string_into_json_root(root, "licence", license);
+
+    /**
+     * @todo use g_strsplit to split authors string if more than one author
+     * is in the string.
+     */
+    auths = json_array();
+    json_array_append_new(auths, json_string(authors));
+    insert_json_value_into_json_root(root, "authors", auths);
+
+
+
+    libs = json_array();
+
+    /* glib */
+    buffer = g_strdup_printf("%d.%d.%d", glib_major_version, glib_minor_version, glib_micro_version);
+    objs = json_object();
+    json_object_set_new(objs, "glib", json_string(buffer));
+    json_array_append_new(libs, objs);
+    free_variable(buffer);
+
+    /* libmicrohttpd */
+    buffer = make_MHD_version();
+    objs = json_object();
+    json_object_set_new(objs, "mhd", json_string(buffer));
+    json_array_append_new(libs, objs);
+    free_variable(buffer);
+
+    /* jansson ! */
+    buffer = g_strdup_printf("%d.%d.%d", JANSSON_MAJOR_VERSION, JANSSON_MINOR_VERSION, JANSSON_MICRO_VERSION);
+    objs = json_object();
+    json_object_set_new(objs, "jansson", json_string(buffer));
+    json_array_append_new(libs, objs);
+    free_variable(buffer);
+
+    insert_json_value_into_json_root(root, "librairies", libs);
+
+    json_str = json_dumps(root, 0);
+
+    json_decref(root);
+
+    return json_str;
+
+}
+
+
+/**
  * Function that encapsulate a meta_data_t * variable into a capsule_t *
  * one. It does not check that meta is not NULL so it may encapsulate a
  * NULL pointer !

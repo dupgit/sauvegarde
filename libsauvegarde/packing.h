@@ -147,4 +147,16 @@ extern capsule_t *encapsulate_end(void);
  */
 extern gint get_json_message_id(gchar *json_str);
 
+
+/**
+ * Converts to a json gchar * string. Used only by serveur's program
+ * @param name : name of the program of which we want to print the version.
+ * @param date : publication date of this version
+ * @param version : version of the program.
+ * @param authors : authors that contributed to this program
+ * @param license : license in use for this program and its sources
+ * @returns a newlly allocated gchar * string in json format that can be
+ *          freed when no longer needed.
+ */
+extern gchar *convert_version_to_json(gchar *name, gchar *date, gchar *version, gchar *authors, gchar *license);
 #endif /* #ifndef _PACKING_H_ */

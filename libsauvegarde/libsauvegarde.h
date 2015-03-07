@@ -192,4 +192,12 @@ extern void ignore_sigpipe(void);
 extern void wait_for_queue_to_flush(GAsyncQueue *queue, guint nbelem, useconds_t usecs);
 
 
+/**
+ * @returns a newlly allocated gchar containing MHD version number with
+ *          the following format : major.minor.maint-build. It may me freed
+ *          when no longer needed.
+ */
+extern gchar *make_MHD_version(void);
+
+
 #endif /* #ifndef _LIBSAUVEGARDE_H_ */

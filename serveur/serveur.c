@@ -72,7 +72,7 @@ static gchar *get_json_answer(serveur_struct_t *serveur_struct, const char *url)
 
     if (g_strcmp0(url, "/Version.json") == 0)
         {
-            answer = g_strdup_printf("{\"Program\": %s}", PROGRAM_NAME);
+            answer = convert_version_to_json(PROGRAM_NAME, SERVEUR_DATE, SERVEUR_VERSION, SERVEUR_AUTHORS, SERVEUR_LICENSE);
         }
     else
         { /* Some sort of echo to the invalid request */
