@@ -146,7 +146,7 @@ gchar *buffer_program_version(gchar *name, gchar *date, gchar *version, gchar *a
 
         if (name != NULL && date != NULL && version != NULL && authors != NULL && license != NULL)
         {
-            buffer = g_strdup_printf(_("%s version : %s (%s)\nAuthor(s) : %s\nLicense : %s\n\n"), name, version, date, authors, license);
+            buffer = g_strdup_printf(_("%s version : %s-%s (%s)\nAuthor(s) : %s\nLicense : %s\n\n"), name, version, REVISION, date, authors, license);
         }
 
     return buffer;

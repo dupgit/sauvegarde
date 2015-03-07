@@ -198,6 +198,8 @@ else
  CFLAGS="$CFLAGS"
 fi
 
+REVISION=`git rev-parse --short --revs-only HEAD 2>/dev/null || echo 0`
+AC_DEFINE_UNQUOTED(REVISION, "$REVISION", [git revision hash])
 
 dnl ***********************************************************************
 dnl * exporting variables                                                 *
@@ -260,6 +262,7 @@ AC_MSG_NOTICE([
      - Prefix                   : $prefix
      - Exec prefix              : ${exec_prefix}
      - Locale dir               : ${LOCALE_DIR}
+     - git revision             : ${REVISION}
 
      - Options
        . is code profiling on ?       : $gprof

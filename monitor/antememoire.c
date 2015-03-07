@@ -59,7 +59,7 @@ static void insert_meta_data_into_cache_or_send_to_serveur(meta_data_t *meta, ma
             else
                 {   /* Something went wrong when sending the datas and thus we have to store them localy. */
 
-                    /** @todo before using insert_file_into_cache do something to speed up the function ! */
+                    /** @note insert_file_into_cache is fast but does not garantee that the data is on the disk ! */
                     print_debug("Inserting into database cache file %s\n", meta->name);
                     insert_file_into_cache(main_struct->database, meta, main_struct->hashs);
                 }
