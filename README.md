@@ -163,6 +163,10 @@ JSON formatted message) We keep buffer order in an implicit manner (by
 storing the ordered list of checksums of a file). Fields marked with '*'
 are primary keys.
 
+SQLITE is used with asynchronous mode (PRAGMA synchronous = OFF;). It is
+really faster (by 19 times) but may lead to database corruption and data
+loss.
+
 
 ## Coding into this project
 

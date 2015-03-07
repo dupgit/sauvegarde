@@ -140,6 +140,10 @@ static void verify_if_tables_exists(db_t *database)
             exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT);", N_("Error while creating database table 'files': %s\n"));
         }
 
+    /**
+     * We are setting the asynchronous mode of SQLITE here. Tradeoff is that any
+     * powerloss is leading to a database corruption and data loss !
+     */
     exec_sql_cmd(database, "PRAGMA synchronous = OFF;", N_("Error while trying to set asynchronous mode.\n"));
 
 }
