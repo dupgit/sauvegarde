@@ -211,8 +211,6 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
 
             root = json_loads(json_str, 0, &error);
 
-            /* print_debug("%p %p\n", root, error); */
-
             if (root != NULL)
                 {
                     free_variable(json_str);
@@ -253,6 +251,7 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
                 }
             else
                 {
+                    free_variable(json_str);
                     print_error(__FILE__, __LINE__,_("Error while trying to load JSON : %s\nline: %d, column: %d, position: %d\n"), error.text, error.line, error.column, error.position);
                     /* exit(EXIT_FAILURE); */  /* An error here means that we will do nothing good */
                 }

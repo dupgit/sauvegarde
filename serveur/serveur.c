@@ -171,6 +171,83 @@ static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Conn
 
 
 /**
+ * Answers /Meta.json POST request by storing datas and answering to the
+ * client.
+ * @param serveur_struct is the main structure for the server.
+ * @param connection is the connection in MHD
+ * @param received_data is a gchar * string to the data that was received
+ *        by the POST request.
+ */
+static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, gchar *received_data)
+{
+    struct MHD_Response *response = NULL;
+    serveur_meta_data_t *smeta = NULL;
+    gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
+    int success = MHD_NO;
+
+    /* received_data is freed : do not reuse after this ! */
+    smeta = convert_json_to_smeta_data(received_data);
+
+    if (smeta != NULL)
+        {
+            answer = g_strdup_printf("Got meta data for %s host\n", smeta->hostname);
+            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
+            smeta = free_smeta_data_t(smeta);
+        }
+    else
+        {
+            answer = g_strdup_printf(_("Error: could not convert metadata to json\n"));
+            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
+        }
+
+    MHD_destroy_response(response);
+
+    return success;
+
+}
+
+
+/**
+ * Function that process the received data from the POST command and
+ * answers to the client.
+ * Here we may do something with this data (we may want to store it
+ * somewhere).
+ *
+ * @param serveur_struct is the main structure for the server.
+ * @param connection is the connection in MHD
+ * @param url is the requested url
+ * @param received_data is a gchar * string to the data that was received
+ *        by the POST request.
+ */
+static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, const char *url, gchar *received_data)
+{
+    struct MHD_Response *response = NULL;
+    gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
+    int success = MHD_NO;
+
+
+    if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
+        {
+            /* received_data is freed there (do not reuse after this call) */
+            success = answer_meta_json_post_request(serveur_struct, connection, received_data);
+        }
+    else
+        {
+            /* The url is unknown to the server and we can not process the request ! */
+            received_data = free_variable(received_data);
+            answer = g_strdup_printf(_("Error: invalid url!\n"));
+            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
+            MHD_destroy_response(response);
+        }
+
+    return success;
+}
+
+
+/**
  * Function to process post requests.
  * @param serveur_struct is the main structure for the server.
  * @param connection is the connection in MHD
@@ -187,10 +264,8 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
     gchar *pp = *con_cls;
     gchar *newpp = NULL;
     gchar *received_data = NULL;
-    gchar *answer = NULL;
     gchar *buf1 = NULL;
-    struct MHD_Response *response = NULL;
-    serveur_meta_data_t *smeta = NULL;
+
 
 
     print_debug("%ld, %s, %p\n", *upload_data_size, url, pp);
@@ -223,41 +298,12 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
             *con_cls = NULL;
 
             received_data = g_strdup(pp);
+            pp = free_variable(pp);
+
             print_debug("%ld: %s\n", strlen(received_data), received_data);
 
             /* Do something with received_data */
-            if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
-                {
-
-                    /* received_data is freed if everything went ok : do not reuse after this ! */
-                    smeta = convert_json_to_smeta_data(received_data);
-
-                    if (smeta != NULL)
-                        {
-                            /* Do not free answer variable as MHD will do it for us ! */
-                            answer = g_strdup_printf("Got meta data for %s host\n", smeta->hostname);
-                            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
-                            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
-                            smeta = free_smeta_data_t(smeta);
-                        }
-                    else
-                        {
-                            answer = g_strdup_printf(_("Error: could not convert metadata to json\n"));
-                            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
-                            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
-                            received_data = free_variable(received_data);
-                        }
-                }
-            else
-                {
-                    received_data = free_variable(received_data);
-                    answer = g_strdup_printf(_("Error: invalid url!\n"));
-                    response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
-                    success = MHD_queue_response(connection, MHD_HTTP_OK, response);
-                }
-
-            pp = free_variable(pp);
-            MHD_destroy_response(response);
+            success = process_received_data(serveur_struct, connection, url, received_data);
         }
 
     return success;
