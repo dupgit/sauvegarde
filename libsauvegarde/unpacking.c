@@ -160,12 +160,12 @@ static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname)
 gint get_json_message_id(gchar *json_str)
 {
     json_t *root = NULL;           /** json_t *root is the json tree from which we will extract msg_id                   */
-    json_error_t *error = NULL;    /** json_error_t *error handle json errors if any                                     */
+    json_error_t error;            /** json_error_t *error handle json errors if any                                     */
     gint msg_id = ENC_NOT_FOUND;   /** gint msg_id is the message id from the JSON string by default it is ENC_NOT_FOUND */
 
     if (json_str != NULL)
         {
-            root = json_loads(json_str, 0, error);
+            root = json_loads(json_str, 0, &error);
 
             if (root != NULL)
                 {
@@ -189,7 +189,7 @@ gint get_json_message_id(gchar *json_str)
 serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
 {
     json_t *root = NULL;                 /** json_t *root is the json tree from which we will extract everything         */
-    json_error_t *error = NULL;          /** json_error_t *error will handle json errors                                 */
+    json_error_t error;                  /** json_error_t *error will handle json errors                                 */
     meta_data_t *meta = NULL;            /** meta_data_t *meta will be returned in smeta and contain file's metadata     */
     serveur_meta_data_t *smeta = NULL;   /** serveur_meta_data_t *smeta will be returned at the end                      */
     json_t *array =  NULL;               /** json_t *array is the retrieved array used to iter over to fill the list     */
@@ -209,9 +209,11 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
     if (json_str != NULL)
         {
 
-            root = json_loads(json_str, 0, error);
+            root = json_loads(json_str, 0, &error);
 
-            if (root != NULL && error == NULL)
+            /* print_debug("%p %p\n", root, error); */
+
+            if (root != NULL)
                 {
                     free_variable(json_str);
 
@@ -249,10 +251,10 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
                     smeta->meta = meta;
                     smeta->hostname =  get_string_from_json_root(root, "hostname");
                 }
-            else if (error != NULL)
+            else
                 {
-                    print_error(__FILE__, __LINE__,_("Error while trying to load JSON : %s\n%s\nline: %d, column: %d, position: %d"), error->text, error->source, error->line, error->column, error->position);
-                    exit(EXIT_FAILURE); /* An error here means that we will do nothing good */
+                    print_error(__FILE__, __LINE__,_("Error while trying to load JSON : %s\nline: %d, column: %d, position: %d\n"), error.text, error.line, error.column, error.position);
+                    exit(EXIT_FAILURE);   /* An error here means that we will do nothing good */
                 }
         }
 
