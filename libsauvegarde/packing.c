@@ -30,7 +30,6 @@
 
 #include "libsauvegarde.h"
 
-static void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_t *value);
 static void append_hash_to_array(json_t *array, gchar *encoded_hash);
 static void insert_string_into_json_root(json_t *root, gchar *keyname, gchar *a_string);
 static void insert_guint8_into_json_root(json_t *root, gchar *keyname, guint8 number);
@@ -45,7 +44,7 @@ static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 
  *        variable's name)
  * @param value is the json_t "encoded" value to insert into the root
  */
-static void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_t *value)
+void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_t *value)
 {
     int result = 0;
 
@@ -153,6 +152,36 @@ static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 
 
 
 /**
+ * Converts the hash list to a json_t * array
+ * @param hash_list : the GSList * list of hashs
+ * @returns a json_t * array with the element of the list in it (if any).
+ */
+json_t *convert_hash_list_to_json(GSList *hash_list)
+{
+    json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs   */
+    gchar *encoded_hash = NULL; /** gchar encoded_hash is an hash base64 encoded                        */
+    GSList *head = NULL;        /** GSList *head is a list to iter over that will contain the hash list */
+
+    /* creating an array with the whole hash list */
+    array = json_array();
+    head = hash_list;
+
+    while (head != NULL)
+        {
+            encoded_hash = g_base64_encode(head->data, HASH_LEN);
+
+            append_hash_to_array(array, encoded_hash);
+
+            free_variable(encoded_hash);
+
+            head = g_slist_next(head);
+        }
+
+    return array;
+}
+
+
+/**
  * This function should return a JSON string with all informations from
  * the meta_data_t structure.
  * @param meta is the structure that contains all meta data for a file or
@@ -165,9 +194,8 @@ gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
 {
     json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json       */
     json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs   */
-    gchar *encoded_hash = NULL; /** gchar encoded_hash is an hash base64 encoded                        */
-    GSList *head = NULL;        /** GSList *head is a list to iter over that will contain the hash list */
     gchar *json_str = NULL;     /** gchar *json_str is the string to be returned at the end             */
+
 
     if (meta != NULL)
         {
@@ -191,20 +219,7 @@ gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
             insert_string_into_json_root(root, "name", meta->name);
             insert_string_into_json_root(root, "hostname", (gchar *) hostname);
 
-            /* creating an array with the whole hash list */
-            array = json_array();
-            head = meta->hash_list;
-
-            while (head != NULL)
-                {
-                    encoded_hash = g_base64_encode(head->data, HASH_LEN);
-
-                    append_hash_to_array(array, encoded_hash);
-
-                    free_variable(encoded_hash);
-
-                    head = g_slist_next(head);
-                }
+            array = convert_hash_list_to_json(meta->hash_list);
 
             insert_json_value_into_json_root(root, "hash_list", array);
 

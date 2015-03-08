@@ -87,7 +87,6 @@ typedef struct
 {
     options_t *opt;           /**< Options of the program from the command line */
     struct MHD_Daemon *d;     /**< libmicrohttpd daemon structure               */
-    gchar *buffer;            /**< for testing purposes */
 } serveur_struct_t;
 
 

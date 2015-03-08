@@ -184,14 +184,27 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
     serveur_meta_data_t *smeta = NULL;
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     int success = MHD_NO;
+    json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json       */
+    json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs   */
+    gchar *json_str = NULL;     /** gchar *json_str is the string to be returned at the end             */
 
     /* received_data is freed : do not reuse after this ! */
     smeta = convert_json_to_smeta_data(received_data);
 
     if (smeta != NULL)
-        {
-            answer = g_strdup_printf("Got meta data for %s host\n", smeta->hostname);
-            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+        {   /* The convertion went well and smeta contains the meta datas */
+            /**
+             * @todo store datas somewhere
+             * Here we are returning the whole hash_list but when we will
+             * begin to store things it may happen that the serveur already
+             * has a specific hash thus we will not ask for it !
+             */
+            root = json_object();
+            array = convert_hash_list_to_json(smeta->meta->hash_list);
+            insert_json_value_into_json_root(root, "hash_list", array);
+            json_str = json_dumps(root, 0);
+
+            response = MHD_create_response_from_buffer(strlen(json_str), (void *) json_str, MHD_RESPMEM_MUST_FREE);
             success = MHD_queue_response(connection, MHD_HTTP_OK, response);
             smeta = free_smeta_data_t(smeta);
         }

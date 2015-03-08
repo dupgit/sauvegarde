@@ -83,6 +83,16 @@ typedef struct
 
 
 /**
+ * Inserts a json_t *value into the json_t *root array.
+ * @param[in,out] root is the root that will contain all meta data values
+ * @param keyname is the keyname associated with the value (in fact it is
+ *        variable's name)
+ * @param value is the json_t "encoded" value to insert into the root
+ */
+void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_t *value);
+
+
+/**
  * returns the string with key keyname from the json tree root. It is used
  * by serveur to get the hostname from the json received message.
  * @param[in,out] root is the main json tree
@@ -92,6 +102,14 @@ typedef struct
  *          needed.
  */
 extern gchar *get_string_from_json_root(json_t *root, gchar *keyname);
+
+
+/**
+ * Converts the hash list to a json_t * array
+ * @param hash_list : the GSList * list of hashs
+ * @returns a json_t * array with the element of the list in it (if any).
+ */
+extern json_t *convert_hash_list_to_json(GSList *hash_list);
 
 
 /**
