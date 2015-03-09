@@ -93,6 +93,16 @@ void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_t *valu
 
 
 /**
+ * gets a json_t *value into the json_t *root array.
+ * @param[in,out] root is the root that contains all meta data values
+ * @param keyname is the keyname associated with the value that we want to
+ *        get back.
+ * @returns the json_t "encoded" value from key keyname from the root
+ */
+extern json_t *get_json_value_from_json_root(json_t *root, gchar *keyname);
+
+
+/**
  * returns the string with key keyname from the json tree root. It is used
  * by serveur to get the hostname from the json received message.
  * @param[in,out] root is the main json tree
@@ -110,6 +120,15 @@ extern gchar *get_string_from_json_root(json_t *root, gchar *keyname);
  * @returns a json_t * array with the element of the list in it (if any).
  */
 extern json_t *convert_hash_list_to_json(GSList *hash_list);
+
+
+/**
+ * This function returns a list from an json array
+ * @param root is the root json string that may contain an array named "name"
+ * @param name is the name of the array to look for into
+ * @returns a GSList that me be composed of 0 element (ie NULL).
+ */
+extern GSList *extract_gslist_from_array(json_t *root, gchar *name);
 
 
 /**

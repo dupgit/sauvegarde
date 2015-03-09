@@ -246,6 +246,15 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
             /* received_data is freed there (do not reuse after this call) */
             success = answer_meta_json_post_request(serveur_struct, connection, received_data);
         }
+    else if (g_strcmp0(url, "/Data.json") == 0 && received_data != NULL)
+        {
+            print_debug(_("Received %ld bytes of datas\n"), strlen(received_data));
+            received_data = free_variable(received_data);
+            answer = g_strdup_printf(_("Ok!\n"));
+            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
+            MHD_destroy_response(response);
+        }
     else
         {
             /* The url is unknown to the server and we can not process the request ! */

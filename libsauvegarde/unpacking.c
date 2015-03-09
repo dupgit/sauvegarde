@@ -28,7 +28,6 @@
 
 #include "libsauvegarde.h"
 
-static json_t *get_json_value_from_json_root(json_t *root, gchar *keyname);
 static guint8 get_guint8_from_json_root(json_t *root, gchar *keyname);
 static guint32 get_guint32_from_json_root(json_t *root, gchar *keyname);
 static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname);
@@ -40,7 +39,7 @@ static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname);
  *        get back.
  * @returns the json_t "encoded" value from key keyname from the root
  */
-static json_t *get_json_value_from_json_root(json_t *root, gchar *keyname)
+json_t *get_json_value_from_json_root(json_t *root, gchar *keyname)
 {
     json_t *value = NULL;
 
@@ -178,6 +177,43 @@ gint get_json_message_id(gchar *json_str)
 
 
 /**
+ * This function returns a list from an json array
+ * @param root is the root json string that may contain an array named "name"
+ * @param name is the name of the array to look for into
+ * @returns a GSList that me be composed of 0 element (ie NULL).
+ * @todo : I'm not sure that the order of the list is respected when using
+ *         json. We get this order with the explicit manner :
+ *         [ {number : n, hash : sdsdd}, {number : m, hash : sazsdd}, ... ]
+ */
+GSList *extract_gslist_from_array(json_t *root, gchar *name)
+{
+    json_t *array =  NULL;   /** json_t *array is the retrieved array used to iter over to fill the list     */
+    size_t index = 0;        /** size_t index is the iterator to iter over the array                         */
+    json_t *value = NULL;    /** json_t *value : value = array[index] when iterating with json_array_foreach */
+    GSList *head = NULL;     /** GSList *head the list to build and iclude into meta_data_t *meta            */
+    guchar *a_hash = NULL;   /** guchar *a_hash is one base64 decoded hash (binary format)                   */
+    gsize hash_len = 0;      /** gsize hash_len is the length of the decoded hash (must alwas be HASH_LEN)   */
+
+
+    if (root != NULL && name != NULL)
+        {
+
+            /* creating a list with JSON array */
+            array = get_json_value_from_json_root(root, name);
+
+            /* This is a loop from jansson library for the array */
+            json_array_foreach(array, index, value)
+                {
+                    a_hash = g_base64_decode(json_string_value(value), &hash_len);
+                    head = g_slist_append(head, a_hash);
+                }
+        }
+
+    return head;
+}
+
+
+/**
  * This function should return a newly allocated serveur_meta_data_t *
  * structure with all informations included from the json string.
  * @param json_str is a gchar * containing the JSON formated string. This
@@ -192,13 +228,6 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
     json_error_t error;                  /** json_error_t *error will handle json errors                                 */
     meta_data_t *meta = NULL;            /** meta_data_t *meta will be returned in smeta and contain file's metadata     */
     serveur_meta_data_t *smeta = NULL;   /** serveur_meta_data_t *smeta will be returned at the end                      */
-    json_t *array =  NULL;               /** json_t *array is the retrieved array used to iter over to fill the list     */
-    size_t index = 0;                    /** size_t index is the iterator to iter over the array                         */
-    json_t *value = NULL;                /** json_t *value : value = array[index] when iterating with json_array_foreach */
-    GSList *head = NULL;                 /** GSList *head the list to build and iclude into meta_data_t *meta            */
-    guchar *a_hash = NULL;               /** guchar *a_hash is one base64 decoded hash (binary format)                   */
-    gsize hash_len = 0;                  /** gsize hash_len is the length of the decoded hash (must alwas be HASH_LEN)   */
-
 
     /**
      * @todo : validate that we have a json string and make
@@ -234,17 +263,7 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
 
                     meta->name = get_string_from_json_root(root, "name");
 
-                    /* creating a list with JSON array */
-                    array = get_json_value_from_json_root(root, "hash_list");
-
-                    /* This is a loop from jansson library for the array */
-                    json_array_foreach(array, index, value)
-                        {
-                            a_hash = g_base64_decode(json_string_value(value), &hash_len);
-                            head = g_slist_append(head, a_hash);
-                        }
-
-                    meta->hash_list = head;
+                    meta->hash_list = extract_gslist_from_array(root, "hash_list");
 
                     smeta->meta = meta;
                     smeta->hostname =  get_string_from_json_root(root, "hostname");

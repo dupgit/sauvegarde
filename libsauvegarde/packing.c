@@ -155,6 +155,9 @@ static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 
  * Converts the hash list to a json_t * array
  * @param hash_list : the GSList * list of hashs
  * @returns a json_t * array with the element of the list in it (if any).
+ * @todo : I'm not sure that the order of the list is respected when using
+ *         json. We should explicit this order :
+ *         [ {number : n, hash : sdsdd}, {number : m, hash : sazsdd}, ... ]
  */
 json_t *convert_hash_list_to_json(GSList *hash_list)
 {

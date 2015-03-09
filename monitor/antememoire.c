@@ -29,6 +29,71 @@
 #include "monitor.h"
 
 /**
+ * This function sends the datas that corresponds to the hashs in the json
+ * formatted string's answer.
+ */
+static void send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer)
+{
+    data_t *a_data = NULL;
+    json_t *root = NULL;
+    json_error_t error;                /** json_error_t *error will handle json errors  */
+    GSList *hash_list = NULL;
+    GSList *head = NULL;
+    gint success = CURLE_FAILED_INIT;
+
+    if (hashs != NULL && answer != NULL)
+        {
+
+            root = json_loads(answer, 0, &error);
+
+            if (root != NULL)
+                {
+
+                    hash_list = extract_gslist_from_array(root, "hash_list");
+                    head = hash_list;
+
+                    while (hash_list != NULL)
+                        {
+                            a_data = g_tree_lookup(hashs->tree_hash, hash_list->data);
+
+                            if (a_data != NULL)
+                                {
+                                    /**
+                                     * @todo construct a json POST request where we have one hash an it's associated data
+                                     * hash :
+                                     * data :
+                                     * size :
+                                     */
+                                    comm->buffer = g_base64_encode((guchar*) a_data->buffer, a_data->read);
+                                    success = post_url(comm, "/Data.json");
+
+                                    if (success == CURLE_OK)
+                                        {
+                                            a_data->buffer = free_variable(a_data->buffer);
+                                            a_data->read = 0;
+                                            a_data->into_cache = FALSE;
+                                        }
+                                }
+                            else if (a_data == NULL)
+                                {
+                                    print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash\n");
+                                }
+                            free_variable(hash_list->data);
+                            hash_list = g_slist_next(hash_list);
+                        }
+
+                    g_slist_free(head);
+                }
+
+            json_decref(root);
+        }
+}
+
+
+
+
+
+/**
  * This function saves meta_data_t structure into the cache or to the
  * serveur's server (it then inserts hostname into the message that is
  * sent).
@@ -37,7 +102,7 @@
  *        to the communication socket, the cache database connexion and the
  *        balanced binary tree that contains hashs.
  */
-static void insert_meta_data_into_cache_or_send_to_serveur(meta_data_t *meta, main_struct_t *main_struct)
+static void send_meta_data_to_serveur_or_store_into_cache(meta_data_t *meta, main_struct_t *main_struct)
 {
     gchar *json_str = NULL;
     gint success = CURLE_FAILED_INIT;
@@ -52,9 +117,17 @@ static void insert_meta_data_into_cache_or_send_to_serveur(meta_data_t *meta, ma
             main_struct->comm->buffer = json_str;
             success = post_url(main_struct->comm, "/Meta.json");
 
+            json_str = free_variable(json_str);
+
             if (success == CURLE_OK)
-                {   /* freeing json_str may only happen when the message has been received */
-                    json_str = free_variable(json_str);
+                {   /**
+                     * Message has been sent and an answer has been received correctly.
+                     * This answer is a list of hashs that the server needs. So we want
+                     * to send the datas that corresponds with the hashs. Answer is in
+                     * comm->buffer
+                     */
+                    send_datas_to_server(main_struct->comm, main_struct->hashs, main_struct->comm->buffer);
+
                 }
             else
                 {   /* Something went wrong when sending the datas and thus we have to store them localy. */
@@ -94,7 +167,7 @@ gpointer store_buffer_data(gpointer data)
                             switch (capsule->command)
                                 {
                                     case ENC_META_DATA:
-                                        insert_meta_data_into_cache_or_send_to_serveur((meta_data_t *) capsule->data, main_struct);
+                                        send_meta_data_to_serveur_or_store_into_cache((meta_data_t *) capsule->data, main_struct);
                                         /* capsule = free_variable(capsule); */
                                     break;
 
@@ -102,7 +175,7 @@ gpointer store_buffer_data(gpointer data)
                                     break;
 
                                     default :
-                                        print_debug(_("Default case !\n"));
+                                        print_error(__FILE__, __LINE__, _("Error: default case !\n"));
                                     break;
                                 }
 
