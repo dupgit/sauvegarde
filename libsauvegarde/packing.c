@@ -62,7 +62,8 @@ void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_t *valu
 
 
 /**
- *
+ * appends an encoded hash into the array (the array is ordered and should
+ * not mess itself)
  * @param[in,out] array is an array that will contain all base64 encoded
  *                hashs
  * @param encoded_hash is the base64 encoded hash
@@ -74,6 +75,7 @@ static void append_hash_to_array(json_t *array, gchar *encoded_hash)
     if (array != NULL && encoded_hash != NULL)
         {
             string = json_string_nocheck((const char *) encoded_hash);
+
             json_array_append_new(array, string);
         }
 }
@@ -181,6 +183,36 @@ json_t *convert_hash_list_to_json(GSList *hash_list)
         }
 
     return array;
+}
+
+
+/**
+ * Converts data with the associated hash to a json formatted string
+ * @param a_data the data structure that contains the data whose checksum
+ *               is a_hash
+ * @param a_hash the hash of the data contained in a_data
+ * @returns a json formatted string with those informations
+ */
+gchar *convert_data_to_json(data_t *a_data, guint8 *a_hash)
+{
+    gchar *encoded_data = NULL;
+    gchar *encoded_hash = NULL;
+    gchar *json_str = NULL;
+    json_t *root = NULL;
+
+    if (a_data != NULL && a_hash != NULL && a_data->buffer != NULL && a_data->read >= 0)
+        {
+            encoded_data = g_base64_encode((guchar*) a_data->buffer, a_data->read);
+            encoded_hash = g_base64_encode(a_hash, HASH_LEN);
+
+            root = json_object();
+            insert_string_into_json_root(root, "hash", encoded_hash);
+            insert_string_into_json_root(root, "data", encoded_data);
+            insert_guint64_into_json_root(root, "size", a_data->read);
+            json_str = json_dumps(root, 0);
+        }
+
+    return json_str;
 }
 
 

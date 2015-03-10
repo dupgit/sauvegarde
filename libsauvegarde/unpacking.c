@@ -194,7 +194,6 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
     guchar *a_hash = NULL;   /** guchar *a_hash is one base64 decoded hash (binary format)                   */
     gsize hash_len = 0;      /** gsize hash_len is the length of the decoded hash (must alwas be HASH_LEN)   */
 
-
     if (root != NULL && name != NULL)
         {
 

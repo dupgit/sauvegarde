@@ -58,13 +58,7 @@ static void send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer)
 
                             if (a_data != NULL)
                                 {
-                                    /**
-                                     * @todo construct a json POST request where we have one hash an it's associated data
-                                     * hash :
-                                     * data :
-                                     * size :
-                                     */
-                                    comm->buffer = g_base64_encode((guchar*) a_data->buffer, a_data->read);
+                                    comm->buffer = convert_data_to_json(a_data, hash_list->data);
                                     success = post_url(comm, "/Data.json");
 
                                     if (success == CURLE_OK)

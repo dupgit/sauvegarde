@@ -152,7 +152,7 @@ gint post_url(comm_t *comm, gchar *url)
                 }
             else if (comm->buffer != NULL)
                 {
-                    print_debug("Answer is : %s\n", comm->buffer);
+                    print_debug("Answer is %ld bytes long\n", strlen(comm->buffer));  /** @todo  Not sure that we will need this information later */
                 }
 
             real_url = free_variable(real_url);

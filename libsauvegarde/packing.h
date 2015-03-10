@@ -132,6 +132,16 @@ extern GSList *extract_gslist_from_array(json_t *root, gchar *name);
 
 
 /**
+ * Converts data with the associated hash to a json formatted string
+ * @param a_data the data structure that contains the data whose checksum
+ *               is a_hash
+ * @param a_hash the hash of the data contained in a_data
+ * @returns a json formatted string with those informations
+ */
+extern gchar *convert_data_to_json(data_t *a_data, guint8 *a_hash);
+
+
+/**
  * This function should return a JSON string with all informations from
  * the meta_data_t structure.
  * @param meta is the structure that contains all meta data for a file or
