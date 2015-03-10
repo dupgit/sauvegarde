@@ -111,7 +111,7 @@ static void send_meta_data_to_serveur_or_store_into_cache(meta_data_t *meta, mai
         {
             json_str = convert_meta_data_to_json(meta, main_struct->hostname);
 
-            print_debug("json string (%d bytes) is : %s\n", strlen(json_str), json_str);
+            print_debug(_("json string of %ld bytes is beeing sent\n"), strlen(json_str));
 
             /* sends message here */
             main_struct->comm->buffer = json_str;

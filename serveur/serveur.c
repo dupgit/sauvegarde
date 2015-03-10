@@ -244,6 +244,7 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
     if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
         {
             /* received_data is freed there (do not reuse after this call) */
+            print_debug(_("Received %ld bytes of meta-datas\n"), strlen(received_data));
             success = answer_meta_json_post_request(serveur_struct, connection, received_data);
         }
     else if (g_strcmp0(url, "/Data.json") == 0 && received_data != NULL)
@@ -259,6 +260,7 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
         {
             /* The url is unknown to the server and we can not process the request ! */
             received_data = free_variable(received_data);
+            print_error(__FILE__, __LINE__, "Error: invalid url: %s\n", url);
             answer = g_strdup_printf(_("Error: invalid url!\n"));
             response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
             success = MHD_queue_response(connection, MHD_HTTP_OK, response);
@@ -321,8 +323,6 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
 
             received_data = g_strdup(pp);
             pp = free_variable(pp);
-
-            print_debug("%ld: %s\n", strlen(received_data), received_data);
 
             /* Do something with received_data */
             success = process_received_data(serveur_struct, connection, url, received_data);
