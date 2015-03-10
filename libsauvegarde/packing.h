@@ -154,6 +154,17 @@ extern gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname
 
 
 /**
+ * Concverts a json formatted string into a data_t * structure and returns
+ * the corresponding hash in a base64 encoded way.
+ * @param json_str a json string containing all data informations
+ * @param a_data will contain decoded datas from json_str
+ *
+ * @returns an base64 encoded hash that corresponds to the datas
+ */
+extern gchar *convert_json_to_data(gchar *json_str, data_t *a_data);
+
+
+/**
  * This function should return a newly allocated meta_data_t * structure
  * with all informations included from the json string.
  * @param json_str is a gchar * contianing the JSON formated string.

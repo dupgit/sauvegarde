@@ -213,6 +213,41 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
 
 
 /**
+ * Concverts a json formatted string into a data_t * structure and returns
+ * the corresponding hash in a base64 encoded way.
+ * @param json_str a json string containing all data informations
+ * @param a_data will contain decoded datas from json_str
+ *
+ * @returns an base64 encoded hash that corresponds to the datas
+ */
+gchar *convert_json_to_data(gchar *json_str, data_t *a_data)
+{
+    json_t *root = NULL;
+    json_error_t error;   /** json_error_t *error will handle json errors */
+    gchar *encoded_data = NULL;
+    gchar *encoded_hash = NULL;
+    gssize read = 0;
+    gsize length = 0;
+
+    if (json_str != NULL)
+        {
+            root = json_loads(json_str, 0, &error);
+
+            if (root != NULL)
+                {
+                    encoded_data = get_string_from_json_root(root, "data");
+                    encoded_hash = get_string_from_json_root(root, "hash");
+                    read = get_guint64_from_json_root(root, "size");
+
+                    a_data = new_data_t_structure(g_base64_decode(encoded_data, &length), read, FALSE);
+            }
+        }
+
+    return encoded_hash;
+}
+
+
+/**
  * This function should return a newly allocated serveur_meta_data_t *
  * structure with all informations included from the json string.
  * @param json_str is a gchar * containing the JSON formated string. This
