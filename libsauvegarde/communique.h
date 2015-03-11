@@ -66,7 +66,7 @@ extern gchar *get_communication_library_version(void);
  * @returns a newly allocated comm_t * structure where sender and receiver
  *          are set to NULL.
  */
-comm_t *init_comm_struct(gchar *conn);
+extern comm_t *init_comm_struct(gchar *conn);
 
 
 /**
@@ -95,6 +95,19 @@ extern gint get_url(comm_t *comm, gchar *url);
  *          situation. When CURLE_OK is returned, the datas that the server
  *          sent is in the comm->buffer gchar * string.
  */
-gint post_url(comm_t *comm, gchar *url);
+extern gint post_url(comm_t *comm, gchar *url);
+
+
+/**
+ * This function sends the datas that corresponds to the hashs in the json
+ * formatted string's answer.
+ * @param comm a comm_t * structure that must contain an initialized
+ *             curl_handle (must not be NULL). Buffer field of this
+ *             structure is sent as data in the POST command.
+ * @param hashs is the hash structure that contains the binary tree.
+ * @param answer is the answer of the serveur containing a json formatted
+ *        hash list.
+ */
+extern void send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer);
 
 #endif /* #ifndef _COMMUNIQUE_H_ */

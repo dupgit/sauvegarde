@@ -28,63 +28,8 @@
 
 #include "monitor.h"
 
-/**
- * This function sends the datas that corresponds to the hashs in the json
- * formatted string's answer.
- */
-static void send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer)
-{
-    data_t *a_data = NULL;
-    json_t *root = NULL;
-    json_error_t error;                /** json_error_t *error will handle json errors  */
-    GSList *hash_list = NULL;
-    GSList *head = NULL;
-    gint success = CURLE_FAILED_INIT;
 
-    if (hashs != NULL && answer != NULL)
-        {
-
-            root = json_loads(answer, 0, &error);
-
-            if (root != NULL)
-                {
-
-                    hash_list = extract_gslist_from_array(root, "hash_list");
-                    head = hash_list;
-
-                    while (hash_list != NULL)
-                        {
-                            a_data = g_tree_lookup(hashs->tree_hash, hash_list->data);
-
-                            if (a_data != NULL)
-                                {
-                                    comm->buffer = convert_data_to_json(a_data, hash_list->data);
-                                    success = post_url(comm, "/Data.json");
-
-                                    if (success == CURLE_OK)
-                                        {
-                                            a_data->buffer = free_variable(a_data->buffer);
-                                            a_data->read = 0;
-                                            a_data->into_cache = FALSE;
-                                        }
-                                }
-                            else if (a_data == NULL)
-                                {
-                                    print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash\n");
-                                }
-                            free_variable(hash_list->data);
-                            hash_list = g_slist_next(hash_list);
-                        }
-
-                    g_slist_free(head);
-                }
-
-            json_decref(root);
-        }
-}
-
-
-
+static void send_meta_data_to_serveur_or_store_into_cache(meta_data_t *meta, main_struct_t *main_struct);
 
 
 /**
@@ -105,9 +50,8 @@ static void send_meta_data_to_serveur_or_store_into_cache(meta_data_t *meta, mai
         {
             json_str = convert_meta_data_to_json(meta, main_struct->hostname);
 
-            print_debug(_("json string of %ld bytes is beeing sent\n"), strlen(json_str));
-
             /* sends message here */
+            print_debug(_("Sending meta datas for file %s\n"), meta->name);
             main_struct->comm->buffer = json_str;
             success = post_url(main_struct->comm, "/Meta.json");
 
@@ -121,6 +65,7 @@ static void send_meta_data_to_serveur_or_store_into_cache(meta_data_t *meta, mai
                      * comm->buffer
                      */
                     send_datas_to_server(main_struct->comm, main_struct->hashs, main_struct->comm->buffer);
+                    main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
 
                 }
             else
@@ -156,7 +101,7 @@ gpointer store_buffer_data(gpointer data)
                     do
                         {
                             capsule = g_async_queue_pop(main_struct->store_queue);
-                            print_debug(_("A capsule (%d) has been received in store's thread\n"), capsule->command);
+                            /* print_debug(_("A capsule (%d) has been received in store's thread\n"), capsule->command); */
 
                             switch (capsule->command)
                                 {

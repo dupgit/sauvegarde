@@ -199,6 +199,8 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
              * begin to store things it may happen that the serveur already
              * has a specific hash thus we will not ask for it !
              */
+            print_debug(_("Received meta datas for file %s\n"), smeta->meta->name);
+
             root = json_object();
             array = convert_hash_list_to_json(smeta->meta->hash_list);
             insert_json_value_into_json_root(root, "hash_list", array);
@@ -246,13 +248,13 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
     if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
         {
             /* received_data is freed there (do not reuse after this call) */
-            print_debug(_("Received %ld bytes of meta-datas\n"), strlen(received_data));   /** @todo  Not sure that we will need this information later */
             success = answer_meta_json_post_request(serveur_struct, connection, received_data);
         }
     else if (g_strcmp0(url, "/Data.json") == 0 && received_data != NULL)
         {
-            print_debug(_("Received %ld bytes of datas\n"), strlen(received_data));   /** @todo  Not sure that we will need this information later */
             encoded_hash = convert_json_to_data(received_data, a_data);
+            print_debug(_("Received data for %s hash\n"), encoded_hash);
+
             received_data = free_variable(received_data);
             answer = g_strdup_printf(_("Ok!\n"));
             response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
@@ -391,7 +393,7 @@ int main(int argc, char **argv)
     if (serveur_struct != NULL && serveur_struct->opt != NULL)
         {
             /* Starting the libmicrohttpd daemon */
-            serveur_struct->d = MHD_start_daemon(MHD_USE_SELECT_INTERNALLY | MHD_USE_DEBUG, serveur_struct->opt->port, NULL, NULL, &ahc, serveur_struct, MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
+            serveur_struct->d = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION | MHD_USE_DEBUG, serveur_struct->opt->port, NULL, NULL, &ahc, serveur_struct, MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
 
             if (serveur_struct->d == NULL)
                 {

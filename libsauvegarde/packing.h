@@ -83,6 +83,14 @@ typedef struct
 
 
 /**
+ * This function loads a JSON string into a json_t struture
+ * @param json_str is the json string
+ * @returns a pointer to a filled json_t * structure or NULL upon error
+ */
+extern json_t *load_json(gchar *json_str);
+
+
+/**
  * Inserts a json_t *value into the json_t *root array.
  * @param[in,out] root is the root that will contain all meta data values
  * @param keyname is the keyname associated with the value (in fact it is

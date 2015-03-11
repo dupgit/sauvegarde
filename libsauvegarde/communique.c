@@ -28,6 +28,10 @@
 
 #include "libsauvegarde.h"
 
+static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
+static void send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash_list);
+
+
 /**
  * Gets the version for the communication library
  * @returns a newly allocated string that contains the version and that
@@ -148,11 +152,11 @@ gint post_url(comm_t *comm, gchar *url)
 
             if (success != CURLE_OK)
                 {
-                    print_error(__FILE__, __LINE__, _("Error while sending POST command (to %s) and datas\n"), real_url);
+                    print_error(__FILE__, __LINE__, _("Error while sending POST command (to %s) with datas\n"), real_url);
                 }
             else if (comm->buffer != NULL)
                 {
-                    print_debug("Answer is %ld bytes long\n", strlen(comm->buffer));  /** @todo  Not sure that we will need this information later */
+                    print_debug("Answer is %s\n", comm->buffer); /** @todo  Not sure that we will need this information later */
                 }
 
             real_url = free_variable(real_url);
@@ -161,6 +165,79 @@ gint post_url(comm_t *comm, gchar *url)
     return success;
 }
 
+
+/**
+ * This functions iters over a GSList of hashs searching into the binary
+ * tree if we have the datas and then sends them to serveur server.
+ * @param
+ */
+static void send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash_list)
+{
+    data_t *a_data = NULL;
+    GSList *head = hash_list;
+    gint success = CURLE_FAILED_INIT;
+
+    while (hash_list != NULL)
+        {
+            a_data = g_tree_lookup(hashs->tree_hash, hash_list->data);
+
+            if (a_data != NULL)
+                {
+                    print_debug(_("Sending datas for hash %s\n"), g_base64_encode(hash_list->data, HASH_LEN));
+                    comm->buffer = convert_data_to_json(a_data, hash_list->data);
+                    success = post_url(comm, "/Data.json");
+
+                    if (success == CURLE_OK)
+                        {
+                            a_data->buffer = free_variable(a_data->buffer);
+                            a_data->read = 0;
+                            a_data->into_cache = FALSE;
+                        }
+                }
+            else
+                {
+                    print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash\n");
+                }
+
+            free_variable(hash_list->data);
+
+            hash_list = g_slist_next(hash_list);
+        }
+
+    g_slist_free(head);
+}
+
+
+/**
+ * This function sends the datas that corresponds to the hashs in the json
+ * formatted string's answer.
+ * @param comm a comm_t * structure that must contain an initialized
+ *             curl_handle (must not be NULL). Buffer field of this
+ *             structure is sent as data in the POST command.
+ * @param hashs is the hash structure that contains the binary tree.
+ * @param answer is the answer of the serveur containing a json formatted
+ *        hash list.
+ */
+void send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer)
+{
+    json_t *root = NULL;
+    GSList *hash_list = NULL;
+
+    if (hashs != NULL && answer != NULL)
+        {
+            root = load_json(answer);
+
+            if (root != NULL)
+                {
+
+                    hash_list = extract_gslist_from_array(root, "hash_list");
+
+                    send_datas_from_hash_list(comm, hashs, hash_list);
+
+                    json_decref(root);
+                }
+        }
+}
 
 
 /**

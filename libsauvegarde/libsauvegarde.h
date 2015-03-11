@@ -50,9 +50,9 @@
 #include <curl/curl.h>
 
 #include "configuration.h"
-#include "communique.h"
 #include "files.h"
 #include "hashs.h"
+#include "communique.h"
 #include "database.h"
 #include "packing.h"
 

@@ -149,6 +149,30 @@ static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname)
 
 
 /**
+ * This function loads a JSON string into a json_t struture
+ * @param json_str is the json string
+ * @returns a pointer to a filled json_t * structure or NULL upon error
+ */
+json_t *load_json(gchar *json_str)
+{
+    json_t *root = NULL;   /** json_t *root is the json tree where we will extract things */
+    json_error_t error;    /** json_error_t *error handle json errors if any.             */
+
+    if (json_str != NULL)
+        {
+            root = json_loads(json_str, 0, &error);
+
+            if (root == NULL)
+                {
+                     print_error(__FILE__, __LINE__, _("Error while trying to load JSON : %s\nline: %d, column: %d, position: %d, string: %s\n"), error.text, error.line, error.column, error.position, json_str);
+                }
+        }
+
+    return root;
+}
+
+
+/**
  * This function returns the MESSAGE_ID from msg_id JSON field
  * @param json_str : a gchar * containing the JSON formated string.
  * @returns a gint that correspond to the msg_id field found in json_str.
@@ -159,12 +183,11 @@ static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname)
 gint get_json_message_id(gchar *json_str)
 {
     json_t *root = NULL;           /** json_t *root is the json tree from which we will extract msg_id                   */
-    json_error_t error;            /** json_error_t *error handle json errors if any                                     */
     gint msg_id = ENC_NOT_FOUND;   /** gint msg_id is the message id from the JSON string by default it is ENC_NOT_FOUND */
 
     if (json_str != NULL)
         {
-            root = json_loads(json_str, 0, &error);
+            root = load_json(json_str);
 
             if (root != NULL)
                 {
@@ -213,7 +236,7 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
 
 
 /**
- * Concverts a json formatted string into a data_t * structure and returns
+ * Converts a json formatted string into a data_t * structure and returns
  * the corresponding hash in a base64 encoded way.
  * @param json_str a json string containing all data informations
  * @param a_data will contain decoded datas from json_str
@@ -223,7 +246,6 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
 gchar *convert_json_to_data(gchar *json_str, data_t *a_data)
 {
     json_t *root = NULL;
-    json_error_t error;   /** json_error_t *error will handle json errors */
     gchar *encoded_data = NULL;
     gchar *encoded_hash = NULL;
     gssize read = 0;
@@ -231,7 +253,7 @@ gchar *convert_json_to_data(gchar *json_str, data_t *a_data)
 
     if (json_str != NULL)
         {
-            root = json_loads(json_str, 0, &error);
+            root = load_json(json_str);
 
             if (root != NULL)
                 {
@@ -240,7 +262,7 @@ gchar *convert_json_to_data(gchar *json_str, data_t *a_data)
                     read = get_guint64_from_json_root(root, "size");
 
                     a_data = new_data_t_structure(g_base64_decode(encoded_data, &length), read, FALSE);
-            }
+                }
         }
 
     return encoded_hash;
@@ -259,7 +281,6 @@ gchar *convert_json_to_data(gchar *json_str, data_t *a_data)
 serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
 {
     json_t *root = NULL;                 /** json_t *root is the json tree from which we will extract everything         */
-    json_error_t error;                  /** json_error_t *error will handle json errors                                 */
     meta_data_t *meta = NULL;            /** meta_data_t *meta will be returned in smeta and contain file's metadata     */
     serveur_meta_data_t *smeta = NULL;   /** serveur_meta_data_t *smeta will be returned at the end                      */
 
@@ -272,12 +293,10 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
     if (json_str != NULL)
         {
 
-            root = json_loads(json_str, 0, &error);
+            root = load_json(json_str);
 
             if (root != NULL)
                 {
-                    free_variable(json_str);
-
                     smeta = new_smeta_data_t();
                     meta = new_meta_data_t();
 
@@ -302,12 +321,8 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
                     smeta->meta = meta;
                     smeta->hostname =  get_string_from_json_root(root, "hostname");
                 }
-            else
-                {
-                    free_variable(json_str);
-                    print_error(__FILE__, __LINE__,_("Error while trying to load JSON : %s\nline: %d, column: %d, position: %d\n"), error.text, error.line, error.column, error.position);
-                    /* exit(EXIT_FAILURE); */  /* An error here means that we will do nothing good */
-                }
+
+            free_variable(json_str);
         }
 
 
