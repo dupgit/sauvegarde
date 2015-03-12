@@ -86,6 +86,10 @@
 typedef struct
 {
     options_t *opt;           /**< Options of the program from the command line */
+    hashs_t *hashs;           /**< Binary tree that will contain all hashs and
+                               *   may be some related data before writing it to
+                               *   disk
+                               */
     struct MHD_Daemon *d;     /**< libmicrohttpd daemon structure               */
 } serveur_struct_t;
 

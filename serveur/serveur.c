@@ -50,6 +50,7 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
     serveur_struct = (serveur_struct_t *) g_malloc0(sizeof(serveur_struct_t));
 
     serveur_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
+    serveur_struct->hashs = new_hash_struct();
     serveur_struct->d = NULL;
 
     return serveur_struct;
@@ -243,7 +244,6 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
     int success = MHD_NO;
 
     gchar *encoded_hash = NULL;
-    data_t *a_data = NULL;
 
     if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
         {
@@ -252,8 +252,9 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
         }
     else if (g_strcmp0(url, "/Data.json") == 0 && received_data != NULL)
         {
-            encoded_hash = convert_json_to_data(received_data, a_data);
+            encoded_hash = insert_json_into_hash_tree(serveur_struct->hashs, received_data);
             print_debug(_("Received data for %s hash\n"), encoded_hash);
+            encoded_hash = free_variable(encoded_hash);
 
             received_data = free_variable(received_data);
             answer = g_strdup_printf(_("Ok!\n"));

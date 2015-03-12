@@ -236,20 +236,24 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
 
 
 /**
- * Converts a json formatted string into a data_t * structure and returns
- * the corresponding hash in a base64 encoded way.
- * @param json_str a json string containing all data informations
- * @param a_data will contain decoded datas from json_str
- *
- * @returns an base64 encoded hash that corresponds to the datas
+ * Inserts a json formatted string into a hashs_t * balanced binary tree
+ * structure and returns.
+ * @param[in,out] hashs an initialized balanced binary tree structure
+ *               (hashs_t *)
+ * @param json_str a json string containing all data informations to be
+ *        inserted into the tree.
+ * @returns the base 64 encoded hash of the data beeing inserted.
  */
-gchar *convert_json_to_data(gchar *json_str, data_t *a_data)
+gchar *insert_json_into_hash_tree(hashs_t *hashs, gchar *json_str)
 {
     json_t *root = NULL;
-    gchar *encoded_data = NULL;
+    guchar *data = NULL;
+    guint8 *hash = NULL;
     gchar *encoded_hash = NULL;
     gssize read = 0;
-    gsize length = 0;
+    gsize data_len = 0;
+    gsize hash_len = 0;
+    data_t *a_data = NULL;
 
     if (json_str != NULL)
         {
@@ -257,11 +261,29 @@ gchar *convert_json_to_data(gchar *json_str, data_t *a_data)
 
             if (root != NULL)
                 {
-                    encoded_data = get_string_from_json_root(root, "data");
+                    data = g_base64_decode(get_string_from_json_root(root, "data"), &data_len);
                     encoded_hash = get_string_from_json_root(root, "hash");
+                    hash = (guint8 *) g_base64_decode(encoded_hash, &hash_len);
                     read = get_guint64_from_json_root(root, "size");
 
-                    a_data = new_data_t_structure(g_base64_decode(encoded_data, &length), read, FALSE);
+                    if (data_len == read && hash_len == HASH_LEN)
+                        {
+
+                            a_data = new_data_t_structure(data, read, FALSE);
+
+                            hashs->total_bytes = hashs->total_bytes + read;
+
+                            if (g_tree_lookup(hashs->tree_hash, hash) == NULL)
+                                {
+                                    hashs->in_bytes = hashs->in_bytes + read;
+                                    g_tree_insert(hashs->tree_hash, hash, a_data);
+                                }
+                        }
+                    else
+                        {
+                            print_error(__FILE__, __LINE__, _("Something is wrong with lengths: data_len = %ld, read = %ld, hash_len = %ld, HASH_LEN = %ld\n"), data_len, read, hash_len, HASH_LEN);
+                        }
+
                 }
         }
 

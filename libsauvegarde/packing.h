@@ -162,14 +162,15 @@ extern gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname
 
 
 /**
- * Concverts a json formatted string into a data_t * structure and returns
- * the corresponding hash in a base64 encoded way.
- * @param json_str a json string containing all data informations
- * @param a_data will contain decoded datas from json_str
- *
- * @returns an base64 encoded hash that corresponds to the datas
+ * Inserts a json formatted string into a hashs_t * balanced binary tree
+ * structure and returns.
+ * @param[in,out] hashs an initialized balanced binary tree structure
+ *               (hashs_t *)
+ * @param json_str a json string containing all data informations to be
+ *        inserted into the tree.
+ * @returns the base 64 encoded hash of the data beeing inserted.
  */
-extern gchar *convert_json_to_data(gchar *json_str, data_t *a_data);
+gchar *insert_json_into_hash_tree(hashs_t *hashs, gchar *json_str);
 
 
 /**
