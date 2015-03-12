@@ -51,7 +51,7 @@ static void send_meta_data_to_serveur_or_store_into_cache(meta_data_t *meta, mai
             json_str = convert_meta_data_to_json(meta, main_struct->hostname);
 
             /* sends message here */
-            print_debug(_("Sending meta datas for file %s\n"), meta->name);
+            print_debug(_("Sending meta datas for file: \"%s\"\n"), meta->name);
             main_struct->comm->buffer = json_str;
             success = post_url(main_struct->comm, "/Meta.json");
 
@@ -72,7 +72,7 @@ static void send_meta_data_to_serveur_or_store_into_cache(meta_data_t *meta, mai
                 {   /* Something went wrong when sending the datas and thus we have to store them localy. */
 
                     /** @note insert_file_into_cache is fast but does not garantee that the data is on the disk ! */
-                    print_debug("Inserting into database cache file %s\n", meta->name);
+                    print_debug("Inserting into database cache file: \"%s\"\n", meta->name);
                     insert_file_into_cache(main_struct->database, meta, main_struct->hashs);
                 }
         }

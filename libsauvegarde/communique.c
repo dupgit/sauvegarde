@@ -100,7 +100,7 @@ gint get_url(comm_t *comm, gchar *url)
 
             if (success == CURLE_OK && comm->buffer != NULL)
                 {
-                    fprintf(stdout, "%s\n", comm->buffer);
+                    print_debug("Answer is: \"%s\"\n", comm->buffer);
                 }
             else
                 {
@@ -152,11 +152,11 @@ gint post_url(comm_t *comm, gchar *url)
 
             if (success != CURLE_OK)
                 {
-                    print_error(__FILE__, __LINE__, _("Error while sending POST command (to %s) with datas\n"), real_url);
+                    print_error(__FILE__, __LINE__, _("Error while sending POST command (to \"%s\") with datas\n"), real_url);
                 }
             else if (comm->buffer != NULL)
                 {
-                    print_debug("Answer is %s\n", comm->buffer); /** @todo  Not sure that we will need this information later */
+                    print_debug("Answer is: \"%s\"\n", comm->buffer); /** @todo  Not sure that we will need this information later */
                 }
 
             real_url = free_variable(real_url);
@@ -183,7 +183,7 @@ static void send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash
 
             if (a_data != NULL)
                 {
-                    print_debug(_("Sending datas for hash %s\n"), g_base64_encode(hash_list->data, HASH_LEN));
+                    print_debug(_("Sending datas for hash: \"%s\"\n"), g_base64_encode(hash_list->data, HASH_LEN));
                     comm->buffer = convert_data_to_json(a_data, hash_list->data);
                     success = post_url(comm, "/Data.json");
 
@@ -196,7 +196,7 @@ static void send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash\n");
+                    print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash: \"%s\"\n",  g_base64_encode(hash_list->data, HASH_LEN));
                 }
 
             free_variable(hash_list->data);
