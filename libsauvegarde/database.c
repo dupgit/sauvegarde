@@ -475,7 +475,7 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                     a_data = g_tree_lookup(hashs->tree_hash, a_hash);
 
                     /* Is encoded hash already in the database ? */
-                    if (a_data != NULL && a_data->into_cache == FALSE) /* encoded_hash is not in the database */
+                    if (a_data != NULL && a_data->into_cache == FALSE && a_data->buffer != NULL) /* encoded_hash is not in the database */
                         {
                             /* Inserting checksum and the corresponding data into 'data' table */
                             encoded_data = g_base64_encode((guchar*) a_data->buffer, a_data->read);
