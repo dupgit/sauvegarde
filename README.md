@@ -168,6 +168,11 @@ really faster (by 19 times) but may lead to database corruption and data
 loss.
 
 
+### API
+
+The API is described [API.md](docs/API.md)
+
+
 ## Coding into this project
 
 ### irc
