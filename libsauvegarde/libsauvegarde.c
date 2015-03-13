@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
  *    libsauvegarde.c
+ *
  *    This file is part of "Sauvegarde" project.
  *
  *    (C) Copyright 2014 - 2015 Olivier Delhomme
@@ -30,6 +31,32 @@
 
 static void catcher(int sig);
 static void print_buffer(gchar *buffer);
+
+
+/**
+ * Initializing debug_mode by default to the compilation choice.
+ */
+gboolean debug_mode = ENABLE_DEBUG;
+
+
+/**
+ * Sets debug_mode on or off if mode is TRUE or FALSE.
+ * @param mode a boolean to say whether we want to have debug enabled
+ *       (TRUE) or not (FALSE).
+ */
+void set_debug_mode(gboolean mode)
+{
+    if (debug_mode == TRUE && mode == FALSE)
+        {
+            print_debug(_("Debug mode is disabled.\n"));
+        }
+    else if (debug_mode == FALSE && mode == TRUE)
+        {
+            print_debug(_("Debug mode is activated.\n"));
+        }
+
+    debug_mode = mode;
+}
 
 
 /**
@@ -291,7 +318,7 @@ void print_debug(const char *format, ...)
 {
     va_list ap;
 
-    if (ENABLE_DEBUG == TRUE)
+    if (debug_mode == TRUE)
         {
             va_start(ap, format);
             vfprintf(stdout, format, ap);

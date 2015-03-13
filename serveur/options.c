@@ -206,13 +206,15 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
  */
 options_t *manage_command_line_options(int argc, char **argv)
 {
-    gboolean version = FALSE;   /** True if -v was selected on the command line  */
-    gchar *configfile = NULL;   /** Filename for the configuration file if any   */
-    gint port = 0;              /** Port number on which to listen               */
+    gboolean version = FALSE;      /** True if -v was selected on the command line  */
+    gint debug = ENABLE_DEBUG;     /** 0 == FALSE and other values == TRUE          */
+    gchar *configfile = NULL;      /** Filename for the configuration file if any   */
+    gint port = 0;                 /** Port number on which to listen               */
 
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
+        { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode"), NULL },
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port number on which to listen"), NULL},
         { NULL }
@@ -244,12 +246,22 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->configfile = NULL;
     opt->port = 5468;
 
+
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "serveur.conf");
     read_from_configuration_file(opt,  defaultconfigfilename);
     free_variable(defaultconfigfilename);
 
     opt->version = version; /* only TRUE if -v or --version was invoked */
+
+    if (debug == 0)
+        {
+            set_debug_mode(FALSE);
+        }
+    else
+        {
+            set_debug_mode(TRUE);
+        }
 
     /* 2) Reading the configuration from the configuration file specified
      *    on the command line

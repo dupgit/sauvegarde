@@ -234,6 +234,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 options_t *manage_command_line_options(int argc, char **argv)
 {
     gboolean version = FALSE;      /** True if -v was selected on the command line           */
+    gint debug = ENABLE_DEBUG;     /** 0 == FALSE and other values == TRUE                   */
     gchar **dirname_array = NULL;  /** array of dirnames left on the command line            */
     gchar *configfile = NULL;      /** filename for the configuration file if any            */
     gint64 blocksize = 0;          /** computed block size in bytes                          */
@@ -246,10 +247,11 @@ options_t *manage_command_line_options(int argc, char **argv)
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
+        { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode"), NULL },
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
         { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Block size used to compute hashs"), NULL},
         { "noprint", 'n', 0, G_OPTION_ARG_NONE, &noprint, N_("Quiets the program while calculating checksum"), NULL},
-        { "dircache", 'd', 0, G_OPTION_ARG_STRING, &dircache, N_("Directory where to cache files"), NULL},
+        { "dircache", 'r', 0, G_OPTION_ARG_STRING, &dircache, N_("Directory where to cache files"), NULL},
         { "dbname", 'f', 0, G_OPTION_ARG_STRING, &dbname, N_("Database filename"), NULL},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), NULL},
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port number on which to listen"), NULL},
@@ -295,6 +297,16 @@ options_t *manage_command_line_options(int argc, char **argv)
     defaultconfigfilename = free_variable(defaultconfigfilename);
 
     opt->version = version; /* only TRUE if -v or --version was invoked */
+
+    if (debug == 0)
+        {
+            set_debug_mode(FALSE);
+        }
+    else
+        {
+            set_debug_mode(TRUE);
+        }
+
 
     /* 2) Reading the configuration from the configuration file specified
      *    on the command line (if any).

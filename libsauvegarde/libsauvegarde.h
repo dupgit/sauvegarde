@@ -56,6 +56,12 @@
 #include "database.h"
 #include "packing.h"
 
+/**
+ * Sets debug_mode on or off if mode is TRUE or FALSE.
+ * @param mode a boolean to say whether we want to have debug enabled
+ *       (TRUE) or not (FALSE).
+ */
+extern void set_debug_mode(gboolean mode);
 
 /**
  * Returns a newly allocated buffer that contains all informations about
