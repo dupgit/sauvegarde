@@ -106,12 +106,19 @@ a serveur_meta_data_t structure.
 
 As an example a JSON structure for a directory looks like :
 
-    {
-    "msg_id": 1, "hash_list": [], "filetype": 2, "group": "admin", "mode": 16877,
-    "owner": "dup", "atime": 1401024480, "uid": 530, "ctime": 1401024479,
-    "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/monitor/.deps",
-    "mtime": 1401024479, "gid": 530, "fsize": 0
-    }
+    {"msg_id": 1,
+     "hash_list": [],
+     "filetype": 2,
+     "group": "admin",
+     "mode": 16877,
+     "owner": "dup",
+     "atime": 1401024480,
+     "uid": 530,
+     "ctime": 1401024479,
+     "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/monitor/.deps",
+     "mtime": 1401024479,
+     "gid": 530,
+     "fsize": 0}
 
 
 #### File
@@ -129,11 +136,21 @@ As an example a JSON structure for a directory looks like :
 
 As an example a JSON structure for a file looks like :
 
-    {
-    "hash_list": ["0CVUtILbsnYD3Royz7Yu8sOSxjl9f/b+b6wPa9DCRTY=", "AAXUaflNSSHEbZnjVAiY1b2Fz7YvQHwle/iZUHct09U=", "MunCygnx7AU/49Kdo+H3s72OludZ7KjzfA4k1ui2NAw="],
-    "msg_id": 1, "filetype": 1, "group": "admin", "mode": 33188, "owner": "dup", "atime": 1401023677, "uid": 530, "ctime": 1401023685,
-    "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/config.log", "mtime": 1401023685, "gid": 530, "fsize": 37803
-    }
+    {"hash_list": ["0CVUtILbsnYD3Royz7Yu8sOSxjl9f/b+b6wPa9DCRTY=",
+                   "AAXUaflNSSHEbZnjVAiY1b2Fz7YvQHwle/iZUHct09U=",
+                   "MunCygnx7AU/49Kdo+H3s72OludZ7KjzfA4k1ui2NAw="],
+     "msg_id": 1,
+     "filetype": 1,
+     "group": "admin",
+     "mode": 33188,
+     "owner": "dup",
+     "atime": 1401023677,
+     "uid": 530,
+     "ctime": 1401023685,
+     "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/config.log",
+     "mtime": 1401023685,
+     "gid": 530,
+     "fsize": 37803}
 
 
 ### Database (local cache)
