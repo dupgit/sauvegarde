@@ -28,7 +28,6 @@
  */
 
 #include "serveur.h"
-#define PAGE_NOT_FOUND "Error not found"
 
 static serveur_struct_t *init_serveur_main_structure(int argc, char **argv);
 static gchar *get_unformatted_answer(serveur_struct_t *serveur_struct, const char *url);

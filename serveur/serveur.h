@@ -49,6 +49,7 @@
 #include <libsauvegarde.h>
 
 #include "options.h"
+#include "backend.h"
 
 
 /**
