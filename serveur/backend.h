@@ -28,4 +28,30 @@
 #ifndef _SERVEUR_BACKEND_H_
 #define _SERVEUR_BACKEND_H_
 
+/**
+ * Function templates definition to be used by backend_t structure
+ */
+typedef void * (*store_smeta_func) (serveur_struct_t *, serveur_meta_data_t *); /**< Stores a serveur_meta_data_t structure according to the backend */
+
+/**
+ * @struct backend_t
+ * This structure contains pointers to the selected backend functions.
+ */
+typedef struct
+{
+    store_smeta_func *store_smeta;
+
+} backend_t;
+
+
+/**
+ * Inits the backend with the correct functions
+ * @todo write some backend !
+ * @param serveur_struct is the main serveur's structure that may contain
+ *        informations needed to connect the right backend (when one will
+ *        have a choice to make!)
+ */
+extern backend_t * init_backend_structure(serveur_struct_t *serveur_struct);
+
+
 #endif /* #ifndef _SERVEUR_BACKEND_H_ */

@@ -29,3 +29,20 @@
 #include "serveur.h"
 
 
+/**
+ * Inits the backend with the correct functions
+ * @todo write some backend !
+ * @param serveur_struct is the main serveur's structure that may contain
+ *        informations needed to connect the right backend (when one will
+ *        have a choice to make!)
+ */
+backend_t * init_backend_structure(serveur_struct_t *serveur_struct)
+{
+    backend_t *backend = NULL;
+
+    backend = (backend_t *) g_malloc0(sizeof(backend_t));
+
+    backend->store_smeta = NULL;
+
+    return backend;
+}

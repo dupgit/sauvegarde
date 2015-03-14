@@ -48,10 +48,6 @@
 
 #include <libsauvegarde.h>
 
-#include "options.h"
-#include "backend.h"
-
-
 /**
  * @def SERVEUR_DATE
  * Defines serveur's creation date
@@ -75,6 +71,9 @@
 #define SERVEUR_VERSION N_("0.0.1")
 #define PROGRAM_NAME ("serveur")
 
+#include "options.h"
+
+
 
 /**
  * @struct serveur_struct_t
@@ -93,6 +92,9 @@ typedef struct
                                */
     struct MHD_Daemon *d;     /**< libmicrohttpd daemon structure               */
 } serveur_struct_t;
+
+
+#include "backend.h"
 
 
 #endif /* #ifndef _SERVEUR_H_ */
