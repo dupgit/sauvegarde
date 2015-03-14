@@ -52,8 +52,8 @@ gchar *get_communication_library_version(void)
  * @param buffer is the buffer where received data are written by libcurl
  * @param size is the size of an element in buffer
  * @param nmemb is the number of elements in buffer
- * @param userp is a user pointer and MUST be a pointer to comm_t *
- *        structure
+ * @param[in,out] userp is a user pointer and MUST be a pointer to comm_t *
+ *                structure
  * @returns should return the size of the data taken into account.
  *          Everything different from the size passed to this function is
  *          considered as an error by libcurl.

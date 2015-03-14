@@ -227,8 +227,10 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
             json_array_foreach(array, index, value)
                 {
                     a_hash = g_base64_decode(json_string_value(value), &hash_len);
-                    head = g_slist_append(head, a_hash);
+                    head = g_slist_prepend(head, a_hash);
                 }
+
+            head = g_slist_reverse(head);
         }
 
     return head;
