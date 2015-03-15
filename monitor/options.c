@@ -222,6 +222,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
         }
 }
 
+
 /**
  * Sets the debug mode from command line read option
  * @param debug is a gint read from the command line and should be 0 or 1

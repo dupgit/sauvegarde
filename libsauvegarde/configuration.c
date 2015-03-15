@@ -203,7 +203,6 @@ gboolean read_boolean_from_file(GKeyFile *keyfile, gchar *filename, gchar *group
 }
 
 
-
 /**
  * This functions converts a gchar ** array to a GSList of gchar *.
  * The function appends to the list first_list (if it exists - it may be

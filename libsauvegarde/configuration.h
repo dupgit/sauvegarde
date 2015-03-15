@@ -56,6 +56,9 @@
   * Defines the group name for all preferences related to "serveur"
   * program.
   *
+  * @def GN_ALL
+  * Defines the group name for all preferences related to all programs
+  *
   */
 #define GN_MONITOR ("Monitor")
 #define GN_CISEAUX ("Ciseaux")
