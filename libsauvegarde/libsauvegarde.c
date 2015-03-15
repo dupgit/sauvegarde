@@ -60,6 +60,15 @@ void set_debug_mode(gboolean mode)
 
 
 /**
+ * @returns the debug mode (TRUE if activated and FALSE if not).
+ */
+gboolean get_debug_mode(void)
+{
+    return debug_mode;
+}
+
+
+/**
  * Prints the buffer to stdout and free its memory !
  * @param buffer : the buffer to be printed and then freed
  */

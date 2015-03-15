@@ -143,10 +143,16 @@ gchar *buffer_selected_option(options_t *opt)
  */
 static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
+    gboolean debug = FALSE;
+
     if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
         {
             /* Reading the port number if any */
             opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, N_("Could not load serveur port number from file."));
+
+            debug = read_boolean_from_file(keyfile, filename, GN_ALL, KN_DEBUG_MODE, N_("Could not load debug mode configuration from file."));
+
+            set_debug_mode(debug);
         }
 }
 
@@ -206,15 +212,15 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
  */
 options_t *manage_command_line_options(int argc, char **argv)
 {
-    gboolean version = FALSE;      /** True if -v was selected on the command line  */
-    gint debug = ENABLE_DEBUG;     /** 0 == FALSE and other values == TRUE          */
-    gchar *configfile = NULL;      /** Filename for the configuration file if any   */
-    gint port = 0;                 /** Port number on which to listen               */
+    gboolean version = FALSE;       /** True if -v was selected on the command line                                        */
+    gint cmdl_debug = -4;           /** debug mode as specified on the command line                                        */
+    gchar *configfile = NULL;       /** Filename for the configuration file if any                                         */
+    gint port = 0;                  /** Port number on which to listen                                                     */
 
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
-        { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode"), NULL },
+        { "debug", 'd', 0,  G_OPTION_ARG_INT, &cmdl_debug, N_("Activates (1) or desactivates (0) debug mode"), NULL },
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port number on which to listen"), NULL},
         { NULL }
@@ -230,6 +236,8 @@ options_t *manage_command_line_options(int argc, char **argv)
     bugreport = g_strconcat(_("Please report bugs to: "), PACKAGE_BUGREPORT, NULL);
     summary = g_strdup(_("This program is monitoring file changes in the filesystem and is hashing\nfiles with SHA256 algorithms from Glib."));
     context = g_option_context_new("");
+
+    set_debug_mode(ENABLE_DEBUG);
 
     set_option_context_options(context, entries, TRUE, bugreport, summary);
 
@@ -254,11 +262,11 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     opt->version = version; /* only TRUE if -v or --version was invoked */
 
-    if (debug == 0)
+    if (cmdl_debug == 0)
         {
             set_debug_mode(FALSE);
         }
-    else
+    else if (cmdl_debug == 1)
         {
             set_debug_mode(TRUE);
         }

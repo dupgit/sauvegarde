@@ -63,6 +63,13 @@
  */
 extern void set_debug_mode(gboolean mode);
 
+
+/**
+ * @returns the debug mode (TRUE if activated and FALSE if not).
+ */
+extern gboolean get_debug_mode(void);
+
+
 /**
  * Returns a newly allocated buffer that contains all informations about
  * the version of the libraries we are using.

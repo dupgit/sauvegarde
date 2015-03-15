@@ -168,6 +168,43 @@ gint read_int_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gc
 
 
 /**
+ * Reads an integer from keyname key in the group grouname from keyfile file
+ * and displays errormsg in case of an error
+ * @param keyfile : the opened keyfile to read from
+ * @param filename : the filename of the keyfile file
+ * @param groupname : the groupname where to look for the key
+ * @param keyname : the key to read the gboolean from
+ * @param errormsg : the error message to be displayed in case of an error
+ * @returns the boolean read at the keyname in the groupname of keyfile
+ *          file or FALSE;
+ */
+gboolean read_boolean_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg)
+{
+    gboolean bool = FALSE; /** Boolean to be read    */
+    GError *error = NULL;  /** Glib error handling   */
+
+    if (g_key_file_has_key(keyfile, groupname, keyname, &error) == TRUE)
+        {
+            bool =  g_key_file_get_boolean(keyfile, groupname, keyname, &error);
+
+            if (error != NULL)
+                {
+                    print_error(__FILE__, __LINE__, "%s %s : %s", errormsg, filename, error->message);
+                    error = free_error(error);
+                }
+        }
+    else if (error != NULL)
+        {
+            print_error(__FILE__, __LINE__,  _("Error while looking for %s key in configuration file : %s\n"), keyname, error->message);
+            error = free_error(error);
+        }
+
+    return bool;
+}
+
+
+
+/**
  * This functions converts a gchar ** array to a GSList of gchar *.
  * The function appends to the list first_list (if it exists - it may be
  * NULL) each entry of the array so elements are in the same order in the

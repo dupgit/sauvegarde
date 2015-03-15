@@ -36,7 +36,7 @@
  *  KN == Key Name that will stor a value or a list of values. It should
  *        be lowercase only.
  *
- * Thoses key names and group names should not be translated.
+ * To translators : thoses key names and group names must not be translated.
  */
 
  /**
@@ -61,6 +61,16 @@
 #define GN_CISEAUX ("Ciseaux")
 #define GN_ANTEMEMOIRE ("AnteMemoire")
 #define GN_SERVEUR ("Serveur")
+#define GN_ALL ("All")
+
+
+/** Below you'll find some definitions for all the programs */
+/**
+ * @def KN_DEBUG_MODE
+ * Defines the key name for debug mode that may be used by any program
+ * in configuration files.
+ */
+#define KN_DEBUG_MODE ("debug-mode")
 
 
 /** Below you'll find some definitions for the ciseaux program */
@@ -180,6 +190,20 @@ extern gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *gr
  *          file or 0;
  */
 extern gint read_int_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
+
+
+/**
+ * Reads an integer from keyname key in the group grouname from keyfile file
+ * and displays errormsg in case of an error
+ * @param keyfile : the opened keyfile to read from
+ * @param filename : the filename of the keyfile file
+ * @param groupname : the groupname where to look for the key
+ * @param keyname : the key to read the gboolean from
+ * @param errormsg : the error message to be displayed in case of an error
+ * @returns the boolean read at the keyname in the groupname of keyfile
+ *          file or FALSE;
+ */
+extern gboolean read_boolean_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
 
 
 /**
