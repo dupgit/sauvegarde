@@ -96,10 +96,16 @@ static void print_selected_options(options_t *opt)
  */
 static void read_from_group_monitor(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
+    gboolean debug = FALSE;
+
     if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_MONITOR) == TRUE)
         {
             /* Reading the directory list */
             opt->dirname_list = read_list_from_file(keyfile, filename, GN_MONITOR, KN_DIR_LIST, N_("Could not load directory list from file"));
+
+            debug = read_boolean_from_file(keyfile, filename, GN_ALL, KN_DEBUG_MODE, N_("Could not load debug mode configuration from file."));
+
+            set_debug_mode(debug);
         }
 }
 
@@ -234,7 +240,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 options_t *manage_command_line_options(int argc, char **argv)
 {
     gboolean version = FALSE;      /** True if -v was selected on the command line           */
-    gint debug = ENABLE_DEBUG;     /** 0 == FALSE and other values == TRUE                   */
+    gint debug = -4;               /** 0 == FALSE and other values == TRUE                   */
     gchar **dirname_array = NULL;  /** array of dirnames left on the command line            */
     gchar *configfile = NULL;      /** filename for the configuration file if any            */
     gint64 blocksize = 0;          /** computed block size in bytes                          */
@@ -270,6 +276,8 @@ options_t *manage_command_line_options(int argc, char **argv)
     summary = g_strdup(_("This program is monitoring file changes in the filesystem and is hashing\nfiles with SHA256 algorithms from Glib."));
     context = g_option_context_new("");
 
+    set_debug_mode(ENABLE_DEBUG);
+
     set_option_context_options(context, entries, TRUE, bugreport, summary);
 
     if (!g_option_context_parse(context, &argc, &argv, &error))
@@ -302,7 +310,7 @@ options_t *manage_command_line_options(int argc, char **argv)
         {
             set_debug_mode(FALSE);
         }
-    else
+    else if (debug == 1)
         {
             set_debug_mode(TRUE);
         }
