@@ -36,13 +36,14 @@
  *        informations needed to connect the right backend (when one will
  *        have a choice to make!)
  */
-backend_t * init_backend_structure(serveur_struct_t *serveur_struct)
+backend_t *init_backend_structure(serveur_struct_t *serveur_struct)
 {
     backend_t *backend = NULL;
 
     backend = (backend_t *) g_malloc0(sizeof(backend_t));
 
     backend->store_smeta = NULL;
+    backend->init_the_backend = NULL;
 
     return backend;
 }

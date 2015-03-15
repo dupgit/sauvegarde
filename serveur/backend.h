@@ -29,9 +29,11 @@
 #define _SERVEUR_BACKEND_H_
 
 /**
- * Function templates definition to be used by backend_t structure
+ * Function templates definition to be used by backend_t structure.
  */
-typedef void * (*store_smeta_func) (serveur_struct_t *, serveur_meta_data_t *); /**< Stores a serveur_meta_data_t structure according to the backend */
+typedef void * (* store_smeta_func) (serveur_struct_t *, serveur_meta_data_t *); /**< Stores a serveur_meta_data_t structure according to the backend */
+typedef void * (* init_backend) (serveur_struct_t *);                            /**< A function that will initialize the backend if needed           */
+
 
 /**
  * @struct backend_t
@@ -40,7 +42,7 @@ typedef void * (*store_smeta_func) (serveur_struct_t *, serveur_meta_data_t *); 
 typedef struct
 {
     store_smeta_func *store_smeta;
-
+    init_backend *init_the_backend;
 } backend_t;
 
 
