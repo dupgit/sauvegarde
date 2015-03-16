@@ -200,17 +200,15 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
 
     if (smeta != NULL && smeta->meta != NULL)
         {   /* The convertion went well and smeta contains the meta datas */
-            /**
-             * @todo store datas somewhere
-             * Here we are returning the whole hash_list but when we will
-             * begin to store things it may happen that the serveur already
-             * has a specific hash thus we will not ask for it !
-             */
+
             print_debug(_("Received meta datas for file %s\n"), smeta->meta->name);
 
 
             /**
              * Creating an answer an sending the hashs that are needed.
+             * Here we are returning the whole hash_list but when we will
+             * begin to store things it may happen that the serveur already
+             * has a specific hash thus we will not ask for it !
              */
             root = json_object();
             array = convert_hash_list_to_json(smeta->meta->hash_list);
@@ -222,7 +220,7 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
             /**
              * Sending smeta datas into the queue in order to be treated by
              * the corresponding thread. smeta is freed there and should not
-             * be used after this call.
+             * be used after this "call" here.
              */
             g_async_queue_push(serveur_struct->meta_queue, smeta);
 
@@ -286,7 +284,8 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
 
             /**
              * Sending received_data into the queue in order to be treated by
-             * the corresponding thread
+             * the corresponding thread. hash_data is freed by datas_thread
+             * and should not be used after this "call" here.
              */
             g_async_queue_push(serveur_struct->data_queue, hash_data);
 
