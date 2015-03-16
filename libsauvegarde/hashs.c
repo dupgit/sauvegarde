@@ -214,3 +214,22 @@ gpointer free_data_t_structure(data_t *a_data)
     return NULL;
 }
 
+
+
+/**
+ * Inits and returns a newly hash_data_t structure.
+ * @returns a newly hash_data_t structure.
+ */
+hash_data_t *new_hash_data_t(guint8 * data, gssize read, guint8 *hash)
+{
+    hash_data_t *hash_data = NULL;
+
+    hash_data = (hash_data_t *) g_malloc0(sizeof(hash_data_t));
+
+    hash_data->hash = hash;
+    hash_data->data = data;
+    hash_data->read = read;
+
+    return hash_data;
+}
+

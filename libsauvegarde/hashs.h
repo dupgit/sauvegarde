@@ -67,6 +67,17 @@ typedef struct
 
 
 /**
+ * @struct hash_data_t
+ * @brief Structure to store a hash and the corresponding datas
+ */
+typedef struct
+{
+    guint8 *hash;
+    guint8 *data;
+    gssize read;
+} hash_data_t;
+
+/**
  * Allocate a new hashs_t structure with a GTree
  * @returns a newly allocated hashs_t structure with a GTree initialized
  *          with compare_two_hashs function to sort the hashs.
@@ -123,5 +134,13 @@ extern data_t *new_data_t_structure(guchar *buffer, gssize read, gboolean into_c
  * be freed
  */
 extern gpointer free_data_t_structure(data_t *a_data);
+
+
+/**
+ * Inits and returns a newly hash_data_t structure.
+ * @returns a newly hash_data_t structure.
+ */
+hash_data_t *new_hash_data_t(guint8 * data, gssize read, guint8 *hash);
+
 
 #endif /* #ifndef _HASHS_H_ */

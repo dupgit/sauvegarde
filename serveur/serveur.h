@@ -72,7 +72,7 @@
 #define PROGRAM_NAME ("serveur")
 
 #include "options.h"
-
+#include "backend.h"
 
 
 /**
@@ -91,10 +91,12 @@ typedef struct
                                *   disk
                                */
     struct MHD_Daemon *d;     /**< libmicrohttpd daemon structure               */
+    backend_t *backend;
+    GAsyncQueue *meta_queue;  /**< An asynchronous queue where smeta data will
+                               *   be transmitted as it arrives                 */
+    GAsyncQueue *data_queue;  /**< An asynchronous queue where data will be
+                               *   transmitted as it arrives                    */
 } serveur_struct_t;
-
-
-#include "backend.h"
 
 
 #endif /* #ifndef _SERVEUR_H_ */
