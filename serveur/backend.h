@@ -32,6 +32,12 @@
 /**
  * Function templates definition to be used by backend_t structure.
  * void * pointers are ment to be serveur_struct_t * pointers.
+ * @todo have a function that will say if a hash and its associated data
+ *       have allready been stored.
+ * @todo have a function that will be called when reading configuration
+ *       file to access some specific backend configurations.
+ * @todo try to imagine a solution to append backend specific new options
+ *       to the command line.
  */
 typedef void * (* store_smeta_func) (void *, serveur_meta_data_t *); /**< Stores a serveur_meta_data_t structure according to the backend */
 typedef void * (* store_data_func) (void *, hash_data_t *);          /**< Stores a hash_data_t structure according to the backend         */

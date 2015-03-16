@@ -1,5 +1,4 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
-
 /*
  *    file_backend.c
  *    This file is part of "Sauvegarde" project.
@@ -25,6 +24,9 @@
  *
  * This file contains all the functions for the file backend that saves
  * everything to some flat files somewhere into the filesystem.
+ * @todo review function comments
+ * @todo move hash specific functions to libsauvegarde's hash.c library as
+ *       it may be usefull for other programs.
  */
 
 #include "serveur.h"
@@ -186,6 +188,10 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
 
     if (hash_data != NULL && hash_data->hash != NULL && hash_data->data != NULL)
         {
+            /** @todo create directories at init time beacause
+             * creating directories like that is time consuming
+             * for nothing
+             */
             path = make_path_from_hash("/var/tmp/sauvegarde/serveur/datas", hash_data->hash, 3);
             create_directory(path);
             hex_hash = hash_to_string(hash_data->hash);

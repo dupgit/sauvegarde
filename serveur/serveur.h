@@ -24,6 +24,8 @@
  *
  * This file contains all the definitions of the functions and structures
  * that are used by 'serveur' Sauvegarde's server.
+ * @todo add some stats structure that will keep some values about the
+ *       activity of serveur server.
  */
 #ifndef _SERVEUR_H_
 #define _SERVEUR_H_
