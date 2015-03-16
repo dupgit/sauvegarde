@@ -198,7 +198,7 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
     /* received_data is freed : do not reuse after this ! */
     smeta = convert_json_to_smeta_data(received_data);
 
-    if (smeta != NULL)
+    if (smeta != NULL && smeta->meta != NULL)
         {   /* The convertion went well and smeta contains the meta datas */
             /**
              * @todo store datas somewhere
@@ -207,12 +207,6 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
              * has a specific hash thus we will not ask for it !
              */
             print_debug(_("Received meta datas for file %s\n"), smeta->meta->name);
-
-            /**
-             * Sending smeta datas into the queue in order to be treated by
-             * the corresponding thread
-             */
-            g_async_queue_push(serveur_struct->meta_queue, smeta);
 
 
             /**
@@ -224,12 +218,21 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
             json_str = json_dumps(root, 0);
             json_decref(root);
 
+
+            /**
+             * Sending smeta datas into the queue in order to be treated by
+             * the corresponding thread. smeta is freed there and should not
+             * be used after this call.
+             */
+            g_async_queue_push(serveur_struct->meta_queue, smeta);
+
+
             response = MHD_create_response_from_buffer(strlen(json_str), (void *) json_str, MHD_RESPMEM_MUST_FREE);
             success = MHD_queue_response(connection, MHD_HTTP_OK, response);
         }
     else
         {
-            answer = g_strdup_printf(_("Error: could not convert metadata to json\n"));
+            answer = g_strdup_printf(_("Error: could not convert json to metadata\n"));
             response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
             success = MHD_queue_response(connection, MHD_HTTP_OK, response);
         }
