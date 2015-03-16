@@ -55,7 +55,9 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
     serveur_struct->d = NULL;            /* libmicrohttpd daemon pointer */
     serveur_struct->meta_queue = g_async_queue_new();
     serveur_struct->data_queue = g_async_queue_new();
-    serveur_struct->backend = init_backend_structure();
+
+    /* default backend */
+    serveur_struct->backend = init_backend_structure(file_store_smeta, NULL, file_init_backend);
 
     return serveur_struct;
 }
@@ -212,6 +214,7 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
              */
             g_async_queue_push(serveur_struct->meta_queue, smeta);
 
+
             /**
              * Creating an answer an sending the hashs that are needed.
              */
@@ -219,10 +222,10 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
             array = convert_hash_list_to_json(smeta->meta->hash_list);
             insert_json_value_into_json_root(root, "hash_list", array);
             json_str = json_dumps(root, 0);
+            json_decref(root);
 
             response = MHD_create_response_from_buffer(strlen(json_str), (void *) json_str, MHD_RESPMEM_MUST_FREE);
             success = MHD_queue_response(connection, MHD_HTTP_OK, response);
-            smeta = free_smeta_data_t(smeta);
         }
     else
         {
@@ -422,7 +425,13 @@ static gpointer meta_datas_thread(gpointer user_data)
 
                             if (smeta != NULL)
                                 {
+                                    print_debug("meta_data_thread: received from %s meta for file %s\n", smeta->hostname, smeta->meta->name);
                                     serveur_struct->backend->store_smeta(serveur_struct, smeta);
+                                    free_smeta_data_t(smeta);
+                                }
+                            else
+                                {
+                                    print_error(__FILE__, __LINE__, _("Error: received a NULL pointer.\n"));
                                 }
                         }
                 }
@@ -506,8 +515,14 @@ int main(int argc, char **argv)
     serveur_struct = init_serveur_main_structure(argc, argv);
 
 
-    if (serveur_struct != NULL && serveur_struct->opt != NULL)
+    if (serveur_struct != NULL && serveur_struct->opt != NULL && serveur_struct->backend != NULL)
         {
+            /* Initializing the choosen backend by calling it's function */
+            if (serveur_struct->backend->init_backend != NULL)
+                {
+                   serveur_struct->backend->init_backend(serveur_struct);
+                }
+
             /* Before starting anything else, start the threads */
             meta_thread = g_thread_new("meta-datas", meta_datas_thread, serveur_struct);
             data_thread = g_thread_new("datas", datas_thread, serveur_struct);
@@ -555,6 +570,10 @@ int main(int argc, char **argv)
                             break;
                         }
                 */
+        }
+    else
+        {
+            print_error(__FILE__, __LINE__, _("Error: initialization failed.\n"));
         }
 
     return 0;

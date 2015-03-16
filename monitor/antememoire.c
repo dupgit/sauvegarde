@@ -63,6 +63,7 @@ static void send_meta_data_to_serveur_or_store_into_cache(meta_data_t *meta, mai
                      * This answer is a list of hashs that the server needs. So we want
                      * to send the datas that corresponds with the hashs. Answer is in
                      * comm->buffer
+                     * @note this could be done by another thread !
                      */
                     send_datas_to_server(main_struct->comm, main_struct->hashs, main_struct->comm->buffer);
                     main_struct->comm->buffer = free_variable(main_struct->comm->buffer);

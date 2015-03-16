@@ -74,7 +74,6 @@
 #include "options.h"
 #include "backend.h"
 
-
 /**
  * @struct serveur_struct_t
  * @brief Structure that contains everything needed by the program.
@@ -97,6 +96,9 @@ typedef struct
     GAsyncQueue *data_queue;  /**< An asynchronous queue where data will be
                                *   transmitted as it arrives                    */
 } serveur_struct_t;
+
+
+#include "file_backend.h"
 
 
 #endif /* #ifndef _SERVEUR_H_ */

@@ -35,7 +35,7 @@
  */
 typedef void * (* store_smeta_func) (void *, serveur_meta_data_t *); /**< Stores a serveur_meta_data_t structure according to the backend */
 typedef void * (* store_data_func) (void *, hash_data_t *);          /**< Stores a hash_data_t structure according to the backend         */
-typedef void * (* init_backend) (void *);                            /**< A function that will initialize the backend if needed           */
+typedef void * (* init_backend_func) (void *);                       /**< A function that will initialize the backend if needed           */
 
 
 /**
@@ -46,7 +46,7 @@ typedef struct
 {
     store_smeta_func store_smeta;
     store_data_func store_data;
-    init_backend init_the_backend;
+    init_backend_func init_backend;
 } backend_t;
 
 
@@ -54,9 +54,12 @@ typedef struct
 /**
  * Inits the backend with the correct functions
  * @todo write some backends !
+ * @param store_smeta a function to store serveur meta data structure
+ * @param store_data a function to store datas
+ * @param init_backend a function to init the backend
  * @returns a newly created backend_t structure initialized to nothing !
  */
-extern backend_t * init_backend_structure(void);
+extern backend_t *init_backend_structure(void *store_smeta, void *store_data, void *init_backend);
 
 
 #endif /* #ifndef _SERVEUR_BACKEND_H_ */

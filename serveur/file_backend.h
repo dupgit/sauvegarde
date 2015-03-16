@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
- *    backend.c
+ *    file_backend.h
  *    This file is part of "Sauvegarde" project.
  *
  *    (C) Copyright 2015 Olivier Delhomme
@@ -20,34 +20,19 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file serveur/backend.c
+ * @file serveur/file_backend.h
  *
- * This file contains all the functions for the backend management of
- * serveur's server.
+ * This file contains all definition for the functions for the file backend
+ * system.
  */
 
-#include "serveur.h"
+/**
+ * Stores meta data into a flat file .
+ */
+extern void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *smeta);
 
 
 /**
- * Inits the backend with the correct functions
- * @todo write some backends !
- * @param store_smeta a function to store serveur meta data structure
- * @param store_data a function to store datas
- * @param init_backend a function to init the backend
- * @returns a newly created backend_t structure initialized to nothing !
+ * Inits the backend : takes care of the directories we want to write to
  */
-backend_t *init_backend_structure(void *store_smeta, void *store_data, void *init_backend)
-{
-    backend_t *backend = NULL;
-
-    backend = (backend_t *) g_malloc0(sizeof(backend_t));
-
-    backend->store_smeta = store_smeta;
-    backend->store_data = store_data;
-    backend->init_backend = init_backend;
-
-    return backend;
-}
-
-
+extern void file_init_backend(serveur_struct_t *serveur_struct);
