@@ -111,7 +111,7 @@ extern void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gss
  * Transforms a binary hashs into a printable string (gchar *)
  * @param a_hash is a hash in a binary form that we want to transform into
  *        a string.
- * @returns a string that conatins the hash in an hexadecimal form.
+ * @returns a string that contains the hash in an hexadecimal form.
  */
 extern gchar *hash_to_string(guint8 *a_hash);
 

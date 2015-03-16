@@ -30,6 +30,8 @@
 #include "serveur.h"
 
 static gchar *convert_hash_list_to_gchar(GSList *hash_list);
+static gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level);
+
 
 /**
  * Converts the hash list to a list of comma separated hashs in one gchar *
@@ -72,7 +74,7 @@ static gchar *convert_hash_list_to_gchar(GSList *hash_list)
 
 
 /**
- * Stores meta data into a flat file .
+ * Stores meta data into a flat file.
  */
 void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *smeta)
 {
@@ -113,22 +115,111 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
                     count = strlen(buffer);
                     written = g_output_stream_write((GOutputStream *) stream, buffer, count, NULL, &error);
 
-                    if (written != count)
+                    if (error != NULL)
                         {
-                            print_error(__FILE__, __LINE__, _("Error: unable to write to file %s.\n"));
+                            print_error(__FILE__, __LINE__, _("Error: unable to write to file %s (%ld bytes written).\n"), filename, written);
                         }
 
                     g_output_stream_close((GOutputStream *) stream, NULL, &error);
-                    g_object_unref(meta_file)   ;
+                    free_variable(buffer);
+
                 }
             else
                 {
                     print_error(__FILE__, __LINE__, _("Error: unable to open file %s to append meta-datas in it.\n"), filename);
                 }
+
+            g_object_unref(meta_file);
+            free_variable(filename);
         }
     else
         {
             print_error(__FILE__, __LINE__, _("Error: no serveur_meta_data_t structure or missing hostname or missing meta_data_t * structure.\n"));
+        }
+}
+
+
+/**
+ * Makes a path from a binary hash : 0E/39/AF for level 3 with hash
+ * begining by (in hex) 0E39AF.
+ */
+static gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level)
+{
+    gchar *octet = NULL;
+    gchar *old_path = NULL;
+    gchar *new_path = NULL;
+    guint i = 0;
+
+    if (path != NULL && hash != NULL && level < HASH_LEN)
+        {
+
+            old_path = g_strdup(path);
+
+            for(i = 0; i < level; i++)
+                {
+                    octet = g_strdup_printf("%02x", hash[i]);
+                    new_path = g_build_filename(old_path, octet, NULL);
+
+                    free_variable(old_path);
+                    free_variable(octet);
+
+                    old_path = new_path;
+                }
+        }
+
+    return old_path;
+}
+
+
+/**
+ * Stores data into a flat file.
+ */
+void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
+{
+    GFile *data_file = NULL;
+    gchar *filename = NULL;
+    GFileOutputStream *stream = NULL;
+    GError *error = NULL;
+    gssize written = 0;
+    gchar *hex_hash = NULL;
+    gchar *path = NULL;
+
+    if (hash_data != NULL && hash_data->hash != NULL && hash_data->data != NULL)
+        {
+            path = make_path_from_hash("/var/tmp/sauvegarde/serveur/datas", hash_data->hash, 3);
+            create_directory(path);
+            hex_hash = hash_to_string(hash_data->hash);
+            filename = g_build_filename(path, hex_hash, NULL);
+
+            data_file = g_file_new_for_path(filename);
+            stream = g_file_replace(data_file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
+
+            if (stream != NULL)
+                {
+                    written = g_output_stream_write((GOutputStream *) stream, hash_data->data, hash_data->read, NULL, &error);
+
+                    if (error != NULL)
+                        {
+                            print_error(__FILE__, __LINE__, _("Error: unable to write to file %s (%ld bytes written).\n"), filename, written);
+                        }
+
+                    g_output_stream_close((GOutputStream *) stream, NULL, &error);
+
+                    free_variable(hash_data->data);
+                    free_variable(hash_data->hash);
+                    free_variable(hash_data);
+                }
+            else
+                {
+                     print_error(__FILE__, __LINE__, _("Error: unable to open file %s to write datas in it.\n"), filename);
+                }
+
+            g_object_unref(data_file);
+            free_variable(filename);
+        }
+    else
+        {
+            print_error(__FILE__, __LINE__, _("Error: no hash_data_t structure or hash in it or missing data in it.\n"));
         }
 }
 

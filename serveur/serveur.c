@@ -57,7 +57,7 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
     serveur_struct->data_queue = g_async_queue_new();
 
     /* default backend */
-    serveur_struct->backend = init_backend_structure(file_store_smeta, NULL, file_init_backend);
+    serveur_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend);
 
     return serveur_struct;
 }

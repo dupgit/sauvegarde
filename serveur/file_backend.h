@@ -36,3 +36,9 @@ extern void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data
  * Inits the backend : takes care of the directories we want to write to
  */
 extern void file_init_backend(serveur_struct_t *serveur_struct);
+
+
+/**
+ * Stores data into a flat file.
+ */
+extern void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data);
