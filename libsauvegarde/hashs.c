@@ -215,7 +215,6 @@ gpointer free_data_t_structure(data_t *a_data)
 }
 
 
-
 /**
  * Inits and returns a newly hash_data_t structure.
  * @returns a newly hash_data_t structure.
@@ -233,3 +232,84 @@ hash_data_t *new_hash_data_t(guint8 * data, gssize read, guint8 *hash)
     return hash_data;
 }
 
+
+/**
+ * Converts the hash list to a list of comma separated hashs in one gchar *
+ * string. Hashs are base64 encoded
+ * @param hash_list à GSList of hashs
+ * @returns a list of comma separated hashs in one gchar * string.
+ * @todo free memory a bit !
+ */
+gchar *convert_hash_list_to_gchar(GSList *hash_list)
+{
+    GSList *head = hash_list;
+    gchar *encoded_hash = NULL;
+    gchar *list = NULL;
+    gchar *old_list = NULL;
+
+
+    while (head != NULL)
+        {
+            encoded_hash = g_strdup_printf("\"%s\"", g_base64_encode(head->data, HASH_LEN));
+
+            if (old_list == NULL)
+                {
+                    list = g_strdup_printf("%s", encoded_hash);
+                    old_list = list;
+                }
+            else
+                {
+                    list = g_strdup_printf("%s, %s", old_list, encoded_hash);
+                    free_variable(old_list);
+                    old_list = list;
+                }
+
+            head = g_slist_next(head);
+        }
+
+    list = old_list;
+
+    return list;
+}
+
+
+/**
+ * Makes a path from a binary hash : 0E/39/AF for level 3 with hash (in hex)
+ * begining by 0E39AF.
+ * @param path is a gchar * prefix for the path (ie /var/tmp/sauvegarde for
+ *        instance).
+ * @param hash is a guint8 pointer to the binary representation of a hash.
+ * @param level The level we want the path to have. It is an unsigned int
+ *        and must be less than HASH_LEN. a level of N gives 2^N
+ *        directories. We should add a level when more than 512 files are
+ *        in each last subdirectories.
+ * @returns a string as a gchar * made of the path and the hex
+ *          representation of hash on 'level' levels. With the example above
+ *          it will return /var/tmp/sauvegarde/0E/39/AF
+ */
+gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level)
+{
+    gchar *octet = NULL;
+    gchar *old_path = NULL;
+    gchar *new_path = NULL;
+    guint i = 0;
+
+    if (path != NULL && hash != NULL && level < HASH_LEN)
+        {
+
+            old_path = g_strdup(path);
+
+            for(i = 0; i < level; i++)
+                {
+                    octet = g_strdup_printf("%02x", hash[i]);
+                    new_path = g_build_filename(old_path, octet, NULL);
+
+                    free_variable(old_path);
+                    free_variable(octet);
+
+                    old_path = new_path;
+                }
+        }
+
+    return old_path;
+}

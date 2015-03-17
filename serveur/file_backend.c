@@ -31,49 +31,6 @@
 
 #include "serveur.h"
 
-static gchar *convert_hash_list_to_gchar(GSList *hash_list);
-static gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level);
-
-
-/**
- * Converts the hash list to a list of comma separated hashs in one gchar *
- * string. Hashs are base64 encoded
- * @param hash_list à GSList of hashs
- * @returns a list of comma separated hashs in one gchar * string.
- * @todo free memory a bit !
- */
-static gchar *convert_hash_list_to_gchar(GSList *hash_list)
-{
-    GSList *head = hash_list;
-    gchar *encoded_hash = NULL;
-    gchar *list = NULL;
-    gchar *old_list = NULL;
-
-
-    while (head != NULL)
-        {
-            encoded_hash = g_strdup_printf("\"%s\"", g_base64_encode(head->data, HASH_LEN));
-
-            if (old_list == NULL)
-                {
-                    list = g_strdup_printf("%s", encoded_hash);
-                    old_list = list;
-                }
-            else
-                {
-                    list = g_strdup_printf("%s, %s", old_list, encoded_hash);
-                    free_variable(old_list);
-                    old_list = list;
-                }
-
-            head = g_slist_next(head);
-        }
-
-    list = old_list;
-
-    return list;
-}
-
 
 /**
  * Stores meta data into a flat file.
@@ -138,38 +95,6 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
         {
             print_error(__FILE__, __LINE__, _("Error: no serveur_meta_data_t structure or missing hostname or missing meta_data_t * structure.\n"));
         }
-}
-
-
-/**
- * Makes a path from a binary hash : 0E/39/AF for level 3 with hash
- * begining by (in hex) 0E39AF.
- */
-static gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level)
-{
-    gchar *octet = NULL;
-    gchar *old_path = NULL;
-    gchar *new_path = NULL;
-    guint i = 0;
-
-    if (path != NULL && hash != NULL && level < HASH_LEN)
-        {
-
-            old_path = g_strdup(path);
-
-            for(i = 0; i < level; i++)
-                {
-                    octet = g_strdup_printf("%02x", hash[i]);
-                    new_path = g_build_filename(old_path, octet, NULL);
-
-                    free_variable(old_path);
-                    free_variable(octet);
-
-                    old_path = new_path;
-                }
-        }
-
-    return old_path;
 }
 
 

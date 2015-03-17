@@ -143,4 +143,30 @@ extern gpointer free_data_t_structure(data_t *a_data);
 hash_data_t *new_hash_data_t(guint8 * data, gssize read, guint8 *hash);
 
 
+/**
+ * Converts the hash list to a list of comma separated hashs in one gchar *
+ * string. Hashs are base64 encoded
+ * @param hash_list à GSList of hashs
+ * @returns a list of comma separated hashs in one gchar * string.
+ */
+extern gchar *convert_hash_list_to_gchar(GSList *hash_list);
+
+
+/**
+ * Makes a path from a binary hash : 0E/39/AF for level 3 with hash (in hex)
+ * begining by 0E39AF.
+ * @param path is a gchar * prefix for the path (ie /var/tmp/sauvegarde for
+ *        instance).
+ * @param hash is a guint8 pointer to the binary representation of a hash.
+ * @param level The level we want the path to have. It is an unsigned int
+ *        and must be less than HASH_LEN. a level of N gives 2^N
+ *        directories. We should add a level when more than 512 files are
+ *        in each last subdirectories.
+ * @returns a string as a gchar * made of the path and the hex
+ *          representation of hash on 'level' levels. With the example above
+ *          it will return /var/tmp/sauvegarde/0E/39/AF
+ */
+extern gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level);
+
+
 #endif /* #ifndef _HASHS_H_ */
