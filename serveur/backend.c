@@ -35,17 +35,20 @@
  * @param store_smeta a function to store serveur meta data structure
  * @param store_data a function to store datas
  * @param init_backend a function to init the backend
+ * @param build_needed_hash_list a function that must build a GSList * needed hash list
  * @returns a newly created backend_t structure initialized to nothing !
  */
-backend_t *init_backend_structure(void *store_smeta, void *store_data, void *init_backend)
+backend_t *init_backend_structure(void *store_smeta, void *store_data, void *init_backend, void *build_needed_hash_list)
 {
     backend_t *backend = NULL;
 
     backend = (backend_t *) g_malloc0(sizeof(backend_t));
 
+    backend->user_data = NULL;
     backend->store_smeta = store_smeta;
     backend->store_data = store_data;
     backend->init_backend = init_backend;
+    backend->build_needed_hash_list = build_needed_hash_list;
 
     return backend;
 }

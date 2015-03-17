@@ -57,7 +57,7 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
     serveur_struct->data_queue = g_async_queue_new();
 
     /* default backend */
-    serveur_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend);
+    serveur_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend, build_needed_hash_list);
 
     return serveur_struct;
 }
@@ -194,6 +194,7 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
     json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json       */
     json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs   */
     gchar *json_str = NULL;     /** gchar *json_str is the string to be returned at the end             */
+    GSList *needed = NULL;
 
     /* received_data is freed : do not reuse after this ! */
     smeta = convert_json_to_smeta_data(received_data);
@@ -203,19 +204,31 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
 
             print_debug(_("Received meta datas for file %s\n"), smeta->meta->name);
 
-
             /**
-             * Creating an answer an sending the hashs that are needed.
-             * Here we are returning the whole hash_list but when we will
-             * begin to store things it may happen that the serveur already
-             * has a specific hash thus we will not ask for it !
+             * Creating an answer an sending the hashs that are needed. If
+             * the selected backend does not have a build_needed_hash_list
+             * function we are returning the whole hash_list !
              */
             root = json_object();
-            array = convert_hash_list_to_json(smeta->meta->hash_list);
+
+            if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->build_needed_hash_list != NULL)
+                {
+                    needed = serveur_struct->backend->build_needed_hash_list(serveur_struct, smeta->meta->hash_list);
+                    array = convert_hash_list_to_json(needed);
+                }
+            else
+                {
+                    array = convert_hash_list_to_json(smeta->meta->hash_list);
+                }
+
             insert_json_value_into_json_root(root, "hash_list", array);
             json_str = json_dumps(root, 0);
             json_decref(root);
 
+            if (needed != NULL)
+                {
+                    needed = free_list(needed);
+                }
 
             /**
              * Sending smeta datas into the queue in order to be treated by

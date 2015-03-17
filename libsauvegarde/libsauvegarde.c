@@ -319,6 +319,27 @@ gpointer free_error(gpointer error)
 
 
 /**
+ * Frees all elements of a gchar * GSList
+ * @param list the list to be freed
+ * @returns NULL
+ */
+gpointer free_list(GSList *list)
+{
+    GSList *head = list;
+
+    while (list != NULL)
+        {
+            free_variable(list->data);
+            list = g_slist_next(list);
+        }
+
+    g_slist_free(head);
+
+    return NULL;
+}
+
+
+/**
  * Prints a message if the debug flag is set
  * @param format : the format of the message (as in printf)
  * @param ... : va_list of variable that are to be printed into format.

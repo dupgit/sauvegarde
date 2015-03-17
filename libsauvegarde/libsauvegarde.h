@@ -154,6 +154,14 @@ extern gpointer free_error(gpointer error);
 
 
 /**
+ * Frees all elements of a gchar * GSList
+ * @param list the list to be freed
+ * @returns NULL
+ */
+extern gpointer free_list(GSList *list);
+
+
+/**
  * Prints a message if the debug flag is set
  * @param format : the format of the message (as in printf)
  * @param ... : va_list of variable that are to be printed into format.

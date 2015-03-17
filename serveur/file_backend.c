@@ -24,8 +24,7 @@
  *
  * This file contains all the functions for the file backend that saves
  * everything to some flat files somewhere into the filesystem.
- * @todo move hash specific functions to libsauvegarde's hash.c library as
- *       it may be usefull for other programs.
+ * @todo make a more complex structure to store directory prefix and level
  */
 
 #include "serveur.h"
@@ -54,12 +53,23 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
     gchar *buffer = NULL;
     gchar *hash_list = NULL;
     meta_data_t *meta = smeta->meta;
+    gchar *prefix = NULL;
+
+
+    if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL)
+        {
+            prefix = g_build_filename((gchar *) serveur_struct->backend->user_data, "metas", NULL);
+        }
+    else
+        {   /* default prefix for datas */
+            prefix = "/var/tmp/sauvegarde/serveur/metas";
+        }
 
     if (smeta != NULL && smeta->hostname != NULL && meta != NULL)
         {
             print_debug("file_store_smeta: Going to store meta-datas for file %s\n", meta->name);
 
-            filename = g_build_filename("/var/tmp/sauvegarde/serveur/metas", smeta->hostname, NULL);
+            filename = g_build_filename(prefix, smeta->hostname, NULL);
 
             meta_file = g_file_new_for_path(filename);
 
@@ -125,6 +135,17 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
     gssize written = 0;
     gchar *hex_hash = NULL;
     gchar *path = NULL;
+    gchar *prefix = NULL;
+
+    if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL)
+        {
+            prefix = g_build_filename((gchar *) serveur_struct->backend->user_data, "datas", NULL);
+        }
+    else
+        {   /* default prefix for datas */
+            prefix = "/var/tmp/sauvegarde/serveur/datas";
+        }
+
 
     if (hash_data != NULL && hash_data->hash != NULL && hash_data->data != NULL)
         {
@@ -132,10 +153,12 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
              * creating directories like that is time consuming
              * for nothing
              */
-            path = make_path_from_hash("/var/tmp/sauvegarde/serveur/datas", hash_data->hash, 3);
+            path = make_path_from_hash(prefix, hash_data->hash, 3);
             create_directory(path);
             hex_hash = hash_to_string(hash_data->hash);
             filename = g_build_filename(path, hex_hash, NULL);
+
+            print_debug("file_store_data: Going to store datas for hash %s\n", hex_hash);
 
             data_file = g_file_new_for_path(filename);
             stream = g_file_replace(data_file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
@@ -171,13 +194,93 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
 
 
 /**
+ * Builds a list of hashs that serveur's server need.
+ * @param serveur_struct is the serveur main structure where all
+ *        informations needed by the program are stored.
+ * @param hash_list is the list of hashs that we have to check for.
+ */
+GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_list)
+{
+    GFile *data_file = NULL;
+    GSList *head = hash_list;
+    GSList *needed = NULL;
+    gchar *hex_hash = NULL;
+    gchar *filename = NULL;
+    gchar *path = NULL;
+    gchar *prefix = NULL;
+
+    if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL)
+        {
+            prefix = g_build_filename((gchar *) serveur_struct->backend->user_data, "datas", NULL);
+        }
+    else
+        {   /* default prefix for datas */
+            prefix = "/var/tmp/sauvegarde/serveur/datas";
+        }
+
+
+    while (head != NULL)
+        {
+            path = make_path_from_hash(prefix, head->data, 3);
+            hex_hash = hash_to_string(head->data);
+            filename = g_build_filename(path, hex_hash, NULL);
+
+            data_file = g_file_new_for_path(filename);
+
+            if (g_file_query_exists(data_file, NULL) == FALSE)
+                {
+                    /* file does not exists and is needed */
+
+                    needed = g_slist_prepend(needed, head->data);
+                }
+
+            free_variable(filename);
+            free_variable(hex_hash);
+            free_variable(path);
+
+            g_object_unref(data_file);
+
+            head = g_slist_next(head);
+        }
+
+    return needed;
+}
+
+
+/**
+ * Creates sub_dir subdirectory into save_dir path
+ * @param save_dir prefix directory where to create sub_dir
+ * @param sub_dir name of the sub directory to be created under save_dir
+ */
+static void file_create_directory(gchar *save_dir, gchar *sub_dir)
+{
+    gchar *a_directory = NULL;
+
+    a_directory = g_build_filename(save_dir, sub_dir, NULL);
+    create_directory(a_directory);
+    free_variable(a_directory);
+}
+
+
+/**
  * Inits the backend : takes care of the directories we want to write to.
  * @param serveur_struct is the serveur main structure where all
  *        informations needed by the program are stored.
  */
 void file_init_backend(serveur_struct_t *serveur_struct)
 {
-    create_directory("/var/tmp/sauvegarde/serveur/metas");
-    create_directory("/var/tmp/sauvegarde/serveur/datas");
+    gchar *save_dir = "/var/tmp/sauvegarde/serveur";
+
+    if (serveur_struct != NULL && serveur_struct->backend != NULL)
+        {
+            serveur_struct->backend->user_data = save_dir;
+
+            file_create_directory(save_dir, "metas");
+            file_create_directory(save_dir, "datas");
+        }
+    else
+        {
+            print_error(__FILE__, __LINE__, _("Error: no serveur structure or no backend structure.\n"));
+        }
 }
 

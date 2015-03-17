@@ -39,9 +39,11 @@
  * @todo try to imagine a solution to append backend specific new options
  *       to the command line.
  */
-typedef void * (* store_smeta_func) (void *, serveur_meta_data_t *); /**< Stores a serveur_meta_data_t structure according to the backend */
-typedef void * (* store_data_func) (void *, hash_data_t *);          /**< Stores a hash_data_t structure according to the backend         */
-typedef void * (* init_backend_func) (void *);                       /**< A function that will initialize the backend if needed           */
+typedef void     (* store_smeta_func) (void *, serveur_meta_data_t *);  /**< Stores a serveur_meta_data_t structure according to the backend        */
+typedef void     (* store_data_func) (void *, hash_data_t *);           /**< Stores a hash_data_t structure according to the backend                */
+typedef GSList * (* build_needed_hash_list_func) (void *, GSList *);    /**< A function that will check if a hash is already known and build a list
+                                                                         *   of needed hashs that the client may send                               */
+typedef void     (* init_backend_func) (void *);                        /**< A function that will initialize the backend if needed                  */
 
 
 /**
@@ -52,20 +54,22 @@ typedef struct
 {
     store_smeta_func store_smeta;
     store_data_func store_data;
+    build_needed_hash_list_func build_needed_hash_list;
     init_backend_func init_backend;
+    void *user_data;                   /**< user_data should be used by backends to store their own internal structure */
 } backend_t;
 
 
 
 /**
  * Inits the backend with the correct functions
- * @todo write some backends !
  * @param store_smeta a function to store serveur meta data structure
  * @param store_data a function to store datas
  * @param init_backend a function to init the backend
+ * @param build_needed_hash_list a function that must build a GSList * needed hash list
  * @returns a newly created backend_t structure initialized to nothing !
  */
-extern backend_t *init_backend_structure(void *store_smeta, void *store_data, void *init_backend);
+extern backend_t *init_backend_structure(void *store_smeta, void *store_data, void *init_backend, void *build_needed_hash_list);
 
 
 #endif /* #ifndef _SERVEUR_BACKEND_H_ */

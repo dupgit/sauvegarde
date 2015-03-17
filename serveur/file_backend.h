@@ -60,3 +60,12 @@ extern void file_init_backend(serveur_struct_t *serveur_struct);
  *        contains the number of bytes in 'data' field.
  */
 extern void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data);
+
+
+/**
+ * Builds a list of hashs that serveur's server need.
+ * @param serveur_struct is the serveur main structure where all
+ *        informations needed by the program are stored.
+ * @param hash_list is the list of hashs that we have to check for.
+ */
+extern GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_list);
