@@ -376,7 +376,8 @@ GThread *g_thread_new(const gchar *unused, GThreadFunc func, gpointer data)
 
 
 /**
- * Tries to create a directory
+ * Tries to create a directory. Does not report an error if the directory
+ * already exists.
  * @param directory is the gchar * string that contains a directory name
  *        to be created (does nothing if it exists).
  */
@@ -392,7 +393,10 @@ void create_directory(gchar *directory)
 
             if (error != NULL)
                 {
-                    print_error(__FILE__, __LINE__, ("Failed to create directory %s : %s\n"), directory, error->message);
+                    if (error->code != G_IO_ERROR_EXISTS)
+                        {
+                            print_error(__FILE__, __LINE__, ("Failed to create directory %s : %s\n"), directory, error->message);
+                        }
                 }
 
             dir = free_object(dir);

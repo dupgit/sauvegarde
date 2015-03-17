@@ -209,7 +209,7 @@ gboolean read_boolean_from_file(GKeyFile *keyfile, gchar *filename, gchar *group
  * NULL) each entry of the array so elements are in the same order in the
  * array and in the list.
  * @param array is a gchar * array.
- * @param first_list is a list that may allready contain some elements and
+ * @param first_list is a list that may already contain some elements and
  *        to which we will add all the elements of 'array' array.
  * @returns a newly allocated GSList that may be freed when no longer
  *          needed or NULL if array is NULL.

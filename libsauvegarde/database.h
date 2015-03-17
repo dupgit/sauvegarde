@@ -74,7 +74,7 @@ extern db_t *open_database(gchar *database_name);
 
 
 /**
- * Says whether a file is in allready in the cache or not
+ * Says whether a file is in already in the cache or not
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
  * @param meta is the file's metadata that we want to know if it's already
@@ -98,7 +98,7 @@ extern void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *h
 
 
 /**
- * Gets all encoded hashs allready inserted into the 'data' table from the
+ * Gets all encoded hashs already inserted into the 'data' table from the
  * database.
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).

@@ -151,7 +151,7 @@ static void verify_if_tables_exists(db_t *database)
 
 
 /**
- * Says whether a file is in allready in the cache or not
+ * Says whether a file is in already in the cache or not
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
  * @param meta is the file's metadata that we want to know if it's already
@@ -397,7 +397,7 @@ static int get_all_checksum_callback(void *inserted_hashs, int nb_col, char **da
 
 
 /**
- * Gets all encoded hashs allready inserted into the 'data' table from the
+ * Gets all encoded hashs already inserted into the 'data' table from the
  * database.
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
