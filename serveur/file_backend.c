@@ -24,7 +24,6 @@
  *
  * This file contains all the functions for the file backend that saves
  * everything to some flat files somewhere into the filesystem.
- * @todo review function comments
  * @todo move hash specific functions to libsauvegarde's hash.c library as
  *       it may be usefull for other programs.
  */
@@ -33,7 +32,16 @@
 
 
 /**
- * Stores meta data into a flat file.
+ * Stores meta data into a flat file. A file is created for each host that
+ * sends meta datas. This code is not thread safe (it means that this is
+ * not safe to call it from different threads unless some mechanism
+ * garantees that a write will never occur in the same file at the same
+ * time.
+ * @param serveur_struct is the serveur main structure where all
+ *        informations needed by the program are stored.
+ * @param smeta the serveur structure for file meta data. It contains the
+ *        hostname that sent it. This structure MUST be freed by this
+ *        function.
  */
 void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *smeta)
 {
@@ -99,7 +107,14 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
 
 
 /**
- * Stores data into a flat file.
+ * Stores data into a flat file. The file is named by its hash in hex
+ * representation (one should easily check that the sha256sum of such a
+ * file gives its name !).
+ * @param serveur_struct is the serveur main structure where all
+ *        informations needed by the program are stored.
+ * @param hash_data is a hash_data_t * structure that contains the hash and
+ *        the corresponding data in a binary form and a 'read' field that
+ *        contains the number of bytes in 'data' field.
  */
 void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
 {
@@ -156,7 +171,9 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
 
 
 /**
- * Inits the backend : takes care of the directories we want to write to
+ * Inits the backend : takes care of the directories we want to write to.
+ * @param serveur_struct is the serveur main structure where all
+ *        informations needed by the program are stored.
  */
 void file_init_backend(serveur_struct_t *serveur_struct)
 {
