@@ -1,5 +1,7 @@
 # Sauvegarde
 
+@mainpage
+
 Some experiments around backup and continuous data protection (CDP).
 
 [![Build Status](https://travis-ci.org/dupgit/sauvegarde.png?branch=master)](https://travis-ci.org/dupgit/sauvegarde)
@@ -264,6 +266,6 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
 * Software quality checkers :
  * lizard         : [https://github.com/terryyin/lizard](https://github.com/terryyin/lizard)
 * Third party libraries :
-* libmicrohttpd   : [https://www.gnu.org/software/libmicrohttpd/](https://www.gnu.org/software/libmicrohttpd/)
-* libevent        : [http://libevent.org/](http://libevent.org/)
+ * libmicrohttpd   : [https://www.gnu.org/software/libmicrohttpd/](https://www.gnu.org/software/libmicrohttpd/)
+ * libevent        : [http://libevent.org/](http://libevent.org/)
 
