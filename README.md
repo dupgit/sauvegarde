@@ -1,6 +1,7 @@
 # Sauvegarde
 
-@mainpage
+[//]: # (@mainpage
+
 
 Some experiments around backup and continuous data protection (CDP).
 
@@ -268,4 +269,3 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
 * Third party libraries :
  * libmicrohttpd   : [https://www.gnu.org/software/libmicrohttpd/](https://www.gnu.org/software/libmicrohttpd/)
  * libevent        : [http://libevent.org/](http://libevent.org/)
-
