@@ -1,6 +1,7 @@
 # Sauvegarde
 
-[//]: # (@mainpage
+
+This is doygen's @mainpage
 
 
 Some experiments around backup and continuous data protection (CDP).
