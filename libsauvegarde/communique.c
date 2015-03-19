@@ -29,7 +29,7 @@
 #include "libsauvegarde.h"
 
 static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
-static void send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash_list);
+static gint send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash_list);
 
 
 /**
@@ -186,13 +186,21 @@ gint post_url(comm_t *comm, gchar *url)
 /**
  * This functions iters over a GSList of hashs searching into the binary
  * tree if we have the datas and then sends them to serveur server.
- * @param
+ * @param comm a comm_t * structure that must contain an initialized
+ *        curl_handle (must not be NULL). buffer field of this structure
+ *        is sent as data in the POST command.
+ * @param hashs is the hash structure that contains the binary tree.
+ * @param hash_list is the GSList of hashs to send.
+ * @returns a CURLcode (http://curl.haxx.se/libcurl/c/libcurl-errors.html)
+ *          CURLE_OK upon success, any other error code in any other
+ *          situation.
  */
-static void send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash_list)
+static gint send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash_list)
 {
     data_t *a_data = NULL;
     GSList *head = hash_list;
     gint success = CURLE_FAILED_INIT;
+    gint all_ok = CURLE_OK;  /* If hash list is NULL there is nothing to be transmitted so it is a success ! */
 
     while (hash_list != NULL)
         {
@@ -211,6 +219,10 @@ static void send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash
                             a_data->read = 0;
                             a_data->into_cache = FALSE;
                         }
+                    else
+                        {
+                            all_ok = success;
+                        }
                 }
             else
                 {
@@ -223,6 +235,9 @@ static void send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash
         }
 
     g_slist_free(head);
+
+
+    return all_ok;
 }
 
 
@@ -235,11 +250,15 @@ static void send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash
  * @param hashs is the hash structure that contains the binary tree.
  * @param answer is the answer of the serveur containing a json formatted
  *        hash list.
+ * @returns a CURLcode (http://curl.haxx.se/libcurl/c/libcurl-errors.html)
+ *          CURLE_OK upon success of whole hash's transmissions, any other
+ *          error code in any other situation.
  */
-void send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer)
+gint send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer)
 {
     json_t *root = NULL;
     GSList *hash_list = NULL;
+    gint success = CURLE_FAILED_INIT;
 
     if (hashs != NULL && answer != NULL)
         {
@@ -250,11 +269,14 @@ void send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer)
 
                     hash_list = extract_gslist_from_array(root, "hash_list");
 
-                    send_datas_from_hash_list(comm, hashs, hash_list);
+                    success = send_datas_from_hash_list(comm, hashs, hash_list);
 
                     json_decref(root);
                 }
         }
+
+
+   return success;
 }
 
 

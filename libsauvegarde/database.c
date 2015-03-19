@@ -37,7 +37,7 @@ static void free_file_row_t(file_row_t *row);
 static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col);
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
 static int get_data_callback(void *a_data, int nb_col, char **data, char **name_col);
-static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 file_id);
+static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 cache_time, gboolean only_meta);
 static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash);
 static gboolean is_checksum_in_db(hashs_t *inserted_hashs, guint8 *a_hash);
 
@@ -173,10 +173,14 @@ gboolean is_file_in_cache(db_t *database, meta_data_t *meta)
                     free_file_row_t(row);
                     return FALSE;
                 }
-            else
+            else if (row != NULL)
                 {
                     free_file_row_t(row);
                     return TRUE;
+                }
+            else
+                {
+                    return FALSE;
                 }
 
         }
@@ -444,8 +448,11 @@ hashs_t *get_all_inserted_hashs(db_t *database)
  * @param hashs : a balanced binary tree that stores hashs.
  * @param file_id : the file_id we are going to insert checksums into the
  *        database.
+ * @param cache_time is used to identify files uniquely (some sort of id)
+ * @param only_meta : a gboolean that when set to TRUE only meta_data will
+ *        be saved and hashs data will not !
  */
-static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 cache_time)
+static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 cache_time, gboolean only_meta)
 {
     GSList *head = NULL;
     guint8 *a_hash = NULL;
@@ -475,7 +482,7 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                     a_data = g_tree_lookup(hashs->tree_hash, a_hash);
 
                     /* Is encoded hash already in the database ? */
-                    if (a_data != NULL && a_data->into_cache == FALSE && a_data->buffer != NULL) /* encoded_hash is not in the database */
+                    if (only_meta == FALSE && a_data != NULL && a_data->into_cache == FALSE && a_data->buffer != NULL) /* encoded_hash is not in the database */
                         {
                             /* Inserting checksum and the corresponding data into 'data' table */
                             encoded_data = g_base64_encode((guchar*) a_data->buffer, a_data->read);
@@ -495,7 +502,12 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                             a_data->buffer = free_variable(a_data->buffer);
                             a_data->into_cache = TRUE;
                         }
-                    else if (a_data == NULL)
+                    else if (only_meta == TRUE)
+                        {
+                            a_data->buffer = free_variable(a_data->buffer);
+                            a_data->into_cache = FALSE;
+                        }
+                    else
                         {
                             print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash %s\n", encoded_hash);
                         }
@@ -519,8 +531,10 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
  * @param meta is the file's metadata that we want to insert into the
  *        cache.
  * @param hashs : a balanced binary tree that stores hashs.
+ * @param only_meta : a gboolean that when set to TRUE only meta_data will
+ *        be saved and hashs data will not !
  */
-void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs)
+void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, gboolean only_meta)
 {
     gchar *sql_command = NULL;     /** gchar *sql_command is the command to be executed */
     guint64 cache_time = 0;
@@ -539,7 +553,7 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs)
 
             free_variable(sql_command);
 
-            insert_file_checksums(database, meta, hashs, cache_time);
+            insert_file_checksums(database, meta, hashs, cache_time, only_meta);
 
             /* ending the transaction here */
             exec_sql_cmd(database, "COMMIT;",  N_("Error commiting to the database: %s\n"));

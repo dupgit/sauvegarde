@@ -108,7 +108,10 @@ extern gint post_url(comm_t *comm, gchar *url);
  * @param hashs is the hash structure that contains the binary tree.
  * @param answer is the answer of the serveur containing a json formatted
  *        hash list.
+ * @returns a CURLcode (http://curl.haxx.se/libcurl/c/libcurl-errors.html)
+ *          CURLE_OK upon success of whole hash's transmissions, any other
+ *          error code in any other situation.
  */
-extern void send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer);
+extern gint send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer);
 
 #endif /* #ifndef _COMMUNIQUE_H_ */

@@ -93,8 +93,10 @@ extern gboolean is_file_in_cache(db_t *database, meta_data_t *meta);
  * @param meta is the file's metadata that we want to insert into the
  *        cache.
  * @param hashs : a balanced binary tree that stores hashs.
+ * @param only_meta : a gboolean that when set to TRUE only meta_data will
+ *        be saved and hashs data will not !
  */
-extern void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs);
+extern void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, gboolean only_meta);
 
 
 /**

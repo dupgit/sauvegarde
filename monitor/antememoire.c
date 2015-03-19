@@ -59,22 +59,36 @@ static void send_meta_data_to_serveur_or_store_into_cache(meta_data_t *meta, mai
 
             if (success == CURLE_OK)
                 {   /**
+                     * @note uppon success the buffer field of main_struct->comm structure
+                     *       contains the answer, that is to say the hashs list that are
+                     *       needed by the serveur.
+                     * @note this could be done by another thread !
                      * Message has been sent and an answer has been received correctly.
                      * This answer is a list of hashs that the server needs. So we want
                      * to send the datas that corresponds with the hashs. Answer is in
                      * comm->buffer
-                     * @note this could be done by another thread !
                      */
-                    send_datas_to_server(main_struct->comm, main_struct->hashs, main_struct->comm->buffer);
+                    success = send_datas_to_server(main_struct->comm, main_struct->hashs, main_struct->comm->buffer);
+
                     main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
+
+                    if (success == CURLE_OK)
+                        {
+                            /* We have to keep in mind that this meta data has been saved into the server */
+                            insert_file_into_cache(main_struct->database, meta, main_struct->hashs, TRUE);
+                        }
+                    else
+                        {
+                            /* Something went wrong and we need to save the whole information into the cache */
+                            insert_file_into_cache(main_struct->database, meta, main_struct->hashs, FALSE);
+                        }
 
                 }
             else
-                {   /* Something went wrong when sending the datas and thus we have to store them localy. */
-
-                    /** @note insert_file_into_cache is fast but does not garantee that the data is on the disk ! */
+                {
+                    /* Something went wrong when sending the datas and thus we have to store them localy. */
                     print_debug("Inserting into database cache file: \"%s\"\n", meta->name);
-                    insert_file_into_cache(main_struct->database, meta, main_struct->hashs);
+                    insert_file_into_cache(main_struct->database, meta, main_struct->hashs, FALSE);
                 }
         }
 }
@@ -102,13 +116,11 @@ gpointer store_buffer_data(gpointer data)
                     do
                         {
                             capsule = g_async_queue_pop(main_struct->store_queue);
-                            /* print_debug(_("A capsule (%d) has been received in store's thread\n"), capsule->command); */
 
                             switch (capsule->command)
                                 {
                                     case ENC_META_DATA:
                                         send_meta_data_to_serveur_or_store_into_cache((meta_data_t *) capsule->data, main_struct);
-                                        /* capsule = free_variable(capsule); */
                                     break;
 
                                     case ENC_END:
