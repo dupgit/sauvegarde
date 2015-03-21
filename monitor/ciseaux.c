@@ -183,11 +183,17 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                     size = get_file_size_from_gfile(fileinfo, meta);
 
                     /**
-                     * @todo Modify this part in order to avoid sending duplicate metas datas.
-                     *  We assume that we are using the cache (and this may not be the case in the future)
+                     * @todo Add a test to avoid inserting metas data into
+                     * the cache if their modification is less than N minutes
+                     * with N an option.
                      */
                     if (is_file_in_cache(main_struct->database, meta) == FALSE)
                         {
+                            /**
+                             * 1. The file is not at all in the cache or
+                             * 2. Something has changed in meta datas
+                             *    (atime, ctime, size...).
+                             */
                             print_debug("%d\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_REGULAR, owner, dates, mode, size, filename);
 
                             do_checksum(main_struct, stream, filename, meta);
@@ -200,7 +206,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                         }
                     else
                         {
-                           /* meta = free_meta_data_t(meta); */
+                           meta = free_meta_data_t(meta);
                         }
 
                     free_variable(owner);
