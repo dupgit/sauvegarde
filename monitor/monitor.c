@@ -174,6 +174,59 @@ static gchar *make_connexion_string(gchar *ip, gint port)
 
 
 /**
+ * Inits fanotify
+ * @param opt : a filled options_t * structure that contains all options
+ *        by default, read into the file or selected in the command line.
+ */
+static gint init_fanotify(options_t *opt)
+{
+    gint fanotify_fd = -1;
+    GSList *head = NULL;
+
+    /* Setup fanotify notifications (FAN) mask. All these defined in fanotify.h. */
+    static uint64_t event_mask =
+      (FAN_ACCESS        |  /* File accessed */
+       FAN_MODIFY        |  /* File modified */
+       FAN_CLOSE_WRITE   |  /* Writtable file closed */
+       FAN_CLOSE_NOWRITE |  /* Unwrittable file closed */
+       FAN_OPEN          |  /* File was opened */
+       FAN_ONDIR         |  /* We want to be reported of events in the directory */
+       FAN_EVENT_ON_CHILD); /* We want to be reported of events in files of the directory */
+
+    if (opt != NULL)
+        {
+
+            /* Create new fanotify device */
+            if ((fanotify_fd = fanotify_init(FAN_CLOEXEC, O_RDONLY | O_CLOEXEC | O_LARGEFILE)) < 0)
+                {
+                    print_error(__FILE__, __LINE__, _("Couldn't setup new fanotify device: %s\n"), strerror(errno));
+                }
+            else
+                {
+                    head = opt->dirname_list;
+
+                    while (head != NULL)
+                        {
+                            if (fanotify_mark(fanotify_fd, FAN_MARK_ADD, event_mask, AT_FDCWD, head->data) < 0)
+                                {
+                                  print_error(__FILE__, __LINE__, _("Couldn't add monitor in directory %s: %s\n"), head->data , strerror(errno));
+                                }
+                            else
+                                {
+                                    print_debug(_("Started monitoring directory %s\n"), head->data);
+                                }
+
+                            head = g_slist_next(head);
+                        }
+                }
+        }
+
+    return fanotify_fd;
+}
+
+
+
+/**
  * Inits the main structure.
  * @note With sqlite version > 3.7.7 we should use URI filename.
  * @param opt : a filled options_t * structure that contains all options
@@ -215,6 +268,8 @@ static main_struct_t *init_main_structure(options_t *opt)
                     /* This should never happen because we have default values */
                     main_struct->comm = NULL;
                 }
+
+            init_fanotify(opt);
 
             print_debug(_("Main structure initialized !\n"));
 

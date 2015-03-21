@@ -39,6 +39,16 @@
 #include <glib/gi18n-lib.h>
 #include <errno.h>
 
+
+#include <signal.h>
+#include <string.h>
+#include <poll.h>
+#include <limits.h>
+#include <sys/stat.h>
+#include <sys/signalfd.h>
+#include <fcntl.h>
+#include <linux/fanotify.h>
+
 #include <libsauvegarde.h>
 
 #include "options.h"
