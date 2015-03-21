@@ -81,6 +81,7 @@ static void print_selected_options(options_t *opt)
             print_string_option(N_("Cache directory: %s\n"), opt->dircache);
             print_string_option(N_("Cache database name: %s\n"), opt->dbname);
             print_string_option(N_("serveur's IP address: %s\n"), opt->ip);
+            fprintf(stdout, _("serveur's port number: %d\n"), opt->port);
         }
 }
 
