@@ -67,7 +67,7 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
 
     if (smeta != NULL && smeta->hostname != NULL && meta != NULL)
         {
-            print_debug("file_store_smeta: Going to store meta-datas for file %s\n", meta->name);
+            /* print_debug("file_store_smeta: Going to store meta-datas for file %s\n", meta->name); */
 
             filename = g_build_filename(prefix, smeta->hostname, NULL);
 
@@ -158,7 +158,7 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
             hex_hash = hash_to_string(hash_data->hash);
             filename = g_build_filename(path, hex_hash, NULL);
 
-            print_debug("file_store_data: Going to store datas for hash %s\n", hex_hash);
+            /* print_debug("file_store_data: Going to store datas for hash %s\n", hex_hash); */
 
             data_file = g_file_new_for_path(filename);
             stream = g_file_replace(data_file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);

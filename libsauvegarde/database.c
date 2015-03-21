@@ -145,7 +145,7 @@ static void verify_if_tables_exists(db_t *database)
      * powerloss is leading to a database corruption and data loss !
      * @todo make this PRAGMA selection an option from the command line.
      */
-    exec_sql_cmd(database, "PRAGMA synchronous = OFF;", N_("Error while trying to set asynchronous mode.\n"));
+    /* exec_sql_cmd(database, "PRAGMA synchronous = OFF;", N_("Error while trying to set asynchronous mode.\n")); */
 
 }
 
