@@ -13,11 +13,11 @@ before_install:
 
 install:
     # Those handled by apt-get
-    - sudo apt-get install -qq build-essential intltool gettext pkg-config libsqlite3-dev libglib2.0-dev libmicrohttpd-dev libcurl4-openssl-dev libjansson-dev
+    - sudo apt-get install -qq build-essential intltool gettext pkg-config libsqlite3-dev libglib2.0-dev libmicrohttpd-dev libcurl4-openssl-dev
 
     # jansson
-    #- git clone git://github.com/akheron/jansson.git
-    #- (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure; make; sudo make install; sudo ldconfig)
+    - git clone git://github.com/akheron/jansson.git
+    - (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure; make; sudo make install; sudo ldconfig)
 
     # libcurl
     #- git clone https://github.com/bagder/curl.git
