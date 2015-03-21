@@ -30,6 +30,6 @@ install:
 # Building sauvegarde
 script:
 
-    - ./autoclean.sh && ./autogen.sh && ./configure --prefix=/home/dup/local --enable-debug --disable-silent && make && sudo make install && /home/dup/local/bin/client --version
+    - ./autoclean.sh && ./autogen.sh && ./configure --prefix=/home/dup/local --enable-debug --disable-silent && make && sudo make install && /home/dup/local/bin/client --version && /home/dup/local/bin/serveur --version
 
 
