@@ -198,6 +198,8 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
  * @param serveur_struct is the serveur main structure where all
  *        informations needed by the program are stored.
  * @param hash_list is the list of hashs that we have to check for.
+ * @returns to the client a list of hashs in no specific order for which
+ *          the server needs the datas.
  */
 GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_list)
 {
