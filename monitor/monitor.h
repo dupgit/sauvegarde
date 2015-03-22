@@ -47,7 +47,7 @@
 #include <sys/stat.h>
 #include <sys/signalfd.h>
 #include <fcntl.h>
-#include <linux/fanotify.h>
+#include <sys/fanotify.h>
 
 #include <libsauvegarde.h>
 

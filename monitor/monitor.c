@@ -174,23 +174,23 @@ static gchar *make_connexion_string(gchar *ip, gint port)
 
 
 /**
- * Inits fanotify
+ * Inits and starts fanotify notifications
  * @param opt : a filled options_t * structure that contains all options
  *        by default, read into the file or selected in the command line.
  */
-static gint init_fanotify(options_t *opt)
+static gint start_fanotify(options_t *opt)
 {
     gint fanotify_fd = -1;
     GSList *head = NULL;
 
     /* Setup fanotify notifications (FAN) mask. All these defined in fanotify.h. */
     static uint64_t event_mask =
-      (FAN_ACCESS        |  /* File accessed */
-       FAN_MODIFY        |  /* File modified */
-       FAN_CLOSE_WRITE   |  /* Writtable file closed */
-       FAN_CLOSE_NOWRITE |  /* Unwrittable file closed */
-       FAN_OPEN          |  /* File was opened */
-       FAN_ONDIR         |  /* We want to be reported of events in the directory */
+      (FAN_ACCESS        |  /* File accessed                                              */
+       FAN_MODIFY        |  /* File modified                                              */
+       FAN_CLOSE_WRITE   |  /* Writtable file closed                                      */
+       FAN_CLOSE_NOWRITE |  /* Unwrittable file closed                                    */
+       FAN_OPEN          |  /* File was opened                                            */
+       FAN_ONDIR         |  /* We want to be reported of events in the directory          */
        FAN_EVENT_ON_CHILD); /* We want to be reported of events in files of the directory */
 
     if (opt != NULL)
@@ -224,6 +224,37 @@ static gint init_fanotify(options_t *opt)
     return fanotify_fd;
 }
 
+
+/**
+ * Stops fanotify notifications
+ */
+static void stop_fanotify(options_t *opt, int fanotify_fd)
+{
+    GSList *head = NULL;
+    /* Setup fanotify notifications (FAN) mask. All these defined in fanotify.h. */
+    static uint64_t event_mask =
+      (FAN_ACCESS        |  /* File accessed                                              */
+       FAN_MODIFY        |  /* File modified                                              */
+       FAN_CLOSE_WRITE   |  /* Writtable file closed                                      */
+       FAN_CLOSE_NOWRITE |  /* Unwrittable file closed                                    */
+       FAN_OPEN          |  /* File was opened                                            */
+       FAN_ONDIR         |  /* We want to be reported of events in the directory          */
+       FAN_EVENT_ON_CHILD); /* We want to be reported of events in files of the directory */
+
+    if (opt != NULL)
+        {
+            head = opt->dirname_list;
+
+            while (head != NULL)
+                {
+                    fanotify_mark(fanotify_fd, FAN_MARK_REMOVE, event_mask, AT_FDCWD, head->data);
+                    head = g_slist_next(head);
+                }
+
+        }
+
+  close(fanotify_fd);
+}
 
 
 /**
@@ -269,7 +300,7 @@ static main_struct_t *init_main_structure(options_t *opt)
                     main_struct->comm = NULL;
                 }
 
-            init_fanotify(opt);
+            start_fanotify(opt);
 
             print_debug(_("Main structure initialized !\n"));
 
