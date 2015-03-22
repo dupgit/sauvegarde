@@ -54,6 +54,7 @@
 #include "options.h"
 #include "ciseaux.h"
 #include "antememoire.h"
+#include "fanotify.h"
 
 /**
  * @def MONITOR_DATE

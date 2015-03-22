@@ -11,12 +11,14 @@ client_LDADD =  $(GLIB_LIBS) $(GIO_LIBS)  -L../libsauvegarde -lsauvegarde \
 MON_HEADERFILES = monitor.h               \
                   options.h				  \
                   ciseaux.h				  \
-                  antememoire.h
+                  antememoire.h			  \
+                  fanotify.h
 
 client_SOURCES =  monitor.c               \
 				  options.c				  \
 				  ciseaux.c				  \
 				  antememoire.c		      \
+				  fanotify.c			  \
 				  $(MON_HEADERFILES)
 
 AM_CPPFLAGS = $(GLIB_CFLAGS) $(GIO_CFLAGS)
