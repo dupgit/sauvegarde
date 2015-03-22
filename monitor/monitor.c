@@ -216,7 +216,8 @@ static main_struct_t *init_main_structure(options_t *opt)
                     main_struct->comm = NULL;
                 }
 
-            start_fanotify(opt);
+            main_struct->signal_fd = start_signals();
+            main_struct->fanotify_fd = start_fanotify(opt);
 
             print_debug(_("Main structure initialized !\n"));
 
@@ -279,6 +280,7 @@ int main(int argc, char **argv)
 
     if (opt != NULL)
         {
+
             main_struct = init_main_structure(opt);
 
             /* Adding paths to be monitored in a threaded way */
@@ -290,6 +292,10 @@ int main(int argc, char **argv)
             store_thread = g_thread_new("store", store_buffer_data, main_struct);
             cut_thread = g_thread_new("cut", ciseaux, main_struct);
             a_thread = g_thread_new("dir_traversal", first_directory_traversal, a_thread_data);
+
+
+            /* Looping to get filesystem events */
+            fanotify_loop(main_struct->signal_fd, main_struct->fanotify_fd);
 
             /* As we are only testing things for now, we just wait for the
              * threads to join and then exits.

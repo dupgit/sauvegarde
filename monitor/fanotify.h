@@ -28,6 +28,16 @@
 #ifndef _FANOTIFY_H_
 #define _FANOTIFY_H_
 
+#define FANOTIFY_BUFFER_SIZE 8192
+
+/* Enumerate list of FDs to poll */
+enum {
+  FD_POLL_SIGNAL = 0,
+  FD_POLL_FANOTIFY,
+  FD_POLL_MAX
+};
+
+
 /**
  * Stops signal handling
  */
@@ -52,5 +62,11 @@ extern gint start_fanotify(options_t *opt);
  * Stops fanotify notifications
  */
 extern void stop_fanotify(options_t *opt, int fanotify_fd);
+
+
+/**
+ * fanotify main loop
+ */
+extern void fanotify_loop(gint signal_fd, gint fanotify_fd);
 
 #endif /* #IFNDEF _FANOTIFY_H_ */
