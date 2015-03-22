@@ -52,7 +52,14 @@ AM_MAINTAINER_MODE
 dnl ***********************************************************************
 dnl * Checks for headers                                                  *
 dnl ***********************************************************************
+AC_HEADER_DIRENT
 AC_HEADER_STDC
+
+AC_CHECK_HEADERS( \
+ signal.h         \
+ sys/signalfd.h   \
+ sys/fanotify.h
+)
 
 
 dnl ***********************************************************************
