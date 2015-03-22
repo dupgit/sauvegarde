@@ -28,6 +28,42 @@
 
 #include "monitor.h"
 
+/**
+ * Stops signal handling
+ */
+void  stop_signals(int signal_fd)
+{
+    close(signal_fd);
+}
+
+
+/**
+ * Starts signal handling
+ */
+gint start_signals(void)
+{
+    gint signal_fd = -1;
+    sigset_t sigmask;
+
+      /* We want to handle SIGINT and SIGTERM in the signal_fd, so we block them. */
+    sigemptyset(&sigmask);
+    sigaddset(&sigmask, SIGINT);
+    sigaddset(&sigmask, SIGTERM);
+
+    if (sigprocmask(SIG_BLOCK, &sigmask, NULL) < 0)
+        {
+            print_error(__FILE__, __LINE__, _("Couldn't block signals: %s\n"), strerror(errno));
+        }
+
+      /* Get new FD to read signals from it */
+    if ((signal_fd = signalfd(-1, &sigmask, 0)) < 0)
+        {
+            print_error(__FILE__, __LINE__, _("Couldn't setup signal FD: %s\n"), strerror(errno));
+        }
+
+  return signal_fd;
+}
+
 
 /**
  * Inits and starts fanotify notifications

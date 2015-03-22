@@ -39,7 +39,6 @@
 #include <glib/gi18n-lib.h>
 #include <errno.h>
 
-
 #include <signal.h>
 #include <string.h>
 #include <poll.h>

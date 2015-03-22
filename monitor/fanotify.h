@@ -29,6 +29,18 @@
 #define _FANOTIFY_H_
 
 /**
+ * Stops signal handling
+ */
+extern void  stop_signals(int signal_fd);
+
+
+/**
+ * Starts signal handling
+ */
+extern gint start_signals(void);
+
+
+/**
  * Inits and starts fanotify notifications
  * @param opt : a filled options_t * structure that contains all options
  *        by default, read into the file or selected in the command line.
