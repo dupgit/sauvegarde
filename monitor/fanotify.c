@@ -39,7 +39,7 @@ gint start_fanotify(options_t *opt)
     gint fanotify_fd = -1;
     GSList *head = NULL;
 
-    /* Setup fanotify notifications (FAN) mask. All these defined in fanotify.h. */
+    /* Setup fanotify notifications (FAN) mask. All these defined in linux/fanotify.h. */
     static uint64_t event_mask =
       (FAN_ACCESS        |  /* File accessed                                              */
        FAN_MODIFY        |  /* File modified                                              */
@@ -51,7 +51,6 @@ gint start_fanotify(options_t *opt)
 
     if (opt != NULL)
         {
-
             /* Create new fanotify device */
             if ((fanotify_fd = fanotify_init(FAN_CLOEXEC, O_RDONLY | O_CLOEXEC | O_LARGEFILE)) < 0)
                 {
@@ -87,7 +86,7 @@ gint start_fanotify(options_t *opt)
 void stop_fanotify(options_t *opt, int fanotify_fd)
 {
     GSList *head = NULL;
-    /* Setup fanotify notifications (FAN) mask. All these defined in fanotify.h. */
+    /* Setup fanotify notifications (FAN) mask. All these defined in linux/fanotify.h. */
     static uint64_t event_mask =
       (FAN_ACCESS        |  /* File accessed                                              */
        FAN_MODIFY        |  /* File modified                                              */

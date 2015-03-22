@@ -30,7 +30,7 @@
 /* Configuration from ./configure script */
 #include "config.h"
 
-#define MHD_PLATFORM_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
