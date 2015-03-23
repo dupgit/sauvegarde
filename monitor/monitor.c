@@ -296,10 +296,6 @@ int main(int argc, char **argv)
             a_thread = g_thread_new("dir_traversal", first_directory_traversal, a_thread_data);
 
 
-            /* Waiting for the directory traversal to finish
-             */
-            g_thread_join(a_thread);
-
             /* Launching an infinite loop to get modifications done on
              * the filesystem (on directories we watch).
              */
@@ -307,6 +303,10 @@ int main(int argc, char **argv)
 
             /* There is no need to send the $END$ command as we use
              * cut and store thread in the loop above.
+             *
+             * Waiting for the directory traversal to finish.
+             * g_thread_join(a_thread);
+             *
              * g_async_queue_push(main_struct->queue, g_strdup("$END$"));
              *
              * g_thread_join(cut_thread);

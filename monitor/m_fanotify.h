@@ -28,7 +28,7 @@
 #ifndef _M_FANOTIFY_H_
 #define _M_FANOTIFY_H_
 
-#define FANOTIFY_BUFFER_SIZE 8192
+#define FANOTIFY_BUFFER_SIZE 49152    /* for 24 bytes events this is 2046 events */
 
 /* Enumerate list of FDs to poll */
 enum {
