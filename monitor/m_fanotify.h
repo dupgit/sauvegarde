@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
- *    fanotify.h
+ *    m_fanotify.h
  *    This file is part of "Sauvegarde" project.
  *
  *    (C) Copyright 2015 Olivier Delhomme
@@ -21,12 +21,12 @@
  */
 
 /**
- * @file fanotify.h
+ * @file m_fanotify.h
  *
  * In this file we have all definition for fanotify's monitor interface.
  */
-#ifndef _FANOTIFY_H_
-#define _FANOTIFY_H_
+#ifndef _M_FANOTIFY_H_
+#define _M_FANOTIFY_H_
 
 #define FANOTIFY_BUFFER_SIZE 8192
 
@@ -66,7 +66,8 @@ extern void stop_fanotify(options_t *opt, int fanotify_fd);
 
 /**
  * fanotify main loop
+ * @todo simplify code (CCN is 12 already !)
  */
-extern void fanotify_loop(gint signal_fd, gint fanotify_fd);
+extern void fanotify_loop(main_struct_t *main_struct);
 
-#endif /* #IFNDEF _FANOTIFY_H_ */
+#endif /* #IFNDEF _M_FANOTIFY_H_ */

@@ -231,6 +231,8 @@ static main_struct_t *init_main_structure(options_t *opt)
  * Prints statistics from the binary tree hash
  * @param hashs : the structure that contains all hashs and some values
  *        that may give some stats about the datas
+ * @todo move this into hash.c of libsauvegarde and refactor to also have
+ *       a json string ?
  */
 static void print_tree_hashs_stats(hashs_t *hashs)
 {
@@ -294,25 +296,29 @@ int main(int argc, char **argv)
             a_thread = g_thread_new("dir_traversal", first_directory_traversal, a_thread_data);
 
 
-            /* Looping to get filesystem events */
-            fanotify_loop(main_struct->signal_fd, main_struct->fanotify_fd);
-
-            /* As we are only testing things for now, we just wait for the
-             * threads to join and then exits.
+            /* Waiting for the directory traversal to finish
              */
             g_thread_join(a_thread);
 
-            g_async_queue_push(main_struct->queue, g_strdup("$END$"));
+            /* Launching an infinite loop to get modifications done on
+             * the filesystem (on directories we watch).
+             */
+            fanotify_loop(main_struct);
 
-            g_thread_join(cut_thread);
-
-            g_async_queue_push(main_struct->store_queue, encapsulate_end());
-            g_thread_join(store_thread);
-
-            print_tree_hashs_stats(main_struct->hashs);
-
-            /* when leaving, we have to free memory... but this is not going to happen here ! */
-            /* free_options_t_structure(main_struct->opt); */
+            /* There is no need to send the $END$ command as we use
+             * cut and store thread in the loop above.
+             * g_async_queue_push(main_struct->queue, g_strdup("$END$"));
+             *
+             * g_thread_join(cut_thread);
+             *
+             * g_async_queue_push(main_struct->store_queue, encapsulate_end());
+             * g_thread_join(store_thread);
+             *
+             * print_tree_hashs_stats(main_struct->hashs);
+             *
+             *
+             * free_options_t_structure(main_struct->opt);
+             */
         }
 
     return 0;

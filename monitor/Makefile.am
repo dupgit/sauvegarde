@@ -12,13 +12,13 @@ MON_HEADERFILES = monitor.h               \
                   options.h				  \
                   ciseaux.h				  \
                   antememoire.h			  \
-                  fanotify.h
+                  m_fanotify.h
 
 client_SOURCES =  monitor.c               \
 				  options.c				  \
 				  ciseaux.c				  \
 				  antememoire.c		      \
-				  fanotify.c			  \
+				  m_fanotify.c			  \
 				  $(MON_HEADERFILES)
 
 AM_CPPFLAGS = $(GLIB_CFLAGS) $(GIO_CFLAGS)

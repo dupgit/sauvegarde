@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
- *    fanotify.c
+ *    m_fanotify.c
  *    This file is part of "Sauvegarde" project.
  *
  *    (C) Copyright 2015 Olivier Delhomme
@@ -21,7 +21,7 @@
  */
 
 /**
- * @file fanotify.c
+ * @file m_fanotify.c
  *
  * This file does fanotify's monitor interface. This file is heavily based
  * on Aleksander Morgado fanotify-example.c's file (ie mainly copied !)
@@ -254,8 +254,9 @@ void stop_fanotify(options_t *opt, int fanotify_fd)
 
 /**
  * fanotify main loop
+ * @todo simplify code (CCN is 12 already !)
  */
-void fanotify_loop(gint signal_fd, gint fanotify_fd)
+void fanotify_loop(main_struct_t *main_struct)
 {
     struct pollfd fds[FD_POLL_MAX];
     struct signalfd_siginfo fdsi;
@@ -263,59 +264,71 @@ void fanotify_loop(gint signal_fd, gint fanotify_fd)
     ssize_t length = 0;
     struct fanotify_event_metadata *fe_mdata = NULL;
 
-    /* Setup polling */
-    fds[FD_POLL_SIGNAL].fd = signal_fd;
-    fds[FD_POLL_SIGNAL].events = POLLIN;
-    fds[FD_POLL_FANOTIFY].fd = fanotify_fd;
-    fds[FD_POLL_FANOTIFY].events = POLLIN;
+    gint signal_fd = 0;
+    gint fanotify_fd = 0;
 
-    while (1)
+    if (main_struct != NULL)
         {
-            /* Block until there is something to be read */
-            if (poll(fds, FD_POLL_MAX, -1) < 0)
-                {
-                    print_error(__FILE__, __LINE__, _("Couldn't poll(): '%s'\n"), strerror(errno));
-                }
+            signal_fd = main_struct->signal_fd;
+            fanotify_fd = main_struct->fanotify_fd;
 
-            /* Signal received? */
-            if (fds[FD_POLL_SIGNAL].revents & POLLIN)
+
+            /* Setup polling */
+            fds[FD_POLL_SIGNAL].fd = signal_fd;
+            fds[FD_POLL_SIGNAL].events = POLLIN;
+            fds[FD_POLL_FANOTIFY].fd = fanotify_fd;
+            fds[FD_POLL_FANOTIFY].events = POLLIN;
+
+            while (1)
                 {
-                    if (read(fds[FD_POLL_SIGNAL].fd, &fdsi, sizeof(fdsi)) != sizeof(fdsi))
+                    /* Block until there is something to be read */
+                    if (poll(fds, FD_POLL_MAX, -1) < 0)
                         {
-                          print_error(__FILE__, __LINE__, _("Couldn't read signal, wrong size read\n"));
+                            print_error(__FILE__, __LINE__, _("Couldn't poll(): '%s'\n"), strerror(errno));
                         }
 
-                    /* Break loop if we got SIGINT or SIGTERM */
-                    if (fdsi.ssi_signo == SIGINT || fdsi.ssi_signo == SIGTERM)
+                    /* Signal received ? */
+                    if (fds[FD_POLL_SIGNAL].revents & POLLIN)
                         {
-                          break;
-                        }
-
-                    print_error(__FILE__, __LINE__, _("Received unexpected signal\n"));
-                }
-
-            /* fanotify event received? */
-            if (fds[FD_POLL_FANOTIFY].revents & POLLIN)
-                {
-                    /* Read from the FD. It will read all events available up to
-                     * the given buffer size. */
-                    if ((length = read (fds[FD_POLL_FANOTIFY].fd, buffer, FANOTIFY_BUFFER_SIZE)) > 0)
-                        {
-                            fe_mdata = (struct fanotify_event_metadata *) buffer;
-
-                            while (FAN_EVENT_OK(fe_mdata, length))
+                            if (read(fds[FD_POLL_SIGNAL].fd, &fdsi, sizeof(fdsi)) != sizeof(fdsi))
                                 {
-                                    event_process(fe_mdata);
+                                  print_error(__FILE__, __LINE__, _("Couldn't read signal, wrong size read\n"));
+                                }
 
-                                    if (fe_mdata->fd > 0)
+                            /* Break loop if we got SIGINT or SIGTERM */
+                            if (fdsi.ssi_signo == SIGINT || fdsi.ssi_signo == SIGTERM)
+                                {
+                                    stop_fanotify(main_struct->opt, main_struct->fanotify_fd);
+                                    break;
+                                }
+
+                            print_error(__FILE__, __LINE__, _("Received unexpected signal\n"));
+                        }
+
+                    /* fanotify event received ? */
+                    if (fds[FD_POLL_FANOTIFY].revents & POLLIN)
+                        {
+                            /* Read from the FD. It will read all events available up to
+                             * the given buffer size. */
+                            if ((length = read (fds[FD_POLL_FANOTIFY].fd, buffer, FANOTIFY_BUFFER_SIZE)) > 0)
+                                {
+                                    fe_mdata = (struct fanotify_event_metadata *) buffer;
+
+                                    while (FAN_EVENT_OK(fe_mdata, length))
                                         {
-                                            close(fe_mdata->fd);
-                                        }
+                                            event_process(fe_mdata);
 
-                                    fe_mdata = FAN_EVENT_NEXT(fe_mdata, length);
+                                            if (fe_mdata->fd > 0)
+                                                {
+                                                    close(fe_mdata->fd);
+                                                }
+
+                                            fe_mdata = FAN_EVENT_NEXT(fe_mdata, length);
+                                        }
                                 }
                         }
                 }
+
         }
 
 }

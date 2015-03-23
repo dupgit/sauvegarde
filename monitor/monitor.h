@@ -53,7 +53,7 @@
 #include "options.h"
 #include "ciseaux.h"
 #include "antememoire.h"
-#include "fanotify.h"
+
 
 /**
  * @def MONITOR_DATE
@@ -117,6 +117,6 @@ typedef struct
 } thread_data_t;
 
 #include "ciseaux.h"
-
+#include "m_fanotify.h"
 
 #endif /* #IFNDEF _MONITOR_H_ */
