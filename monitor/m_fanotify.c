@@ -86,6 +86,8 @@ gint start_fanotify(options_t *opt)
        FAN_ONDIR         |  /* We want to be reported of events in the directory          */
        FAN_EVENT_ON_CHILD); /* We want to be reported of events in files of the directory */
 
+    unsigned int mark_flags = FAN_MARK_ADD | FAN_MARK_MOUNT;
+
     if (opt != NULL)
         {
             /* Create new fanotify device */
@@ -99,7 +101,7 @@ gint start_fanotify(options_t *opt)
 
                     while (head != NULL)
                         {
-                            if (fanotify_mark(fanotify_fd, FAN_MARK_ADD, event_mask, AT_FDCWD, head->data) < 0)
+                            if (fanotify_mark(fanotify_fd, mark_flags, event_mask, AT_FDCWD, head->data) < 0)
                                 {
                                   print_error(__FILE__, __LINE__, _("Couldn't add monitor in directory %s: %s\n"), head->data , strerror(errno));
                                 }
