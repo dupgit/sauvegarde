@@ -25,6 +25,8 @@
  *
  * This file does fanotify's monitor interface. This file is heavily based
  * on Aleksander Morgado fanotify-example.c's file (ie mainly copied !)
+ * @todo : do something with the ugly code of this file (testing things for
+ *         now - but should not be like that after tests).
  */
 
 #include "monitor.h"
@@ -78,11 +80,11 @@ gint start_fanotify(options_t *opt)
 
     /* Setup fanotify notifications (FAN) mask. All these defined in linux/fanotify.h. */
     static uint64_t event_mask =
-      (/* FAN_ACCESS        |   File accessed                                              */
+      (FAN_ACCESS        |  /* File accessed                                              */
        FAN_MODIFY        |  /* File modified                                              */
        FAN_CLOSE_WRITE   |  /* Writtable file closed                                      */
-       /* FAN_CLOSE_NOWRITE |   Unwrittable file closed                                    */
-       /* FAN_OPEN          |   File was opened                                            */
+       FAN_CLOSE_NOWRITE |  /* Read only file closed                                      */
+       FAN_OPEN          |  /* File was opened                                            */
        FAN_ONDIR         |  /* We want to be reported of events in the directory          */
        FAN_EVENT_ON_CHILD); /* We want to be reported of events in files of the directory */
 
@@ -122,25 +124,44 @@ gint start_fanotify(options_t *opt)
 /**
  * gets path from file descriptor
  */
-static char *get_file_path_from_fd (gint fd, char *buffer, size_t  buffer_size)
+static gchar *get_file_path_from_fd(gint fd)
 {
-    ssize_t len;
+    ssize_t len = 0;
+    off_t linklen = 0;
+    gchar *path = NULL;
+    gchar *proc = NULL;
+    struct stat st;
 
     if (fd <= 0)
         {
-            return NULL;
+            return g_strdup_printf("fd unknown");
         }
 
-    sprintf(buffer, "/proc/self/fd/%d", fd);
+    proc = g_strdup_printf("/proc/self/fd/%d", fd);
 
-    if ((len = readlink(buffer, buffer, buffer_size - 1)) < 0)
+    if (lstat(proc, &st) == -1)
         {
-            return NULL;
+            print_error(__FILE__, __LINE__, _("lstat is wrong: %s\n"), strerror(errno));
+            free_variable(proc);
+            return  g_strdup_printf("lstat unknown");
+        }
+    else
+        {
+            linklen = st.st_size;
         }
 
-    buffer[len] = '\0';
+    path = (gchar *) g_malloc0((linklen + 1) * sizeof(gchar));
 
-    return buffer;
+    if ((len = readlink(proc, path, linklen)) < 0)
+        {
+            free_variable(proc);
+            return g_strdup_printf("readlink unknown");
+        }
+
+    path[len] = '\0';
+
+    free_variable(proc);
+    return path;
 }
 
 
@@ -184,42 +205,87 @@ static char *get_program_name_from_pid(int pid, char *buffer, size_t  buffer_siz
 /**
  * An example of processing events
  */
-static void event_process(struct fanotify_event_metadata *event)
+static void event_process(struct fanotify_event_metadata *event, GSList *dir_list)
 {
-    char path[PATH_MAX];
+    gchar *path = NULL;
+    GSList *head = dir_list;
+    gboolean found = FALSE;
+    gchar *pathutf8 = NULL;
+    gchar *dirutf8 = NULL;
+    size_t lenp = 0;
+    size_t lend = 0;
+    size_t lencmp = 0;
 
-    print_debug(_("Received event in path: %s"), get_file_path_from_fd(event->fd, path, PATH_MAX) ? path : "unknown");
-    print_debug(_(" pid=%d (%s): \n"), event->pid, (get_program_name_from_pid (event->pid, path, PATH_MAX) ? path : "unknown"));
+    path = get_file_path_from_fd(event->fd);
 
+    lenp = strlen(path);
+    pathutf8 = g_utf8_casefold(path, lenp);
 
-    if (event->mask & FAN_OPEN)
+    while (head != NULL && found == FALSE)
         {
-             print_debug(_("\tFAN_OPEN\n"));
+            lend = strlen(head->data);
+            /** @todo allocate an already transformed list to avoid this */
+            dirutf8 = g_utf8_casefold(head->data, lend);
+
+            if (lenp < lend)
+                {
+                    lencmp = lenp;
+                }
+            else
+                {
+                    lencmp = lend;
+                }
+
+            if (strncmp(dirutf8, pathutf8, lencmp) == 0)
+                {
+                    found = TRUE;
+                }
+            else
+                {
+                    head = g_slist_next(head);
+                }
+            dirutf8 = free_variable(dirutf8);
         }
 
-    if (event->mask & FAN_ACCESS)
-        {
-            print_debug(_("\tFAN_ACCESS\n"));
-        }
+    pathutf8 = free_variable(pathutf8);
 
-    if (event->mask & FAN_MODIFY)
+    if (found == TRUE)
         {
-            print_debug(_("\tFAN_MODIFY\n"));
-        }
+            print_debug(_("Received event file/directory: %s\n"), path);
+            print_debug(_(" matching directory is       : %s\n"), head->data);
+            print_debug(_(" pid=%d (%s): \n"), event->pid, (get_program_name_from_pid (event->pid, path, PATH_MAX) ? path : "unknown"));
 
-    if (event->mask & FAN_CLOSE_WRITE)
-        {
-            print_debug(_("\tFAN_CLOSE_WRITE\n"));
-        }
 
-    if (event->mask & FAN_CLOSE_NOWRITE)
-        {
-            print_debug(_("\tFAN_CLOSE_NOWRITE\n"));
-        }
+            if (event->mask & FAN_OPEN)
+                {
+                     print_debug(_("\tFAN_OPEN\n"));
+                }
 
-    fflush (stdout);
+            if (event->mask & FAN_ACCESS)
+                {
+                    print_debug(_("\tFAN_ACCESS\n"));
+                }
+
+            if (event->mask & FAN_MODIFY)
+                {
+                    print_debug(_("\tFAN_MODIFY\n"));
+                }
+
+            if (event->mask & FAN_CLOSE_WRITE)
+                {
+                    print_debug(_("\tFAN_CLOSE_WRITE\n"));
+                }
+
+            if (event->mask & FAN_CLOSE_NOWRITE)
+                {
+                    print_debug(_("\tFAN_CLOSE_NOWRITE\n"));
+                }
+
+            fflush (stdout);
+        }
 
     close(event->fd);
+    free_variable(path);
 }
 
 
@@ -231,11 +297,11 @@ void stop_fanotify(options_t *opt, int fanotify_fd)
     GSList *head = NULL;
     /* Setup fanotify notifications (FAN) mask. All these defined in linux/fanotify.h. */
     static uint64_t event_mask =
-      (/* FAN_ACCESS        |   File accessed                                              */
+      (FAN_ACCESS        |  /* File accessed                                              */
        FAN_MODIFY        |  /* File modified                                              */
        FAN_CLOSE_WRITE   |  /* Writtable file closed                                      */
-       /* FAN_CLOSE_NOWRITE |   Unwrittable file closed                                    */
-       /* FAN_OPEN          |   File was opened                                            */
+       FAN_CLOSE_NOWRITE |  /* Read only file closed                                      */
+       FAN_OPEN          |  /* File was opened                                            */
        FAN_ONDIR         |  /* We want to be reported of events in the directory          */
        FAN_EVENT_ON_CHILD); /* We want to be reported of events in files of the directory */
 
@@ -320,7 +386,7 @@ void fanotify_loop(main_struct_t *main_struct)
 
                                     while (FAN_EVENT_OK(fe_mdata, length))
                                         {
-                                            event_process(fe_mdata);
+                                            event_process(fe_mdata, main_struct->opt->dirname_list);
 
                                             if (fe_mdata->fd > 0)
                                                 {
