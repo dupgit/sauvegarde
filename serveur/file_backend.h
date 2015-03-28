@@ -26,6 +26,10 @@
  * system.
  */
 
+#ifndef _SERVEUR_FILE_BACKEND_H_
+#define _SERVEUR_FILE_BACKEND_H_
+
+
 /**
  * Stores meta data into a flat file. A file is created for each host that
  * sends meta datas. This code is not thread safe (it means that this is
@@ -43,6 +47,8 @@ extern void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data
 
 /**
  * Inits the backend : takes care of the directories we want to write to.
+ * user_data of the backend structure is a gchar * that represents the
+ * prefix path where to store datas.
  * @param serveur_struct is the serveur main structure where all
  *        informations needed by the program are stored.
  */
@@ -69,3 +75,6 @@ extern void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_
  * @param hash_list is the list of hashs that we have to check for.
  */
 extern GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_list);
+
+
+#endif /* #ifndef _SERVEUR_FILE_lBACKEND_H_ */

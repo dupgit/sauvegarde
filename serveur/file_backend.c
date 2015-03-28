@@ -266,6 +266,8 @@ static void file_create_directory(gchar *save_dir, gchar *sub_dir)
 
 /**
  * Inits the backend : takes care of the directories we want to write to.
+ * user_data of the backend structure is a gchar * that represents the
+ * prefix path where to store datas.
  * @param serveur_struct is the serveur main structure where all
  *        informations needed by the program are stored.
  */
