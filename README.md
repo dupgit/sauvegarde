@@ -28,14 +28,16 @@ This project depends on :
 
 * autotools     (2.59)
 * glib and gio  (2.26)
-* libmicrohttpd (0.9.39)
-* libcurl       (7.40.0)
+* libmicrohttpd (0.9.5)
+* libcurl       (7.22.0)
 * sqlite        (3.6.20)
-* jansson       (2.6)
+* jansson       (2.5)
 
 doxygen (1.6.1) is used to generate code's documentation but is not
 required to build the project. jansson's library version is quite recent
-but it compiles nicely and depends on nothing (as far as I know).
+but it compiles nicely and depends on nothing (as far as I know). Please
+have a look at .travis.yml file in order to see how to compile dependencies
+before compiling sauvegarde.
 
 
 ## Installation
