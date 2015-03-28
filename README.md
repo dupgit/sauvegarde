@@ -234,7 +234,18 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
   directories !). We might want to look at redirfs
   (http://www.redirfs.org/tiki-index.php) or pluginfs
   (http://www.pluginfs.org/).
-* redirfs, pluginfs and dazuko seems dead (on 02 march 2014).
+* redirfs, pluginfs and dazuko seems dead (on 02 march 2014). As of
+  28.03.2015 we can notice that :
+ * redirfs has its last commit in Jun 2014
+ * pluginfs.org is no more accessible (and all ressources it had). Found
+   plugins on github along with redirfs !! :
+  * [https://github.com/fhrbata/pluginfs](https://github.com/fhrbata/pluginfs)
+  * [https://github.com/fhrbata/redirfs](https://github.com/fhrbata/redirfs)
+ * dazuko still seems dead since 06.09.2008
+* fanotify can not handle file permission changes (chmod and chown) nor
+  file deletion (rm). This is really anoying if one wants restore a
+  directory at a specified time (and we can not decide if a file was
+  deleted at that time.
 * It seems (on my system) that the more the blocksize is small the more the
   intra-deduplication rate is high (from 2.56 % at 32768 bytes to 8% at 512
   bytes). But if the blocksize is smaller than cpu overhead is higher and
