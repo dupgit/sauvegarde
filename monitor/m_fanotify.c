@@ -204,6 +204,7 @@ static char *get_program_name_from_pid(int pid, char *buffer, size_t  buffer_siz
 
 /**
  * An example of processing events
+ * @todo simplify code (CCN is 12 already !)
  */
 static void event_process(struct fanotify_event_metadata *event, GSList *dir_list)
 {
