@@ -86,6 +86,15 @@ extern hashs_t *new_hash_struct(void);
 
 
 /**
+ * Prints statistics from the binary tree hash
+ * @param hashs : the structure that contains all hashs and some values
+ *        that may give some stats about the datas
+ * @todo refactor to also have a json string ?
+ */
+extern void print_tree_hashs_stats(hashs_t *hashs);
+
+
+/**
  * Comparison function used with the GTree structure to sort hashs
  * properly.
  * @returns a negative value if a < b, zero if a = b and a positive value
@@ -140,7 +149,7 @@ extern gpointer free_data_t_structure(data_t *a_data);
  * Inits and returns a newly hash_data_t structure.
  * @returns a newly hash_data_t structure.
  */
-hash_data_t *new_hash_data_t(guint8 * data, gssize read, guint8 *hash);
+extern hash_data_t *new_hash_data_t(guint8 * data, gssize read, guint8 *hash);
 
 
 /**

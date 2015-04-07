@@ -48,6 +48,34 @@ hashs_t *new_hash_struct(void)
 
 
 /**
+ * Prints statistics from the binary tree hash
+ * @param hashs : the structure that contains all hashs and some values
+ *        that may give some stats about the datas
+ * @todo refactor to also have a json string ?
+ */
+void print_tree_hashs_stats(hashs_t *hashs)
+{
+    if (hashs != NULL)
+        {
+            /* printing some stats of the GTree */
+            fprintf(stdout, _("Number of unique hash : %d\n"), g_tree_nnodes(hashs->tree_hash));
+            fprintf(stdout, _("Tree height           : %d\n"), g_tree_height(hashs->tree_hash));
+            fprintf(stdout, _("Total size in bytes   : %ld\n"), hashs->total_bytes);
+            fprintf(stdout, _("Dedup size in bytes   : %ld\n"), hashs->total_bytes - hashs->in_bytes);
+
+            if (hashs->total_bytes != 0)
+                {
+                    fprintf(stdout, _("Deduplication %%       : %.2f\n"), 100*(hashs->total_bytes - hashs->in_bytes)/ (float) hashs->total_bytes);
+                }
+            else
+                {
+                    fprintf(stdout, _("Deduplication in bytes : %.2ld\n"), hashs->in_bytes);
+                }
+        }
+}
+
+
+/**
  * Comparison function used with the GTree structure to sort hashs
  * properly.
  * @param a is a hash in a binary form (a guint8 *)

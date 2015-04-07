@@ -34,7 +34,6 @@
 static void traverse_directory(main_struct_t *main_struct, gchar *directory);
 static gpointer first_directory_traversal(gpointer data);
 static main_struct_t *init_main_structure(options_t *opt);
-static void print_tree_hashs_stats(hashs_t *hashs);
 static gchar *make_connexion_string(gchar *ip, gint port);
 
 
@@ -224,35 +223,6 @@ static main_struct_t *init_main_structure(options_t *opt)
         }
 
     return main_struct;
-}
-
-
-/**
- * Prints statistics from the binary tree hash
- * @param hashs : the structure that contains all hashs and some values
- *        that may give some stats about the datas
- * @todo move this into hash.c of libsauvegarde and refactor to also have
- *       a json string ?
- */
-static void print_tree_hashs_stats(hashs_t *hashs)
-{
-    if (hashs != NULL)
-        {
-            /* printing some stats of the GTree */
-            fprintf(stdout, _("Number of unique hash : %d\n"), g_tree_nnodes(hashs->tree_hash));
-            fprintf(stdout, _("Tree height           : %d\n"), g_tree_height(hashs->tree_hash));
-            fprintf(stdout, _("Total size in bytes   : %ld\n"), hashs->total_bytes);
-            fprintf(stdout, _("Dedup size in bytes   : %ld\n"), hashs->total_bytes - hashs->in_bytes);
-
-            if (hashs->total_bytes != 0)
-                {
-                    fprintf(stdout, _("Deduplication %%       : %.2f\n"), 100*(hashs->total_bytes - hashs->in_bytes)/ (float) hashs->total_bytes);
-                }
-            else
-                {
-                    fprintf(stdout, _("Deduplication in bytes : %.2ld\n"), hashs->in_bytes);
-                }
-        }
 }
 
 
