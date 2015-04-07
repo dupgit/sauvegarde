@@ -237,9 +237,6 @@ int main(int argc, char **argv)
     options_t *opt = NULL;  /** Structure to manage options from the command line can be freed when no longer needed */
     main_struct_t *main_struct = NULL;
     thread_data_t *a_thread_data = NULL;
-    GThread *a_thread = NULL;     /* thread used to do the directory traversal */
-    GThread *cut_thread = NULL;
-    GThread *store_thread = NULL;
 
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
@@ -261,9 +258,9 @@ int main(int argc, char **argv)
             a_thread_data->main_struct = main_struct;
             a_thread_data->dir_list = opt->dirname_list;
 
-            store_thread = g_thread_new("store", store_buffer_data, main_struct);
-            cut_thread = g_thread_new("cut", ciseaux, main_struct);
-            a_thread = g_thread_new("dir_traversal", first_directory_traversal, a_thread_data);
+            g_thread_new("store", store_buffer_data, main_struct);
+            g_thread_new("cut", ciseaux, main_struct);
+            g_thread_new("dir_traversal", first_directory_traversal, a_thread_data);
 
 
             /* Launching an infinite loop to get modifications done on
