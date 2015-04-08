@@ -174,7 +174,14 @@ gboolean is_file_in_cache(db_t *database, meta_data_t *meta)
                     return FALSE;
                 }
             else if (row != NULL)
-                {
+                {   /* at least one row has been returned */
+                    /**
+                     * @todo Add a test to avoid inserting metas data into
+                     * the cache if their modification is less than N minutes
+                     * with N an option.
+                     */
+
+
                     free_file_row_t(row);
                     return TRUE;
                 }
@@ -182,7 +189,6 @@ gboolean is_file_in_cache(db_t *database, meta_data_t *meta)
                 {
                     return FALSE;
                 }
-
         }
     else
         {
@@ -204,7 +210,7 @@ static int get_file_callback(void *a_row, int nb_col, char **data, char **name_c
     file_row_t *row = (file_row_t *) a_row;
 
     row->nb_row = row->nb_row + 1;
-    row->file_id_list = g_slist_append(row->file_id_list, g_strdup(data[0]));
+    row->id_list = g_slist_append(row->id_list, g_strdup(data[0]));
 
     return 0;
 }
@@ -257,7 +263,7 @@ static file_row_t *new_file_row_t(void)
     row = (file_row_t *) g_malloc0(sizeof(file_row_t));
 
     row->nb_row = 0;
-    row->file_id_list = NULL;
+    row->id_list = NULL;
 
     return row;
 }
@@ -271,7 +277,8 @@ static void free_file_row_t(file_row_t *row)
 {
     if (row != NULL)
         {
-            g_slist_free(row->file_id_list);
+            g_slist_free(row->id_list);
+            g_slist_free(row->mtime_list);
             free_variable(row);
         }
 }

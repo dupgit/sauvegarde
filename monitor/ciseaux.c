@@ -178,11 +178,6 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                     mode = get_file_mode_from_gfile(fileinfo, meta);
                     size = get_file_size_from_gfile(fileinfo, meta);
 
-                    /**
-                     * @todo Add a test to avoid inserting metas data into
-                     * the cache if their modification is less than N minutes
-                     * with N an option.
-                     */
                     if (is_file_in_cache(main_struct->database, meta) == FALSE)
                         {
                             /**
