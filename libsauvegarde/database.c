@@ -33,6 +33,7 @@ static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message);
 static int table_callback(void *num, int nbCol, char **data, char **nomCol);
 static void verify_if_tables_exists(db_t *database);
 static file_row_t *new_file_row_t(void);
+static void free_gchar(gpointer data);
 static void free_file_row_t(file_row_t *row);
 static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col);
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
@@ -180,9 +181,8 @@ gboolean is_file_in_cache(db_t *database, meta_data_t *meta)
                      * the cache if their modification is less than N minutes
                      * with N an option.
                      */
-
-
                     free_file_row_t(row);
+
                     return TRUE;
                 }
             else
@@ -234,7 +234,7 @@ static file_row_t *get_file_id(db_t *database, meta_data_t *meta)
 
     row = new_file_row_t();
 
-    sql_command = g_strdup_printf("SELECT file_id from files WHERE name='%s' AND type=%d AND uid=%d AND gid=%d AND ctime=%ld AND mtime=%ld AND mode=%d AND size=%ld;", meta->name, meta->file_type, meta->uid, meta->gid, meta->ctime, meta->mtime, meta->mode, meta->size);
+    sql_command = g_strdup_printf("SELECT file_id from files WHERE name='%s' AND type=%d AND uid=%d AND gid=%d AND atime=%ld AND ctime=%ld AND mtime=%ld AND mode=%d AND size=%ld;", meta->name, meta->file_type, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size);
 
     db_result = sqlite3_exec(database->db, sql_command, get_file_callback, row, &error_message);
 
@@ -270,6 +270,16 @@ static file_row_t *new_file_row_t(void)
 
 
 /**
+ * Callback function (to g_slist_free_full) to free gchars in a GSList *
+ * @param data is the gchar * pointer to be freed
+ */
+static void free_gchar(gpointer data)
+{
+    free_variable(data);
+}
+
+
+/**
  * Frees everything whithin the file_row_t structure
  * @param row is the variable to be freed totaly
  */
@@ -277,8 +287,7 @@ static void free_file_row_t(file_row_t *row)
 {
     if (row != NULL)
         {
-            g_slist_free(row->id_list);
-            g_slist_free(row->mtime_list);
+            g_slist_free_full(row->id_list, free_gchar);
             free_variable(row);
         }
 }

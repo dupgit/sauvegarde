@@ -52,8 +52,8 @@ typedef struct
  */
 typedef struct
 {
-    guint nb_row;        /**< number of row                    */
-    GSList *id_list;     /**< list of file_ids                 */
+    guint nb_row;        /**< number of row                       */
+    GSList *id_list;     /**< list of file_ids                    */
 } file_row_t;
 
 

@@ -183,7 +183,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                             /**
                              * 1. The file is not at all in the cache or
                              * 2. Something has changed in meta datas
-                             *    (atime, ctime, size...).
+                             *    (atime, ctime, mode, size...) at least N minutes ago.
                              */
                             print_debug("%d\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_REGULAR, owner, dates, mode, size, filename);
 
