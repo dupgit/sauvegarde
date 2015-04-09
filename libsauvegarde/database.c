@@ -118,7 +118,7 @@ static void verify_if_tables_exists(db_t *database)
 {
     char *error_message = NULL;
     int result = 0;
-    int *i = NULL;               /** int i* is used to count the number of row */
+    int *i = NULL;               /** int *i is used to count the number of row */
 
     i = (int *) g_malloc0(sizeof(int));
     *i = 0;
@@ -138,7 +138,7 @@ static void verify_if_tables_exists(db_t *database)
             exec_sql_cmd(database, "CREATE TABLE buffers (cache_time INTEGER, buf_order INTEGER, checksum TEXT);", N_("Error while creating database table 'buffers': %s\n"));
 
             /* Creation of files table that contains everything about a file */
-            exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT);", N_("Error while creating database table 'files': %s\n"));
+            exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT);", N_("Error while creating database table 'files': %s\n"));
         }
 
     /**
@@ -563,7 +563,7 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, g
             exec_sql_cmd(database, "BEGIN;",  N_("Error openning the transaction: %s\n"));
 
             /* Inserting the file into the files table */
-            sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name) VALUES (%ld, %d, '%s', '%s', %d, %d, %ld, %ld, %ld, %d, %ld, '%s');", cache_time, meta->file_type, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name);
+            sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name) VALUES (%ld, %d, %ld, '%s', '%s', %d, %d, %ld, %ld, %ld, %d, %ld, '%s');", cache_time, meta->file_type, meta->inode, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name);
 
             exec_sql_cmd(database, sql_command,  N_("Error while inserting into the table 'files': %s\n"));
 

@@ -41,6 +41,7 @@
  * @param smeta the serveur structure for file meta data. It contains the
  *        hostname that sent it. This structure MUST be freed by this
  *        function.
+ * @todo prefix should be set as a configuration's option.
  */
 void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *smeta)
 {
@@ -81,12 +82,12 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
 
                     if (hash_list != NULL)
                         {
-                            buffer = g_strdup_printf("%d, %d, %ld, %ld, %ld, %ld, \"%s\", \"%s\", %d, %d, \"%s\", %s\n", meta->file_type, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name, hash_list);
+                            buffer = g_strdup_printf("%d, %ld, %d, %ld, %ld, %ld, %ld, \"%s\", \"%s\", %d, %d, \"%s\", %s\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name, hash_list);
                             free_variable(hash_list);
                         }
                     else
                         {
-                            buffer = g_strdup_printf("%d, %d, %ld, %ld, %ld, %ld, \"%s\", \"%s\", %d, %d, \"%s\"\n", meta->file_type, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name);
+                            buffer = g_strdup_printf("%d, %ld, %d, %ld, %ld, %ld, %ld, \"%s\", \"%s\", %d, %d, \"%s\"\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name);
                         }
 
                     count = strlen(buffer);
@@ -125,6 +126,7 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
  * @param hash_data is a hash_data_t * structure that contains the hash and
  *        the corresponding data in a binary form and a 'read' field that
  *        contains the number of bytes in 'data' field.
+ * @todo prefix should be set as a configuration's option.
  */
 void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
 {

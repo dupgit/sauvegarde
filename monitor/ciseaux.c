@@ -109,6 +109,7 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
     gchar *dates = NULL;
     gchar *mode = NULL;
     gchar *size = NULL;
+    guint64 inode = 0;
     capsule_t *capsule = NULL;
 
 
@@ -118,6 +119,7 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
             dates = get_dates_from_gfile(fileinfo, meta);
             mode = get_file_mode_from_gfile(fileinfo, meta);
             size = get_file_size_from_gfile(fileinfo, meta);
+            inode = get_inode_from_gfile(fileinfo, meta);
 
             /**
              * @todo Modify this part in order to avoid sending duplicate metas datas.
@@ -125,7 +127,7 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
              */
             if (is_file_in_cache(main_struct->database, meta) == FALSE)
                 {
-                    print_debug("%d\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_DIRECTORY, owner, dates, mode, size, dirname);
+                    print_debug("%d\t%ld\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_DIRECTORY, inode, owner, dates, mode, size, dirname);
 
                     capsule = encapsulate_meta_data_t(ENC_META_DATA, meta);
                     g_async_queue_push(main_struct->store_queue, capsule);
@@ -160,6 +162,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
     gchar *dates = NULL;
     gchar *mode = NULL;
     gchar *size = NULL;
+    guint64 inode = 0;
     capsule_t *capsule = NULL;
 
     if (a_file != NULL && main_struct != NULL && fileinfo != NULL && meta != NULL && filename != NULL)
@@ -177,6 +180,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                     dates = get_dates_from_gfile(fileinfo, meta);
                     mode = get_file_mode_from_gfile(fileinfo, meta);
                     size = get_file_size_from_gfile(fileinfo, meta);
+                    inode = get_inode_from_gfile(fileinfo, meta);
 
                     if (is_file_in_cache(main_struct->database, meta) == FALSE)
                         {
@@ -185,7 +189,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                              * 2. Something has changed in meta datas
                              *    (atime, ctime, mode, size...) at least N minutes ago.
                              */
-                            print_debug("%d\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_REGULAR, owner, dates, mode, size, filename);
+                            print_debug("%d\t%ld\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_REGULAR, inode, owner, dates, mode, size, filename);
 
                             do_checksum(main_struct, stream, filename, meta);
                             g_input_stream_close((GInputStream *) stream, NULL, NULL);

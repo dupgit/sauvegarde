@@ -43,6 +43,7 @@ meta_data_t *new_meta_data_t(void)
     if (meta != NULL)
         {
             meta->file_type = 0;
+            meta->inode = 0;
             meta->mode = 0;
             meta->atime = 0;
             meta->ctime = 0;
@@ -141,11 +142,37 @@ gchar *get_filename_from_gfile(GFile *a_file)
 
 
 /**
- * Returns the username of the owner of the a file
+ * Returns the inode of the file fileinfo
  * @param fileinfo : a GFileInfo pointer obtained from an opened file
- *        (GFile *)
- * @param meta : meta_data_t * structure that contains all meta data for
- *        the corresponding file.
+ *                   (GFile *)
+ * @param[out] meta : meta_data_t * structure that contains all meta data
+ *                    for the corresponding file (populated here with
+ *                    inode number.
+ * @returns the inode file.
+ */
+guint64 get_inode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
+{
+    guint64 inode = 0;
+
+
+    if (fileinfo != NULL && meta != NULL)
+        {
+            inode = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_UNIX_INODE);
+
+            meta->inode = inode;
+        }
+
+    return inode;
+}
+
+
+/**
+ * Returns the username of the owner of the file fileinfo
+ * @param fileinfo : a GFileInfo pointer obtained from an opened file
+ *                   (GFile *)
+ * @param[out] meta : meta_data_t * structure that contains all meta data
+ *                    for the corresponding file (populated here with owner,
+ *                    group, uid and gid.
  * @returns the "user:group uid:gid" of the file or an empty string if an
  *          error occurs
  */
@@ -158,13 +185,17 @@ gchar *get_username_owner_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
     guint32 uid = 0;
     guint32 gid = 0;
 
-    if (fileinfo != NULL)
+
+    if (fileinfo != NULL && meta != NULL)
         {
+
+
             owner = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_USER);
             group = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_GROUP);
 
             uid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_UID);
             gid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_GID);
+
             ids = g_strdup_printf("%d:%d", uid, gid);
 
             meta->owner = g_strdup(owner);

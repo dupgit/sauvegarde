@@ -41,6 +41,7 @@
  */
 typedef struct
 {
+    guint64 inode;     /**< file's inode.                                        */
     guint8 file_type;  /**< type of the file : FILE, DIR, SYMLINK...             */
     guint32 mode;      /**< UNIX mode of the file : contains rights for the file */
     guint64 atime;     /**< access time                                          */
@@ -76,6 +77,18 @@ typedef struct
  *          freed when no longer needed
  */
 extern gchar *get_filename_from_gfile(GFile *a_file);
+
+
+/**
+ * Returns the inode of the file fileinfo
+ * @param fileinfo : a GFileInfo pointer obtained from an opened file
+ *                   (GFile *)
+ * @param[out] meta : meta_data_t * structure that contains all meta data
+ *                    for the corresponding file (populated here with
+ *                    inode number.
+ * @returns the inode file.
+ */
+extern guint64 get_inode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta);
 
 
 /**
