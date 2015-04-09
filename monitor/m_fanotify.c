@@ -165,25 +165,29 @@ static gchar *get_file_path_from_fd(gint fd)
 }
 
 
-static char *get_program_name_from_pid(int pid, char *buffer, size_t  buffer_size)
+static char *get_program_name_from_pid(int pid)
 {
     int fd = 0;
     ssize_t len = 0;
     char *aux = NULL;
+    gchar *cmd = NULL;
+    gchar *buffer = NULL;
 
     /* Try to get program name by PID */
-    sprintf(buffer, "/proc/%d/cmdline", pid);
+    cmd = g_strdup_printf("/proc/%d/cmdline", pid);
 
-    if ((fd = open (buffer, O_RDONLY)) < 0)
+    if ((fd = open(cmd, O_RDONLY)) < 0)
         {
             return NULL;
         }
 
+    buffer = (gchar *) g_malloc0(PATH_MAX);
+
     /* Read file contents into buffer */
-    if ((len = read (fd, buffer, buffer_size - 1)) <= 0)
+    if ((len = read(fd, buffer, PATH_MAX - 1)) <= 0)
         {
             close (fd);
-            return NULL;
+            return g_strdup("unknown");
         }
     else
         {
@@ -209,6 +213,7 @@ static char *get_program_name_from_pid(int pid, char *buffer, size_t  buffer_siz
 static void event_process(struct fanotify_event_metadata *event, GSList *dir_list)
 {
     gchar *path = NULL;
+    gchar *progname = NULL;
     GSList *head = dir_list;
     gboolean found = FALSE;
     gchar *pathutf8 = NULL;
@@ -252,9 +257,10 @@ static void event_process(struct fanotify_event_metadata *event, GSList *dir_lis
 
     if (found == TRUE)
         {
+            progname = get_program_name_from_pid(event->pid);
             print_debug(_("Received event file/directory: %s\n"), path);
             print_debug(_(" matching directory is       : %s\n"), head->data);
-            print_debug(_(" pid=%d (%s): \n"), event->pid, (get_program_name_from_pid (event->pid, path, PATH_MAX) ? path : "unknown"));
+            print_debug(_(" pid=%d (%s): \n"), event->pid, progname);
 
 
             if (event->mask & FAN_OPEN)
@@ -283,10 +289,13 @@ static void event_process(struct fanotify_event_metadata *event, GSList *dir_lis
                 }
 
             fflush (stdout);
+
+            free_variable(progname);
         }
 
     close(event->fd);
     free_variable(path);
+
 }
 
 
