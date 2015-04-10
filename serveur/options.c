@@ -94,37 +94,24 @@ static void print_selected_options(options_t *opt)
 gchar *buffer_selected_option(options_t *opt)
 {
     gchar *buf1 = NULL;
-    gchar *buf2 = NULL;
     gchar *buffer = NULL;
-
-    /** @todo : do something less memory time consuming ! */
 
     if (opt != NULL)
         {
-            buf1 = g_strdup_printf(_("\n%s options are :\n"), PROGRAM_NAME);
-
             if (opt->configfile != NULL)
                 {
-                    buf2 = g_strdup_printf(_("Configuration file : %s\n"), opt->configfile);
-                    buffer = g_strconcat(buf1, buf2, NULL);
-                    buf2 = free_variable(buf2);
+                    buffer = g_strdup_printf(_("\n%s options are :\nConfiguration file : %s\n"), PROGRAM_NAME, opt->configfile);
                 }
             else
                 {
-                    buffer = g_strdup(buf1);
+                    buffer = g_strdup_printf(_("\n%s options are :\n"), PROGRAM_NAME);
                 }
-
-            buf1 = free_variable(buf1);
 
             if (opt->port != 0)
                 {
-                    buf1 = g_strdup_printf(_("Port number : %d\n"), opt->port);
-                }
-
-            if (buf1 != NULL)
-                {
-                    buffer = g_strconcat(buffer, buf1, NULL);
-                    buf1 = free_variable(buf1);
+                    buf1 = g_strdup_printf(_("%sPort number : %d\n"), buffer, opt->port);
+                    free_variable(buffer);
+                    buffer = buf1;
                 }
         }
 
