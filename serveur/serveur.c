@@ -510,7 +510,6 @@ static gpointer datas_thread(gpointer user_data)
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
  * @returns always 0
- * @todo do some real loop here.
  */
 int main(int argc, char **argv)
 {
@@ -551,40 +550,12 @@ int main(int argc, char **argv)
                     return 1;
                 }
 
-            /* We will never join as the threads contains a while (TRUE) loop ! */
+            /* Unless on error we will never join the threads as they
+             * contain a while (TRUE) loop !
+             */
             g_thread_join(meta_thread);
             g_thread_join(data_thread);
-            (void) getc(stdin);
             MHD_stop_daemon(serveur_struct->d);
-
-                /*
-                    msg_id = get_json_message_id(message);
-
-                    switch (msg_id)
-                        {
-                            case ENC_META_DATA:
-
-                                / ** message variable is freed in convert_json_to_smeta_data()
-                                 *  function : no need to free it again elsewhere !
-                                 *  Use of message variable is safe here because it is known
-                                 *  not to be NULL
-                                 * /
-
-                                print_debug("Message of size %d received : %s\n", strlen(message), message);
-
-                                smeta = convert_json_to_smeta_data(message);
-                                smeta = free_smeta_data_t(smeta);
-
-                            break;
-
-                            case ENC_NOT_FOUND:
-                            case ENC_END:
-                                / ** We should never end the server with a
-                                 *  message from a client !
-                                 * /
-                            break;
-                        }
-                */
         }
     else
         {
