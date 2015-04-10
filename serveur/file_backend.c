@@ -151,9 +151,9 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
 
     if (hash_data != NULL && hash_data->hash != NULL && hash_data->data != NULL)
         {
-            /** @todo create directories at init time beacause
+            /** @todo create directories at init time because
              * creating directories like that is time consuming
-             * for nothing
+             * for nothing. Hard coded level of 3.
              */
             path = make_path_from_hash(prefix, hash_data->hash, 3);
             create_directory(path);
@@ -225,6 +225,7 @@ GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_li
 
     while (head != NULL)
         {
+            /* Hard coded level of 3 */
             path = make_path_from_hash(prefix, head->data, 3);
             hex_hash = hash_to_string(head->data);
             filename = g_build_filename(path, hex_hash, NULL);
