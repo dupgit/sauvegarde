@@ -265,7 +265,7 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
 * 0MQ is overkill for my needs. I switched to libcurl and libmicrohttpd.
 
 
-## Usefull links
+## May be usefull links
 
 * Filesystem events notifycation :
  * redirfs        : [http://www.redirfs.org/tiki-index.php](http://www.redirfs.org/tiki-index.php)
@@ -285,3 +285,7 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
 * Third party libraries :
  * libmicrohttpd   : [https://www.gnu.org/software/libmicrohttpd/](https://www.gnu.org/software/libmicrohttpd/)
  * libevent        : [http://libevent.org/](http://libevent.org/)
+* Similar projects :
+ * clsync          : [https://github.com/xaionaro/clsync](https://github.com/xaionaro/clsync)
+ * data-14         : [http://www.data-14.org/](http://www.data-14.org/)
+
