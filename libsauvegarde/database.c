@@ -234,7 +234,7 @@ static file_row_t *get_file_id(db_t *database, meta_data_t *meta)
 
     row = new_file_row_t();
 
-    sql_command = g_strdup_printf("SELECT file_id from files WHERE name='%s' AND type=%d AND uid=%d AND gid=%d AND atime=%ld AND ctime=%ld AND mtime=%ld AND mode=%d AND size=%ld;", meta->name, meta->file_type, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size);
+    sql_command = g_strdup_printf("SELECT file_id from files WHERE name='%s' AND type=%d AND uid=%d AND gid=%d AND ctime=%ld AND mtime=%ld AND mode=%d AND size=%ld;", meta->name, meta->file_type, meta->uid, meta->gid, meta->ctime, meta->mtime, meta->mode, meta->size);
 
     db_result = sqlite3_exec(database->db, sql_command, get_file_callback, row, &error_message);
 
