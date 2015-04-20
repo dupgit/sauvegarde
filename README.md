@@ -120,6 +120,7 @@ As an example a JSON structure for a directory looks like :
     {"msg_id": 1,
      "hash_list": [],
      "filetype": 2,
+     "inode": 23456,
      "group": "admin",
      "mode": 16877,
      "owner": "dup",
@@ -129,7 +130,8 @@ As an example a JSON structure for a directory looks like :
      "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/monitor/.deps",
      "mtime": 1401024479,
      "gid": 530,
-     "fsize": 0}
+     "fsize": 0
+    }
 
 
 #### File
@@ -153,6 +155,7 @@ As an example a JSON structure for a file looks like :
      "msg_id": 1,
      "filetype": 1,
      "group": "admin",
+     "inode": 284938,
      "mode": 33188,
      "owner": "dup",
      "atime": 1401023677,
@@ -161,7 +164,8 @@ As an example a JSON structure for a file looks like :
      "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/config.log",
      "mtime": 1401023685,
      "gid": 530,
-     "fsize": 37803}
+     "fsize": 37803
+    }
 
 
 ### Database (local cache)

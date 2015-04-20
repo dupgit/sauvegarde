@@ -1,6 +1,6 @@
 # API
 
-All urls ending with .json waits or provide json strings.
+All urls ending with .json waits (POST) or provide (GET) json strings.
 
 
 ## GET
@@ -36,10 +36,12 @@ output such as :
      "librairies": [{"glib": "2.36.3"},
                     {"mhd": "0.9.39-2"},
                     {"sqlite": "3.8.6"},
-                    {"jansson": "2.7.0"}],
+                    {"jansson": "2.7.0"}
+                   ],
      "authors": ["Olivier DELHOMME <olivier.delhomme@free.fr>"],
      "version": "0.0.1",
-     "licence": "GPL v3 or later"}
+     "licence": "GPL v3 or later"
+    }
 
 
 ## POST
@@ -57,7 +59,8 @@ already has. Example :
 
     {"hash_list": ["QKlVxnrQi/A338uHJUSKw3C+RfmJ2KUdiZPMru/Z9kE=",
                    ...,
-                   "nZjIbSp6tJHAQJ71rzVt/KGoTeX4BXDLYvXx/PQM5j8="]}
+                   "nZjIbSp6tJHAQJ71rzVt/KGoTeX4BXDLYvXx/PQM5j8="]
+    }
 
 
 ### /Data.json
@@ -67,4 +70,5 @@ and data fields must be base 64 encoded.
 
     {"hash": "QKlVxnrQi/A338uHJUSKw3C+RfmJ2KUdiZPMru/Z9kE=",
      "data": "8oBc08li ... WW9mr20u4=",
-     "size": 12140}
+     "size": 12140
+    }
