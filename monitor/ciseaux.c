@@ -127,7 +127,7 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
              */
             if (is_file_in_cache(main_struct->database, meta) == FALSE)
                 {
-                    print_debug("%d\t%ld\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_DIRECTORY, inode, owner, dates, mode, size, dirname);
+                    print_debug(_("Checksuming: %d\t%ld\t%s\t%s\t%s\t%s\t%s\n"), G_FILE_TYPE_DIRECTORY, inode, owner, dates, mode, size, dirname);
 
                     capsule = encapsulate_meta_data_t(ENC_META_DATA, meta);
                     g_async_queue_push(main_struct->store_queue, capsule);
@@ -193,7 +193,7 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
                              * 2. Something has changed in meta datas
                              *    (atime, ctime, mode, size...) at least N minutes ago.
                              */
-                            print_debug("%d\t%ld\t%s\t%s\t%s\t%s\t%s\n", G_FILE_TYPE_REGULAR, inode, owner, dates, mode, size, filename);
+                            print_debug(_("Checksuming: %d\t%ld\t%s\t%s\t%s\t%s\t%s\n"), G_FILE_TYPE_REGULAR, inode, owner, dates, mode, size, filename);
 
                             do_checksum(main_struct, stream, filename, meta);
                             g_input_stream_close((GInputStream *) stream, NULL, NULL);
@@ -268,6 +268,7 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
 
                                             if (g_file_info_get_is_symlink(fileinfo))
                                                 {
+                                                    /** @todo save also symbolic links */
                                                     print_debug(_("%s is a symbolic link.\n"), filename);
                                                 }
                                             else if (filetype == G_FILE_TYPE_REGULAR)

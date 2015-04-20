@@ -87,7 +87,7 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
                             if (filename != NULL)
                                 {
                                     g_async_queue_push(main_struct->queue, g_strdup(filename));
-                                    print_debug(_("%s passed to checksum's thread\n"), filename);
+                                    print_debug(_("%s passed to 'cut' thread\n"), filename);
                                     filename = free_variable(filename);
                                 }
                         }
