@@ -134,6 +134,10 @@ static void it_is_a_directory(main_struct_t *main_struct, gchar *dirname, GFileI
 
                     print_debug(_("%s passed to store's thread\n"), dirname);
                 }
+            else
+                {
+                   meta = free_meta_data_t(meta);
+                }
 
             free_variable(owner);
             free_variable(dates);
