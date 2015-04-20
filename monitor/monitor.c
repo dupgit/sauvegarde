@@ -237,6 +237,9 @@ int main(int argc, char **argv)
     options_t *opt = NULL;  /** Structure to manage options from the command line can be freed when no longer needed */
     main_struct_t *main_struct = NULL;
     thread_data_t *a_thread_data = NULL;
+    GThread *cut_thread = NULL;
+    GThread *store_thread = NULL;
+    GThread *dir_thread = NULL;
 
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
@@ -258,34 +261,36 @@ int main(int argc, char **argv)
             a_thread_data->main_struct = main_struct;
             a_thread_data->dir_list = opt->dirname_list;
 
-            g_thread_new("store", store_buffer_data, main_struct);
-            g_thread_new("cut", ciseaux, main_struct);
-            g_thread_new("dir_traversal", first_directory_traversal, a_thread_data);
+            store_thread = g_thread_new("store", store_buffer_data, main_struct);
+            cut_thread   = g_thread_new("cut", ciseaux, main_struct);
+            dir_thread   = g_thread_new("dir_traversal", first_directory_traversal, a_thread_data);
 
 
-            /* Launching an infinite loop to get modifications done on
+            /** Launching an infinite loop to get modifications done on
              * the filesystem (on directories we watch).
+             * @note fanotify's kernel interface does not provide the events
+             * needed to know if a file has been deleted or it's attributes
+             * changed. Disabling this for now.
+             * fanotify_loop(main_struct);
              */
-            fanotify_loop(main_struct);
 
             /* There is no need to send the $END$ command as we use
              * cut and store thread in the loop above.
-             *
-             * Waiting for the directory traversal to finish.
-             * g_thread_join(a_thread);
-             *
-             * g_async_queue_push(main_struct->queue, g_strdup("$END$"));
-             *
-             * g_thread_join(cut_thread);
-             *
-             * g_async_queue_push(main_struct->store_queue, encapsulate_end());
-             * g_thread_join(store_thread);
-             *
-             * print_tree_hashs_stats(main_struct->hashs);
-             *
-             *
-             * free_options_t_structure(main_struct->opt);
              */
+             /* Waiting for the directory traversal to finish. */
+
+             g_thread_join(dir_thread);
+
+             g_async_queue_push(main_struct->queue, g_strdup("$END$"));
+
+             g_thread_join(cut_thread);
+
+             g_async_queue_push(main_struct->store_queue, encapsulate_end());
+             g_thread_join(store_thread);
+
+             print_tree_hashs_stats(main_struct->hashs);
+
+             free_options_t_structure(main_struct->opt);
         }
 
     return 0;
