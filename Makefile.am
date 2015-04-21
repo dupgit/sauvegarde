@@ -1,4 +1,4 @@
-SUBDIRS = libsauvegarde monitor serveur po
+SUBDIRS = libsauvegarde monitor serveur restaure po
 
 ACLOCAL_AMFLAGS = -I m4
 
