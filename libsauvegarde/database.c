@@ -138,7 +138,7 @@ static void verify_if_tables_exists(db_t *database)
             exec_sql_cmd(database, "CREATE TABLE buffers (cache_time INTEGER, buf_order INTEGER, checksum TEXT);", N_("(%d) Error while creating database table 'buffers': %s\n"));
 
             /* Creation of files table that contains everything about a file */
-            exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT);", N_("(%d) Error while creating database table 'files': %s\n"));
+            exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL);", N_("(%d) Error while creating database table 'files': %s\n"));
         }
 
     /**
@@ -495,9 +495,10 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                     a_data = g_tree_lookup(hashs->tree_hash, a_hash);
 
                     /* Is encoded hash already in the database ? */
-                    if (only_meta == FALSE && a_data != NULL && a_data->into_cache == FALSE && a_data->buffer != NULL) /* encoded_hash is not in the database */
+                    if (only_meta == FALSE && a_data != NULL && a_data->into_cache == FALSE && a_data->buffer != NULL)
                         {
-                            /* Inserting checksum and the corresponding data into 'data' table */
+                            /* encoded_hash is not in the database or something went wrong with serveur server */
+                            /* Inserting checksum and the corresponding data into 'data' table                 */
                             encoded_data = g_base64_encode((guchar*) a_data->buffer, a_data->read);
 
                             sql_command = g_strdup_printf("INSERT INTO data (checksum, size, data) VALUES ('%s', %ld, '%s');", encoded_hash, a_data->read, encoded_data);
@@ -545,7 +546,8 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
  *        cache.
  * @param hashs : a balanced binary tree that stores hashs.
  * @param only_meta : a gboolean that when set to TRUE only meta_data will
- *        be saved and hashs data will not !
+ *        be saved and hashs data will not ! FALSE means that something
+ *        went wrong with serveur and that all data will be cached localy.
  */
 void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, gboolean only_meta)
 {
@@ -560,7 +562,7 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, g
             exec_sql_cmd(database, "BEGIN;",  N_("(%d) Error openning the transaction: %s\n"));
 
             /* Inserting the file into the files table */
-            sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name) VALUES (%ld, %d, %ld, '%s', '%s', %d, %d, %ld, %ld, %ld, %d, %ld, '%s');", cache_time, meta->file_type, meta->inode, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name);
+            sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted) VALUES (%ld, %d, %ld, '%s', '%s', %d, %d, %ld, %ld, %ld, %d, %ld, '%s', %d);", cache_time, meta->file_type, meta->inode, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name, only_meta);
 
             exec_sql_cmd(database, sql_command,  N_("(%d) Error while inserting into the table 'files': %s\n"));
 
