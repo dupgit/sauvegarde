@@ -227,7 +227,7 @@ static gint send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash
     gint success = CURLE_FAILED_INIT;
     gint all_ok = CURLE_OK;  /* If hash list is NULL there is nothing to be transmitted so it is a success ! */
 
-    while (hash_list != NULL)
+    while (hash_list != NULL && all_ok == CURLE_OK)
         {
             a_data = g_tree_lookup(hashs->tree_hash, hash_list->data);
 
@@ -299,7 +299,6 @@ gint send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer)
                     json_decref(root);
                 }
         }
-
 
    return success;
 }
