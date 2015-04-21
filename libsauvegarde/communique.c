@@ -201,12 +201,28 @@ gboolean is_serveur_alive(comm_t *comm)
 
     if (success == CURLE_OK && version !=  NULL)
         {
-            print_debug("Server (version %s) is alive\n", version);
+            if (comm->conn != NULL)
+                {
+                    print_debug("Server (version %s) is alive at %s.\n", version, comm->conn);
+                }
+            else
+                {
+                    print_debug("Server (version %s) is alive.\n", version);
+                }
+
             return TRUE;
         }
     else
         {
-            print_debug("Server is not alive.\n");
+            if (comm->conn != NULL)
+                {
+                    print_debug("Server is not alive (%s).\n", comm->conn);
+                }
+            else
+                {
+                    print_debug("Server is not alive.\n");
+                }
+
             return FALSE;
         }
 }
