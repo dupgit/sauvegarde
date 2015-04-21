@@ -111,10 +111,8 @@ gpointer store_buffer_data(gpointer data)
 
             if (main_struct->comm != NULL)
                 {
-                    if (is_serveur_alive(main_struct->comm))
-                        {
-                            print_debug(_("Serveur's server is alive.\n"));
-                        }
+                    is_serveur_alive(main_struct->comm);
+
                     do
                         {
                             capsule = g_async_queue_pop(main_struct->store_queue);

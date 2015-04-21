@@ -200,6 +200,31 @@ gint get_json_message_id(gchar *json_str)
 
 
 /**
+ * Gets the version of a version json string as returned by serveur's
+ * server.
+ * @param json_str : a gchar * containing the JSON formated string.
+ * @returns version string or NULL
+ */
+gchar *get_json_version(gchar *json_str)
+{
+    json_t *root = NULL;     /** json_t *root is the json tree from which we will extract version's string */
+    gchar *version = NULL;   /** version'string has extracted or NULL                                      */
+
+    if (json_str != NULL)
+        {
+            root = load_json(json_str);
+
+            if (root != NULL)
+                {
+                    version = get_string_from_json_root(root, "version");
+                }
+        }
+
+    return version;
+}
+
+
+/**
  * This function returns a list from an json array
  * @param root is the root json string that may contain an array named "name"
  * @param name is the name of the array to look for into

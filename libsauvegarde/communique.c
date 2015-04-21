@@ -192,17 +192,21 @@ gint post_url(comm_t *comm, gchar *url)
 gboolean is_serveur_alive(comm_t *comm)
 {
     gint success = CURLE_FAILED_INIT;
+    gchar *version = NULL;
 
     success = get_url(comm, "/Version.json");
+    version = get_json_version(comm->buffer);
 
     free_variable(comm->buffer);
 
-    if (success == CURLE_OK)
+    if (success == CURLE_OK && version !=  NULL)
         {
+            print_debug("Server (version %s) is alive\n", version);
             return TRUE;
         }
     else
         {
+            print_debug("Server is not alive.\n");
             return FALSE;
         }
 }

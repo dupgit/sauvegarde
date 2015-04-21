@@ -223,6 +223,15 @@ extern gint get_json_message_id(gchar *json_str);
 
 
 /**
+ * Gets the version of a version json string as returned by serveur's
+ * server.
+ * @param json_str : a gchar * containing the JSON formated string.
+ * @returns version string or NULL
+ */
+extern gchar *get_json_version(gchar *json_str);
+
+
+/**
  * Converts to a json gchar * string. Used only by serveur's program
  * @param name : name of the program of which we want to print the version.
  * @param date : publication date of this version
