@@ -182,6 +182,31 @@ gint post_url(comm_t *comm, gchar *url)
     return success;
 }
 
+/**
+ * Checks wether the serveur is alive or not and checks its version
+ * @param comm a comm_t * structure that must contain an initialized
+ *        curl_handle (must not be NULL).
+ * @returns TRUE if the serveur is alive and has a correct version.
+ *          FALSE otherwise
+ */
+gboolean is_serveur_alive(comm_t *comm)
+{
+    gint success = CURLE_FAILED_INIT;
+
+    success = get_url(comm, "/Version.json");
+
+    free_variable(comm->buffer);
+
+    if (success == CURLE_OK)
+        {
+            return TRUE;
+        }
+    else
+        {
+            return FALSE;
+        }
+}
+
 
 /**
  * This functions iters over a GSList of hashs searching into the binary

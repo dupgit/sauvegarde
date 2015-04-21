@@ -497,8 +497,8 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                     /* Is encoded hash already in the database ? */
                     if (only_meta == FALSE && a_data != NULL && a_data->into_cache == FALSE && a_data->buffer != NULL)
                         {
-                            /* encoded_hash is not in the database or something went wrong with serveur server */
-                            /* Inserting checksum and the corresponding data into 'data' table                 */
+                            /* encoded_hash is not in the database and something went wrong with serveur server */
+                            /* Inserting checksum and the corresponding data into 'data' table                  */
                             encoded_data = g_base64_encode((guchar*) a_data->buffer, a_data->read);
 
                             sql_command = g_strdup_printf("INSERT INTO data (checksum, size, data) VALUES ('%s', %ld, '%s');", encoded_hash, a_data->read, encoded_data);

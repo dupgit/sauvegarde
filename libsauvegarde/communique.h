@@ -98,6 +98,14 @@ extern gint get_url(comm_t *comm, gchar *url);
  */
 extern gint post_url(comm_t *comm, gchar *url);
 
+/**
+ * Checks wether the serveur is alive or not and checks its version
+ * @param comm a comm_t * structure that must contain an initialized
+ *        curl_handle (must not be NULL).
+ * @returns TRUE if the serveur is alive and has a correct version.
+ *          FALSE otherwise
+ */
+extern gboolean is_serveur_alive(comm_t *comm);
 
 /**
  * This function sends the datas that corresponds to the hashs in the json

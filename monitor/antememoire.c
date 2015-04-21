@@ -97,7 +97,7 @@ static void send_meta_data_to_serveur_or_store_into_cache(meta_data_t *meta, mai
 /**
  * This function is a thread that is waiting to receive messages from
  * the checksum function and whose aim is to store somewhere the data
- * of a buffer that a been checksumed.
+ * of a buffer that has been checksumed.
  * @param data : main_struct_t * structure.
  * @returns NULL to fullfill the template needed to create a GThread
  */
@@ -111,8 +111,10 @@ gpointer store_buffer_data(gpointer data)
 
             if (main_struct->comm != NULL)
                 {
-                    get_url(main_struct->comm, "/Version");
-
+                    if (is_serveur_alive(main_struct->comm))
+                        {
+                            print_debug(_("Serveur's server is alive.\n"));
+                        }
                     do
                         {
                             capsule = g_async_queue_pop(main_struct->store_queue);
