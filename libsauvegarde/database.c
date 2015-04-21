@@ -436,9 +436,6 @@ hashs_t *get_all_inserted_hashs(db_t *database)
 
     sql_command = g_strdup_printf("SELECT checksum, size FROM data;");
 
-    inserted_hashs->total_bytes = 0;
-    inserted_hashs->in_bytes = 0;
-
     db_result = sqlite3_exec(database->db, sql_command, get_all_checksum_callback, inserted_hashs, &error_message);
 
     free_variable(sql_command);
