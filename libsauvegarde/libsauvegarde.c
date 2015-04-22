@@ -168,6 +168,22 @@ void print_libraries_versions(gchar *name)
 
 
 /**
+ * Prints if string is not NULL then prints it to stdout right in the
+ * 'description' printf format.
+ * @param description is a fprintf format string that must contain a %s
+ *        in order to include the string 'string'
+ * @param string is the string to be printed.
+ */
+void print_string_option(gchar *description, gchar *string)
+{
+    if (string != NULL)
+    {
+        fprintf(stdout, description, string);
+    }
+}
+
+
+/**
  * Returns a newly allocated buffer that contains all informations about
  * program's version, authors and license.
  * @param name : name of the program of which we want to print the version.
