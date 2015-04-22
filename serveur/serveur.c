@@ -191,9 +191,9 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
     serveur_meta_data_t *smeta = NULL;
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     int success = MHD_NO;
-    json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json       */
-    json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs   */
-    gchar *json_str = NULL;     /** gchar *json_str is the string to be returned at the end             */
+    json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json formatted */
+    json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs       */
+    gchar *json_str = NULL;     /** gchar *json_str is the string to be returned at the end                 */
     GSList *needed = NULL;
 
     /* received_data is freed : do not reuse after this ! */

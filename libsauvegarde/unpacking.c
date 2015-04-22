@@ -24,6 +24,8 @@
  * @file unpacking.c
  * This file contains the functions to unpack messages for all the
  * programs of "Sauvegarde" project.
+ * @todo : check that json_/string/integer/.../_value frees the json_t
+ *         parameter. If not add some json_decref(); everywhere !
  */
 
 #include "libsauvegarde.h"
@@ -192,6 +194,8 @@ gint get_json_message_id(gchar *json_str)
             if (root != NULL)
                 {
                     msg_id = get_guint8_from_json_root(root, "msg_id");
+
+                    json_decref(root);
                 }
         }
 
@@ -217,6 +221,7 @@ gchar *get_json_version(gchar *json_str)
             if (root != NULL)
                 {
                     version = get_string_from_json_root(root, "version");
+                    json_decref(root);
                 }
         }
 
@@ -416,6 +421,8 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
 
                     smeta->meta = meta;
                     smeta->hostname =  get_string_from_json_root(root, "hostname");
+
+                    json_decref(root);
                 }
 
             free_variable(json_str);

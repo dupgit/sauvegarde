@@ -210,6 +210,8 @@ gchar *convert_data_to_json(data_t *a_data, guint8 *a_hash)
             insert_string_into_json_root(root, "data", encoded_data);
             insert_guint64_into_json_root(root, "size", a_data->read);
             json_str = json_dumps(root, 0);
+
+            json_decref(root);
         }
 
     return json_str;
@@ -260,6 +262,8 @@ gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
             insert_json_value_into_json_root(root, "hash_list", array);
 
             json_str = json_dumps(root, 0);
+
+            json_decref(root);
         }
 
     return json_str;
