@@ -34,3 +34,6 @@ serveur/.deps/
 serveur/.libs/
 serveur/serveur
 pixmaps/*
+restaure/.deps/
+restaure/.libs/
+restaure/restaure
