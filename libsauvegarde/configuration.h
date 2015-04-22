@@ -222,4 +222,5 @@ extern gboolean read_boolean_from_file(GKeyFile *keyfile, gchar *filename, gchar
  */
 extern GSList *read_list_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
 
+
 #endif /* #ifndef _CONFIGURATION_H_ */
