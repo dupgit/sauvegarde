@@ -28,7 +28,6 @@
 #include "restaure.h"
 
 
-
 /**
  * Main function
  * @param argc : number of arguments given on the command line.
@@ -37,7 +36,15 @@
  */
 int main(int argc, char **argv)
 {
+    options_t *opt = NULL;
 
+    #if !GLIB_CHECK_VERSION(2, 36, 0)
+        g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
+    #endif
 
+    init_international_languages();
 
+    opt = do_what_is_needed_from_command_line_options(argc, argv);
+
+    return 0;
 }

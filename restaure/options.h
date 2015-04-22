@@ -29,4 +29,30 @@
 #ifndef _RESTAURE_OPTIONS_H_
 #define _RESTAURE_OPTIONS_H_
 
+
+/**
+ * @struct options_t
+ * @brief Selected options for 'serveur' program
+ *
+ * Structure Options gives a way to store program options passed from the
+ * command line or read from a configuration file for 'serveur' program.
+ */
+typedef struct
+{
+    gboolean version;   /**< TRUE if we have to display program's version                                      */
+    gchar *configfile;  /**< filename for the configuration file specified on the command line                 */
+    gchar *ip;          /**< A string representing the IP address where serveur is located (may be a hotsname) */
+    gint port;          /**< Port number on which to send things to serveur's server (on which it must listen) */
+} options_t;
+
+
+/**
+ * Decides what to do upon command lines options passed to the program
+ * @param argc : number of arguments given on the command line.
+ * @param argv : an array of strings that contains command line arguments.
+ * @returns options_t structure malloc'ed and filled upon choosen command
+ *          line's option (in manage_command_line_options function).
+ */
+extern options_t *do_what_is_needed_from_command_line_options(int argc, char **argv);
+
 #endif /* #ifndef _RESTAURE_OPTIONS_H_ */
