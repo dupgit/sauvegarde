@@ -32,7 +32,6 @@ static void read_from_group_monitor(options_t *opt, GKeyFile *keyfile, gchar *fi
 static void read_from_group_ciseaux(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static void read_from_group_antememoire(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static void read_from_configuration_file(options_t *opt, gchar *filename);
-static void set_debug_mode_upon_cmdl(gint debug);
 
 
 /**
@@ -204,25 +203,6 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                 }
 
             g_key_file_free(keyfile);
-        }
-}
-
-
-/**
- * Sets the debug mode from command line read option
- * @param debug is a gint read from the command line and should be 0 or 1
- *        but is initialized to something different in order to be able to
- *        detect if the option has been invoked or not.
- */
-static void set_debug_mode_upon_cmdl(gint debug)
-{
-    if (debug == 0)
-        {
-            set_debug_mode(FALSE);
-        }
-    else if (debug == 1)
-        {
-            set_debug_mode(TRUE);
         }
 }
 

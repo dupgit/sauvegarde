@@ -65,6 +65,15 @@ extern void set_debug_mode(gboolean mode);
 
 
 /**
+ * Sets the debug mode from command line read option
+ * @param debug is a gint read from the command line and should be 0 or 1
+ *        but is initialized to something different in order to be able to
+ *        detect if the option has been invoked or not.
+ */
+extern void set_debug_mode_upon_cmdl(gint debug);
+
+
+/**
  * @returns the debug mode (TRUE if activated and FALSE if not).
  */
 extern gboolean get_debug_mode(void);
@@ -82,6 +91,17 @@ extern gchar *buffer_libraries_versions(gchar *name);
  * @param name : name of the program of which we want to print the version.
  */
 extern void print_libraries_versions(gchar *name);
+
+
+/**
+ * Prints if string is not NULL then prints it to stdout right in the
+ * 'description' printf format.
+ * @param description is a fprintf format string that must contain a %s
+ *        in order to include the string 'string'
+ * @param string is the string to be printed.
+ */
+extern void print_string_option(gchar *description, gchar *string);
+
 
 /**
  * returns a newly allocated buffer that contains all informations about

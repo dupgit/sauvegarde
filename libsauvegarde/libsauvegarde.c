@@ -60,6 +60,28 @@ void set_debug_mode(gboolean mode)
 
 
 /**
+ * Sets the debug mode from command line read option
+ * @param debug is a gint read from the command line and should be 0 or 1
+ *        but is initialized to something different in order to be able to
+ *        detect if the option has been invoked or not.
+ */
+void set_debug_mode_upon_cmdl(gint debug)
+{
+    if (debug == 0)
+        {
+            set_debug_mode(FALSE);
+        }
+    else if (debug == 1)
+        {
+            set_debug_mode(TRUE);
+        }
+}
+
+
+
+
+
+/**
  * @returns the debug mode (TRUE if activated and FALSE if not).
  */
 gboolean get_debug_mode(void)
