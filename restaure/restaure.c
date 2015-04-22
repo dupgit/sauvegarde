@@ -28,6 +28,19 @@
 #include "restaure.h"
 
 
+static res_struct_t *init_res_struct(int argc, char **argv)
+{
+    res_struct_t *res_struct = NULL;
+
+    res_struct = (res_struct_t *) g_malloc0(sizeof(res_struct_t));
+
+    res_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
+
+    return res_struct;
+}
+
+
+
 /**
  * Main function
  * @param argc : number of arguments given on the command line.
@@ -36,7 +49,7 @@
  */
 int main(int argc, char **argv)
 {
-    options_t *opt = NULL;
+    res_struct_t *res_struct = NULL;
 
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
@@ -44,7 +57,7 @@ int main(int argc, char **argv)
 
     init_international_languages();
 
-    opt = do_what_is_needed_from_command_line_options(argc, argv);
+    res_struct = init_res_struct(argc, argv);
 
     return 0;
 }

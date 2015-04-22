@@ -43,6 +43,11 @@
 
 #include "options.h"
 
+typedef struct
+{
+    options_t *opt;  /**< program's options */
+} res_struct_t;
+
 
 /**
  * @def RESTAURE_DATE

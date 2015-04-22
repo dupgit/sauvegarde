@@ -49,6 +49,7 @@ static void print_selected_options(options_t *opt)
         }
 }
 
+
 /**
  * Reads keys in keyfile if group GN_ALL is in that keyfile.
  * @param keyfile is the GKeyFile structure that is used by glib to read
