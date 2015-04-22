@@ -131,9 +131,6 @@ static void read_from_group_antememoire(options_t *opt, GKeyFile *keyfile, gchar
 
             /* Reading filename of the database if any */
             opt->dbname = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_DB_NAME, N_("Could not load cache database name"));
-
-            /* Reading IP address of serveur's host if any */
-            opt->ip = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_SERVEUR_IP, N_("Could not load cache database name"));
         }
 }
 
@@ -160,6 +157,9 @@ static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *fi
                 {
                     opt->port = port;
                 }
+
+            /* Reading IP address of serveur's host if any */
+            opt->ip = read_string_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_IP, N_("Could not load cache database name"));
         }
 }
 
