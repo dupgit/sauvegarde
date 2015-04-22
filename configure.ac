@@ -232,6 +232,7 @@ Makefile
 libsauvegarde/Makefile
 monitor/Makefile
 serveur/Makefile
+restaure/Makefile
 po/Makefile.in
 ])
 
