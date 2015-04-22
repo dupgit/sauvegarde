@@ -210,6 +210,7 @@ gboolean is_serveur_alive(comm_t *comm)
                     print_debug("Server (version %s) is alive.\n", version);
                 }
 
+            free_variable(version);
             return TRUE;
         }
     else
@@ -223,6 +224,7 @@ gboolean is_serveur_alive(comm_t *comm)
                     print_debug("Server is not alive.\n");
                 }
 
+            free_variable(version);
             return FALSE;
         }
 }
