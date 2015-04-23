@@ -44,6 +44,17 @@ output such as :
     }
 
 
+### /Files/List.json
+
+Gets a list of all saved files and their versions.
+
+
+### /Data/beeff34162c5402270369ad624c15bdc8f599df220b7d540239b774eabb57fb0.json
+
+Gets the associated data of the hash that has to be transmitted in
+hexadecimal format.
+
+
 ## POST
 
 ### /Meta.json
