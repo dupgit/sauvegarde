@@ -76,7 +76,7 @@ gchar *get_string_from_json_root(json_t *root, gchar *keyname)
 
     if (root != NULL && keyname != NULL)
         {
-            str = get_json_value_from_json_root(root, keyname);*
+            str = get_json_value_from_json_root(root, keyname);
 
             a_string = g_strdup(json_string_value(str));
 
