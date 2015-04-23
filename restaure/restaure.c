@@ -27,7 +27,13 @@
 
 #include "restaure.h"
 
-
+/**
+ * Inits a res_struct_t * structure. Manages the command line options.
+ * @param argc : number of arguments given on the command line.
+ * @param argv : an array of strings that contains command line arguments.
+ * @returns a res_struct_t * structure containing all of what is needed
+ *          by restaure program.
+ */
 static res_struct_t *init_res_struct(int argc, char **argv)
 {
     res_struct_t *res_struct = NULL;
