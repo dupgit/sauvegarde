@@ -24,8 +24,6 @@
  * @file unpacking.c
  * This file contains the functions to unpack messages for all the
  * programs of "Sauvegarde" project.
- * @todo : check that json_/string/integer/.../_value frees the json_t
- *         parameter. If not add some json_decref(); everywhere !
  */
 
 #include "libsauvegarde.h"
@@ -63,6 +61,8 @@ json_t *get_json_value_from_json_root(json_t *root, gchar *keyname)
 /**
  * returns the string with key keyname from the json tree root. It is used
  * by serveur to get the hostname from the json received message.
+ * @note Freeing json_t *str here is a bad idea as it will free it into
+ *       json_t *root variable that is freed afterwards.
  * @param[in,out] root is the main json tree
  * @param keyname is the key for which we seek the string value.
  * @returns a newlly allocated gchar * string that is the value associated
@@ -77,10 +77,7 @@ gchar *get_string_from_json_root(json_t *root, gchar *keyname)
     if (root != NULL && keyname != NULL)
         {
             str = get_json_value_from_json_root(root, keyname);
-
             a_string = g_strdup(json_string_value(str));
-
-            json_decref(str);
         }
 
     return a_string;
@@ -90,6 +87,8 @@ gchar *get_string_from_json_root(json_t *root, gchar *keyname)
 /**
  * returns the guint8 value associated with key keyname from the json tree
  * root.
+ * @note Freeing json_t *value here is a bad idea as it will free it into
+ *       json_t *root variable that is freed afterwards.
  * @param[in,out] root is the main json tree
  * @param keyname is the key for which we seek the guint8 value.
  * @returns a guint8 number that is the value associated with key keyname.
@@ -102,10 +101,7 @@ static guint8 get_guint8_from_json_root(json_t *root, gchar *keyname)
     if (root != NULL && keyname != NULL)
         {
             value = get_json_value_from_json_root(root, keyname);
-
             number = (guint8) json_integer_value(value);
-
-            json_decref(value);
         }
 
     return number;
@@ -115,6 +111,8 @@ static guint8 get_guint8_from_json_root(json_t *root, gchar *keyname)
 /**
  * returns the guint32 value associated with key keyname from the json tree
  * root.
+ * @note Freeing json_t *value here is a bad idea as it will free it into
+ *       json_t *root variable that is freed afterwards.
  * @param[in,out] root is the main json tree
  * @param keyname is the key for which we seek the guint32 value.
  * @returns a guint32 number that is the value associated with key keyname.
@@ -127,10 +125,7 @@ static guint32 get_guint32_from_json_root(json_t *root, gchar *keyname)
     if (root != NULL && keyname != NULL)
         {
             value = get_json_value_from_json_root(root, keyname);
-
             number = (guint32) json_integer_value(value);
-
-            json_decref(value);
         }
 
     return number;
@@ -140,6 +135,8 @@ static guint32 get_guint32_from_json_root(json_t *root, gchar *keyname)
 /**
  * returns the guint64 value associated with key keyname from the json tree
  * root.
+ * @note Freeing json_t *value here is a bad idea as it will free it into
+ *       json_t *root variable that is freed afterwards.
  * @param[in,out] root is the main json tree
  * @param keyname is the key for which we seek the guint64 value.
  * @returns a guint64 number that is the value associated with key keyname.
@@ -152,10 +149,7 @@ static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname)
     if (root != NULL && keyname != NULL)
         {
             value = get_json_value_from_json_root(root, keyname);
-
             number = (guint64) json_integer_value(value);
-
-            json_decref(value);
         }
 
     return number;
@@ -243,7 +237,9 @@ gchar *get_json_version(gchar *json_str)
 
 
 /**
- * This function returns a list from an json array
+ * This function returns a list from an json array.
+ * @note Freeing json_t *array here is a bad idea as it will free it into
+ *       json_t *root variable that is freed afterwards.
  * @param root is the root json string that may contain an array named "name"
  * @param name is the name of the array to look for into
  * @returns a GSList that me be composed of 0 element (ie NULL).
@@ -263,7 +259,7 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
     if (root != NULL && name != NULL)
         {
 
-            /* creating a list with JSON array */
+            /* creating a list with the json array found in root json string */
             array = get_json_value_from_json_root(root, name);
 
             /**
@@ -277,8 +273,6 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
                 }
 
             head = g_slist_reverse(head);
-
-            json_decref(array);
         }
 
     return head;
