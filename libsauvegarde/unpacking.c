@@ -76,8 +76,11 @@ gchar *get_string_from_json_root(json_t *root, gchar *keyname)
 
     if (root != NULL && keyname != NULL)
         {
-            str = get_json_value_from_json_root(root, keyname);
+            str = get_json_value_from_json_root(root, keyname);*
+
             a_string = g_strdup(json_string_value(str));
+
+            json_decref(str);
         }
 
     return a_string;
@@ -99,7 +102,10 @@ static guint8 get_guint8_from_json_root(json_t *root, gchar *keyname)
     if (root != NULL && keyname != NULL)
         {
             value = get_json_value_from_json_root(root, keyname);
+
             number = (guint8) json_integer_value(value);
+
+            json_decref(value);
         }
 
     return number;
@@ -121,7 +127,10 @@ static guint32 get_guint32_from_json_root(json_t *root, gchar *keyname)
     if (root != NULL && keyname != NULL)
         {
             value = get_json_value_from_json_root(root, keyname);
+
             number = (guint32) json_integer_value(value);
+
+            json_decref(value);
         }
 
     return number;
@@ -143,7 +152,10 @@ static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname)
     if (root != NULL && keyname != NULL)
         {
             value = get_json_value_from_json_root(root, keyname);
+
             number = (guint64) json_integer_value(value);
+
+            json_decref(value);
         }
 
     return number;
@@ -221,6 +233,7 @@ gchar *get_json_version(gchar *json_str)
             if (root != NULL)
                 {
                     version = get_string_from_json_root(root, "version");
+
                     json_decref(root);
                 }
         }
@@ -253,7 +266,10 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
             /* creating a list with JSON array */
             array = get_json_value_from_json_root(root, name);
 
-            /* This is a loop from jansson library for the array */
+            /**
+             * @note : This is a loop from jansson library for the array.
+             *         One needs at least jansson 2.5 to compile this.
+             */
             json_array_foreach(array, index, value)
                 {
                     a_hash = g_base64_decode(json_string_value(value), &hash_len);
@@ -261,6 +277,8 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
                 }
 
             head = g_slist_reverse(head);
+
+            json_decref(array);
         }
 
     return head;
@@ -317,7 +335,6 @@ gchar *insert_json_into_hash_tree(hashs_t *hashs, gchar *json_str)
                         }
 
                     json_decref(root);
-
                 }
         }
 
@@ -360,7 +377,6 @@ hash_data_t *convert_json_to_hash_data(gchar *json_str)
                         }
 
                     json_decref(root);
-
                 }
         }
 
