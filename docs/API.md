@@ -44,7 +44,7 @@ output such as :
     }
 
 
-### /Files/List.json
+### /File/List.json
 
 Gets a list of all saved files and their versions.
 

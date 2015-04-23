@@ -73,7 +73,7 @@ static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gc
 {
     gchar *answer = NULL;
 
-    answer = g_strdup_printf(_("Not yet implemented."));
+    answer = g_strdup_printf(_("Not yet implemented: %s\n"), hash);
 
     return answer;
 
@@ -89,7 +89,7 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct)
 {
     gchar *answer = NULL;
 
-    answer = g_strdup_printf(_("Not yet implemented."));
+    answer = g_strdup_printf(_("Not yet implemented.\n"));
 
     return answer;
 }
@@ -109,23 +109,36 @@ static gchar *get_json_answer(serveur_struct_t *serveur_struct, const char *url)
 {
     gchar *answer = NULL;
     gchar *hash = NULL;
+    size_t hlen = 0;
 
     if (g_strcmp0(url, "/Version.json") == 0)
         {
             answer = convert_version_to_json(PROGRAM_NAME, SERVEUR_DATE, SERVEUR_VERSION, SERVEUR_AUTHORS, SERVEUR_LICENSE);
         }
-    else if (g_strcmp0(url, "/Files/List.json") == 0)
+    else if (g_strcmp0(url, "/File/List.json") == 0)
         {
             answer = get_a_list_of_files(serveur_struct);
         }
-    else if (g_str_has_prefix(url, "/Data/") == 0)
+    else if (g_str_has_prefix(url, "/Data/"))
         {
-            hash = g_strndup(url[5], HASH_LEN*2);  /* HASH_LEN is expressed when hash is in binary form */
-            answer = get_data_from_a_specific_hash(serveur_struct, hash);
+            hash = g_strndup((const gchar *) url + 6, HASH_LEN*2);  /* HASH_LEN is expressed when hash is in binary form */
+            hash = g_strcanon(hash, "abcdef0123456789", '\0');
+
+            hlen = strlen(hash);
+            if (hlen == HASH_LEN*2)
+                {
+                    answer = get_data_from_a_specific_hash(serveur_struct, hash);
+                }
+            else
+                {
+                    answer = g_strdup_printf("{\"Invalid url (%s) hash length\": %ld instead of %d}", url, hlen, HASH_LEN*2);
+                }
+
+            free_variable(hash);
         }
     else
         { /* Some sort of echo to the invalid request */
-            answer = g_strdup_printf("{\"Invalid url\": %s\n}", url);
+            answer = g_strdup_printf("{\"Invalid url\": %s}", url);
         }
 
     return answer;
