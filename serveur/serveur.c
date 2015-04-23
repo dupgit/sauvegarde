@@ -64,6 +64,38 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 
 
 /**
+ * Function that gets the data of a specific hash
+ * @param serveur_struct is the main structure for the server.
+ * @param hash is the hash of which we want the data
+ * @returns a json formatted string.
+ */
+static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gchar *hash)
+{
+    gchar *answer = NULL;
+
+    answer = g_strdup_printf(_("Not yet implemented."));
+
+    return answer;
+
+}
+
+
+/**
+ * Function to get a list of all files saved
+ * @param serveur_struct is the main structure for the server.
+ * @returns a json formatted string or NULL
+ */
+static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct)
+{
+    gchar *answer = NULL;
+
+    answer = g_strdup_printf(_("Not yet implemented."));
+
+    return answer;
+}
+
+
+/**
  * Function to answer to get requests in a json way. This mode should be
  * prefered.
  * @param serveur_struct is the main structure for the server.
@@ -76,10 +108,20 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 static gchar *get_json_answer(serveur_struct_t *serveur_struct, const char *url)
 {
     gchar *answer = NULL;
+    gchar *hash = NULL;
 
     if (g_strcmp0(url, "/Version.json") == 0)
         {
             answer = convert_version_to_json(PROGRAM_NAME, SERVEUR_DATE, SERVEUR_VERSION, SERVEUR_AUTHORS, SERVEUR_LICENSE);
+        }
+    else if (g_strcmp0(url, "/Files/List.json") == 0)
+        {
+            answer = get_a_list_of_files(serveur_struct);
+        }
+    else if (g_str_has_prefix(url, "/Data/") == 0)
+        {
+            hash = g_strndup(url[5], HASH_LEN*2);  /* HASH_LEN is expressed when hash is in binary form */
+            answer = get_data_from_a_specific_hash(serveur_struct, hash);
         }
     else
         { /* Some sort of echo to the invalid request */
