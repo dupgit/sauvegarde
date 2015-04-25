@@ -29,6 +29,23 @@
 #ifndef _SERVEUR_FILE_BACKEND_H_
 #define _SERVEUR_FILE_BACKEND_H_
 
+/**
+ * @struct file_backend_t
+ * @brief Structure that contains everything needed by file backend.
+ *
+ * This structure contains the prefix for the path where datas are located.
+ * and a level that indicates the number of level of directories
+ * indirections. Default value is 3 but 4 may be used. A level of 3 with
+ * a block level of 16384 bytes should be sufficient to store up to 64 tera
+ * bytes of deduplicated data. A level of 4 should be ok for 16384 tera
+ * bytes !
+ */
+typedef struct
+{
+    gchar *prefix; /**< Prefix for the path where data are located */
+    guint level;   /**< level of directories defaults to 3 */
+} file_backend_t;
+
 
 /**
  * Stores meta data into a flat file. A file is created for each host that

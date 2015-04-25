@@ -212,7 +212,7 @@ static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Conn
                     answer = get_json_answer(serveur_struct, url);
                 }
             else
-                { /* A "unformatted" answer was requested */
+                { /* An "unformatted" answer was requested */
                     answer = get_unformatted_answer(serveur_struct, url);
                 }
 
