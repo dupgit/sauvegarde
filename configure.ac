@@ -109,7 +109,7 @@ dnl ***********************************************************************
 case $build_os in
     *linux*)
         AC_DEFINE_UNQUOTED(SYS_LINUX, 1, [This is a Linux system])
-        LDFLAGS="$LDFLAGS -export-dynamic -no-undefined -module"
+        LDFLAGS="$LDFLAGS -export-dynamic -no-undefined -module -lm"
     ;;
     *mingw*)
         AC_DEFINE_UNQUOTED(SYS_MINGW, 1, [This is a Windows system using MinGW])

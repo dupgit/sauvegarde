@@ -146,12 +146,8 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
 
             if (hash_data != NULL && hash_data->hash != NULL && hash_data->data != NULL)
                 {
-                    /** @todo create directories at init time because
-                     * creating directories like that is time consuming
-                     * for nothing.
-                     */
                     path = make_path_from_hash(prefix, hash_data->hash, file_backend->level);
-                    create_directory(path);
+                    /* create_directory(path); */
                     hex_hash = hash_to_string(hash_data->hash);
                     filename = g_build_filename(path, hex_hash, NULL);
 
@@ -269,6 +265,63 @@ static void file_create_directory(gchar *save_dir, gchar *sub_dir)
 
 
 /**
+ * Makes all subdirectories into the "datas" directory.
+ * @note creating subdirectories for a level of 3 may take a long time and
+ *       an even empty structure will consume something like 64 Gb of space
+ *       on an ext4 filesystem (expect 16 Tb with level 4).
+ * @param file_backend the structure that contains the prefix path and the
+ *        level in which we want to create the subdirectories.
+ */
+static void make_all_subdirectories(file_backend_t *file_backend)
+{
+    gchar *path = NULL;
+    gchar *path2 = NULL;
+    gchar *octet = NULL;
+    guint number = 0;
+    double i = 0;
+    double p = 0;
+    double total = 0;
+
+    if (file_backend != NULL && file_backend->level < 5 && file_backend->level > 1)
+        {
+            total = pow(256, file_backend->level);
+
+            for (i = 0; i < total; i++)
+                {
+                    path = g_strdup_printf("");
+
+                    for (p = file_backend->level-1; p >= 0; p--)
+                        {
+                            number = i / (pow(256, p));
+
+
+                            if (number > 255)
+                                {
+                                    number = fmod(number, 256);
+                                }
+
+
+                            octet = g_strdup_printf("%02x", number);
+                            path2 = g_strconcat(path, octet, "/", NULL);
+                            free_variable(path);
+                            path = path2;
+                            free_variable(octet);
+                        }
+
+                    path[strlen(path)-1] = '\0';
+                    path2 = g_strconcat(file_backend->prefix, "/datas/", path, NULL);
+
+                    create_directory(path2);
+
+                    free_variable(path);
+                    free_variable(path2);
+
+                }
+    }
+}
+
+
+/**
  * Inits the backend : takes care of the directories we want to write to.
  * user_data of the backend structure is a file_backend_t structure that
  * contains the prefix path where to store datas and the level of
@@ -284,13 +337,20 @@ void file_init_backend(serveur_struct_t *serveur_struct)
         {
             file_backend = (file_backend_t *) g_malloc0(sizeof(file_backend_t));
 
-            file_backend->prefix = g_strdup("/var/tmp/sauvegarde/serveur");
+            file_backend->prefix = g_strdup("/home/dup/sauvegarde/serveur");
             file_backend->level = 3;
 
             serveur_struct->backend->user_data = file_backend;
 
             file_create_directory(file_backend->prefix, "metas");
             file_create_directory(file_backend->prefix, "datas");
+
+            /**
+             * @todo : store somewhere that this as already been done once
+             */
+            fprintf(stdout, _("Please wait while creating directories\n"));
+            /* make_all_subdirectories(file_backend); */
+            fprintf(stdout, _("Finished !\n"));
         }
     else
         {
