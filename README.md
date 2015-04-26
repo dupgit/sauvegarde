@@ -207,6 +207,24 @@ to database corruption and/or data loss.
 The API is described [API.md](docs/API.md)
 
 
+### Server backends
+
+#### File backend
+
+Stores metas datas into flat files and datas directly in directories and
+subdirectories named by their hash. Default level of indirection is 2. This
+means that each hash is stored in 2 subdirectories : beef0345... is stored
+in /be/ef/beef0345... with level 2 and in /be/ef/03/beef0345.... with level
+3.
+
+With level 2 one may store up to 512 Gb of deduplicated datas. Level 3 can
+store up to 256 Tb of datas and level 4 up to 65536 Tb ! Keep in mind also
+that creating such amount of directories takes space : 256 Mb for level 2,
+64 Gb for level 3 and 16 Tb for level 4 ! Also it may take a long time to
+create those directories: level 3 took nearly 1 hour on my system where
+level 2 took only 2 seconds !
+
+
 ## Coding into this project
 
 ### irc
