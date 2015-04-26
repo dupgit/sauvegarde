@@ -313,3 +313,25 @@ extern gchar *get_file_size_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 
     return result;
 }
+
+
+/**
+ * Checks if a filename exists or not.
+ * @param filename that we want to check.
+ * @returns TRUE if filename exists and FALSE if not.
+ */
+gboolean file_exists(gchar *filename)
+{
+    GFile *file = NULL;
+    gboolean exists = FALSE;
+
+    if (filename != NULL)
+        {
+            file = g_file_new_for_path(filename);
+            exists = g_file_query_exists(file, NULL);
+            g_object_unref(file);
+        }
+
+    return exists;
+}
+

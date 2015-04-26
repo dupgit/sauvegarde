@@ -168,4 +168,11 @@ extern gpointer free_meta_data_t(meta_data_t *meta);
 extern gpointer free_smeta_data_t(serveur_meta_data_t *smeta);
 
 
+/**
+ * Checks if a filename exists or not.
+ * @param filename that we want to check.
+ * @returns TRUE if filename exists and FALSE if not.
+ */
+extern gboolean file_exists(gchar *filename);
+
 #endif /* #ifndef _FILES_H_ */

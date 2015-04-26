@@ -319,7 +319,14 @@ static void make_all_subdirectories(file_backend_t *file_backend)
                     free_variable(path2);
 
                 }
-    }
+
+            /* Creates a directory named .done in prefix/datas in order
+             * to tell that we already have created all direcrories an subdirectories
+             */
+            path = g_strconcat(file_backend->prefix, "/datas/", ".done", NULL);
+            create_directory(path);
+            free_variable(path);
+        }
 }
 
 
@@ -334,6 +341,7 @@ static void make_all_subdirectories(file_backend_t *file_backend)
 void file_init_backend(serveur_struct_t *serveur_struct)
 {
     file_backend_t *file_backend = NULL;
+    gchar *path = NULL;
 
     if (serveur_struct != NULL && serveur_struct->backend != NULL)
         {
@@ -347,13 +355,15 @@ void file_init_backend(serveur_struct_t *serveur_struct)
             file_create_directory(file_backend->prefix, "metas");
             file_create_directory(file_backend->prefix, "datas");
 
-            /**
-             * @todo : store somewhere that this as already been done once
-             *         and do not do it twice !
-             */
-            fprintf(stdout, _("Please wait while creating directories\n"));
-            make_all_subdirectories(file_backend);
-            fprintf(stdout, _("Finished !\n"));
+            path =  g_strconcat(file_backend->prefix, "/datas/", ".done", NULL);
+            if (file_exists(path) == FALSE)
+                {
+                    fprintf(stdout, _("Please wait while creating directories\n"));
+                    make_all_subdirectories(file_backend);
+                    fprintf(stdout, _("Finished !\n"));
+                }
+            free_variable(path);
+
         }
     else
         {
