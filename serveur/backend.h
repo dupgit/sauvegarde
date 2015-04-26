@@ -44,6 +44,7 @@ typedef void     (* store_data_func) (void *, hash_data_t *);           /**< Sto
 typedef GSList * (* build_needed_hash_list_func) (void *, GSList *);    /**< A function that will check if a hash is already known and build a list
                                                                          *   of needed hashs that the client may send                               */
 typedef void     (* init_backend_func) (void *);                        /**< A function that will initialize the backend if needed                  */
+typedef GSList * (* get_list_of_files_func) (void *, void *);           /**< A function that returns a list of saved files                          */
 
 
 /**
