@@ -36,10 +36,11 @@
  *
  * This structure contains the prefix for the path where datas are located.
  * and a level that indicates the number of level of directories
- * indirections. Default value is 3 but 4 may be used. A level of 3 with
- * a block level of 16384 bytes should be sufficient to store up to 64 tera
- * bytes of deduplicated data. A level of 4 should be ok for 16384 tera
- * bytes !
+ * indirections. Default value is 2 but 3 or 4 may be used.
+ * A level of 2 with a block size of 16384 bytes should be sufficient
+ * to store up to 512 Gbytes of deduplicated data. A level of 3 should be
+ * ok up to 256 tera bytes of deduplicated data. A level of 4 should be ok
+ * for 65536 tera bytes !
  */
 typedef struct
 {

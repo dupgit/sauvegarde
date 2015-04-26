@@ -266,9 +266,11 @@ static void file_create_directory(gchar *save_dir, gchar *sub_dir)
 
 /**
  * Makes all subdirectories into the "datas" directory.
- * @note creating subdirectories for a level of 3 may take a long time and
- *       an even empty structure will consume something like 64 Gb of space
- *       on an ext4 filesystem (expect 16 Tb with level 4).
+ * @note creating subdirectories for a level of 2 will take some time and
+ *       the empty directories will consume at least 256 Mb of space (ext4
+ *       filesystem). A level of 3 will take a long time and will consume
+ *       at least like 64 Gb of space (ext4 filesystem). Expect 16 Tb with
+ *       level 4 and a very very long time to complete.
  * @param file_backend the structure that contains the prefix path and the
  *        level in which we want to create the subdirectories.
  */
@@ -338,7 +340,7 @@ void file_init_backend(serveur_struct_t *serveur_struct)
             file_backend = (file_backend_t *) g_malloc0(sizeof(file_backend_t));
 
             file_backend->prefix = g_strdup("/home/dup/sauvegarde/serveur");
-            file_backend->level = 3;
+            file_backend->level = 2;  /* default level */
 
             serveur_struct->backend->user_data = file_backend;
 
@@ -349,7 +351,7 @@ void file_init_backend(serveur_struct_t *serveur_struct)
              * @todo : store somewhere that this as already been done once
              */
             fprintf(stdout, _("Please wait while creating directories\n"));
-            /* make_all_subdirectories(file_backend); */
+            make_all_subdirectories(file_backend);
             fprintf(stdout, _("Finished !\n"));
         }
     else
