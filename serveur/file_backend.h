@@ -40,7 +40,7 @@
  * A level of 2 with a block size of 16384 bytes should be sufficient
  * to store up to 512 Gbytes of deduplicated data. A level of 3 should be
  * ok up to 256 tera bytes of deduplicated data. A level of 4 should be ok
- * for 65536 tera bytes !
+ * for up to 65536 tera bytes !
  */
 typedef struct
 {

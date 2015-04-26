@@ -339,7 +339,7 @@ void file_init_backend(serveur_struct_t *serveur_struct)
         {
             file_backend = (file_backend_t *) g_malloc0(sizeof(file_backend_t));
 
-            file_backend->prefix = g_strdup("/home/dup/sauvegarde/serveur");
+            file_backend->prefix = g_strdup("/var/tmp/sauvegarde/serveur");
             file_backend->level = 2;  /* default level */
 
             serveur_struct->backend->user_data = file_backend;
@@ -349,6 +349,7 @@ void file_init_backend(serveur_struct_t *serveur_struct)
 
             /**
              * @todo : store somewhere that this as already been done once
+             *         and do not do it twice !
              */
             fprintf(stdout, _("Please wait while creating directories\n"));
             make_all_subdirectories(file_backend);
