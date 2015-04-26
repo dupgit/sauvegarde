@@ -73,7 +73,7 @@ static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gc
 {
     gchar *answer = NULL;
 
-    answer = g_strdup_printf(_("Not yet implemented: %s\n"), hash);
+    answer = g_strdup_printf(_("Not yet implemented: %s"), hash);
 
     return answer;
 
@@ -89,7 +89,7 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct)
 {
     gchar *answer = NULL;
 
-    answer = g_strdup_printf(_("Not yet implemented.\n"));
+    answer = g_strdup_printf(_("Not yet implemented."));
 
     return answer;
 }
