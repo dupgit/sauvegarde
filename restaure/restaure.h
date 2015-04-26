@@ -45,7 +45,8 @@
 
 typedef struct
 {
-    options_t *opt;  /**< program's options */
+    options_t *opt;  /**< program's options                                        */
+    comm_t *comm;    /**< Communication structure to operate with serveur's server */
 } res_struct_t;
 
 

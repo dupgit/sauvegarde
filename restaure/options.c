@@ -160,10 +160,12 @@ static options_t *manage_command_line_options(int argc, char **argv)
     gchar *configfile = NULL;      /** filename for the configuration file if any            */
     gchar *ip =  NULL;             /** IP address where is located serveur's program         */
     gint port = 0;                 /** Port number on which to send things to the server     */
+    gboolean list = FALSE;         /** True if we have to get a list of saved files          */
 
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
+        { "list", 'l', 0, G_OPTION_ARG_NONE, &list, N_("Gives a list of saved files"), NULL},
         { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode"), NULL },
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), NULL},
@@ -200,12 +202,11 @@ static options_t *manage_command_line_options(int argc, char **argv)
     opt->ip = g_strdup("localhost");
     opt->port = 5468;
 
+
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "restaure.conf");
     read_from_configuration_file(opt,  defaultconfigfilename);
     defaultconfigfilename = free_variable(defaultconfigfilename);
-
-    opt->version = version; /* only TRUE if -v or --version was invoked */
 
     set_debug_mode_upon_cmdl(debug);
 
@@ -221,6 +222,8 @@ static options_t *manage_command_line_options(int argc, char **argv)
 
     /* 3) retrieving other options from the command line.
      */
+    opt->version = version; /* only TRUE if -v or --version was invoked */
+    opt->list = list;       /* only TRUE if -l or --list was invoked    */
 
     if (ip != NULL)
         {

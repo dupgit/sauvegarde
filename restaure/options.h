@@ -40,6 +40,7 @@
 typedef struct
 {
     gboolean version;   /**< TRUE if we have to display program's version                                      */
+    gboolean list;      /**< TRUE if we have to get a list of saved files from serveur's server.               */
     gchar *configfile;  /**< filename for the configuration file specified on the command line                 */
     gchar *ip;          /**< A string representing the IP address where serveur is located (may be a hotsname) */
     gint port;          /**< Port number on which to send things to serveur's server (on which it must listen) */

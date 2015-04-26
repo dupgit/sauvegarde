@@ -68,7 +68,7 @@ extern gchar *get_communication_library_version(void);
  * @returns a newly allocated string that may be freed with free_variable()
  *          function.
  */
-extern gchar *make_connexion_string(gchar *ip, gint port)
+extern gchar *make_connexion_string(gchar *ip, gint port);
 
 
 /**
