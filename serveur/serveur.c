@@ -37,6 +37,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
 static gpointer meta_datas_thread(gpointer user_data);
 static gpointer datas_thread(gpointer user_data);
 
+
 /**
  * Inits main serveur's structure
  * @param argc : number of arguments given on the command line.
@@ -56,8 +57,8 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
     serveur_struct->meta_queue = g_async_queue_new();
     serveur_struct->data_queue = g_async_queue_new();
 
-    /* default backend */
-    serveur_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend, build_needed_hash_list);
+    /* default backend (file_backend) */
+    serveur_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend, build_needed_hash_list, get_list_of_files);
 
     return serveur_struct;
 }
@@ -85,11 +86,11 @@ static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gc
  * @param serveur_struct is the main structure for the server.
  * @returns a json formatted string or NULL
  */
-static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct)
+static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, const char *url)
 {
     gchar *answer = NULL;
 
-    answer = g_strdup_printf(_("Not yet implemented."));
+    answer = g_strdup_printf(_("Not yet implemented %s."), url);
 
     return answer;
 }
@@ -115,14 +116,14 @@ static gchar *get_json_answer(serveur_struct_t *serveur_struct, const char *url)
         {
             answer = convert_version_to_json(PROGRAM_NAME, SERVEUR_DATE, SERVEUR_VERSION, SERVEUR_AUTHORS, SERVEUR_LICENSE);
         }
-    else if (g_strcmp0(url, "/File/List.json") == 0)
+    else if (g_str_has_prefix(url, "/File/List.json"))
         {
-            answer = get_a_list_of_files(serveur_struct);
+            answer = get_a_list_of_files(serveur_struct, url);
         }
     else if (g_str_has_prefix(url, "/Data/"))
         {
-            hash = g_strndup((const gchar *) url + 6, HASH_LEN*2);  /* HASH_LEN is expressed when hash is in binary form */
-            hash = g_strcanon(hash, "abcdef0123456789", '\0');
+            hash = g_strndup((const gchar *) url + 6, HASH_LEN*2);  /* HASH_LEN is expressed when hash is in binary form  */
+            hash = g_strcanon(hash, "abcdef0123456789", '\0');      /* replace anything not in hexadecimal format with \0 */
 
             hlen = strlen(hash);
             if (hlen == HASH_LEN*2)

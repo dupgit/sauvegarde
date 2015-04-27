@@ -311,7 +311,7 @@ static void make_all_subdirectories(file_backend_t *file_backend)
                         }
 
                     path[strlen(path)-1] = '\0';
-                    path2 = g_strconcat(file_backend->prefix, "/datas/", path, NULL);
+                    path2 = g_build_filename(file_backend->prefix, "datas", path, NULL);
 
                     create_directory(path2);
 
@@ -323,7 +323,7 @@ static void make_all_subdirectories(file_backend_t *file_backend)
             /* Creates a directory named .done in prefix/datas in order
              * to tell that we already have created all direcrories an subdirectories
              */
-            path = g_strconcat(file_backend->prefix, "/datas/", ".done", NULL);
+            path =  g_build_filename(file_backend->prefix, "datas", ".done", NULL);
             create_directory(path);
             free_variable(path);
         }
@@ -355,7 +355,7 @@ void file_init_backend(serveur_struct_t *serveur_struct)
             file_create_directory(file_backend->prefix, "metas");
             file_create_directory(file_backend->prefix, "datas");
 
-            path =  g_strconcat(file_backend->prefix, "/datas/", ".done", NULL);
+            path =  g_build_filename(file_backend->prefix, "datas", ".done", NULL);
             if (file_exists(path) == FALSE)
                 {
                     fprintf(stdout, _("Please wait while creating directories\n"));
@@ -369,5 +369,29 @@ void file_init_backend(serveur_struct_t *serveur_struct)
         {
             print_error(__FILE__, __LINE__, _("Error: no serveur structure or no backend structure.\n"));
         }
+}
+
+
+/**
+ * Gets the list of all saved files
+ */
+GSList *get_list_of_files(serveur_struct_t *serveur_struct)
+{
+    GSList *file_list = NULL;
+    gchar *filename = NULL;
+    file_backend_t *file_backend = NULL;
+    GFile *the_file = NULL;
+    GFileInputStream *stream = NULL;
+
+
+    if (serveur_struct != NULL && serveur_struct->backend != NULL &&  serveur_struct->backend->user_data != NULL)
+        {
+            file_backend = serveur_struct->backend->user_data;
+            filename =  g_build_filename(file_backend->prefix, "metas", NULL);
+            the_file = g_file_new_for_path(filename);
+
+        }
+
+    return file_list;
 }
 

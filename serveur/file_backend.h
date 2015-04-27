@@ -96,4 +96,6 @@ extern void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_
 extern GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_list);
 
 
+extern GSList *get_list_of_files(serveur_struct_t *serveur_struct);
+
 #endif /* #ifndef _SERVEUR_FILE_lBACKEND_H_ */
