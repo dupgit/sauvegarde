@@ -487,9 +487,7 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
 
                     /* Inserting the hash and it's order into buffers table */
                     sql_command = g_strdup_printf("INSERT INTO buffers (cache_time, buf_order, checksum) VALUES (%ld, %ld, '%s');", cache_time, i, encoded_hash);
-
                     exec_sql_cmd(database, sql_command,  N_("(%d) Error while inserting into the table 'buffers': %s\n"));
-
                     free_variable(sql_command);
 
                     a_data = g_tree_lookup(hashs->tree_hash, a_hash);
@@ -521,7 +519,11 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                             a_data->buffer = free_variable(a_data->buffer);
                             a_data->into_cache = FALSE;
                         }
-                    else
+                    else if (a_data != NULL)
+                        {
+                            print_debug("Deduplicated hash!? %s\n", encoded_hash);
+                        }
+                    else if (a_data == NULL)
                         {
                             print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash %s\n", encoded_hash);
                         }
