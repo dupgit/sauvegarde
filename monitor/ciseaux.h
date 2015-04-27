@@ -36,12 +36,9 @@
 
 
 /**
- * This function creates one thread to print things and
- * one other thread to calculate the checksums. This function
- * is a thread itself.
- * It waits until the end of the calc_thread thread (this will change
- * as in the future thoses functions should have an end unless the program
- * itself ends.
+ * This function creates one thread to calculate the checksums. This
+ * function is a thread itself.
+ * It waits until the end of the calc_thread thread.
  * @param data : main_struct_t * structure.
  * @returns NULL to fullfill the template needed to create a GThread
  */

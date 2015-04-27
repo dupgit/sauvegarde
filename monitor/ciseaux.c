@@ -220,8 +220,8 @@ static void it_is_a_file(main_struct_t *main_struct, GFile *a_file, gchar *filen
 
 
 /**
- * The main function that will calculate the hashs on a file. This function
- * is a thread itself. It waits for messages in the main queue.
+ * The main function that will calculate the hashs on a file. It waits for
+ * messages in the main queue.
  * Messages are sent by the following functions :
  * . traverse_directory.
  * @param data is main_struct_t * pointer
@@ -313,25 +313,19 @@ static gpointer calculate_hashs_on_a_file(gpointer data)
 
 
 /**
- * This function creates one thread to print things and
- * one other thread to calculate the checksums. This function
- * is a thread itself.
- * It waits until the end of the calc_thread thread (this will change
- * as in the future thoses functions should have an end unless the program
- * itself ends.
+ * This function creates one thread to calculate the checksums. This
+ * function is a thread itself.
+ * It waits until the end of the calc_thread thread.
  * @param data : main_struct_t * structure.
  * @returns NULL to fullfill the template needed to create a GThread
  */
 gpointer ciseaux(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
-    GThread *calc_thread = NULL;
 
     if (main_struct != NULL)
         {
-            calc_thread = g_thread_new("hashs", calculate_hashs_on_a_file, main_struct);
-
-            g_thread_join(calc_thread);
+            calculate_hashs_on_a_file(main_struct);
         }
 
     return NULL;
