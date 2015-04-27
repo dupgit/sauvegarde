@@ -37,8 +37,7 @@ static main_struct_t *init_main_structure(options_t *opt);
 
 
 /**
- * Traverse all sub-directories of a directory and adds each directory into
- * path_t * structure in main_struct->path_tree balanced binary tree.
+ * Traverse all sub-directories of a directory in a recursive way.
  * @param main_struct : main structure with everything needed
  * @param directory : the directory that we want to traverse
  * @todo do something with symbolic links that must be saved as is.
@@ -98,9 +97,10 @@ static void traverse_directory(main_struct_t *main_struct, gchar *directory)
                     fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
                 }
 
-            fileinfo = free_object(fileinfo);
+            free_object(fileinfo);
+
             g_file_enumerator_close(file_enum, NULL, NULL);
-            file_enum = free_object(file_enum);
+            free_object(file_enum);
         }
     else
         {

@@ -329,7 +329,7 @@ gboolean file_exists(gchar *filename)
         {
             file = g_file_new_for_path(filename);
             exists = g_file_query_exists(file, NULL);
-            g_object_unref(file);
+            free_object(file);
         }
 
     return exists;

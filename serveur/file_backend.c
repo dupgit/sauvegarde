@@ -103,7 +103,7 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
                             print_error(__FILE__, __LINE__, _("Error: unable to open file %s to append meta-datas in it.\n"), filename);
                         }
 
-                    g_object_unref(meta_file);
+                    free_object(meta_file);
                     free_variable(filename);
                 }
             else
@@ -176,7 +176,7 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
                              print_error(__FILE__, __LINE__, _("Error: unable to open file %s to write datas in it.\n"), filename);
                         }
 
-                    g_object_unref(data_file);
+                    free_object(data_file);
                     free_variable(filename);
                     free_variable(hex_hash);
                     free_variable(path);
@@ -235,8 +235,7 @@ GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_li
                     free_variable(filename);
                     free_variable(hex_hash);
                     free_variable(path);
-
-                    g_object_unref(data_file);
+                    free_object(data_file);
 
                     head = g_slist_next(head);
                 }
@@ -387,6 +386,7 @@ GSList *get_list_of_files(serveur_struct_t *serveur_struct)
     if (serveur_struct != NULL && serveur_struct->backend != NULL &&  serveur_struct->backend->user_data != NULL)
         {
             file_backend = serveur_struct->backend->user_data;
+            /* needs to pass hostname and user and uid. */
             filename =  g_build_filename(file_backend->prefix, "metas", NULL);
             the_file = g_file_new_for_path(filename);
 
