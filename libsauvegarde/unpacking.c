@@ -313,12 +313,11 @@ gchar *insert_json_into_hash_tree(hashs_t *hashs, gchar *json_str)
                     /* Some basic verifications */
                     if (data_len == read && hash_len == HASH_LEN)
                         {
-                            a_data = new_data_t_structure(data, read, FALSE);
-
                             hashs->total_bytes = hashs->total_bytes + read;
 
                             if (g_tree_lookup(hashs->tree_hash, hash) == NULL)
                                 {
+                                    a_data = new_data_t_structure(data, read, FALSE);
                                     hashs->in_bytes = hashs->in_bytes + read;
                                     g_tree_insert(hashs->tree_hash, hash, a_data);
                                 }
@@ -345,6 +344,7 @@ hash_data_t *convert_json_to_hash_data(gchar *json_str)
     json_t *root = NULL;
     guint8 *data = NULL;
     guint8 *hash = NULL;
+    gchar *string = NULL;
     gsize data_len = 0;
     gsize hash_len = 0;
     gssize read = 0;
@@ -356,8 +356,14 @@ hash_data_t *convert_json_to_hash_data(gchar *json_str)
 
             if (root != NULL)
                 {
-                    data = (guint8 *) g_base64_decode(get_string_from_json_root(root, "data"), &data_len);
-                    hash = (guint8 *) g_base64_decode(get_string_from_json_root(root, "hash"), &hash_len);
+                    string = get_string_from_json_root(root, "data");
+                    data = (guint8 *) g_base64_decode(string, &data_len);
+                    free_variable(string);
+
+                    string = get_string_from_json_root(root, "hash");
+                    hash = (guint8 *) g_base64_decode(string, &hash_len);
+                    free_variable(string);
+
                     read = get_guint64_from_json_root(root, "size");
 
                     /* Some basic verifications */

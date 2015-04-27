@@ -328,7 +328,7 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
     struct MHD_Response *response = NULL;
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     int success = MHD_NO;
-
+    gchar *encoded_hash = NULL;
     hash_data_t *hash_data = NULL;
 
     if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
@@ -349,7 +349,9 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
             hash_data = convert_json_to_hash_data(received_data);
             received_data = free_variable(received_data);
 
-            print_debug(_("Received data for hash: \"%s\" (%ld bytes)\n"), g_base64_encode(hash_data->hash, HASH_LEN), hash_data->read);
+            encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
+            print_debug(_("Received data for hash: \"%s\" (%ld bytes)\n"), encoded_hash, hash_data->read);
+            free_variable(encoded_hash);
 
             /**
              * Sending received_data into the queue in order to be treated by

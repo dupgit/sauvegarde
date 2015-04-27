@@ -211,6 +211,7 @@ gchar *convert_data_to_json(data_t *a_data, gchar *encoded_hash)
             json_str = json_dumps(root, 0);
 
             json_decref(root);
+            free_variable(encoded_data);
         }
 
     return json_str;
