@@ -143,10 +143,11 @@ extern GSList *extract_gslist_from_array(json_t *root, gchar *name);
  * Converts data with the associated hash to a json formatted string
  * @param a_data the data structure that contains the data whose checksum
  *               is a_hash
- * @param a_hash the hash of the data contained in a_data
+ * @param encoded_hash the hash of the data contained in a_data in base64
+ *        encoded format.
  * @returns a json formatted string with those informations
  */
-extern gchar *convert_data_to_json(data_t *a_data, guint8 *a_hash);
+gchar *convert_data_to_json(data_t *a_data, gchar *encoded_hash);
 
 
 /**

@@ -190,20 +190,19 @@ json_t *convert_hash_list_to_json(GSList *hash_list)
  * Converts data with the associated hash to a json formatted string
  * @param a_data the data structure that contains the data whose checksum
  *               is a_hash
- * @param a_hash the hash of the data contained in a_data
+ * @param encoded_hash the hash of the data contained in a_data in base64
+ *        encoded format.
  * @returns a json formatted string with those informations
  */
-gchar *convert_data_to_json(data_t *a_data, guint8 *a_hash)
+gchar *convert_data_to_json(data_t *a_data, gchar *encoded_hash)
 {
     gchar *encoded_data = NULL;
-    gchar *encoded_hash = NULL;
     gchar *json_str = NULL;
     json_t *root = NULL;
 
-    if (a_data != NULL && a_hash != NULL && a_data->buffer != NULL && a_data->read >= 0)
+    if (a_data != NULL && encoded_hash != NULL && a_data->buffer != NULL && a_data->read >= 0)
         {
             encoded_data = g_base64_encode((guchar*) a_data->buffer, a_data->read);
-            encoded_hash = g_base64_encode(a_hash, HASH_LEN);
 
             root = json_object();
             insert_string_into_json_root(root, "hash", encoded_hash);

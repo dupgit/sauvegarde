@@ -273,6 +273,7 @@ static gint send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash
 {
     data_t *a_data = NULL;
     GSList *head = hash_list;
+    gchar *encoded_hash = NULL;
     gint success = CURLE_FAILED_INIT;
     gint all_ok = CURLE_OK;  /* If hash list is NULL there is nothing to be transmitted so it is a success ! */
 
@@ -280,11 +281,12 @@ static gint send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash
         {
             a_data = g_tree_lookup(hashs->tree_hash, hash_list->data);
 
+            encoded_hash = g_base64_encode(hash_list->data, HASH_LEN);
+
             if (a_data != NULL)
                 {
-
-                    print_debug(_("Sending datas for hash: \"%s\"\n"), g_base64_encode(hash_list->data, HASH_LEN));
-                    comm->buffer = convert_data_to_json(a_data, hash_list->data);
+                    print_debug(_("Sending datas for hash: \"%s\"\n"), encoded_hash);
+                    comm->buffer = convert_data_to_json(a_data, encoded_hash);
                     success = post_url(comm, "/Data.json");
 
                     if (success == CURLE_OK)
@@ -300,10 +302,11 @@ static gint send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash: \"%s\"\n",  g_base64_encode(hash_list->data, HASH_LEN));
+                    print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash: \"%s\"\n", encoded_hash);
                 }
 
             free_variable(hash_list->data);
+            free_variable(encoded_hash);
 
             hash_list = g_slist_next(hash_list);
         }
