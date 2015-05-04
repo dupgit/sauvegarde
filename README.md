@@ -47,6 +47,9 @@ Sauvegarde successfully in a system that is not listed here.
 
 ## Installation
 
+Sauvegarde is known to compile on x86_64 and arm7l architectures and on
+Centos 7, Ubuntu 12.04 LTS and raspbian 3.
+
 If you had the code from the git repository you may generate the configure
 script by invoking `./autogen.sh` script. It will execute aclocal, libtoolize
 automake, autoconf, glib-gettextize and intltoolize for you. If everything
