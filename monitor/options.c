@@ -58,7 +58,7 @@ static void print_selected_options(options_t *opt)
                         }
                 }
 
-            fprintf(stdout, _("Blocksize: %ld\n"), opt->blocksize);
+            fprintf(stdout, _("Blocksize: %" G_GINT64_FORMAT "\n"), opt->blocksize);
 
             print_string_option(N_("Configuration file: %s\n"), opt->configfile);
             print_string_option(N_("Cache directory: %s\n"), opt->dircache);

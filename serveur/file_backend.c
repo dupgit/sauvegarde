@@ -79,12 +79,12 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
 
                             if (hash_list != NULL)
                                 {
-                                    buffer = g_strdup_printf("%d, %ld, %d, %ld, %ld, %ld, %ld, \"%s\", \"%s\", %d, %d, \"%s\", %s\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name, hash_list);
+                                   buffer = g_strdup_printf("%d, %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", \"%s\", \"%s\", %d, %d, \"%s\", %s\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name, hash_list);
                                     free_variable(hash_list);
                                 }
                             else
                                 {
-                                    buffer = g_strdup_printf("%d, %ld, %d, %ld, %ld, %ld, %ld, \"%s\", \"%s\", %d, %d, \"%s\"\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name);
+                                    buffer = g_strdup_printf("%d, %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", \"%s\", \"%s\", %d, %d, \"%s\"\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name);
                                 }
 
                             count = strlen(buffer);

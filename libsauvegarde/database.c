@@ -234,7 +234,7 @@ static file_row_t *get_file_id(db_t *database, meta_data_t *meta)
 
     row = new_file_row_t();
 
-    sql_command = g_strdup_printf("SELECT file_id from files WHERE inode=%ld AND name='%s' AND type=%d AND uid=%d AND gid=%d AND ctime=%ld AND mtime=%ld AND mode=%d AND size=%ld;", meta->inode, meta->name, meta->file_type, meta->uid, meta->gid, meta->ctime, meta->mtime, meta->mode, meta->size);
+    sql_command = g_strdup_printf("SELECT file_id from files WHERE inode=%" G_GUINT64_FORMAT " AND name='%s' AND type=%d AND uid=%d AND gid=%d AND ctime=%" G_GUINT64_FORMAT " AND mtime=%" G_GUINT64_FORMAT " AND mode=%d AND size=%" G_GUINT64_FORMAT ";", meta->inode, meta->name, meta->file_type, meta->uid, meta->gid, meta->ctime, meta->mtime, meta->mode, meta->size);
 
     db_result = sqlite3_exec(database->db, sql_command, get_file_callback, row, &error_message);
 
@@ -486,7 +486,7 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                     encoded_hash = g_base64_encode((guchar*) a_hash, HASH_LEN);
 
                     /* Inserting the hash and it's order into buffers table */
-                    sql_command = g_strdup_printf("INSERT INTO buffers (cache_time, buf_order, checksum) VALUES (%ld, %ld, '%s');", cache_time, i, encoded_hash);
+                    sql_command = g_strdup_printf("INSERT INTO buffers (cache_time, buf_order, checksum) VALUES (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", '%s');", cache_time, i, encoded_hash);
                     exec_sql_cmd(database, sql_command,  N_("(%d) Error while inserting into the table 'buffers': %s\n"));
                     free_variable(sql_command);
 
@@ -499,7 +499,7 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                             /* Inserting checksum and the corresponding data into 'data' table                  */
                             encoded_data = g_base64_encode((guchar*) a_data->buffer, a_data->read);
 
-                            sql_command = g_strdup_printf("INSERT INTO data (checksum, size, data) VALUES ('%s', %ld, '%s');", encoded_hash, a_data->read, encoded_data);
+                            sql_command = g_strdup_printf("INSERT INTO data (checksum, size, data) VALUES ('%s', %" G_GUINT64_FORMAT ", '%s');", encoded_hash, a_data->read, encoded_data);
 
                             exec_sql_cmd(database, sql_command,  N_("(%d) Error while inserting into the table 'data': %s\n"));
 
@@ -564,7 +564,7 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, g
             exec_sql_cmd(database, "BEGIN;",  N_("(%d) Error openning the transaction: %s\n"));
 
             /* Inserting the file into the files table */
-            sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted) VALUES (%ld, %d, %ld, '%s', '%s', %d, %d, %ld, %ld, %ld, %d, %ld, '%s', %d);", cache_time, meta->file_type, meta->inode, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name, only_meta);
+            sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted) VALUES (%" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', '%s', %d, %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', %d);", cache_time, meta->file_type, meta->inode, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name, only_meta);
 
             exec_sql_cmd(database, sql_command,  N_("(%d) Error while inserting into the table 'files': %s\n"));
 

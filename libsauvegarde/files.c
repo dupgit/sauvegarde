@@ -243,7 +243,7 @@ gchar *get_dates_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
             meta->ctime = ctime;
             meta->mtime = mtime;
 
-            result = g_strdup_printf("%ld %ld %ld", atime, ctime, mtime);
+            result = g_strdup_printf("%" G_GUINT64_FORMAT " %"  G_GUINT64_FORMAT " %"  G_GUINT64_FORMAT "", atime, ctime, mtime);
         }
     else
         {
@@ -304,7 +304,7 @@ extern gchar *get_file_size_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
             size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
             meta->size = size;
 
-            result = g_strdup_printf("%ld", size);
+            result = g_strdup_printf("%"  G_GUINT64_FORMAT "", size);
         }
     else
         {

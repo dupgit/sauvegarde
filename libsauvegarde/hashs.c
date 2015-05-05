@@ -60,8 +60,8 @@ void print_tree_hashs_stats(hashs_t *hashs)
             /* printing some stats of the GTree */
             fprintf(stdout, _("Number of unique hash : %d\n"), g_tree_nnodes(hashs->tree_hash));
             fprintf(stdout, _("Tree height           : %d\n"), g_tree_height(hashs->tree_hash));
-            fprintf(stdout, _("Total size in bytes   : %ld\n"), hashs->total_bytes);
-            fprintf(stdout, _("Dedup size in bytes   : %ld\n"), hashs->total_bytes - hashs->in_bytes);
+            fprintf(stdout, _("Total size in bytes   : %" G_GUINT64_FORMAT "\n"), hashs->total_bytes);
+            fprintf(stdout, _("Dedup size in bytes   : %" G_GUINT64_FORMAT "\n"), hashs->total_bytes - hashs->in_bytes);
 
             if (hashs->total_bytes != 0)
                 {
@@ -69,7 +69,7 @@ void print_tree_hashs_stats(hashs_t *hashs)
                 }
             else
                 {
-                    fprintf(stdout, _("Deduplication in bytes : %.2ld\n"), hashs->in_bytes);
+                    fprintf(stdout, _("Deduplication in bytes : %.2" G_GUINT64_FORMAT "\n"), hashs->in_bytes);
                 }
         }
 }
