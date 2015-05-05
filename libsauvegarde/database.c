@@ -499,7 +499,7 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                             /* Inserting checksum and the corresponding data into 'data' table                  */
                             encoded_data = g_base64_encode((guchar*) a_data->buffer, a_data->read);
 
-                            sql_command = g_strdup_printf("INSERT INTO data (checksum, size, data) VALUES ('%s', %" G_GUINT64_FORMAT ", '%s');", encoded_hash, a_data->read, encoded_data);
+                            sql_command = g_strdup_printf("INSERT INTO data (checksum, size, data) VALUES ('%s', %" G_GSSIZE_FORMAT ", '%s');", encoded_hash, a_data->read, encoded_data);
 
                             exec_sql_cmd(database, sql_command,  N_("(%d) Error while inserting into the table 'data': %s\n"));
 
