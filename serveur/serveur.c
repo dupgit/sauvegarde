@@ -132,7 +132,7 @@ static gchar *get_json_answer(serveur_struct_t *serveur_struct, const char *url)
                 }
             else
                 {
-                    answer = g_strdup_printf("{\"Invalid url (%s) hash length\": %ld instead of %d}", url, hlen, HASH_LEN*2);
+                    answer = g_strdup_printf("{\"Invalid url (%s) hash length\": %zd instead of %d}", url, hlen, HASH_LEN*2);
                 }
 
             free_variable(hash);
