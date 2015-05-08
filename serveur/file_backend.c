@@ -289,7 +289,7 @@ static void make_all_subdirectories(file_backend_t *file_backend)
 
             for (i = 0; i < total; i++)
                 {
-                    path = g_strdup_printf("");
+                    path = g_strdup("");
 
                     for (p = file_backend->level-1; p >= 0; p--)
                         {
