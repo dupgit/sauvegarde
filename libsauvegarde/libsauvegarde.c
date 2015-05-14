@@ -78,9 +78,6 @@ void set_debug_mode_upon_cmdl(gint debug)
 }
 
 
-
-
-
 /**
  * @returns the debug mode (TRUE if activated and FALSE if not).
  */

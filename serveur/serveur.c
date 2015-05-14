@@ -36,7 +36,8 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
 static int ahc(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **con_cls);
 static gpointer meta_datas_thread(gpointer user_data);
 static gpointer datas_thread(gpointer user_data);
-
+static void print_headers(struct MHD_Connection *connection);
+static int print_out_key(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
 
 /**
  * Inits main serveur's structure
@@ -208,6 +209,11 @@ static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Conn
         }
     else
         {
+            if (get_debug_mode() == TRUE)
+                {
+                    print_headers(connection);
+                }
+
             if (g_str_has_suffix(url, ".json"))
                 { /* A json format answer was requested */
                     answer = get_json_answer(serveur_struct, url);
@@ -446,6 +452,33 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
 
 
 /**
+ * Prints all keys-values pairs contained in an HTTP header.
+ * @param cls cls may be NULL here (not used).
+ * @param[in] kind is the MHD_ValueKind requested
+ * @param[in] key is the key to be printed
+ * @param[in] value is the value of the corresponding key
+ *
+ */
+static int print_out_key(void *cls, enum MHD_ValueKind kind, const char *key, const char *value)
+{
+  fprintf(stdout, "\t%s: %s\n", key, value);
+
+  return MHD_YES;
+}
+
+
+/**
+ * Prints everything in the header of a connection
+ * @param connection the connection that we want to print all headers.
+ */
+static void print_headers(struct MHD_Connection *connection)
+{
+    fprintf(stdout, "Headers for this connection are:\n");
+    MHD_get_connection_values(connection, MHD_HEADER_KIND, &print_out_key, NULL);
+}
+
+
+/**
  * MHD_AccessHandlerCallback function that manages all connections requests
  * @param cls is the serveur_struct_t * serveur_struct main serveur
  *        structure.
@@ -456,6 +489,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
 {
     serveur_struct_t *serveur_struct = (serveur_struct_t *) cls;
     int success = MHD_NO;
+
 
 
     if (g_strcmp0(method, "GET") == 0)
