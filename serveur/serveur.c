@@ -38,6 +38,9 @@ static gpointer meta_datas_thread(gpointer user_data);
 static gpointer datas_thread(gpointer user_data);
 static void print_headers(struct MHD_Connection *connection);
 static int print_out_key(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
+static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key);
+static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_Connection *connection);
+
 
 /**
  * Inits main serveur's structure
@@ -78,20 +81,65 @@ static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gc
     answer = g_strdup_printf(_("Not yet implemented: %s"), hash);
 
     return answer;
+}
 
+
+/**
+ * Function that gets the argument corresponding to the key 'key' in the
+ * url (from connection)
+ * @param connection is the connection in MHD
+ * @param key the key to look for into the url
+ * @returns a gchar * string that may be freed when no longer needed
+ */
+static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key)
+{
+    const char *value = NULL;
+    gchar *value_dup = NULL;
+
+    if (connection != NULL && key != NULL)
+        {
+            value = MHD_lookup_connection_value(connection, MHD_GET_ARGUMENT_KIND, key);
+
+            if (value != NULL)
+                {
+                    value_dup = g_strdup(value);
+                }
+        }
+
+    return value_dup;
 }
 
 
 /**
  * Function to get a list of all files saved
  * @param serveur_struct is the main structure for the server.
+ * @param connection is the connection in MHD
+ * @param url is the requested url
  * @returns a json formatted string or NULL
  */
-static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, const char *url)
+static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_Connection *connection)
 {
     gchar *answer = NULL;
+    gchar *hostname = NULL;
+    gchar *uid = NULL;
+    gchar *gid = NULL;
+    gchar *owner = NULL;
+    gchar *group = NULL;
 
-    answer = g_strdup_printf(_("Not yet implemented %s."), url);
+    hostname = get_argument_value_from_key(connection, "hostname");
+    uid = get_argument_value_from_key(connection, "uid");
+    gid = get_argument_value_from_key(connection, "gid");
+    owner = get_argument_value_from_key(connection, "owner");
+    group = get_argument_value_from_key(connection, "group");
+
+    if (hostname != NULL && uid != NULL && gid != NULL && owner != NULL && group != NULL)
+        {
+            answer = g_strdup_printf(_("%s: Not yet implemented."), hostname);
+        }
+    else
+        {
+            answer = g_strdup_printf(_("Malformed request. hostname: %s, uid: %s, gid: %s, owner: %s, group: %s"), hostname, uid, gid, owner, group);
+        }
 
     return answer;
 }
@@ -101,13 +149,14 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, const char *
  * Function to answer to get requests in a json way. This mode should be
  * prefered.
  * @param serveur_struct is the main structure for the server.
+ * @param connection is the connection in MHD
  * @param url is the requested url
  * @note to translators all json requests MUST NOT be translated because
  *       it is the protocol itself !
  * @returns a newlly allocated gchar * string that contains the anwser to be
  *          sent back to the client.
  */
-static gchar *get_json_answer(serveur_struct_t *serveur_struct, const char *url)
+static gchar *get_json_answer(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, const char *url)
 {
     gchar *answer = NULL;
     gchar *hash = NULL;
@@ -119,7 +168,7 @@ static gchar *get_json_answer(serveur_struct_t *serveur_struct, const char *url)
         }
     else if (g_str_has_prefix(url, "/File/List.json"))
         {
-            answer = get_a_list_of_files(serveur_struct, url);
+            answer = get_a_list_of_files(serveur_struct, connection);
         }
     else if (g_str_has_prefix(url, "/Data/"))
         {
@@ -216,7 +265,7 @@ static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Conn
 
             if (g_str_has_suffix(url, ".json"))
                 { /* A json format answer was requested */
-                    answer = get_json_answer(serveur_struct, url);
+                    answer = get_json_answer(serveur_struct, connection, url);
                 }
             else
                 { /* An "unformatted" answer was requested */

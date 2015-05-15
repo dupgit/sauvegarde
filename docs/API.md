@@ -28,7 +28,7 @@ producing an output such as :
 ### /Version.json
 
 Gets the version of the serveur in a json parsable string producing an
-output such as :
+output such as:
 
     {"revision": "cb6c92b",
      "name": "serveur",
@@ -46,7 +46,11 @@ output such as :
 
 ### /File/List.json
 
-Gets a list of all saved files and their versions.
+Gets a list of all saved files and their versions. This url needs five
+parameters: hostname, uid, gid, owner and group. An url must include all
+theses parameters:
+
+    http://192.168.0.152:5468/File/List.json?hostname=julia&uid=530&gid=530&owner=dup&group=admin"
 
 
 ### /Data/beeff34162c5402270369ad624c15bdc8f599df220b7d540239b774eabb57fb0.json
@@ -66,7 +70,7 @@ contains hashs of data in an ordered way and base64 encoded.
 
 The serveur answers a hash_list that may be empty. This hash list is the
 hashs that the server needs. The server should not ask for hash that it
-already has. Example :
+already has. Example:
 
     {"hash_list": ["QKlVxnrQi/A338uHJUSKw3C+RfmJ2KUdiZPMru/Z9kE=",
                    ...,
