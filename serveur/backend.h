@@ -29,6 +29,22 @@
 #define _SERVEUR_BACKEND_H_
 
 
+
+/**
+ * @struct queru_t
+ * @brief This structure is used to pass parameters to query functions.
+ * Fields of this structure may be searched into the selected backend.
+ */
+typedef struct
+{
+    gchar *hostname;
+    gchar *uid;
+    gchar *gid;
+    gchar *owner;
+    gchar *group;
+} query_t;
+
+
 /**
  * Function templates definition to be used by backend_t structure.
  * void * pointers are ment to be serveur_struct_t * pointers.
@@ -44,12 +60,12 @@ typedef void     (* store_data_func) (void *, hash_data_t *);           /**< Sto
 typedef GSList * (* build_needed_hash_list_func) (void *, GSList *);    /**< A function that will check if a hash is already known and build a list
                                                                          *   of needed hashs that the client may send                               */
 typedef void     (* init_backend_func) (void *);                        /**< A function that will initialize the backend if needed                  */
-typedef GSList * (* get_list_of_files_func) (void *);                   /**< A function that returns a list of saved files                          */
+typedef GSList * (* get_list_of_files_func) (void *, query_t *);        /**< A function that returns a list of saved files                          */
 
 
 /**
  * @struct backend_t
- * This structure contains pointers to the selected backend functions.
+ * @brief This structure contains pointers to the selected backend functions.
  */
 typedef struct
 {
@@ -73,6 +89,20 @@ typedef struct
  * @returns a newly created backend_t structure initialized to nothing !
  */
 extern backend_t *init_backend_structure(void *store_smeta, void *store_data, void *init_backend, void *build_needed_hash_list, void *get_list_of_files);
+
+
+/**
+ * Creates a query_t * structure filled with the corresponding datas
+ * @param hostname hostname (where to look for)
+ * @param uid uid for the file(s)
+ * @param gid gid for the file(s)
+ * @param owner owner for the file(s) hopefully corresponding to uid
+ * @param group group for the file(s) hopefully corresponding to gid
+ * @returns a newly allocated query_t * structure filled  with the
+ *          corresponding datas that may be freed when no longer needed.
+ */
+extern query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group);
+
 
 
 #endif /* #ifndef _SERVEUR_BACKEND_H_ */

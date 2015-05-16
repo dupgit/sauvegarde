@@ -374,7 +374,7 @@ void file_init_backend(serveur_struct_t *serveur_struct)
 /**
  * Gets the list of all saved files
  */
-GSList *get_list_of_files(serveur_struct_t *serveur_struct)
+GSList *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 {
     GSList *file_list = NULL;
     gchar *filename = NULL;
