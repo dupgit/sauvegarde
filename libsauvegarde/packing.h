@@ -131,6 +131,14 @@ extern json_t *convert_hash_list_to_json(GSList *hash_list);
 
 
 /**
+ * Converts the file list to a json_t * array
+ * @param file_list : the GSList * list of hashs
+ * @returns a json_t * array with the element of the list in it (if any).
+ */
+extern json_t *convert_file_list_to_json(GSList *file_list);
+
+
+/**
  * This function returns a list from an json array
  * @param root is the root json string that may contain an array named "name"
  * @param name is the name of the array to look for into

@@ -187,6 +187,33 @@ json_t *convert_hash_list_to_json(GSList *hash_list)
 
 
 /**
+ * Converts the file list (a list of gchar *) to a json_t * array
+ * @param file_list : the GSList * list of hashs
+ * @returns a json_t * array with the element of the list in it (if any).
+ */
+json_t *convert_file_list_to_json(GSList *file_list)
+{
+    json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs   */
+    GSList *head = NULL;        /** GSList *head is a list to iter over that will contain the hash list */
+
+    /* creating an array with the whole hash list */
+    array = json_array();
+    head = file_list;
+
+    while (head != NULL)
+        {
+            append_hash_to_array(array, head->data);
+
+            head = g_slist_next(head);
+        }
+
+    return array;
+}
+
+
+
+
+/**
  * Converts data with the associated hash to a json formatted string
  * @param a_data the data structure that contains the data whose checksum
  *               is a_hash
