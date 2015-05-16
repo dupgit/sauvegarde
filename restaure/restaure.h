@@ -38,6 +38,9 @@
 #include <unistd.h>
 #include <glib.h>
 #include <glib/gi18n-lib.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
 
 #include <libsauvegarde.h>
 
@@ -47,6 +50,7 @@ typedef struct
 {
     options_t *opt;  /**< program's options                                        */
     comm_t *comm;    /**< Communication structure to operate with serveur's server */
+    gchar *hostname; /**< host name where the program is executing itself          */
 } res_struct_t;
 
 

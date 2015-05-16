@@ -1,3 +1,4 @@
+
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
  *    restaure.c
@@ -27,6 +28,9 @@
 
 #include "restaure.h"
 
+static res_struct_t *init_res_struct(int argc, char **argv);
+static query_t *get_user_infos(gchar *hostname);
+
 /**
  * Inits a res_struct_t * structure. Manages the command line options.
  * @param argc : number of arguments given on the command line.
@@ -40,7 +44,10 @@ static res_struct_t *init_res_struct(int argc, char **argv)
     gchar *conn = NULL;
 
 
+
     res_struct = (res_struct_t *) g_malloc0(sizeof(res_struct_t));
+
+    res_struct->hostname = (gchar *) g_get_host_name();
 
     res_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
 
@@ -59,6 +66,39 @@ static res_struct_t *init_res_struct(int argc, char **argv)
     return res_struct;
 }
 
+
+/**
+ * Gets all user infos and fills a query_t * structure accordingly.
+ * @param hostname the hostname where the program is run
+ */
+static query_t *get_user_infos(gchar *hostname)
+{
+    uid_t uid;
+    struct passwd *pass = NULL;
+    struct group *grp = NULL;
+    query_t *query = NULL;
+    gchar *the_uid = NULL;
+    gchar *the_gid = NULL;
+    gchar *owner = NULL;
+    gchar *group = NULL;
+
+    uid = geteuid();
+    pass = getpwuid(uid);
+
+    if (pass != NULL)
+        {
+            grp = getgrgid(pass->pw_gid);
+            group = g_strdup(grp->gr_name);
+            owner = g_strdup(pass->pw_name);
+            the_uid = g_strdup_printf("%d", uid);
+            the_gid = g_strdup_printf("%d", pass->pw_gid);
+
+            query = init_query_structure(hostname, the_uid, the_gid, owner, group);
+            print_debug("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n", hostname, the_uid, the_gid, owner, group);
+        }
+
+    return query;
+}
 
 
 /**
@@ -84,6 +124,7 @@ int main(int argc, char **argv)
 
             if (res_struct->opt->list == TRUE && res_struct->comm != NULL)
                 {
+                    get_user_infos(res_struct->hostname);
                     get_url(res_struct->comm, "/File/List.json");
                 }
 

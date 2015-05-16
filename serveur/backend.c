@@ -56,30 +56,3 @@ backend_t *init_backend_structure(void *store_smeta, void *store_data, void *ini
 }
 
 
-/**
- * Creates a query_t * structure filled with the corresponding datas
- * @param hostname hostname (where to look for)
- * @param uid uid for the file(s)
- * @param gid gid for the file(s)
- * @param owner owner for the file(s) hopefully corresponding to uid
- * @param group group for the file(s) hopefully corresponding to gid
- * @returns a newly allocated query_t * structure filled  with the
- *          corresponding datas that may be freed when no longer needed.
- */
-query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group)
-{
-    query_t *query = NULL;
-
-    query = (query_t *) g_malloc0(sizeof(query_t));
-
-    query->hostname = hostname;
-    query->uid = uid;
-    query->gid = gid;
-    query->owner = owner;
-    query->group = group;
-
-    return query;
-}
-
-
-

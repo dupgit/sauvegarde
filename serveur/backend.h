@@ -28,23 +28,6 @@
 #ifndef _SERVEUR_BACKEND_H_
 #define _SERVEUR_BACKEND_H_
 
-
-
-/**
- * @struct queru_t
- * @brief This structure is used to pass parameters to query functions.
- * Fields of this structure may be searched into the selected backend.
- */
-typedef struct
-{
-    gchar *hostname;
-    gchar *uid;
-    gchar *gid;
-    gchar *owner;
-    gchar *group;
-} query_t;
-
-
 /**
  * Function templates definition to be used by backend_t structure.
  * void * pointers are ment to be serveur_struct_t * pointers.
@@ -91,17 +74,6 @@ typedef struct
 extern backend_t *init_backend_structure(void *store_smeta, void *store_data, void *init_backend, void *build_needed_hash_list, void *get_list_of_files);
 
 
-/**
- * Creates a query_t * structure filled with the corresponding datas
- * @param hostname hostname (where to look for)
- * @param uid uid for the file(s)
- * @param gid gid for the file(s)
- * @param owner owner for the file(s) hopefully corresponding to uid
- * @param group group for the file(s) hopefully corresponding to gid
- * @returns a newly allocated query_t * structure filled  with the
- *          corresponding datas that may be freed when no longer needed.
- */
-extern query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group);
 
 
 

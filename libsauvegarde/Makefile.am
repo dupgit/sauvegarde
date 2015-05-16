@@ -7,7 +7,8 @@ headerfiles = libsauvegarde.h	\
 			  files.h			\
 			  hashs.h			\
 			  packing.h			\
-			  database.h
+			  database.h		\
+			  query.h
 
 libsauvegarde_la_SOURCES =	libsauvegarde.c 	\
 							configuration.c		\
@@ -17,6 +18,7 @@ libsauvegarde_la_SOURCES =	libsauvegarde.c 	\
 							database.c			\
 							packing.c			\
 							unpacking.c			\
+							query.c				\
 							$(headerfiles)
 
 libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)          \
