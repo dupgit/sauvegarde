@@ -125,20 +125,35 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_C
     gchar *gid = NULL;
     gchar *owner = NULL;
     gchar *group = NULL;
+    backend_t *backend = NULL;
+    query_t *query = NULL;
+    GSList *file_list = NULL;
 
-    hostname = get_argument_value_from_key(connection, "hostname");
-    uid = get_argument_value_from_key(connection, "uid");
-    gid = get_argument_value_from_key(connection, "gid");
-    owner = get_argument_value_from_key(connection, "owner");
-    group = get_argument_value_from_key(connection, "group");
 
-    if (hostname != NULL && uid != NULL && gid != NULL && owner != NULL && group != NULL)
+    if (serveur_struct != NULL && serveur_struct->backend != NULL)
         {
-            answer = g_strdup_printf(_("%s: Not yet implemented."), hostname);
-        }
-    else
-        {
-            answer = g_strdup_printf(_("Malformed request. hostname: %s, uid: %s, gid: %s, owner: %s, group: %s"), hostname, uid, gid, owner, group);
+            backend = serveur_struct->backend;
+
+            if (backend->get_list_of_files != NULL)
+                {
+                    hostname = get_argument_value_from_key(connection, "hostname");
+                    uid = get_argument_value_from_key(connection, "uid");
+                    gid = get_argument_value_from_key(connection, "gid");
+                    owner = get_argument_value_from_key(connection, "owner");
+                    group = get_argument_value_from_key(connection, "group");
+
+                    if (hostname != NULL && uid != NULL && gid != NULL && owner != NULL && group != NULL)
+                        {
+                            query = init_query_structure(hostname, uid, gid, owner, group);
+                            file_list = backend->get_list_of_files(serveur_struct, query);
+                            answer = convert_file_list_to_json_string(file_list);
+
+                        }
+                    else
+                        {
+                            answer = g_strdup_printf(_("Malformed request. hostname: %s, uid: %s, gid: %s, owner: %s, group: %s"), hostname, uid, gid, owner, group);
+                        }
+                }
         }
 
     return answer;

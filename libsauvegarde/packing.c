@@ -211,6 +211,31 @@ json_t *convert_file_list_to_json(GSList *file_list)
 }
 
 
+/**
+ * Converts the file list (a list of gchar *) to a json string
+ * @param file_list : the GSList * list of hashs
+ * @returns a gchar * string json formatted with all files (if any) in a
+ *          json array
+ */
+gchar *convert_file_list_to_json_string(GSList *file_list)
+{
+    json_t *array = NULL;
+    json_t *root = NULL;
+    gchar *string = NULL;
+
+    root = json_object();
+
+    array = convert_file_list_to_json(file_list);
+
+    insert_json_value_into_json_root(root, "file_list", array);
+
+    string = json_dumps(root, 0);
+
+    json_decref(array);
+    json_decref(root);
+
+    return string;
+}
 
 
 /**

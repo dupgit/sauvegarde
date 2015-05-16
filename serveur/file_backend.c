@@ -373,6 +373,10 @@ void file_init_backend(serveur_struct_t *serveur_struct)
 
 /**
  * Gets the list of all saved files
+ * @param serveur_struct is the structure that contains all datas for the
+ *        server.
+ * @param query is the structure that contains everything about the
+ *        requested query.
  */
 GSList *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 {
@@ -381,14 +385,26 @@ GSList *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
     file_backend_t *file_backend = NULL;
     GFile *the_file = NULL;
     GFileInputStream *stream = NULL;
+    GError *error = NULL;
 
 
-    if (serveur_struct != NULL && serveur_struct->backend != NULL &&  serveur_struct->backend->user_data != NULL)
+    if (serveur_struct != NULL && serveur_struct->backend != NULL &&  serveur_struct->backend->user_data != NULL && query != NULL)
         {
             file_backend = serveur_struct->backend->user_data;
-            /* needs to pass hostname and user and uid. */
-            filename =  g_build_filename(file_backend->prefix, "metas", NULL);
+            filename =  g_build_filename(file_backend->prefix, "metas", query->hostname, NULL);
             the_file = g_file_new_for_path(filename);
+
+            stream = g_file_read(the_file, NULL, &error);
+
+            if (stream != NULL)
+                {
+                    /* g_input_stream_read(stream, buffer, 512, NULL, &error); */
+                    /* testing things */
+                    file_list = g_slist_prepend(file_list, "/home/dup/Myfile1");
+                    file_list = g_slist_prepend(file_list, "/usr/bin/Another_file.truc");
+                }
+
+            g_object_unref(stream);
 
         }
 
