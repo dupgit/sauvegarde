@@ -110,6 +110,8 @@ static query_t *get_user_infos(gchar *hostname)
 int main(int argc, char **argv)
 {
     res_struct_t *res_struct = NULL;
+    query_t *query = NULL;
+    gchar *request = NULL;
 
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
@@ -124,8 +126,14 @@ int main(int argc, char **argv)
 
             if (res_struct->opt->list == TRUE && res_struct->comm != NULL)
                 {
-                    get_user_infos(res_struct->hostname);
-                    get_url(res_struct->comm, "/File/List.json");
+                    query = get_user_infos(res_struct->hostname);
+
+                    if (query != NULL)
+                        {
+                            request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s", query->hostname, query->uid, query->gid, query->owner, query->group);
+                            get_url(res_struct->comm, request);
+                            free_variable(request);
+                        }
                 }
 
             return EXIT_SUCCESS;
