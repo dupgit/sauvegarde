@@ -330,6 +330,7 @@ static void make_all_subdirectories(file_backend_t *file_backend)
 
 
 /**
+
  * Inits the backend : takes care of the directories we want to write to.
  * user_data of the backend structure is a file_backend_t structure that
  * contains the prefix path where to store datas and the level of
@@ -372,6 +373,104 @@ void file_init_backend(serveur_struct_t *serveur_struct)
 
 
 /**
+ * Allocates a newly buffer_t structure and fills it with the corresponding
+ * values.
+ * @param buf the buffer
+ * @param size the total bytes read into buf
+ * @param pos the position when reading the buffer
+ * @returns a newly allocated buffer_t structure with buf, size and pos
+ *          filled accordingly. It may be freed when no longer needed.
+ */
+static buffer_t *init_buffer_structure(gchar *buf, gssize size, gssize pos)
+{
+    buffer_t *a_buffer = NULL;
+
+    a_buffer = (buffer_t *) g_malloc0(sizeof(buffer_t));
+
+    a_buffer->buf = buf;
+    a_buffer->size = size;
+    a_buffer->pos = pos;
+
+    return a_buffer;
+}
+
+
+/**
+ * Reads one entire buffer
+ * @param stream is the stream to read from
+ * @returns a buffer_t with a buffer of FILE_BACKEND_BUFFER_SIZE size or
+ *          less if there is less data to read (the result may be NULL)
+ */
+static buffer_t *read_one_buffer(GFileInputStream *stream)
+{
+    GError *error = NULL;
+    buffer_t *a_buffer = NULL;
+    gchar *buf = NULL;
+    gssize read = 0;
+
+    if (stream != NULL)
+        {
+            buf =(gchar *) g_malloc0(FILE_BACKEND_BUFFER_SIZE + 1); /* to store the \0 at the end ! */
+            read = g_input_stream_read((GInputStream *) stream, buf, FILE_BACKEND_BUFFER_SIZE, NULL, &error);
+
+            if (read >= 0 && error == NULL)
+                {
+                    a_buffer = init_buffer_structure(buf, read, 0);
+                }
+            else if (read <0 && error != NULL)
+                {
+                    print_error(__FILE__, __LINE__, _("Error while reading the file : %s\n"), error->message);
+                    error = free_error(error);
+                }
+        }
+
+    return a_buffer;
+}
+
+
+/**
+ * This function extracts one line from the buffer by searching the end of
+ * line (assuming unix style '\n' end of lines).
+ * @param[in,out] a_buffer contains the buffer the total number of bytes read
+ *                and the actual position
+ */
+static gchar *extract_one_line_from_buffer(buffer_t *a_buffer, gchar *a_line)
+{
+    gchar *line = NULL;
+    gchar *whole_line = NULL;
+    gssize i = 0;
+
+    if (a_buffer != NULL && a_buffer->buf != NULL)
+        {
+             i = a_buffer->pos;
+             while (i < a_buffer->size && a_buffer->buf[i] != '\n')
+                {
+                    i++;
+                }
+
+            line = g_strndup(a_buffer->buf + a_buffer->pos, i - a_buffer->pos);
+            a_buffer->pos = i;
+
+            if (a_line != NULL)
+                {
+                    whole_line = g_strconcat(a_line, line, NULL);
+                    free_variable(a_line);
+                    free_variable(line);
+                }
+            else
+                {
+                    whole_line = line;
+                }
+        }
+
+    return whole_line;
+}
+
+
+
+
+
+/**
  * Gets the list of all saved files
  * @param serveur_struct is the structure that contains all datas for the
  *        server.
@@ -386,7 +485,8 @@ GSList *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
     GFile *the_file = NULL;
     GFileInputStream *stream = NULL;
     GError *error = NULL;
-
+    buffer_t *a_buffer = NULL;
+    gchar *line = NULL;
 
     if (serveur_struct != NULL && serveur_struct->backend != NULL &&  serveur_struct->backend->user_data != NULL && query != NULL)
         {
@@ -398,8 +498,10 @@ GSList *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
             if (stream != NULL)
                 {
-                    /* g_input_stream_read(stream, buffer, 512, NULL, &error); */
                     /* testing things */
+                    a_buffer = read_one_buffer(stream);
+                    line = extract_one_line_from_buffer(a_buffer, NULL);
+                    print_debug(_("Line read: %s\n"), line);
                     file_list = g_slist_prepend(file_list, "/home/dup/Myfile1");
                     file_list = g_slist_prepend(file_list, "/usr/bin/Another_file.truc");
                 }

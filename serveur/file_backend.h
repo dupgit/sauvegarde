@@ -31,6 +31,14 @@
 
 
 /**
+ * @def FILE_BACKEND_BUFFER_SIZE
+ * Defines the buffer size used to read files in the file_backend backend.
+ * Should be at least as big as CISEAUX_BLOCK_SIZE
+ */
+#define FILE_BACKEND_BUFFER_SIZE 32768
+
+
+/**
  * @struct file_backend_t
  * @brief Structure that contains everything needed by file backend.
  *
@@ -47,6 +55,21 @@ typedef struct
     gchar *prefix; /**< Prefix for the path where data are located */
     guint level;   /**< level of directories defaults to 3 */
 } file_backend_t;
+
+
+
+/**
+ * @struct buffer_t
+ * @brief used to know where we are in the buffer when extracting lines of
+ *        it.
+ */
+typedef struct
+{
+    gssize pos;   /**< Position into the buffer             */
+    gssize size;  /**< number of bytes read into the buffer */
+    gchar *buf;   /**< buffer read                          */
+} buffer_t;
+
 
 
 /**
