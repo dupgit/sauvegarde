@@ -375,21 +375,23 @@ void file_init_backend(serveur_struct_t *serveur_struct)
 /**
  * Allocates a newly buffer_t structure and fills it with the corresponding
  * values.
- * @param buf the buffer
- * @param size the total bytes read into buf
- * @param pos the position when reading the buffer
+ * @param stream is the GFileInputStream stream from which we want to read things
  * @returns a newly allocated buffer_t structure with buf, size and pos
  *          filled accordingly. It may be freed when no longer needed.
  */
-static buffer_t *init_buffer_structure(gchar *buf, gssize size, gssize pos)
+static buffer_t *init_buffer_structure(GFileInputStream *stream)
 {
     buffer_t *a_buffer = NULL;
+    gchar *buf = NULL;
 
     a_buffer = (buffer_t *) g_malloc0(sizeof(buffer_t));
 
+    buf =(gchar *) g_malloc0(FILE_BACKEND_BUFFER_SIZE + 1); /* to store the \0 at the end ! */
+
     a_buffer->buf = buf;
-    a_buffer->size = size;
-    a_buffer->pos = pos;
+    a_buffer->size = 0;
+    a_buffer->pos = 0;
+    a_buffer->stream = stream;
 
     return a_buffer;
 }
@@ -397,34 +399,26 @@ static buffer_t *init_buffer_structure(gchar *buf, gssize size, gssize pos)
 
 /**
  * Reads one entire buffer
- * @param stream is the stream to read from
- * @returns a buffer_t with a buffer of FILE_BACKEND_BUFFER_SIZE size or
- *          less if there is less data to read (the result may be NULL)
+ * @param[in,out] a_buffer is a buffer_t * structure containing all that is
+ *                needed to read a buffer and to know where we are in it
+ *                when parsing it. It fills the structure with the bytes
+ *                read, the number of bytes read and puts pos at 0.
  */
-static buffer_t *read_one_buffer(GFileInputStream *stream)
+static void read_one_buffer(buffer_t *a_buffer)
 {
     GError *error = NULL;
-    buffer_t *a_buffer = NULL;
-    gchar *buf = NULL;
-    gssize read = 0;
 
-    if (stream != NULL)
+    if (a_buffer != NULL && a_buffer->stream != NULL)
         {
-            buf =(gchar *) g_malloc0(FILE_BACKEND_BUFFER_SIZE + 1); /* to store the \0 at the end ! */
-            read = g_input_stream_read((GInputStream *) stream, buf, FILE_BACKEND_BUFFER_SIZE, NULL, &error);
+            a_buffer->size = g_input_stream_read((GInputStream *) a_buffer->stream, a_buffer->buf, FILE_BACKEND_BUFFER_SIZE, NULL, &error);
+            a_buffer->pos = 0;
 
-            if (read >= 0 && error == NULL)
-                {
-                    a_buffer = init_buffer_structure(buf, read, 0);
-                }
-            else if (read <0 && error != NULL)
+            if (a_buffer->size < 0 && error != NULL)
                 {
                     print_error(__FILE__, __LINE__, _("Error while reading the file : %s\n"), error->message);
                     error = free_error(error);
                 }
         }
-
-    return a_buffer;
 }
 
 
@@ -434,28 +428,58 @@ static buffer_t *read_one_buffer(GFileInputStream *stream)
  * @param[in,out] a_buffer contains the buffer the total number of bytes read
  *                and the actual position
  */
-static gchar *extract_one_line_from_buffer(buffer_t *a_buffer, gchar *a_line)
+static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
 {
     gchar *line = NULL;
+    gchar *a_line = NULL;
     gchar *whole_line = NULL;
     gssize i = 0;
 
     if (a_buffer != NULL && a_buffer->buf != NULL)
         {
-             i = a_buffer->pos;
-             while (i < a_buffer->size && a_buffer->buf[i] != '\n')
+            i = a_buffer->pos;
+
+            while (a_buffer->buf[i] != '\n' && a_buffer->size != 0)
                 {
-                    i++;
+                    if (i < a_buffer->size)
+                        {
+                            i++;
+                        }
+                    else
+                        {
+                            /* The line is stored in more than one buffer */
+
+                            line = g_strndup(a_buffer->buf + a_buffer->pos, i - a_buffer->pos);
+
+                            if (whole_line != NULL)
+                                {
+                                    /* the line is stored in more than 2 buffers */
+                                    a_line = g_strconcat(whole_line, line, NULL);
+                                    free_variable(whole_line);
+                                    free_variable(line);
+                                    whole_line = a_line;
+                                }
+                            else
+                                {
+                                    /* second buffer */
+                                    whole_line = line;
+                                }
+
+                            read_one_buffer(a_buffer);
+                            i = 0;
+                        }
                 }
 
-            line = g_strndup(a_buffer->buf + a_buffer->pos, i - a_buffer->pos);
-            a_buffer->pos = i;
 
-            if (a_line != NULL)
+            line = g_strndup(a_buffer->buf + a_buffer->pos, i - a_buffer->pos);
+            a_buffer->pos = i + 1; /* the new position is right next '\n' ! */
+
+            if (whole_line != NULL)
                 {
-                    whole_line = g_strconcat(a_line, line, NULL);
-                    free_variable(a_line);
+                    a_line = g_strconcat(whole_line, line, NULL);
+                    free_variable(whole_line);
                     free_variable(line);
+                    whole_line = a_line;
                 }
             else
                 {
@@ -467,7 +491,26 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer, gchar *a_line)
 }
 
 
+/**
+ * Extracts the filename from the line
+ * @param line the line that has been read.
+ * @returns a newly allocated gchar * string containing the filename
+ */
+static gchar *extract_from_line(gchar *line)
+{
+    gchar **params = NULL;
+    gchar *filename = NULL;
 
+    if (strlen(line) > 16)
+        {
+            params = g_strsplit(line, ",", 13);
+            /* we have a leading space before " and a trailing space after " so begins at + 2 and length is - 3 less */
+            filename = g_strndup(params[11]+2, strlen(params[11])-3);
+            g_strfreev(params);
+        }
+
+    return filename;
+}
 
 
 /**
@@ -499,11 +542,18 @@ GSList *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
             if (stream != NULL)
                 {
                     /* testing things */
-                    a_buffer = read_one_buffer(stream);
-                    line = extract_one_line_from_buffer(a_buffer, NULL);
-                    print_debug(_("Line read: %s\n"), line);
-                    file_list = g_slist_prepend(file_list, "/home/dup/Myfile1");
-                    file_list = g_slist_prepend(file_list, "/usr/bin/Another_file.truc");
+                    a_buffer = init_buffer_structure(stream);
+                    read_one_buffer(a_buffer);
+                    do
+                        {
+                            line = extract_one_line_from_buffer(a_buffer);
+
+                            if (a_buffer->size != 0)
+                                {
+                                    file_list = g_slist_prepend(file_list, extract_from_line(line));
+                                }
+                        }
+                    while (a_buffer->size != 0);
                 }
 
             g_object_unref(stream);

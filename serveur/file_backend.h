@@ -65,9 +65,10 @@ typedef struct
  */
 typedef struct
 {
-    gssize pos;   /**< Position into the buffer             */
-    gssize size;  /**< number of bytes read into the buffer */
-    gchar *buf;   /**< buffer read                          */
+    GFileInputStream *stream;   /**< Stream from which we want to read things */
+    gssize pos;                 /**< Position into the buffer                 */
+    gssize size;                /**< number of bytes read into the buffer     */
+    gchar *buf;                 /**< buffer read                              */
 } buffer_t;
 
 
