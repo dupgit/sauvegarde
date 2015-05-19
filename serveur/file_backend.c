@@ -554,10 +554,9 @@ GSList *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
                                 }
                         }
                     while (a_buffer->size != 0);
+
+                    g_object_unref(stream);
                 }
-
-            g_object_unref(stream);
-
         }
 
     return file_list;
