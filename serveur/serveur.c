@@ -147,7 +147,7 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_C
                             query = init_query_structure(hostname, uid, gid, owner, group);
                             file_list = backend->get_list_of_files(serveur_struct, query);
                             answer = convert_file_list_to_json_string(file_list);
-
+                            free_list(file_list);
                         }
                     else
                         {
