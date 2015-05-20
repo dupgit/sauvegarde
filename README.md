@@ -35,20 +35,19 @@ This project depends on :
 
 doxygen (1.6.1) is used to generate code's documentation but is not
 required to build the project. jansson's library version is quite recent
-but it compiles nicely and depends on nothing (as far as I know). Please
-have a look at .travis.yml file in order to see how to compile dependencies
-before compiling sauvegarde.
+but it compiles nicely and depends on nothing (as far as I know).
+Compiling sauvegarde also needs gnutls development files (used by
+libmicrohttpd. Please have a look at .travis.yml file in order to see how
+to compile dependencies before compiling sauvegarde.
 
 Sauvegarde's project is known to compile (sometimes at the expense of
 recompiling and installing newer versions of dependencies) under Centos 7,
-Debian Jessie and Ubuntu 12.04 LTS. Please let me know if you have compiled
-Sauvegarde successfully in a system that is not listed here.
+Debian Jessie and Ubuntu 12.04 LTS and raspbian 3 and on x86_64 and arm7l
+architectures. Please let me know if you have compiled Sauvegarde
+successfully in a system that is not listed here.
 
 
 ## Installation
-
-Sauvegarde is known to compile on x86_64 and arm7l architectures and on
-Centos 7, Ubuntu 12.04 LTS and raspbian 3.
 
 If you had the code from the git repository you may generate the configure
 script by invoking `./autogen.sh` script. It will execute aclocal, libtoolize
