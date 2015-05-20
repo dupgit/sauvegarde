@@ -127,7 +127,6 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_C
     gchar *group = NULL;
     backend_t *backend = NULL;
     query_t *query = NULL;
-    GSList *file_list = NULL;
 
 
     if (serveur_struct != NULL && serveur_struct->backend != NULL)
@@ -145,16 +144,7 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_C
                     if (hostname != NULL && uid != NULL && gid != NULL && owner != NULL && group != NULL)
                         {
                             query = init_query_structure(hostname, uid, gid, owner, group);
-
-                            /**
-                             * @todo: instead of using a list and then free it should'nt we
-                             * return the json formatted string in get_list_of_files instead ?
-                             * This may be quicker and less memory consuming and we may return
-                             * more than only the filename.
-                             */
-                            file_list = backend->get_list_of_files(serveur_struct, query);
-                            answer = convert_file_list_to_json_string(file_list);
-                            free_list(file_list);
+                            answer = backend->get_list_of_files(serveur_struct, query);
                         }
                     else
                         {

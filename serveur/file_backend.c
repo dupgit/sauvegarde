@@ -330,7 +330,6 @@ static void make_all_subdirectories(file_backend_t *file_backend)
 
 
 /**
-
  * Inits the backend : takes care of the directories we want to write to.
  * user_data of the backend structure is a file_backend_t structure that
  * contains the prefix path where to store datas and the level of
@@ -427,6 +426,8 @@ static void read_one_buffer(buffer_t *a_buffer)
  * line (assuming unix style '\n' end of lines).
  * @param[in,out] a_buffer contains the buffer the total number of bytes read
  *                and the actual position
+ * @returns a gchar * representing a whole line that may be freed when no
+ *          longer needed.
  */
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
 {
@@ -494,7 +495,8 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
 /**
  * Extracts the filename from the line
  * @param line the line that has been read.
- * @returns a newly allocated gchar * string containing the filename
+ * @returns a newly allocated gchar * string containing the filename that
+ *          may be freed when no longer needed
  */
 static gchar *extract_from_line(gchar *line)
 {
@@ -519,10 +521,10 @@ static gchar *extract_from_line(gchar *line)
  *        server.
  * @param query is the structure that contains everything about the
  *        requested query.
+ * @returns a JSON string containing all filenames requested
  */
-GSList *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
+gchar *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 {
-    GSList *file_list = NULL;
     gchar *filename = NULL;
     file_backend_t *file_backend = NULL;
     GFile *the_file = NULL;
@@ -530,6 +532,11 @@ GSList *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
     GError *error = NULL;
     buffer_t *a_buffer = NULL;
     gchar *line = NULL;
+    json_t *array = NULL;
+    json_t *root = NULL;
+    gchar *json_string = NULL;
+    gchar *a_filename = NULL;
+
 
     if (serveur_struct != NULL && serveur_struct->backend != NULL &&  serveur_struct->backend->user_data != NULL && query != NULL)
         {
@@ -541,6 +548,8 @@ GSList *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
             if (stream != NULL)
                 {
+                    array = json_array();
+
                     /* testing things */
                     a_buffer = init_buffer_structure(stream);
                     read_one_buffer(a_buffer);
@@ -550,15 +559,28 @@ GSList *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
                             if (a_buffer->size != 0)
                                 {
-                                    file_list = g_slist_prepend(file_list, extract_from_line(line));
+                                    a_filename = extract_from_line(line);
+                                    append_string_to_array(array, a_filename);
+                                    free_variable(a_filename);
                                 }
+
+                            free_variable(line);
+
                         }
                     while (a_buffer->size != 0);
 
                     g_object_unref(stream);
+
+                    root = json_object();
+                    insert_json_value_into_json_root(root, "file_list", array);
+                    json_string = json_dumps(root, 0);
+
+                    json_decref(array);
+                    json_decref(root);
+
                 }
         }
 
-    return file_list;
+    return json_string;
 }
 

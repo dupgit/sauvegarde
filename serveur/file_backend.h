@@ -120,6 +120,14 @@ extern void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_
 extern GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_list);
 
 
-extern GSList *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query);
+/**
+ * Gets the list of all saved files
+ * @param serveur_struct is the structure that contains all datas for the
+ *        server.
+ * @param query is the structure that contains everything about the
+ *        requested query.
+ * @returns a JSON string containing all filenames requested
+ */
+gchar *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query);
 
 #endif /* #ifndef _SERVEUR_FILE_BACKEND_H_ */

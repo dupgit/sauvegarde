@@ -38,12 +38,12 @@
  * @todo try to imagine a solution to append backend specific new options
  *       to the command line.
  */
-typedef void     (* store_smeta_func) (void *, serveur_meta_data_t *);  /**< Stores a serveur_meta_data_t structure according to the backend        */
-typedef void     (* store_data_func) (void *, hash_data_t *);           /**< Stores a hash_data_t structure according to the backend                */
+typedef void     (* store_smeta_func) (void *, serveur_meta_data_t *);  /**< Stores a serveur_meta_data_t structure according to the backend                            */
+typedef void     (* store_data_func) (void *, hash_data_t *);           /**< Stores a hash_data_t structure according to the backend                                    */
 typedef GSList * (* build_needed_hash_list_func) (void *, GSList *);    /**< A function that will check if a hash is already known and build a list
-                                                                         *   of needed hashs that the client may send                               */
-typedef void     (* init_backend_func) (void *);                        /**< A function that will initialize the backend if needed                  */
-typedef GSList * (* get_list_of_files_func) (void *, query_t *);        /**< A function that returns a list of saved files                          */
+                                                                         *   of needed hashs that the client may send                                                   */
+typedef void     (* init_backend_func) (void *);                        /**< A function that will initialize the backend if needed                                      */
+typedef gchar  * (* get_list_of_files_func) (void *, query_t *);        /**< A function that returns a JSON formatted string of saved files corresponding to the query  */
 
 
 /**
