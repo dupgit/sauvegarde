@@ -515,6 +515,7 @@ static gchar *extract_from_line(gchar *line)
 }
 
 
+
 /**
  * Gets the list of all saved files
  * @param serveur_struct is the structure that contains all datas for the
@@ -537,6 +538,7 @@ gchar *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
     gchar *json_string = NULL;
     gchar *a_filename = NULL;
 
+    array = json_array();
 
     if (serveur_struct != NULL && serveur_struct->backend != NULL &&  serveur_struct->backend->user_data != NULL && query != NULL)
         {
@@ -548,7 +550,6 @@ gchar *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
             if (stream != NULL)
                 {
-                    array = json_array();
 
                     /* testing things */
                     a_buffer = init_buffer_structure(stream);
@@ -570,16 +571,16 @@ gchar *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
                     while (a_buffer->size != 0);
 
                     g_object_unref(stream);
-
-                    root = json_object();
-                    insert_json_value_into_json_root(root, "file_list", array);
-                    json_string = json_dumps(root, 0);
-
-                    json_decref(array);
-                    json_decref(root);
-
                 }
         }
+
+    root = json_object();
+    insert_json_value_into_json_root(root, "file_list", array);
+    json_string = json_dumps(root, 0);
+
+    json_decref(array);
+    json_decref(root);
+
 
     return json_string;
 }
