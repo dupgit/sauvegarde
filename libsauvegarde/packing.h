@@ -101,6 +101,16 @@ void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_t *valu
 
 
 /**
+ * appends a string into the array (the array is ordered and should
+ * not mess itself)
+ * @param[in,out] array is an array of strings (may be hashs of filenames
+ *                for instance.
+ * @param to_append is the string to be appended to the array
+ */
+void append_string_to_array(json_t *array, gchar *to_append);
+
+
+/**
  * gets a json_t *value into the json_t *root array.
  * @param[in,out] root is the root that contains all meta data values
  * @param keyname is the keyname associated with the value that we want to

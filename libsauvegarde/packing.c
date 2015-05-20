@@ -30,7 +30,6 @@
 
 #include "libsauvegarde.h"
 
-static void append_hash_to_array(json_t *array, gchar *encoded_hash);
 static void insert_string_into_json_root(json_t *root, gchar *keyname, gchar *a_string);
 static void insert_guint8_into_json_root(json_t *root, gchar *keyname, guint8 number);
 static void insert_guint32_into_json_root(json_t *root, gchar *keyname, guint32 number);
@@ -62,19 +61,19 @@ void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_t *valu
 
 
 /**
- * appends an encoded hash into the array (the array is ordered and should
+ * appends a string into the array (the array is ordered and should
  * not mess itself)
- * @param[in,out] array is an array that will contain all base64 encoded
- *                hashs
- * @param encoded_hash is the base64 encoded hash
+ * @param[in,out] array is an array of strings (may be hashs of filenames
+ *                for instance.
+ * @param to_append is the string to be appended to the array
  */
-static void append_hash_to_array(json_t *array, gchar *encoded_hash)
+void append_string_to_array(json_t *array, gchar *to_append)
 {
     json_t *string = NULL;
 
-    if (array != NULL && encoded_hash != NULL)
+    if (array != NULL && to_append != NULL)
         {
-            string = json_string_nocheck((const char *) encoded_hash);
+            string = json_string_nocheck((const char *) to_append);
 
             json_array_append_new(array, string);
         }
@@ -175,7 +174,7 @@ json_t *convert_hash_list_to_json(GSList *hash_list)
         {
             encoded_hash = g_base64_encode(head->data, HASH_LEN);
 
-            append_hash_to_array(array, encoded_hash);
+            append_string_to_array(array, encoded_hash);
 
             free_variable(encoded_hash);
 
@@ -202,7 +201,7 @@ json_t *convert_file_list_to_json(GSList *file_list)
 
     while (head != NULL)
         {
-            append_hash_to_array(array, head->data);
+            append_string_to_array(array, head->data);
 
             head = g_slist_next(head);
         }
