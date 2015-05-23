@@ -30,6 +30,7 @@
 
 static res_struct_t *init_res_struct(int argc, char **argv);
 static query_t *get_user_infos(gchar *hostname);
+static void print_all_files(res_struct_t *res_struct);
 
 /**
  * Inits a res_struct_t * structure. Manages the command line options.
@@ -102,6 +103,40 @@ static query_t *get_user_infos(gchar *hostname)
 
 
 /**
+ * Prints all saved files
+ * @param res_struct is the main structure for restaure program.
+ */
+static void print_all_files(res_struct_t *res_struct)
+{
+    query_t *query = NULL;
+    gchar *request = NULL;
+    json_t *root = NULL;
+    GSList *list = NULL;
+
+    query = get_user_infos(res_struct->hostname);
+
+    if (query != NULL)
+        {
+            request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s", query->hostname, query->uid, query->gid, query->owner, query->group);
+            get_url(res_struct->comm, request);
+
+            if (res_struct->comm->buffer != NULL)
+                {
+                    root = load_json(res_struct->comm->buffer);
+                    list = extract_gslist_from_array(root, "file_list", FALSE);
+
+                    while (list != NULL)
+                        {
+                            fprintf(stdout, "%s\n", (char *)list->data);
+                            list = g_slist_next(list);
+                        }
+                }
+            free_variable(request);
+        }
+}
+
+
+/**
  * Main function
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
@@ -110,8 +145,7 @@ static query_t *get_user_infos(gchar *hostname)
 int main(int argc, char **argv)
 {
     res_struct_t *res_struct = NULL;
-    query_t *query = NULL;
-    gchar *request = NULL;
+
 
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
@@ -126,14 +160,7 @@ int main(int argc, char **argv)
 
             if (res_struct->opt->list == TRUE && res_struct->comm != NULL)
                 {
-                    query = get_user_infos(res_struct->hostname);
-
-                    if (query != NULL)
-                        {
-                            request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s", query->hostname, query->uid, query->gid, query->owner, query->group);
-                            get_url(res_struct->comm, request);
-                            free_variable(request);
-                        }
+                    print_all_files(res_struct);
                 }
 
             return EXIT_SUCCESS;

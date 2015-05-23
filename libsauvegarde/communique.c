@@ -344,7 +344,7 @@ gint send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer)
             if (root != NULL)
                 {
 
-                    hash_list = extract_gslist_from_array(root, "hash_list");
+                    hash_list = extract_gslist_from_array(root, "hash_list", TRUE);
 
                     success = send_datas_from_hash_list(comm, hashs, hash_list);
 
