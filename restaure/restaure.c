@@ -158,10 +158,10 @@ int main(int argc, char **argv)
 
     res_struct = init_res_struct(argc, argv);
 
-    if (res_struct != NULL && res_struct->opt != NULL)
+    if (res_struct != NULL && res_struct->opt != NULL && res_struct->comm != NULL)
         {
 
-            if (res_struct->opt->list == TRUE && res_struct->comm != NULL)
+            if (res_struct->opt->list == TRUE)
                 {
                     print_all_files(res_struct);
                 }
