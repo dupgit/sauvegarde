@@ -39,6 +39,7 @@ typedef struct
     gchar *gid;
     gchar *owner;
     gchar *group;
+    gchar *filename;
 } query_t;
 
 
@@ -52,7 +53,7 @@ typedef struct
  * @returns a newly allocated query_t * structure filled  with the
  *          corresponding datas that may be freed when no longer needed.
  */
-extern query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group);
+extern query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group, gchar *filename);
 
 
 /**

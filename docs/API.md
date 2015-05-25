@@ -47,10 +47,13 @@ output such as:
 ### /File/List.json
 
 Gets a list of all saved files and their versions. This url needs five
-parameters: hostname, uid, gid, owner and group. An url must include all
-theses parameters:
+parameters: hostname, uid, gid, owner and group. An url must include at
+least all theses parameters:
 
     http://192.168.0.152:5468/File/List.json?hostname=julia&uid=530&gid=530&owner=dup&group=admin"
+
+filename may be used to filter results for a specifi filename (or
+directory).
 
 
 ### /Data/beeff34162c5402270369ad624c15bdc8f599df220b7d540239b774eabb57fb0.json

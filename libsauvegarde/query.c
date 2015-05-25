@@ -40,7 +40,7 @@
  * @returns a newly allocated query_t * structure filled  with the
  *          corresponding datas that may be freed when no longer needed.
  */
-query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group)
+query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group, gchar *filename)
 {
     query_t *query = NULL;
 
@@ -51,6 +51,7 @@ query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *ow
     query->gid = gid;
     query->owner = owner;
     query->group = group;
+    query->filename = filename;
 
     return query;
 }
@@ -66,6 +67,11 @@ gpointer free_query_structure(query_t *query)
     if (query != NULL)
         {
             free_variable(query->hostname);
+            free_variable(query->uid);
+            free_variable(query->gid);
+            free_variable(query->owner);
+            free_variable(query->group);
+            free_variable(query->filename);
             g_free(query);
         }
 

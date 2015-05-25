@@ -524,7 +524,7 @@ static gchar *extract_from_line(gchar *line)
  *        requested query.
  * @returns a JSON string containing all filenames requested
  */
-gchar *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
+gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 {
     gchar *filename = NULL;
     file_backend_t *file_backend = NULL;
@@ -550,8 +550,6 @@ gchar *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
             if (stream != NULL)
                 {
-
-                    /* testing things */
                     a_buffer = init_buffer_structure(stream);
                     read_one_buffer(a_buffer);
                     do
@@ -561,7 +559,11 @@ gchar *get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
                             if (a_buffer->size != 0)
                                 {
                                     a_filename = extract_from_line(line);
-                                    append_string_to_array(array, a_filename);
+
+                                    if (g_str_match_string(query->filename, a_filename, FALSE))
+                                        {
+                                            append_string_to_array(array, a_filename);
+                                        }
                                     free_variable(a_filename);
                                 }
 

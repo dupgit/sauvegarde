@@ -62,7 +62,7 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
     serveur_struct->data_queue = g_async_queue_new();
 
     /* default backend (file_backend) */
-    serveur_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend, build_needed_hash_list, get_list_of_files);
+    serveur_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend, build_needed_hash_list, file_get_list_of_files);
 
     return serveur_struct;
 }
@@ -125,6 +125,7 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_C
     gchar *gid = NULL;
     gchar *owner = NULL;
     gchar *group = NULL;
+    gchar *filename = NULL;
     backend_t *backend = NULL;
     query_t *query = NULL;
 
@@ -140,11 +141,13 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_C
                     gid = get_argument_value_from_key(connection, "gid");
                     owner = get_argument_value_from_key(connection, "owner");
                     group = get_argument_value_from_key(connection, "group");
+                    filename = get_argument_value_from_key(connection, "filename");
 
                     if (hostname != NULL && uid != NULL && gid != NULL && owner != NULL && group != NULL)
                         {
-                            query = init_query_structure(hostname, uid, gid, owner, group);
+                            query = init_query_structure(hostname, uid, gid, owner, group, filename);
                             answer = backend->get_list_of_files(serveur_struct, query);
+                            free_query_structure(query); /** All variables hostname ... are freed there ! */
                         }
                     else
                         {

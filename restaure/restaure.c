@@ -29,8 +29,8 @@
 #include "restaure.h"
 
 static res_struct_t *init_res_struct(int argc, char **argv);
-static query_t *get_user_infos(gchar *hostname);
-static void print_all_files(res_struct_t *res_struct);
+static query_t *get_user_infos(gchar *hostname, gchar *filename);
+static void print_all_files(res_struct_t *res_struct, gchar *filename);
 
 /**
  * Inits a res_struct_t * structure. Manages the command line options.
@@ -72,7 +72,7 @@ static res_struct_t *init_res_struct(int argc, char **argv)
  * Gets all user infos and fills a query_t * structure accordingly.
  * @param hostname the hostname where the program is run
  */
-static query_t *get_user_infos(gchar *hostname)
+static query_t *get_user_infos(gchar *hostname, gchar *filename)
 {
     uid_t uid;
     struct passwd *pass = NULL;
@@ -94,7 +94,7 @@ static query_t *get_user_infos(gchar *hostname)
             the_uid = g_strdup_printf("%d", uid);
             the_gid = g_strdup_printf("%d", pass->pw_gid);
 
-            query = init_query_structure(hostname, the_uid, the_gid, owner, group);
+            query = init_query_structure(hostname, the_uid, the_gid, owner, group, filename);
             print_debug("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n", hostname, the_uid, the_gid, owner, group);
         }
 
@@ -106,18 +106,18 @@ static query_t *get_user_infos(gchar *hostname)
  * Prints all saved files
  * @param res_struct is the main structure for restaure program.
  */
-static void print_all_files(res_struct_t *res_struct)
+static void print_all_files(res_struct_t *res_struct, gchar *filename)
 {
     query_t *query = NULL;
     gchar *request = NULL;
     json_t *root = NULL;
     GSList *list = NULL;
 
-    query = get_user_infos(res_struct->hostname);
+    query = get_user_infos(res_struct->hostname, filename);
 
     if (query != NULL)
         {
-            request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s", query->hostname, query->uid, query->gid, query->owner, query->group);
+            request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s", query->hostname, query->uid, query->gid, query->owner, query->group, filename);
             get_url(res_struct->comm, request);
 
             if (res_struct->comm->buffer != NULL)
@@ -163,7 +163,7 @@ int main(int argc, char **argv)
 
             if (res_struct->opt->list != NULL)
                 {
-                    print_all_files(res_struct);
+                    print_all_files(res_struct, res_struct->opt->list);
                 }
 
             return EXIT_SUCCESS;
