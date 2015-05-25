@@ -132,7 +132,9 @@ static void print_all_files(res_struct_t *res_struct)
                             list = g_slist_next(list);
                         }
                 }
+
             free_variable(request);
+            free_query_structure(query);
         }
 }
 

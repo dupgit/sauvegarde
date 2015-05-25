@@ -54,3 +54,22 @@ query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *ow
 
     return query;
 }
+
+
+/**
+ * Frees a query
+ * @param query is the qery to be freed
+ * @returns NULL;
+ */
+gpointer free_query_structure(query_t *query)
+{
+    if (query != NULL)
+        {
+            free_variable(query->hostname);
+            g_free(query);
+        }
+
+    return NULL;
+}
+
+
