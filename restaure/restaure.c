@@ -124,6 +124,7 @@ static void print_all_files(res_struct_t *res_struct)
                 {
                     root = load_json(res_struct->comm->buffer);
                     list = extract_gslist_from_array(root, "file_list", FALSE);
+                    list = g_slist_sort(list, compare_filenames);
 
                     while (list != NULL)
                         {

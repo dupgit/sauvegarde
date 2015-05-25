@@ -175,4 +175,14 @@ extern gpointer free_smeta_data_t(serveur_meta_data_t *smeta);
  */
 extern gboolean file_exists(gchar *filename);
 
+
+/**
+ * Comparison function to be used when sorting filenames
+ * @param a filename a
+ * @param b filename b to be compared with a
+ * @returns a negative integer if the a comes before b, 0 if they are
+ *          equal, or a positive integer if the a comes after b.
+ */
+extern gint compare_filenames(gconstpointer a, gconstpointer b);
+
 #endif /* #ifndef _FILES_H_ */

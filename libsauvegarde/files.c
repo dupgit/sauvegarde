@@ -335,3 +335,29 @@ gboolean file_exists(gchar *filename)
     return exists;
 }
 
+
+/**
+ * Comparison function to be used when sorting filenames
+ * @param a filename a
+ * @param b filename b to be compared with a
+ * @returns a negative integer if the a comes before b, 0 if they are
+ *          equal, or a positive integer if the a comes after b.
+ */
+gint compare_filenames(gconstpointer a, gconstpointer b)
+{
+    gchar *key_a = NULL;
+    gchar *key_b = NULL;
+    gint value = 0;
+
+    key_a = g_utf8_collate_key_for_filename((gchar *) a, -1);
+    key_b = g_utf8_collate_key_for_filename((gchar *) b, -1);
+
+    value = strcmp(key_a, key_b);
+
+    free_variable(key_a);
+    free_variable(key_b);
+
+    return value;
+}
+
+
