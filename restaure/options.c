@@ -155,18 +155,18 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
  */
 static options_t *manage_command_line_options(int argc, char **argv)
 {
-    gboolean version = FALSE;      /** True if -v was selected on the command line           */
-    gint debug = -4;               /** 0 == FALSE and other values == TRUE                   */
-    gchar *configfile = NULL;      /** filename for the configuration file if any            */
-    gchar *ip =  NULL;             /** IP address where is located serveur's program         */
-    gint port = 0;                 /** Port number on which to send things to the server     */
-    gboolean list = FALSE;         /** True if we have to get a list of saved files          */
+    gboolean version = FALSE;      /** True if -v was selected on the command line            */
+    gint debug = -4;               /** 0 == FALSE and other values == TRUE                    */
+    gchar *configfile = NULL;      /** filename for the configuration file if any             */
+    gchar *ip =  NULL;             /** IP address where is located serveur's program          */
+    gint port = 0;                 /** Port number on which to send things to the server      */
+    gchar *list = NULL;            /** Should contain a filename or a directory to filter out */
 
     GOptionEntry entries[] =
     {
-        { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
-        { "list", 'l', 0, G_OPTION_ARG_NONE, &list, N_("Gives a list of saved files"), NULL},
-        { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode"), NULL },
+        { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL},
+        { "list", 'l', 0, G_OPTION_ARG_FILENAME, &list, N_("Gives a list of saved files"), NULL},
+        { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode"), NULL},
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), NULL},
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port number on which serveur program is listening"), NULL},
@@ -199,6 +199,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     opt = (options_t *) g_malloc0(sizeof(options_t));
 
     opt->configfile = NULL;
+    opt->list = NULL;
     opt->ip = g_strdup("localhost");
     opt->port = 5468;
 
@@ -223,7 +224,11 @@ static options_t *manage_command_line_options(int argc, char **argv)
     /* 3) retrieving other options from the command line.
      */
     opt->version = version; /* only TRUE if -v or --version was invoked */
-    opt->list = list;       /* only TRUE if -l or --list was invoked    */
+
+    if (list != NULL)
+        {
+            opt->list = g_strdup(list);
+        }
 
     if (ip != NULL)
         {
@@ -240,6 +245,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     free_variable(ip);
     free_variable(bugreport);
     free_variable(summary);
+    free_variable(list);
 
     return opt;
 }
