@@ -52,8 +52,8 @@ least all theses parameters:
 
     http://192.168.0.152:5468/File/List.json?hostname=julia&uid=530&gid=530&owner=dup&group=admin"
 
-filename may be used to filter results for a specifi filename (or
-directory).
+'filename' may be used to filter results for a specific filename (or
+directory name).
 
 
 ### /Data/beeff34162c5402270369ad624c15bdc8f599df220b7d540239b774eabb57fb0.json
