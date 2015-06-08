@@ -503,19 +503,60 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex)
 {
     gchar **params = NULL;
     gchar *filename = NULL;
+    uint guess = 0;
+    guint64 guess_64 = 0;
     meta_data_t *meta = NULL;
 
     if (line != NULL && strlen(line) > 16)
         {
             meta = new_meta_data_t();
 
+            /**
+             * line example : 1, 1049893, 33261, 1432131763, 1432129404, 1425592185, 38680, "root", "root", 0, 0, "/bin/locale", "eAAAdPN/AAAQFgB0838AAFNKQtsAlNrU4QHmJlkxiKA=",
+             * "IBUAdPN/AADgCQB0838AACuk6dHfqsfcXvECD/HXSbU=", "4AwAdPN/AAAQFgB0838AAPJ18vuZ+mHsaFOztwu6IWw="
+             */
+
             params = g_strsplit(line, ",", 13);
             /* we have a leading space before " and a trailing space after " so begins at + 2 and length is - 3 less */
             filename = g_strndup(params[11]+2, strlen(params[11])-3);
 
+
             if (g_regex_match(a_regex, filename, 0, NULL))
                 {
                     meta->name = filename;
+
+                    sscanf(params[0], "%d", &guess);
+                    meta->file_type = guess;
+
+                    sscanf(params[1], "%ld", &guess_64);
+                    meta->inode = guess_64;
+
+                    sscanf(params[2], "%d", &guess);
+                    meta->mode = guess;
+
+                    sscanf(params[3], "%ld", &guess_64);
+                    meta->atime = guess_64;
+
+                    sscanf(params[4], "%ld", &guess_64);
+                    meta->ctime = guess_64;
+
+                    sscanf(params[5], "%ld", &guess_64);
+                    meta->mtime = guess_64;
+
+                    sscanf(params[6], "%ld", &guess_64);
+                    meta->size = guess_64;
+
+                    meta->owner = g_strndup(params[7]+2, strlen(params[7])-3);
+                    meta->group = g_strndup(params[8]+2, strlen(params[8])-3);
+
+                    sscanf(params[9], "%d", &guess);
+                    meta->uid = guess;
+
+                    sscanf(params[10], "%d", &guess);
+                    meta->gid = guess;
+
+                    print_debug("type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
+
                 }
             else
                 {
@@ -554,7 +595,7 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
     gchar *json_string = NULL;
     /* gchar *a_filename = NULL; */
     GRegex *a_regex = NULL;
-     meta_data_t *meta = NULL;
+    meta_data_t *meta = NULL;
 
 
     array = json_array();
@@ -582,7 +623,7 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
                                 {
                                     meta = extract_from_line(line, a_regex);
 
-                                    if (meta != NULL)
+                                    if (meta != NULL && meta->name != NULL)
                                         {
                                             append_string_to_array(array, meta->name);
                                         }
