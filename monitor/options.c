@@ -60,10 +60,10 @@ static void print_selected_options(options_t *opt)
 
             fprintf(stdout, _("Blocksize: %" G_GINT64_FORMAT "\n"), opt->blocksize);
 
-            print_string_option(N_("Configuration file: %s\n"), opt->configfile);
-            print_string_option(N_("Cache directory: %s\n"), opt->dircache);
-            print_string_option(N_("Cache database name: %s\n"), opt->dbname);
-            print_string_option(N_("serveur's IP address: %s\n"), opt->ip);
+            print_string_option(_("Configuration file: %s\n"), opt->configfile);
+            print_string_option(_("Cache directory: %s\n"), opt->dircache);
+            print_string_option(_("Cache database name: %s\n"), opt->dbname);
+            print_string_option(_("serveur's IP address: %s\n"), opt->ip);
             fprintf(stdout, _("serveur's port number: %d\n"), opt->port);
         }
 }
@@ -85,9 +85,9 @@ static void read_from_group_monitor(options_t *opt, GKeyFile *keyfile, gchar *fi
     if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_MONITOR) == TRUE)
         {
             /* Reading the directory list */
-            opt->dirname_list = read_list_from_file(keyfile, filename, GN_MONITOR, KN_DIR_LIST, N_("Could not load directory list from file"));
+            opt->dirname_list = read_list_from_file(keyfile, filename, GN_MONITOR, KN_DIR_LIST, _("Could not load directory list from file"));
 
-            debug = read_boolean_from_file(keyfile, filename, GN_ALL, KN_DEBUG_MODE, N_("Could not load debug mode configuration from file."));
+            debug = read_boolean_from_file(keyfile, filename, GN_ALL, KN_DEBUG_MODE, _("Could not load debug mode configuration from file."));
 
             set_debug_mode(debug);
         }
@@ -108,7 +108,7 @@ static void read_from_group_ciseaux(options_t *opt, GKeyFile *keyfile, gchar *fi
     if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_CISEAUX) == TRUE)
         {
             /* Reading the blocksize if any */
-            opt->blocksize = read_int64_from_file(keyfile, filename, GN_CISEAUX, KN_BLOCK_SIZE, N_("Could not load blocksize from file"));
+            opt->blocksize = read_int64_from_file(keyfile, filename, GN_CISEAUX, KN_BLOCK_SIZE, _("Could not load blocksize from file"));
         }
 }
 
@@ -127,10 +127,10 @@ static void read_from_group_antememoire(options_t *opt, GKeyFile *keyfile, gchar
     if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_ANTEMEMOIRE) == TRUE)
         {
             /* Reading the cache directory if any */
-            opt->dircache = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_CACHE_DIR, N_("Could not load directory name"));
+            opt->dircache = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_CACHE_DIR, _("Could not load directory name"));
 
             /* Reading filename of the database if any */
-            opt->dbname = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_DB_NAME, N_("Could not load cache database name"));
+            opt->dbname = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_DB_NAME, _("Could not load cache database name"));
         }
 }
 
@@ -151,7 +151,7 @@ static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *fi
     if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
         {
             /* Reading the port number if any */
-            port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, N_("Could not load serveur port number from file."));
+            port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, _("Could not load serveur port number from file."));
 
             if (port > 1024 && port < 65535)
                 {
@@ -159,7 +159,7 @@ static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *fi
                 }
 
             /* Reading IP address of serveur's host if any */
-            opt->ip = read_string_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_IP, N_("Could not load cache database name"));
+            opt->ip = read_string_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_IP, _("Could not load cache database name"));
         }
 }
 

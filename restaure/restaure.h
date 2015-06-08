@@ -73,9 +73,9 @@ typedef struct
  * antememoire).
  */
 #define RESTAURE_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
-#define RESTAURE_DATE N_("22 04 2015")
-#define RESTAURE_LICENSE N_("GPL v3 or later")
-#define RESTAURE_VERSION N_("0.0.1")
+#define RESTAURE_DATE _("22 04 2015")
+#define RESTAURE_LICENSE _("GPL v3 or later")
+#define RESTAURE_VERSION _("0.0.1")
 #define PROGRAM_NAME ("restaure")
 
 

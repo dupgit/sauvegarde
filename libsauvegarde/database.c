@@ -128,17 +128,17 @@ static void verify_if_tables_exists(db_t *database)
 
     if (result == SQLITE_OK && *i == 0)  /* No row (0) means that there is no table */
         {
-            print_debug(N_("Creating tables into the database\n"));
+            print_debug(_("Creating tables into the database\n"));
 
             /* The database does not contain any tables. So we have to create them.         */
             /* Creation of checksum table that contains checksums and their associated data */
-            exec_sql_cmd(database, "CREATE TABLE data (checksum TEXT PRIMARY KEY, size INTEGER, data TEXT);", N_("(%d) Error while creating database table 'data': %s\n"));
+            exec_sql_cmd(database, "CREATE TABLE data (checksum TEXT PRIMARY KEY, size INTEGER, data TEXT);", _("(%d) Error while creating database table 'data': %s\n"));
 
             /* Creation of buffers table that contains checksums and their associated data */
-            exec_sql_cmd(database, "CREATE TABLE buffers (cache_time INTEGER, buf_order INTEGER, checksum TEXT);", N_("(%d) Error while creating database table 'buffers': %s\n"));
+            exec_sql_cmd(database, "CREATE TABLE buffers (cache_time INTEGER, buf_order INTEGER, checksum TEXT);", _("(%d) Error while creating database table 'buffers': %s\n"));
 
             /* Creation of files table that contains everything about a file */
-            exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL);", N_("(%d) Error while creating database table 'files': %s\n"));
+            exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL);", _("(%d) Error while creating database table 'files': %s\n"));
         }
 
     /**
@@ -146,7 +146,7 @@ static void verify_if_tables_exists(db_t *database)
      * powerloss is leading to a database corruption and data loss !
      * @todo make this PRAGMA selection an option from the command line.
      */
-    /* exec_sql_cmd(database, "PRAGMA synchronous = OFF;", N_("Error while trying to set asynchronous mode.\n")); */
+    /* exec_sql_cmd(database, "PRAGMA synchronous = OFF;", _("Error while trying to set asynchronous mode.\n")); */
 
 }
 
@@ -246,7 +246,7 @@ static file_row_t *get_file_id(db_t *database, meta_data_t *meta)
         }
     else
         {
-            print_db_error(database->db, N_("(%d) Error while searching into the table 'files': %s\n"), db_result, error_message);
+            print_db_error(database->db, _("(%d) Error while searching into the table 'files': %s\n"), db_result, error_message);
             return NULL; /* to avoid a compilation warning as we exited with failure in print_db_error */
         }
 }
@@ -344,7 +344,7 @@ static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash)
         }
     else
         {
-            print_db_error(database->db, N_("(%d) Error while searching into the table 'data': %s\n"), db_result, error_message);
+            print_db_error(database->db, _("(%d) Error while searching into the table 'data': %s\n"), db_result, error_message);
             return NULL; /* to avoid a compilation warning as we exited with failure in print_db_error */
         }
 }
@@ -446,7 +446,7 @@ hashs_t *get_all_inserted_hashs(db_t *database)
         }
     else
         {
-            print_db_error(database->db, N_("(%d) Error while searching into the table 'data': %s\n"), db_result, error_message);
+            print_db_error(database->db, _("(%d) Error while searching into the table 'data': %s\n"), db_result, error_message);
             return NULL; /* to avoid a compilation warning as we exited with failure in print_db_error */
         }
 }
@@ -487,7 +487,7 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
 
                     /* Inserting the hash and it's order into buffers table */
                     sql_command = g_strdup_printf("INSERT INTO buffers (cache_time, buf_order, checksum) VALUES (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", '%s');", cache_time, i, encoded_hash);
-                    exec_sql_cmd(database, sql_command,  N_("(%d) Error while inserting into the table 'buffers': %s\n"));
+                    exec_sql_cmd(database, sql_command,  _("(%d) Error while inserting into the table 'buffers': %s\n"));
                     free_variable(sql_command);
 
                     a_data = g_tree_lookup(hashs->tree_hash, a_hash);
@@ -501,7 +501,7 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
 
                             sql_command = g_strdup_printf("INSERT INTO data (checksum, size, data) VALUES ('%s', %" G_GSSIZE_FORMAT ", '%s');", encoded_hash, a_data->read, encoded_data);
 
-                            exec_sql_cmd(database, sql_command,  N_("(%d) Error while inserting into the table 'data': %s\n"));
+                            exec_sql_cmd(database, sql_command,  _("(%d) Error while inserting into the table 'data': %s\n"));
 
                             free_variable(sql_command);
                             free_variable(encoded_data);
@@ -561,19 +561,19 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, g
             cache_time = g_get_real_time();
 
             /* beginning a transaction */
-            exec_sql_cmd(database, "BEGIN;",  N_("(%d) Error openning the transaction: %s\n"));
+            exec_sql_cmd(database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n"));
 
             /* Inserting the file into the files table */
             sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted) VALUES (%" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', '%s', %d, %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', %d);", cache_time, meta->file_type, meta->inode, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name, only_meta);
 
-            exec_sql_cmd(database, sql_command,  N_("(%d) Error while inserting into the table 'files': %s\n"));
+            exec_sql_cmd(database, sql_command,  _("(%d) Error while inserting into the table 'files': %s\n"));
 
             free_variable(sql_command);
 
             insert_file_checksums(database, meta, hashs, cache_time, only_meta);
 
             /* ending the transaction here */
-            exec_sql_cmd(database, "COMMIT;",  N_("(%d) Error commiting to the database: %s\n"));
+            exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));
         }
 }
 

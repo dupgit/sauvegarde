@@ -74,9 +74,9 @@
  * antememoire).
  */
 #define MONITOR_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
-#define MONITOR_DATE N_("15 02 2014")
-#define MONITOR_LICENSE N_("GPL v3 or later")
-#define MONITOR_VERSION N_("0.0.1")
+#define MONITOR_DATE _("15 02 2014")
+#define MONITOR_LICENSE _("GPL v3 or later")
+#define MONITOR_VERSION _("0.0.1")
 #define PROGRAM_NAME ("client")
 
 
