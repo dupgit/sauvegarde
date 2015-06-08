@@ -111,7 +111,7 @@ static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gch
 
 
 /**
- * Function to get a list of all files saved
+ * Function to get a list of saved files.
  * @param serveur_struct is the main structure for the server.
  * @param connection is the connection in MHD
  * @param url is the requested url

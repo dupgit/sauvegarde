@@ -517,12 +517,14 @@ static gchar *extract_from_line(gchar *line)
 
 
 /**
- * Gets the list of all saved files
+ * Gets the list of all saved files.
  * @param serveur_struct is the structure that contains all datas for the
  *        server.
  * @param query is the structure that contains everything about the
  *        requested query.
  * @returns a JSON string containing all filenames requested
+ * @note g_str_match_string is only available since glib 2.40 and
+ *       travis-ci.org has an older version of it!
  */
 gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 {
@@ -537,11 +539,15 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
     json_t *root = NULL;
     gchar *json_string = NULL;
     gchar *a_filename = NULL;
+    GRegex *a_regex = NULL;
 
     array = json_array();
 
     if (serveur_struct != NULL && serveur_struct->backend != NULL &&  serveur_struct->backend->user_data != NULL && query != NULL)
         {
+
+            a_regex = g_regex_new(query->filename, G_REGEX_CASELESS, 0, &error);
+
             file_backend = serveur_struct->backend->user_data;
             filename =  g_build_filename(file_backend->prefix, "metas", query->hostname, NULL);
             the_file = g_file_new_for_path(filename);
@@ -560,7 +566,7 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
                                 {
                                     a_filename = extract_from_line(line);
 
-                                    if (g_str_match_string(query->filename, a_filename, FALSE))
+                                    if (g_regex_match(a_regex, a_filename, 0, NULL))
                                         {
                                             append_string_to_array(array, a_filename);
                                         }
@@ -574,6 +580,8 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
                     g_object_unref(stream);
                 }
+
+            g_regex_unref(a_regex);
         }
 
     root = json_object();
