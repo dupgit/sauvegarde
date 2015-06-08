@@ -498,20 +498,26 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
  * @returns a newly allocated gchar * string containing the filename that
  *          may be freed when no longer needed
  */
-static gchar *extract_from_line(gchar *line)
+static meta_data_t *extract_from_line(gchar *line)
 {
     gchar **params = NULL;
     gchar *filename = NULL;
+    meta_data_t *meta = NULL;
 
-    if (strlen(line) > 16)
+    if (line != NULL && strlen(line) > 16)
         {
+            meta = new_meta_data_t();
+
             params = g_strsplit(line, ",", 13);
             /* we have a leading space before " and a trailing space after " so begins at + 2 and length is - 3 less */
             filename = g_strndup(params[11]+2, strlen(params[11])-3);
+
+            meta->name = filename;
+
             g_strfreev(params);
         }
 
-    return filename;
+    return meta;
 }
 
 
@@ -538,8 +544,10 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
     json_t *array = NULL;
     json_t *root = NULL;
     gchar *json_string = NULL;
-    gchar *a_filename = NULL;
+    /* gchar *a_filename = NULL; */
     GRegex *a_regex = NULL;
+     meta_data_t *meta = NULL;
+
 
     array = json_array();
 
@@ -564,13 +572,13 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
                             if (a_buffer->size != 0)
                                 {
-                                    a_filename = extract_from_line(line);
+                                    meta = extract_from_line(line);
 
-                                    if (g_regex_match(a_regex, a_filename, 0, NULL))
+                                    if (g_regex_match(a_regex, meta->name, 0, NULL))
                                         {
-                                            append_string_to_array(array, a_filename);
+                                            append_string_to_array(array, meta->name);
                                         }
-                                    free_variable(a_filename);
+                                    free_meta_data_t(meta);
                                 }
 
                             free_variable(line);
