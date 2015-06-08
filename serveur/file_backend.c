@@ -495,10 +495,11 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
 /**
  * Extracts the filename from the line
  * @param line the line that has been read.
+ * @param a_regex is the regular expression to filter upon the filename
  * @returns a newly allocated gchar * string containing the filename that
  *          may be freed when no longer needed
  */
-static meta_data_t *extract_from_line(gchar *line)
+static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex)
 {
     gchar **params = NULL;
     gchar *filename = NULL;
@@ -512,7 +513,14 @@ static meta_data_t *extract_from_line(gchar *line)
             /* we have a leading space before " and a trailing space after " so begins at + 2 and length is - 3 less */
             filename = g_strndup(params[11]+2, strlen(params[11])-3);
 
-            meta->name = filename;
+            if (g_regex_match(a_regex, filename, 0, NULL))
+                {
+                    meta->name = filename;
+                }
+            else
+                {
+                    free_variable(filename);
+                }
 
             g_strfreev(params);
         }
@@ -572,12 +580,13 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
                             if (a_buffer->size != 0)
                                 {
-                                    meta = extract_from_line(line);
+                                    meta = extract_from_line(line, a_regex);
 
-                                    if (g_regex_match(a_regex, meta->name, 0, NULL))
+                                    if (meta != NULL)
                                         {
                                             append_string_to_array(array, meta->name);
                                         }
+
                                     free_meta_data_t(meta);
                                 }
 
