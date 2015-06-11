@@ -528,22 +528,22 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex)
                     sscanf(params[0], "%d", &guess);
                     meta->file_type = guess;
 
-                    sscanf(params[1], "%ld", &guess_64);
+                    sscanf(params[1], "%" G_GUINT64_FORMAT "", &guess_64);
                     meta->inode = guess_64;
 
                     sscanf(params[2], "%d", &guess);
                     meta->mode = guess;
 
-                    sscanf(params[3], "%ld", &guess_64);
+                    sscanf(params[3], "%" G_GUINT64_FORMAT "", &guess_64);
                     meta->atime = guess_64;
 
-                    sscanf(params[4], "%ld", &guess_64);
+                    sscanf(params[4], "%" G_GUINT64_FORMAT "", &guess_64);
                     meta->ctime = guess_64;
 
-                    sscanf(params[5], "%ld", &guess_64);
+                    sscanf(params[5], "%" G_GUINT64_FORMAT "", &guess_64);
                     meta->mtime = guess_64;
 
-                    sscanf(params[6], "%ld", &guess_64);
+                    sscanf(params[6], "%" G_GUINT64_FORMAT "", &guess_64);
                     meta->size = guess_64;
 
                     meta->owner = g_strndup(params[7]+2, strlen(params[7])-3);
