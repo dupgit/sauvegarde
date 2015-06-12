@@ -596,6 +596,7 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
     /* gchar *a_filename = NULL; */
     GRegex *a_regex = NULL;
     meta_data_t *meta = NULL;
+    gchar *meta_string = NULL;
 
 
     array = json_array();
@@ -625,7 +626,9 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
                                     if (meta != NULL && meta->name != NULL)
                                         {
-                                            append_string_to_array(array, meta->name);
+                                            meta_string = convert_meta_data_to_json(meta, query->hostname);
+                                            append_string_to_array(array, meta_string);
+                                            free_variable(meta_string);
                                         }
 
                                     free_meta_data_t(meta);

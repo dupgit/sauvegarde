@@ -184,7 +184,7 @@ gchar *convert_data_to_json(data_t *a_data, gchar *encoded_hash);
  * the meta_data_t structure.
  * @param meta is the structure that contains all meta data for a file or
  *        a directory.
- * @param hostname is the name of the host onw hich we are running and that
+ * @param hostname is the name of the host on which we are running and that
  *        we want to include into the json string.
  * @returns a JSON formated string or NULL
  */
