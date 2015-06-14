@@ -103,6 +103,22 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename)
 
 
 /**
+ * Prints a file ands its meta data to the screen
+ * @param smeta is the serveur meta data of the file to be printed on the
+ *        screen
+ */
+static void print_smeta_to_screen(serveur_meta_data_t *smeta)
+{
+
+    if (smeta !=  NULL && smeta->meta != NULL)
+        {
+            fprintf(stdout, "%s\n", smeta->meta->name);
+        }
+
+}
+
+
+/**
  * Prints all saved files
  * @param res_struct is the main structure for restaure program.
  */
@@ -131,10 +147,8 @@ static void print_all_files(res_struct_t *res_struct, gchar *filename)
                         {
                             smeta = (serveur_meta_data_t *) list->data;
 
-                            if (smeta !=  NULL)
-                                {
-                                    fprintf(stdout, "%s\n", smeta->meta->name);
-                                }
+                            print_smeta_to_screen(smeta);
+                            free_smeta_data_t(smeta);
 
                             list = g_slist_next(list);
                         }
