@@ -343,10 +343,6 @@ GSList *extract_smeta_gslist_from_file_list(json_t *root)
 }
 
 
-
-
-
-
 /**
  * Inserts a json formatted string into a hashs_t * balanced binary tree
  * structure and returns.
