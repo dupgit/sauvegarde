@@ -48,7 +48,7 @@ static void send_meta_data_to_serveur_or_store_into_cache(meta_data_t *meta, mai
 
     if (main_struct != NULL && meta != NULL && main_struct->hostname != NULL)
         {
-            json_str = convert_meta_data_to_json(meta, main_struct->hostname);
+            json_str = convert_meta_data_to_json_string(meta, main_struct->hostname);
 
             /* sends message here */
             print_debug(_("Sending meta datas for file: \"%s\"\n"), meta->name);

@@ -161,11 +161,20 @@ extern gchar *convert_file_list_to_json_string(GSList *file_list);
  * This function returns a list from an json array
  * @param root is the root json string that may contain an array named "name"
  * @param name is the name of the array to look for into
- * @param is_hash should be TRUE when the array is encoded base 64 hashs and
- *        FALSE if the array contains only strings.
  * @returns a GSList that me be composed of 0 element (ie NULL).
  */
-extern GSList *extract_gslist_from_array(json_t *root, gchar *name, gboolean is_hash);
+extern GSList *extract_gslist_from_array(json_t *root, gchar *name);
+
+
+/**
+ * This function returns a list from an json array.
+ * @note Freeing json_t *array here is a bad idea as it will free it into
+ *       json_t *root variable that is freed afterwards.
+ * @param root is the root json string that may contain an array named "name"
+ * @returns a GSList that may be composed of 0 element (ie NULL).
+ */
+extern GSList *extract_smeta_gslist_from_file_list(json_t *root);
+
 
 
 /**
@@ -180,6 +189,18 @@ gchar *convert_data_to_json(data_t *a_data, gchar *encoded_hash);
 
 
 /**
+ * This function should return a JSON object with all informations from
+ * the meta_data_t structure.
+ * @param meta is the structure that contains all meta data for a file or
+ *        a directory.
+ * @param hostname is the name of the host onw hich we are running and that
+ *        we want to include into the json string.
+ * @returns a json_t structure or NULL
+ */
+json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname);
+
+
+/**
  * This function should return a JSON string with all informations from
  * the meta_data_t structure.
  * @param meta is the structure that contains all meta data for a file or
@@ -188,7 +209,7 @@ gchar *convert_data_to_json(data_t *a_data, gchar *encoded_hash);
  *        we want to include into the json string.
  * @returns a JSON formated string or NULL
  */
-extern gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname);
+extern gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *hostname);
 
 
 /**

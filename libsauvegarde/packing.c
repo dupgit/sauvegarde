@@ -270,20 +270,18 @@ gchar *convert_data_to_json(data_t *a_data, gchar *encoded_hash)
 
 
 /**
- * This function should return a JSON string with all informations from
+ * This function should return a JSON object with all informations from
  * the meta_data_t structure.
  * @param meta is the structure that contains all meta data for a file or
  *        a directory.
  * @param hostname is the name of the host onw hich we are running and that
  *        we want to include into the json string.
- * @returns a JSON formated string or NULL
+ * @returns a json_t structure or NULL
  */
-gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
+json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
 {
     json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json       */
     json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs   */
-    gchar *json_str = NULL;     /** gchar *json_str is the string to be returned at the end             */
-
 
     if (meta != NULL)
         {
@@ -311,9 +309,31 @@ gchar *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
             array = convert_hash_list_to_json(meta->hash_list);
 
             insert_json_value_into_json_root(root, "hash_list", array);
+        }
 
+    return root;
+}
+
+
+/**
+ * This function should return a JSON string with all informations from
+ * the meta_data_t structure.
+ * @param meta is the structure that contains all meta data for a file or
+ *        a directory.
+ * @param hostname is the name of the host onw hich we are running and that
+ *        we want to include into the json string.
+ * @returns a JSON formated string or NULL
+ */
+gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *hostname)
+{
+    json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json       */
+    gchar *json_str = NULL;     /** gchar *json_str is the string to be returned at the end             */
+
+
+    if (meta != NULL)
+        {
+            root = convert_meta_data_to_json(meta, hostname);
             json_str = json_dumps(root, 0);
-
             json_decref(root);
         }
 

@@ -111,7 +111,8 @@ static void print_all_files(res_struct_t *res_struct, gchar *filename)
     query_t *query = NULL;
     gchar *request = NULL;
     json_t *root = NULL;
-    GSList *list = NULL;
+    GSList *list = NULL;  /** List of serveur_meta_data_t * */
+    serveur_meta_data_t *smeta = NULL;
 
     query = get_user_infos(res_struct->hostname, filename);
 
@@ -123,12 +124,18 @@ static void print_all_files(res_struct_t *res_struct, gchar *filename)
             if (res_struct->comm->buffer != NULL)
                 {
                     root = load_json(res_struct->comm->buffer);
-                    list = extract_gslist_from_array(root, "file_list", FALSE);
+                    list = extract_smeta_gslist_from_file_list(root);
                     list = g_slist_sort(list, compare_filenames);
 
                     while (list != NULL)
                         {
-                            fprintf(stdout, "%s\n", (char *)list->data);
+                            smeta = (serveur_meta_data_t *) list->data;
+
+                            if (smeta !=  NULL)
+                                {
+                                    fprintf(stdout, "%s\n", smeta->meta->name);
+                                }
+
                             list = g_slist_next(list);
                         }
                 }
