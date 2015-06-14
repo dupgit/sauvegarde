@@ -161,20 +161,20 @@ extern gchar *convert_file_list_to_json_string(GSList *file_list);
  * This function returns a list from an json array
  * @param root is the root json string that may contain an array named "name"
  * @param name is the name of the array to look for into
- * @returns a GSList that me be composed of 0 element (ie NULL).
+ * @returns a GSList that me be composed of 0 element (ie NULL). Elements
+ *          are of type gchar *.
  */
 extern GSList *extract_gslist_from_array(json_t *root, gchar *name);
 
 
 /**
  * This function returns a list from an json array.
- * @note Freeing json_t *array here is a bad idea as it will free it into
- *       json_t *root variable that is freed afterwards.
- * @param root is the root json string that may contain an array named "name"
- * @returns a GSList that may be composed of 0 element (ie NULL).
+ * @param root is the root json string that must contain an array named
+ *        "file_list"
+ * @returns a GSList that may be composed of 0 element (ie NULL). Elements
+ *          are of type serveur_meta_data_t *.
  */
 extern GSList *extract_smeta_gslist_from_file_list(json_t *root);
-
 
 
 /**
