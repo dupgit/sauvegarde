@@ -13,7 +13,7 @@ before_install:
 
 install:
     # Those handled by apt-get
-    - sudo apt-get install -qq build-essential intltool gettext pkg-config libsqlite3-dev libglib2.0-dev libcurl4-openssl-dev libmicrohttpd-dev libmicrohttpd10
+    - sudo apt-get install -qq build-essential intltool gettext pkg-config libsqlite3-dev libglib2.0-dev libcurl4-openssl-dev libmicrohttpd-dev
 
     # jansson
     - git clone git://github.com/akheron/jansson.git
