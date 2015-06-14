@@ -109,10 +109,36 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename)
  */
 static void print_smeta_to_screen(serveur_meta_data_t *smeta)
 {
+    meta_data_t *meta = NULL;
+    GDateTime *la_date = NULL;
+    gchar *the_date = NULL;
 
     if (smeta !=  NULL && smeta->meta != NULL)
         {
-            fprintf(stdout, "%s\n", smeta->meta->name);
+            meta = smeta->meta;
+
+            switch (meta->file_type)
+                {
+                    case 1:
+                        fprintf(stdout, "[FILE] ");
+                    break;
+                    case 2:
+                        fprintf(stdout, "[DIR ] ");
+                    break;
+                    default:
+                        fprintf(stdout, "[    ] ");
+                    break;
+                }
+
+            la_date = g_date_time_new_from_unix_utc(meta->mtime);
+            the_date = g_date_time_format(la_date, "%F %T");
+
+            fprintf(stdout, "%s ", the_date);
+
+            fprintf(stdout, "%s\n", meta->name);
+
+            free_variable(the_date);
+            g_date_time_unref(la_date);
         }
 
 }
