@@ -147,6 +147,8 @@ static void print_smeta_to_screen(serveur_meta_data_t *smeta)
 /**
  * Prints all saved files
  * @param res_struct is the main structure for restaure program.
+ * @param filename is the filename used to filter out the query. It must
+ *        not be NULL.
  */
 static void print_all_files(res_struct_t *res_struct, gchar *filename)
 {
@@ -158,7 +160,7 @@ static void print_all_files(res_struct_t *res_struct, gchar *filename)
 
     query = get_user_infos(res_struct->hostname, filename);
 
-    if (query != NULL)
+    if (query != NULL && filename != NULL)
         {
             request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s", query->hostname, query->uid, query->gid, query->owner, query->group, filename);
             get_url(res_struct->comm, request);

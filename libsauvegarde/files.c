@@ -337,7 +337,9 @@ gboolean file_exists(gchar *filename)
 
 
 /**
- * Comparison function to be used when sorting filenames
+ * Comparison function to be used when sorting filenames. First filenames
+ * are compared and when an equality is found then the modified time is
+ * compared (as a second sorting criteria)
  * @param a serveur_meta_data_t * representing a file 'a'
  * @param b serveur_meta_data_t * representing a file 'b' to be compared
  *          with 'a'
@@ -357,6 +359,22 @@ gint compare_filenames(gconstpointer a, gconstpointer b)
     key_b = g_utf8_collate_key_for_filename(sb->meta->name, -1);
 
     value = strcmp(key_a, key_b);
+
+    if (value == 0)
+        { /* second sorting criteria : modification time */
+            if (sa->meta->mtime < sb->meta->mtime)
+                {
+                    value = -1;
+                }
+            else if (sa->meta->mtime > sb->meta->mtime)
+                {
+                    value = 1;
+                }
+            else
+                {
+                    value = 0;
+                }
+        }
 
     free_variable(key_a);
     free_variable(key_b);
