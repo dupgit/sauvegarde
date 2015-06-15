@@ -61,6 +61,6 @@ extern query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gc
  * @param query is the qery to be freed
  * @returns NULL;
  */
-gpointer free_query_structure(query_t *query);
+extern gpointer free_query_structure(query_t *query);
 
 #endif /* #ifndef _QUERY_H_ */

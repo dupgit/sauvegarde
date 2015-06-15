@@ -41,6 +41,8 @@ static int get_data_callback(void *a_data, int nb_col, char **data, char **name_
 static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 cache_time, gboolean only_meta);
 static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash);
 static gboolean is_checksum_in_db(hashs_t *inserted_hashs, guint8 *a_hash);
+static int get_all_checksum_callback(void *inserted_hashs, int nb_col, char **data, char **name_col);
+
 
 /**
  * @returns a string containing the version of the database used.

@@ -97,7 +97,7 @@ extern json_t *load_json(gchar *json_str);
  *        variable's name)
  * @param value is the json_t "encoded" value to insert into the root
  */
-void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_t *value);
+extern void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_t *value);
 
 
 /**
@@ -107,7 +107,7 @@ void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_t *valu
  *                for instance.
  * @param to_append is the string to be appended to the array
  */
-void append_string_to_array(json_t *array, gchar *to_append);
+extern void append_string_to_array(json_t *array, gchar *to_append);
 
 
 /**
@@ -185,7 +185,7 @@ extern GSList *extract_smeta_gslist_from_file_list(json_t *root);
  *        encoded format.
  * @returns a json formatted string with those informations
  */
-gchar *convert_data_to_json(data_t *a_data, gchar *encoded_hash);
+extern gchar *convert_data_to_json(data_t *a_data, gchar *encoded_hash);
 
 
 /**
@@ -197,7 +197,7 @@ gchar *convert_data_to_json(data_t *a_data, gchar *encoded_hash);
  *        we want to include into the json string.
  * @returns a json_t structure or NULL
  */
-json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname);
+extern json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname);
 
 
 /**
@@ -221,14 +221,14 @@ extern gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *h
  *        inserted into the tree.
  * @returns the base 64 encoded hash of the data beeing inserted.
  */
-gchar *insert_json_into_hash_tree(hashs_t *hashs, gchar *json_str);
+extern gchar *insert_json_into_hash_tree(hashs_t *hashs, gchar *json_str);
 
 
 /**
  * Function that converts json_str containing the keys "hash", "data" and
  * "read" into hash
  */
-hash_data_t *convert_json_to_hash_data(gchar *json_str);
+extern hash_data_t *convert_json_to_hash_data(gchar *json_str);
 
 
 /**

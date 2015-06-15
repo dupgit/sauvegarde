@@ -30,16 +30,20 @@
 #include "serveur.h"
 
 static serveur_struct_t *init_serveur_main_structure(int argc, char **argv);
+static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gchar *hash);
+static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key);
+static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_Connection *connection);
+static gchar *get_json_answer(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, const char *url);
 static gchar *get_unformatted_answer(serveur_struct_t *serveur_struct, const char *url);
 static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, const char *url, void **con_cls);
+static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, gchar *received_data);
+static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, const char *url, gchar *received_data);
 static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size);
+static int print_out_key(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
+static void print_headers(struct MHD_Connection *connection);
 static int ahc(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **con_cls);
 static gpointer meta_datas_thread(gpointer user_data);
 static gpointer datas_thread(gpointer user_data);
-static void print_headers(struct MHD_Connection *connection);
-static int print_out_key(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
-static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key);
-static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_Connection *connection);
 
 
 /**

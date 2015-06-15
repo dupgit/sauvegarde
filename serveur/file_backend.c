@@ -30,6 +30,14 @@
 #include "serveur.h"
 
 
+static void file_create_directory(gchar *save_dir, gchar *sub_dir);
+static void make_all_subdirectories(file_backend_t *file_backend);
+static buffer_t *init_buffer_structure(GFileInputStream *stream);
+static void read_one_buffer(buffer_t *a_buffer);
+static gchar *extract_one_line_from_buffer(buffer_t *a_buffer);
+static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex);
+
+
 /**
  * Stores meta data into a flat file. A file is created for each host that
  * sends meta datas. This code is not thread safe (it means that this is

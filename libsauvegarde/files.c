@@ -294,7 +294,7 @@ gchar *get_file_mode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
  * @returns a newly allocated string with file size in decimal
  *          representation.
  */
-extern gchar *get_file_size_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
+gchar *get_file_size_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 {
     guint64 size = 0;
     gchar *result = NULL;

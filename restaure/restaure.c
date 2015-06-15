@@ -30,6 +30,7 @@
 
 static res_struct_t *init_res_struct(int argc, char **argv);
 static query_t *get_user_infos(gchar *hostname, gchar *filename);
+static void print_smeta_to_screen(serveur_meta_data_t *smeta);
 static void print_all_files(res_struct_t *res_struct, gchar *filename);
 
 /**

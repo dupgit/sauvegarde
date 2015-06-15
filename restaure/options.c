@@ -29,6 +29,7 @@
 #include "restaure.h"
 
 static void print_selected_options(options_t *opt);
+static void read_from_group_all(GKeyFile *keyfile, gchar *filename);
 static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static options_t *manage_command_line_options(int argc, char **argv);
 
