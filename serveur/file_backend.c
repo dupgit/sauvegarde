@@ -528,7 +528,6 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex)
             /* we have a leading space before " and a trailing space after " so begins at + 2 and length is - 3 less */
             filename = g_strndup(params[11]+2, strlen(params[11])-3);
 
-
             if (g_regex_match(a_regex, filename, 0, NULL))
                 {
                     meta->name = filename;
@@ -563,7 +562,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex)
                     sscanf(params[10], "%d", &guess);
                     meta->gid = guess;
 
-                    print_debug("type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
+                    print_debug(_("type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
 
                 }
             else
