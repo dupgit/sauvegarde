@@ -55,6 +55,10 @@ least all theses parameters:
 'filename' may be used to filter results for a specific filename (or
 directory name).
 
+The answer contains a json array named "file_list" that contains a
+serveur_meta_data_t structure (a JSON structure for a file as stated in
+[README.md](../README.md) file) for each file.
+
 
 ### /Data/beeff34162c5402270369ad624c15bdc8f599df220b7d540239b774eabb57fb0.json
 
