@@ -506,13 +506,17 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
  * @param a_regex is the regular expression to filter upon the filename
  * @returns a newly allocated gchar * string containing the filename that
  *          may be freed when no longer needed
- * @todo transmit the complete hash list for each file.
  */
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex)
 {
     gchar **params = NULL;
     gchar *filename = NULL;
+    gchar **hashs = NULL;
+    gchar *a_hash = NULL;
+    GSList *hash_list = NULL;
     uint guess = 0;
+    uint i = 0;
+    gsize len = 0;
     guint64 guess_64 = 0;
     meta_data_t *meta = NULL;
 
@@ -562,6 +566,28 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex)
 
                     sscanf(params[10], "%d", &guess);
                     meta->gid = guess;
+
+                    /* hash list generation */
+                    hashs = g_strsplit(params[12], ",", -1);
+
+                    i = 0;
+                    hash_list = NULL;
+
+                    while (hashs[i] != NULL)
+                        {
+                            a_hash = g_strndup(g_strchug(hashs[i] + 1), strlen(g_strchug(hashs[i])) - 2);
+                            fprintf(stdout, "%s\n", a_hash);
+                            /* we have to base64 encode it to insert it into the meta_data_t * structure */
+                            hash_list = g_slist_prepend(hash_list, g_base64_decode(a_hash, &len));
+                            free_variable(a_hash);
+                            i = i + 1;
+                        }
+
+                    g_strfreev(hashs);
+
+                    hash_list = g_slist_reverse(hash_list);
+
+                    meta->hash_list = hash_list;
 
                     print_debug(_("type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
 
