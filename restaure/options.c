@@ -156,17 +156,19 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
  */
 static options_t *manage_command_line_options(int argc, char **argv)
 {
-    gboolean version = FALSE;      /** True if -v was selected on the command line            */
-    gint debug = -4;               /** 0 == FALSE and other values == TRUE                    */
-    gchar *configfile = NULL;      /** filename for the configuration file if any             */
-    gchar *ip =  NULL;             /** IP address where is located serveur's program          */
-    gint port = 0;                 /** Port number on which to send things to the server      */
-    gchar *list = NULL;            /** Should contain a filename or a directory to filter out */
+    gboolean version = FALSE;      /** True if -v was selected on the command line                */
+    gint debug = -4;               /** 0 == FALSE and other values == TRUE                        */
+    gchar *configfile = NULL;      /** filename for the configuration file if any                 */
+    gchar *ip =  NULL;             /** IP address where is located serveur's program              */
+    gint port = 0;                 /** Port number on which to send things to the server          */
+    gchar *list = NULL;            /** Should contain a filename or a directory to filter out     */
+    gchar *restore = NULL;         /** Must contain a filename or a directory name to be restored */
 
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL},
         { "list", 'l', 0, G_OPTION_ARG_FILENAME, &list, N_("Gives a list of saved files"), NULL},
+        { "restore", 'r', 0, G_OPTION_ARG_FILENAME, &restore, N_("Restore requested filename (by default latest version)"), NULL},
         { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode"), NULL},
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), NULL},
@@ -201,11 +203,15 @@ static options_t *manage_command_line_options(int argc, char **argv)
 
     opt->configfile = NULL;
     opt->list = NULL;
+    opt->restore = NULL;
     opt->ip = g_strdup("localhost");
     opt->port = 5468;
 
 
-    /* 1) Reading options from default configuration file */
+    /* 1) Reading options from default configuration file
+     *    note: restore option will never be read into the configuration
+     *          file.
+     */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "restaure.conf");
     read_from_configuration_file(opt,  defaultconfigfilename);
     defaultconfigfilename = free_variable(defaultconfigfilename);
@@ -215,6 +221,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
 
     /* 2) Reading the configuration from the configuration file specified
      *    on the command line (if any).
+     *    note: same note than 1) applies here too.
      */
     if (configfile != NULL)
         {
@@ -229,6 +236,11 @@ static options_t *manage_command_line_options(int argc, char **argv)
     if (list != NULL)
         {
             opt->list = g_strdup(list);
+        }
+
+    if (restore != NULL)
+        {
+            opt->restore = g_strdup(restore);
         }
 
     if (ip != NULL)
@@ -247,6 +259,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     free_variable(bugreport);
     free_variable(summary);
     free_variable(list);
+    free_variable(restore);
 
     return opt;
 }

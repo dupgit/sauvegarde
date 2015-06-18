@@ -215,6 +215,10 @@ int main(int argc, char **argv)
                 {
                     print_all_files(res_struct, res_struct->opt->list);
                 }
+            if (res_struct->opt->restore != NULL)
+                {
+                    fprintf(stdout, "We should restore %s!\n", res_struct->opt->restore);
+                }
 
             return EXIT_SUCCESS;
         }
