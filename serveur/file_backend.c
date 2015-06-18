@@ -576,7 +576,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex)
                     while (hashs[i] != NULL)
                         {
                             a_hash = g_strndup(g_strchug(hashs[i] + 1), strlen(g_strchug(hashs[i])) - 2);
-                            fprintf(stdout, "%s\n", a_hash);
+
                             /* we have to base64 encode it to insert it into the meta_data_t * structure */
                             hash_list = g_slist_prepend(hash_list, g_base64_decode(a_hash, &len));
                             free_variable(a_hash);
