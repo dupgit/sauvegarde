@@ -166,13 +166,13 @@ static options_t *manage_command_line_options(int argc, char **argv)
 
     GOptionEntry entries[] =
     {
-        { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL},
-        { "list", 'l', 0, G_OPTION_ARG_FILENAME, &list, N_("Gives a list of saved files that correspond to the given REGEX"), "REGEX"},
-        { "restore", 'r', 0, G_OPTION_ARG_FILENAME, &restore, N_("Restore requested filename (REGEX) (by default latest version)"), "REGEX"},
-        { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode"), N_("BOOLEAN")},
-        { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), N_("FILENAME")},
+        { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version."), NULL},
+        { "list", 'l', 0, G_OPTION_ARG_FILENAME, &list, N_("Gives a list of saved files that correspond to the given REGEX."), "REGEX"},
+        { "restore", 'r', 0, G_OPTION_ARG_FILENAME, &restore, N_("Restore requested filename (REGEX) (by default latest version)."), "REGEX"},
+        { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode."), N_("BOOLEAN")},
+        { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), "IP"},
-        { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which serveur program is listening"), N_("NUMBER")},
+        { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which serveur program is listening."), N_("NUMBER")},
         { NULL }
     };
 
