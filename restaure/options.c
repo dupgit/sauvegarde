@@ -167,7 +167,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL},
-        { "list", 'l', 0, G_OPTION_ARG_FILENAME, &list, N_("Gives a list of saved files"), NULL},
+        { "list", 'l', 0, G_OPTION_ARG_FILENAME, &list, N_("Gives a list of saved files that correspond to the given REGEX"), NULL},
         { "restore", 'r', 0, G_OPTION_ARG_FILENAME, &restore, N_("Restore requested filename (by default latest version)"), NULL},
         { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode"), NULL},
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},

@@ -567,14 +567,11 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex)
                     sscanf(params[10], "%d", &guess);
                     meta->gid = guess;
 
-                    /* hash list generation */
-                    hashs = g_strsplit(params[12], ",", -1);
-
-                    i = 0;
-                    hash_list = NULL;
-
-                    if (hashs != NULL)
+                    if (params[12] != NULL)
                         {
+                            /* hash list generation */
+                            hashs = g_strsplit(params[12], ",", -1);
+
                             while (hashs[i] != NULL)
                                 {
                                     a_hash = g_strndup(g_strchug(hashs[i] + 1), strlen(g_strchug(hashs[i])) - 2);
