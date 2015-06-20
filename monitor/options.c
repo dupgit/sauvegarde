@@ -238,14 +238,14 @@ options_t *manage_command_line_options(int argc, char **argv)
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
-        { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode"), NULL },
-        { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
-        { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Block size used to compute hashs"), NULL},
+        { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode"), N_("BOOLEAN")},
+        { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), N_("FILENAME")},
+        { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Block SIZE used to compute hashs"), N_("SIZE")},
         { "noprint", 'n', 0, G_OPTION_ARG_NONE, &noprint, N_("Quiets the program while calculating checksum"), NULL},
-        { "dircache", 'r', 0, G_OPTION_ARG_STRING, &dircache, N_("Directory where to cache files"), NULL},
-        { "dbname", 'f', 0, G_OPTION_ARG_STRING, &dbname, N_("Database filename"), NULL},
-        { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), NULL},
-        { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port number on which to listen"), NULL},
+        { "dircache", 'r', 0, G_OPTION_ARG_STRING, &dircache, N_("Directory DIRNAME where to cache files"), N_("DIRNAME")},
+        { "dbname", 'f', 0, G_OPTION_ARG_STRING, &dbname, N_("Database FILENAME"), N_("FILENAME")},
+        { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), "IP"},
+        { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which to listen"), N_("NUMBER")},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
