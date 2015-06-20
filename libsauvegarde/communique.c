@@ -142,7 +142,7 @@ gint get_url(comm_t *comm, gchar *url)
 
             if (success == CURLE_OK && comm->buffer != NULL)
                 {
-                    print_debug("Answer is: \"%s\"\n", comm->buffer);
+                    print_debug(_("Answer is: \"%s\"\n"), comm->buffer);
                 }
             else
                 {
