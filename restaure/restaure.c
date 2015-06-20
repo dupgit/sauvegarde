@@ -31,6 +31,7 @@
 static res_struct_t *init_res_struct(int argc, char **argv);
 static query_t *get_user_infos(gchar *hostname, gchar *filename);
 static void print_smeta_to_screen(serveur_meta_data_t *smeta);
+static GSList *get_files_from_serveur(res_struct_t *res_struct, gchar *filename);
 static void print_all_files(res_struct_t *res_struct, gchar *filename);
 
 /**
@@ -146,6 +147,46 @@ static void print_smeta_to_screen(serveur_meta_data_t *smeta)
 
 
 /**
+ * Gets the file the serveur_metat_data_t * file list if any
+ * @param res_struct is the main structure for restaure program.
+ * @param filename is the filename used to filter out the query. It must
+ *        not be NULL.
+ * @returns a GSList * of serveur_meta_data_t *
+ */
+static GSList *get_files_from_serveur(res_struct_t *res_struct, gchar *filename)
+{
+    query_t *query = NULL;
+    gchar *request = NULL;
+    json_t *root = NULL;
+    GSList *list = NULL;    /** List of serveur_meta_data_t * */
+    gint res = CURLE_FAILED_INIT;
+
+    query = get_user_infos(res_struct->hostname, filename);
+
+    if (query != NULL)
+        {
+            request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s", query->hostname, query->uid, query->gid, query->owner, query->group, filename);
+            res = get_url(res_struct->comm, request);
+
+            if (res == CURLE_OK && res_struct->comm->buffer != NULL)
+                {
+                    root = load_json(res_struct->comm->buffer);
+
+                    list = extract_smeta_gslist_from_file_list(root);
+                    list = g_slist_sort(list, compare_filenames);
+
+                    json_decref(root);
+                }
+
+            free_variable(request);
+            free_query_structure(query);
+        }
+
+    return list;
+}
+
+
+/**
  * Prints all saved files
  * @param res_struct is the main structure for restaure program.
  * @param filename is the filename used to filter out the query. It must
@@ -153,38 +194,25 @@ static void print_smeta_to_screen(serveur_meta_data_t *smeta)
  */
 static void print_all_files(res_struct_t *res_struct, gchar *filename)
 {
-    query_t *query = NULL;
-    gchar *request = NULL;
-    json_t *root = NULL;
-    GSList *list = NULL;  /** List of serveur_meta_data_t * */
+    GSList *list = NULL;   /** List of serveur_meta_data_t * */
+    GSList *head = NULL;   /** head of the list to be freed  */
     serveur_meta_data_t *smeta = NULL;
 
-    query = get_user_infos(res_struct->hostname, filename);
-
-    if (query != NULL && filename != NULL)
+    if (res_struct != NULL && filename != NULL)
         {
-            request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s", query->hostname, query->uid, query->gid, query->owner, query->group, filename);
-            get_url(res_struct->comm, request);
+            list = get_files_from_serveur(res_struct, filename);
+            head = list;
 
-            if (res_struct->comm->buffer != NULL)
+            while (list != NULL)
                 {
-                    root = load_json(res_struct->comm->buffer);
-                    list = extract_smeta_gslist_from_file_list(root);
-                    list = g_slist_sort(list, compare_filenames);
+                    smeta = (serveur_meta_data_t *) list->data;
+                    print_smeta_to_screen(smeta);
+                    free_smeta_data_t(smeta);
 
-                    while (list != NULL)
-                        {
-                            smeta = (serveur_meta_data_t *) list->data;
-
-                            print_smeta_to_screen(smeta);
-                            free_smeta_data_t(smeta);
-
-                            list = g_slist_next(list);
-                        }
+                    list = g_slist_next(list);
                 }
 
-            free_variable(request);
-            free_query_structure(query);
+            g_slist_free(head);
         }
 }
 
@@ -215,6 +243,7 @@ int main(int argc, char **argv)
                 {
                     print_all_files(res_struct, res_struct->opt->list);
                 }
+
             if (res_struct->opt->restore != NULL)
                 {
                     fprintf(stdout, "We should restore %s!\n", res_struct->opt->restore);
