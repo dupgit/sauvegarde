@@ -1,8 +1,7 @@
 # Sauvegarde
 
 
-This is doygen's @mainpage
-
+This is sauvegarde doxygen's @mainpage.
 
 Some experiments around backup and continuous data protection (CDP).
 
@@ -24,7 +23,8 @@ projects used here (see dependencies section).
 
 ## Dependencies
 
-This project depends on :
+This project depends on the following projects (minimum version required is
+stated between brakets):
 
 * autotools     (2.59)
 * glib and gio  (2.26)
@@ -42,7 +42,7 @@ to compile dependencies before compiling sauvegarde.
 
 Sauvegarde's project is known to compile (sometimes at the expense of
 recompiling and installing newer versions of dependencies) under Centos 7,
-Debian Jessie and Ubuntu 12.04 LTS and raspbian 3 and on x86_64 and arm7l
+Debian Jessie, Ubuntu 12.04 LTS and raspbian 3 and on x86_64 and arm7l
 architectures. Please let me know if you have compiled Sauvegarde
 successfully in a system that is not listed here.
 
@@ -317,4 +317,7 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
 * Similar projects :
  * clsync          : [https://github.com/xaionaro/clsync](https://github.com/xaionaro/clsync)
  * data-14         : [http://www.data-14.org/](http://www.data-14.org/)
+* other dependencies :
+ * libcurl         : [http://curl.haxx.se/](http://curl.haxx.se/)
+ * glib            : [https://wiki.gnome.org/Projects/GLib](https://wiki.gnome.org/Projects/GLib)
 
