@@ -189,10 +189,10 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     GOptionEntry entries[] =
     {
-        { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
-        { "debug", 'd', 0,  G_OPTION_ARG_INT, &cmdl_debug, N_("Activates (1) or desactivates (0) debug mode"), NULL },
-        { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), NULL},
-        { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port number on which to listen"), NULL},
+        { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL},
+        { "debug", 'd', 0,  G_OPTION_ARG_INT, &cmdl_debug, N_("Activates (1) or desactivates (0) debug mode"), N_("BOOLEAN")},
+        { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), N_("FILENAME")},
+        { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which to listen"), N_("NUMBER")},
         { NULL }
     };
 

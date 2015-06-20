@@ -172,7 +172,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
         { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode"), N_("BOOLEAN")},
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file"), N_("FILENAME")},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), "IP"},
-        { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which serveur program is listening"), "NUMBER"},
+        { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which serveur program is listening"), N_("NUMBER")},
         { NULL }
     };
 
