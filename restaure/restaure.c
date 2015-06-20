@@ -176,6 +176,7 @@ static GSList *get_files_from_serveur(res_struct_t *res_struct, gchar *filename)
                     list = g_slist_sort(list, compare_filenames);
 
                     json_decref(root);
+                    free_variable(res_struct->comm->buffer);
                 }
 
             free_variable(request);
