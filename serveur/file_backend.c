@@ -506,6 +506,7 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
  * @param a_regex is the regular expression to filter upon the filename
  * @returns a newly allocated gchar * string containing the filename that
  *          may be freed when no longer needed
+ * @todo filter out the files that are not with the correct uid/gid/owner/group parameters.
  */
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex)
 {
