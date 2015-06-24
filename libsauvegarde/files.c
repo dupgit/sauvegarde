@@ -119,6 +119,17 @@ gpointer free_smeta_data_t(serveur_meta_data_t *smeta)
 
 
 /**
+ * Wrapper for the g_slist_free_full function
+ * the pointer to the data to be freed
+ * @param the pointer to the data to be freed by free_smeta_data_t call.
+ */
+void gslist_free_smeta(gpointer data)
+{
+    free_smeta_data_t((serveur_meta_data_t *)data);
+}
+
+
+/**
  * Gets the filename of a  GFile
  * @param a_file : the GFile to get the filename from.
  * @returns the name of the GFile if any or "--" gchar * string that may be

@@ -169,6 +169,14 @@ extern gpointer free_smeta_data_t(serveur_meta_data_t *smeta);
 
 
 /**
+ * Wrapper for the g_slist_free_full function
+ * the pointer to the data to be freed
+ * @param the pointer to the data to be freed by free_smeta_data_t call.
+ */
+extern void gslist_free_smeta(gpointer data);
+
+
+/**
  * Checks if a filename exists or not.
  * @param filename that we want to check.
  * @returns TRUE if filename exists and FALSE if not.

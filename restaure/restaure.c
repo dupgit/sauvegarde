@@ -219,6 +219,37 @@ static void print_all_files(res_struct_t *res_struct, gchar *filename)
 
 
 /**
+ * Restores the last file that the fetched list contains.
+ * @param res_struct is the main structure for restaure program.
+ * @param filename is the filename used to filter out the query. It must
+ *        not be NULL.
+ */
+static void restore_last_file(res_struct_t *res_struct, gchar *filename)
+{
+    GSList *list = NULL;   /** List of serveur_meta_data_t * */
+    GSList *last = NULL;   /** last element of the list      */
+    serveur_meta_data_t *smeta = NULL;
+    meta_data_t *meta = NULL;
+
+    if (res_struct != NULL && filename != NULL)
+        {
+            list = get_files_from_serveur(res_struct, filename);
+            last = g_slist_last(list);
+
+            if (last != NULL)
+                {
+                    smeta = (serveur_meta_data_t *) last->data;
+                    meta = smeta->meta;
+
+                    print_debug(_("File to be restored: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
+                }
+
+            g_slist_free_full(list, gslist_free_smeta);
+        }
+}
+
+
+/**
  * Main function
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
@@ -248,6 +279,7 @@ int main(int argc, char **argv)
             if (res_struct->opt->restore != NULL)
                 {
                     fprintf(stdout, "We should restore %s!\n", res_struct->opt->restore);
+                    restore_last_file(res_struct, res_struct->opt->restore);
                 }
 
             return EXIT_SUCCESS;
