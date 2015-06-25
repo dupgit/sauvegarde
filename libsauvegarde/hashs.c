@@ -344,3 +344,43 @@ gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level)
 
     return old_path;
 }
+
+
+/**
+ * makes a GSList of base64 decoded hashs from a string containning base64
+ * encoded hashs that may be separated by comas.
+ * @param the string containing base64 encoded hashs such as : *
+ *        "cCoCVkt/AABf04jn2+rfDmqJaln6P2A9uKolBjEFJV4=", "0G8MaPZ/AADNyaPW7ZP2s0BI4hAdZZIE2xO1EwdOzhE="
+ *        for instance.
+ * @returns a GSList of base64 decoded hashs (binary form).
+ */
+GSList *make_hash_list_from_string(gchar *hash_string)
+{
+    uint i = 0;
+    gchar **hashs = NULL;
+    gchar *a_hash = NULL;
+    GSList *hash_list = NULL;
+    gsize len = 0;
+
+    if (hash_string != NULL)
+        {
+            /* hash list generation */
+            hashs = g_strsplit(hash_string, ",", -1);
+
+            while (hashs[i] != NULL)
+                {
+                    a_hash = g_strndup(g_strchug(hashs[i] + 1), strlen(g_strchug(hashs[i])) - 2);
+
+                    /* we have to base64 encode it to insert it into the meta_data_t * structure */
+                    hash_list = g_slist_prepend(hash_list, g_base64_decode(a_hash, &len));
+                    free_variable(a_hash);
+                    i = i + 1;
+                }
+
+            g_strfreev(hashs);
+
+            hash_list = g_slist_reverse(hash_list);
+        }
+
+    return hash_list;
+}

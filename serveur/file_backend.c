@@ -35,6 +35,8 @@ static void make_all_subdirectories(file_backend_t *file_backend);
 static buffer_t *init_buffer_structure(GFileInputStream *stream);
 static void read_one_buffer(buffer_t *a_buffer);
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer);
+static guint64 get_guint64_from_string(gchar *string);
+static uint get_uint_from_string(gchar *string);
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query);
 
 
@@ -501,6 +503,43 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
 
 
 /**
+ * @param string a gchar * string containing a number coded at most in 64
+ *        bits.
+ * @returns a guint64 from the gchar * string that may contain such a
+ *          number.
+ */
+static guint64 get_guint64_from_string(gchar *string)
+{
+    guint64 guess_64 = 0;
+
+    if (string != NULL)
+        {
+            sscanf(string, "%" G_GUINT64_FORMAT "", &guess_64);
+        }
+
+    return guess_64;
+}
+
+
+/**
+ * @param string a gchar * string containing a number that should be
+ *        32 bits at most.
+ * @returns a uint from the gchar * string that may contain such a number.
+ */
+static uint get_uint_from_string(gchar *string)
+{
+    uint guess = 0;
+
+    if (string != NULL)
+        {
+            sscanf(string, "%d", &guess);
+        }
+
+    return guess;
+}
+
+
+/**
  * Extracts the filename from the line
  * @param line the line that has been read.
  * @param a_regex is the regular expression to filter upon the filename
@@ -509,19 +548,12 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
  * @returns a newly allocated gchar * string containing the filename that
  *          may be freed when no longer needed
  * @todo filter out the files that are not with the correct uid/gid parameters.
- * @todo simplify this function.
  */
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query)
 {
     gchar **params = NULL;
     gchar *filename = NULL;
-    gchar **hashs = NULL;
-    gchar *a_hash = NULL;
     GSList *hash_list = NULL;
-    uint guess = 0;
-    uint i = 0;
-    gsize len = 0;
-    guint64 guess_64 = 0;
     meta_data_t *meta = NULL;
 
     if (line != NULL && strlen(line) > 16)
@@ -541,61 +573,25 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
                 {
                     meta->name = filename;
 
-                    sscanf(params[0], "%d", &guess);
-                    meta->file_type = guess;
+                    meta->file_type = get_uint_from_string(params[0]);
+                    meta->inode = get_guint64_from_string(params[1]);
 
-                    sscanf(params[1], "%" G_GUINT64_FORMAT "", &guess_64);
-                    meta->inode = guess_64;
+                    meta->mode = get_uint_from_string(params[2]);
 
-                    sscanf(params[2], "%d", &guess);
-                    meta->mode = guess;
-
-                    sscanf(params[3], "%" G_GUINT64_FORMAT "", &guess_64);
-                    meta->atime = guess_64;
-
-                    sscanf(params[4], "%" G_GUINT64_FORMAT "", &guess_64);
-                    meta->ctime = guess_64;
-
-                    sscanf(params[5], "%" G_GUINT64_FORMAT "", &guess_64);
-                    meta->mtime = guess_64;
-
-                    sscanf(params[6], "%" G_GUINT64_FORMAT "", &guess_64);
-                    meta->size = guess_64;
+                    meta->atime = get_guint64_from_string(params[3]);
+                    meta->ctime = get_guint64_from_string(params[4]);
+                    meta->mtime = get_guint64_from_string(params[5]);
+                    meta->size = get_guint64_from_string(params[6]);
 
                     meta->owner = g_strndup(params[7]+2, strlen(params[7])-3);
                     meta->group = g_strndup(params[8]+2, strlen(params[8])-3);
 
-                    sscanf(params[9], "%d", &guess);
-                    meta->uid = guess;
-
-                    sscanf(params[10], "%d", &guess);
-                    meta->gid = guess;
+                    meta->uid = get_uint_from_string(params[9]);
+                    meta->gid = get_uint_from_string(params[10]);
 
                     if (strcmp(meta->owner, query->owner) == 0 && strcmp(meta->group, query->group) == 0)
                         {
-
-
-                            if (params[12] != NULL)
-                                {
-                                    /* hash list generation */
-                                    hashs = g_strsplit(params[12], ",", -1);
-
-                                    while (hashs[i] != NULL)
-                                        {
-                                            a_hash = g_strndup(g_strchug(hashs[i] + 1), strlen(g_strchug(hashs[i])) - 2);
-
-                                            /* we have to base64 encode it to insert it into the meta_data_t * structure */
-                                            hash_list = g_slist_prepend(hash_list, g_base64_decode(a_hash, &len));
-                                            free_variable(a_hash);
-                                            i = i + 1;
-                                        }
-
-                                    g_strfreev(hashs);
-
-
-                                    hash_list = g_slist_reverse(hash_list);
-                                }
-
+                            hash_list = make_hash_list_from_string(params[12]);
 
                             meta->hash_list = hash_list;
 
