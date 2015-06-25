@@ -35,7 +35,7 @@ static void make_all_subdirectories(file_backend_t *file_backend);
 static buffer_t *init_buffer_structure(GFileInputStream *stream);
 static void read_one_buffer(buffer_t *a_buffer);
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer);
-static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex);
+static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query);
 
 
 /**
@@ -504,11 +504,14 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
  * Extracts the filename from the line
  * @param line the line that has been read.
  * @param a_regex is the regular expression to filter upon the filename
+ * @param query is the structure that contains everything about the
+ *        requested filename.
  * @returns a newly allocated gchar * string containing the filename that
  *          may be freed when no longer needed
- * @todo filter out the files that are not with the correct uid/gid/owner/group parameters.
+ * @todo filter out the files that are not with the correct uid/gid parameters.
+ * @todo simplify this function.
  */
-static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex)
+static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query)
 {
     gchar **params = NULL;
     gchar *filename = NULL;
@@ -568,30 +571,40 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex)
                     sscanf(params[10], "%d", &guess);
                     meta->gid = guess;
 
-                    if (params[12] != NULL)
+                    if (strcmp(meta->owner, query->owner) == 0 && strcmp(meta->group, query->group) == 0)
                         {
-                            /* hash list generation */
-                            hashs = g_strsplit(params[12], ",", -1);
 
-                            while (hashs[i] != NULL)
+
+                            if (params[12] != NULL)
                                 {
-                                    a_hash = g_strndup(g_strchug(hashs[i] + 1), strlen(g_strchug(hashs[i])) - 2);
+                                    /* hash list generation */
+                                    hashs = g_strsplit(params[12], ",", -1);
 
-                                    /* we have to base64 encode it to insert it into the meta_data_t * structure */
-                                    hash_list = g_slist_prepend(hash_list, g_base64_decode(a_hash, &len));
-                                    free_variable(a_hash);
-                                    i = i + 1;
+                                    while (hashs[i] != NULL)
+                                        {
+                                            a_hash = g_strndup(g_strchug(hashs[i] + 1), strlen(g_strchug(hashs[i])) - 2);
+
+                                            /* we have to base64 encode it to insert it into the meta_data_t * structure */
+                                            hash_list = g_slist_prepend(hash_list, g_base64_decode(a_hash, &len));
+                                            free_variable(a_hash);
+                                            i = i + 1;
+                                        }
+
+                                    g_strfreev(hashs);
+
+
+                                    hash_list = g_slist_reverse(hash_list);
                                 }
 
-                            g_strfreev(hashs);
 
+                            meta->hash_list = hash_list;
 
-                            hash_list = g_slist_reverse(hash_list);
+                            print_debug(_("type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
+                         }
+                    else
+                        {
+                            meta = free_meta_data_t(meta);
                         }
-
-                    meta->hash_list = hash_list;
-
-                    print_debug(_("type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
 
                 }
             else
@@ -658,7 +671,7 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
                             if (a_buffer->size != 0)
                                 {
-                                    meta = extract_from_line(line, a_regex);
+                                    meta = extract_from_line(line, a_regex, query);
 
                                     if (meta != NULL && meta->name != NULL)
                                         {
