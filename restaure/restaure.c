@@ -219,6 +219,73 @@ static void print_all_files(res_struct_t *res_struct, gchar *filename)
 
 
 /**
+ * Creates the file to be restored.
+ * @param res_struct is the main structure for restaure program (used here
+ *        to communicate with serveur's server.
+ * @param meta is the whole meta_data file describing the file to be
+ *        restored
+ */
+static void create_file(res_struct_t *res_struct, meta_data_t *meta)
+{
+    GFile *file = NULL;
+    gchar *basename = NULL;    /** basename for the file to be restored     */
+    gchar *cwd = NULL;         /** current working directory                */
+    gchar *filename = NULL;    /** filename of the restored file            */
+    GSList *hash_list = NULL;  /** list of hashs of the file to be restored */
+    gchar *base64_hash = NULL;
+    gchar *hash = NULL;
+    gchar *request = NULL;
+    gint res = CURLE_FAILED_INIT;
+
+
+    if (meta != NULL)
+        {
+            file = g_file_new_for_path(meta->name);
+            basename = g_file_get_basename(file);
+            free_object(file);
+
+            cwd = getcwd(NULL, 0);
+            filename = g_build_filename(cwd, basename, NULL);
+            print_debug("filename = %s\n", filename);
+
+            hash_list = meta->hash_list;
+            while (hash_list != NULL)
+                {
+                    base64_hash = g_base64_encode(hash_list->data, HASH_LEN);
+                    hash = hash_to_string(hash_list->data);
+                    print_debug(_("hash: %s\n"), base64_hash);
+
+                    request = g_strdup_printf("/Data/%s.json", hash);
+                    res = get_url(res_struct->comm, request);
+                    if (res == CURLE_OK)
+                        {
+                            /** We need to save the retrieved buffer */
+                            if (res_struct->comm->buffer != NULL)
+                                {
+                                    free_variable(res_struct->comm->buffer);
+                                }
+                        }
+                    else
+                        {
+                            print_error(__FILE__, __LINE__, _("Error while getting hash %s (%s)"), hash, base64_hash);
+                        }
+
+                    hash_list = g_slist_next(hash_list);
+                    free_variable(base64_hash);
+                    free_variable(request);
+                    free_variable(hash);
+                }
+
+
+            free(cwd);
+            free_variable(basename);
+            free_variable(filename);
+
+        }
+}
+
+
+/**
  * Restores the last file that the fetched list contains.
  * @param res_struct is the main structure for restaure program.
  * @param filename is the filename used to filter out the query. It must
@@ -226,8 +293,8 @@ static void print_all_files(res_struct_t *res_struct, gchar *filename)
  */
 static void restore_last_file(res_struct_t *res_struct, gchar *filename)
 {
-    GSList *list = NULL;   /** List of serveur_meta_data_t * */
-    GSList *last = NULL;   /** last element of the list      */
+    GSList *list = NULL;      /** List of serveur_meta_data_t *            */
+    GSList *last = NULL;      /** last element of the list                 */
     serveur_meta_data_t *smeta = NULL;
     meta_data_t *meta = NULL;
 
@@ -242,6 +309,7 @@ static void restore_last_file(res_struct_t *res_struct, gchar *filename)
                     meta = smeta->meta;
 
                     print_debug(_("File to be restored: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
+                    create_file(res_struct, meta);
                 }
 
             g_slist_free_full(list, gslist_free_smeta);
