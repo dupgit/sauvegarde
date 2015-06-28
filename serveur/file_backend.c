@@ -547,7 +547,6 @@ static uint get_uint_from_string(gchar *string)
  *        requested filename.
  * @returns a newly allocated gchar * string containing the filename that
  *          may be freed when no longer needed
- * @todo filter out the files that are not with the correct uid/gid parameters.
  */
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query)
 {
@@ -555,6 +554,9 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
     gchar *filename = NULL;
     GSList *hash_list = NULL;
     meta_data_t *meta = NULL;
+    guint32 q_uid = 0;
+    guint32 q_gid = 0;
+
 
     if (line != NULL && strlen(line) > 16)
         {
@@ -588,8 +590,10 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
                     meta->uid = get_uint_from_string(params[9]);
                     meta->gid = get_uint_from_string(params[10]);
+                    q_uid = get_uint_from_string(query->uid);
+                    q_gid = get_uint_from_string(query->gid);
 
-                    if (strcmp(meta->owner, query->owner) == 0 && strcmp(meta->group, query->group) == 0)
+                    if (strcmp(meta->owner, query->owner) == 0 && strcmp(meta->group, query->group) == 0 && (meta->uid == q_uid) && (meta->gid == q_gid) == 0)
                         {
                             hash_list = make_hash_list_from_string(params[12]);
 
