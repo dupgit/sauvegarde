@@ -11,6 +11,7 @@
  *    the Free Software Foundation, either version 3 of the License, or
  *    (at your option) any later version.
  *
+ *
  *    "Sauvegarde" is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -38,12 +39,13 @@
  * @todo try to imagine a solution to append backend specific new options
  *       to the command line.
  */
-typedef void     (* store_smeta_func) (void *, serveur_meta_data_t *);  /**< Stores a serveur_meta_data_t structure according to the backend                            */
-typedef void     (* store_data_func) (void *, hash_data_t *);           /**< Stores a hash_data_t structure according to the backend                                    */
-typedef GSList * (* build_needed_hash_list_func) (void *, GSList *);    /**< A function that will check if a hash is already known and build a list
-                                                                         *   of needed hashs that the client may send                                                   */
-typedef void     (* init_backend_func) (void *);                        /**< A function that will initialize the backend if needed                                      */
-typedef gchar  * (* get_list_of_files_func) (void *, query_t *);        /**< A function that returns a JSON formatted string of saved files corresponding to the query  */
+typedef void (* store_smeta_func) (void *, serveur_meta_data_t *);   /**< Stores a serveur_meta_data_t structure according to the backend                            */
+typedef void (* store_data_func) (void *, hash_data_t *);            /**< Stores a hash_data_t structure according to the backend                                    */
+typedef GSList * (* build_needed_hash_list_func) (void *, GSList *); /**< A function that will check if a hash is already known and build a list
+                                                                      *   of needed hashs that the client may send                                                   */
+typedef void (* init_backend_func) (void *);                         /**< A function that will initialize the backend if needed                                      */
+typedef gchar * (* get_list_of_files_func) (void *, query_t *);      /**< A function that returns a JSON formatted string of saved files corresponding to the query  */
+typedef hash_data_t * (* file_retrieve_data_func) (void *, gchar *); /**< A function that returns the buffer associated to a specific hash                           */
 
 
 /**
@@ -57,6 +59,7 @@ typedef struct
     build_needed_hash_list_func build_needed_hash_list;
     init_backend_func init_backend;
     get_list_of_files_func get_list_of_files;
+    file_retrieve_data_func file_retrieve_data;
     void *user_data;                                     /**< user_data should be used by backends to store their own internal structure */
 } backend_t;
 

@@ -177,6 +177,7 @@ void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize rea
  * @param a_hash is a hash in a binary form that we want to transform into
  *        a string.
  * @returns a string that conatins the hash in an hexadecimal form.
+ * @todo manage memory concerns here !
  */
 gchar *hash_to_string(guint8 *a_hash)
 {
@@ -197,6 +198,96 @@ gchar *hash_to_string(guint8 *a_hash)
         }
 
     free_variable(octet);
+    return string;
+}
+
+
+/**
+ * @param value is the gchar to be evaluated (should be 0 to 9 or a to f)
+ * @returns the guint value of a gchar character.
+ */
+static guint int_value(gchar value)
+{
+    switch (value)
+        {
+            case '0' :
+                return 0;
+                break;
+            case '1' :
+                return 1;
+                break;
+            case '2' :
+                return 2;
+                break;
+            case '3' :
+                return 3;
+                break;
+            case '4' :
+                return 4;
+                break;
+            case '5' :
+                return 5;
+                break;
+            case '6' :
+                return 6;
+                break;
+            case '7' :
+                return 7;
+                break;
+            case '8' :
+                return 8;
+                break;
+            case '9' :
+                return 9;
+                break;
+            case 'a' :
+                return 10;
+                break;
+            case 'b' :
+                return 11;
+                break;
+            case 'c' :
+                return 12;
+                break;
+            case 'd' :
+                return 13;
+                break;
+            case 'e' :
+                return 14;
+                break;
+            case 'f' :
+                return 15;
+                break;
+            default :
+                return 0;  /* This default case should never happen */
+                break;
+        }
+}
+
+
+/**
+ * Transforms a binary hashs into a printable string (gchar *)
+ * @param str_hash a string (gchar *) that conatins the hash in an
+ *        hexadecimal form.
+ * @returns a hash in a binary form (guint8 *).
+ */
+guint8 *string_to_hash(gchar *str_hash)
+{
+    guint8 *string = NULL;
+    guint8 octet = 0;
+    guint i = 0;
+
+    if (str_hash != NULL)
+        {
+            string = (guint8 *) g_malloc0(HASH_LEN + 1); /* two char per bytes */
+
+            for(i = 0; i < HASH_LEN * 2; i = i + 2)
+                {
+                    octet = int_value(str_hash[i])*16 + int_value(str_hash[i+1]);
+                    memmove(string + i/2, &octet, 1);
+                }
+        }
+
     return string;
 }
 

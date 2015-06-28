@@ -130,4 +130,16 @@ extern GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *
  */
 extern gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query);
 
+
+/**
+ * Retrieves data from a flat file. The file is named by its hash in hex
+ * representation (one should easily check that the sha256sum of such a
+ * file gives its name !).
+ * @param serveur_struct is the serveur main structure where all
+ *        informations needed by the program are stored.
+ * @param hex_hash is a gchar * hash in hexadecimal format as retrieved
+ *        from the url.
+ */
+extern hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_hash);
+
 #endif /* #ifndef _SERVEUR_FILE_BACKEND_H_ */

@@ -700,7 +700,68 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
     json_decref(array);
     json_decref(root);
 
-
     return json_string;
 }
 
+
+/**
+ * Retrieves data from a flat file. The file is named by its hash in hex
+ * representation (one should easily check that the sha256sum of such a
+ * file gives its name !).
+ * @param serveur_struct is the serveur main structure where all
+ *        informations needed by the program are stored.
+ * @param hex_hash is a gchar * hash in hexadecimal format as retrieved
+ *        from the url.
+ */
+hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_hash)
+{
+    GFile *data_file = NULL;
+    gchar *filename = NULL;
+    GFileInputStream *stream = NULL;
+    GError *error = NULL;
+    gssize read = 0;
+    gchar *path = NULL;
+    gchar *prefix = NULL;
+    file_backend_t *file_backend = NULL;
+    hash_data_t *hash_data = NULL;
+    guint8 *data = NULL;
+    guint8 *hash = NULL;
+
+
+    if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL)
+        {
+            file_backend = serveur_struct->backend->user_data;
+            prefix = g_build_filename((gchar *) file_backend->prefix, "datas", NULL);
+            hash = string_to_hash(hex_hash);
+            path = make_path_from_hash(prefix, hash, file_backend->level);
+            filename = g_build_filename(path, hex_hash, NULL);
+            data_file = g_file_new_for_path(filename);
+            stream = g_file_read(data_file, NULL, &error);
+
+            if (stream != NULL)
+                {
+                    data = (guint8 *) g_malloc0(FILE_BACKEND_BUFFER_SIZE + 1);
+                    read = g_input_stream_read((GInputStream *) stream, data, FILE_BACKEND_BUFFER_SIZE, NULL, &error);
+
+                    if (error != NULL)
+                        {
+                            print_error(__FILE__, __LINE__, _("Error: unable to read from file %s (%ld bytes read).\n"), filename, read);
+                        }
+
+                    g_input_stream_close((GInputStream *) stream, NULL, &error);
+                    hash_data = new_hash_data_t(data, read, hash);
+                }
+            else
+                {
+                     print_error(__FILE__, __LINE__, _("Error: unable to open file %s to read datas from it.\n"), filename);
+                }
+
+            free_object(data_file);
+            free_variable(filename);
+            free_variable(hash);
+            free_variable(path);
+            free_variable(prefix);
+        }
+
+    return hash_data;
+}

@@ -126,6 +126,15 @@ extern gchar *hash_to_string(guint8 *a_hash);
 
 
 /**
+ * Transforms a binary hashs into a printable string (gchar *)
+ * @param str_hash a string (gchar *) that conatins the hash in an
+ *        hexadecimal form.
+ * @returns a hash in a binary form (guint8 *).
+ */
+extern guint8 *string_to_hash(gchar *str_hash);
+
+
+/**
  * Creates a new data_t * structure populated with the buffer and its size.
  * @param buffer : the data to be stored
  * @param read : the size of that buffer
@@ -147,7 +156,7 @@ extern gpointer free_data_t_structure(data_t *a_data);
 
 /**
  * Inits and returns a newly hash_data_t structure.
- * @returns a newly hash_data_t structure.
+ * @returns a newly created hash_data_t structure.
  */
 extern hash_data_t *new_hash_data_t(guint8 * data, gssize read, guint8 *hash);
 
