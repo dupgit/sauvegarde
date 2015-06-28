@@ -53,7 +53,7 @@ typedef struct
     guint32 uid;       /**< uid  (owner)                                         */
     guint32 gid;       /**< gid  (group owner)                                   */
     gchar *name;       /**< name for the file or the directory                   */
-    GSList *hash_list; /**< List of hashs of the file                            */
+    GSList *hash_list; /**< List of hashs of the file (in a binary form)         */
 } meta_data_t;
 
 
