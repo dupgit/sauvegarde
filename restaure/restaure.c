@@ -236,7 +236,8 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
     gchar *hash = NULL;
     gchar *request = NULL;
     gint res = CURLE_FAILED_INIT;
-
+    GFileOutputStream *stream =  NULL;
+    GError *error = NULL;
 
     if (meta != NULL)
         {
@@ -247,6 +248,9 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
             cwd = getcwd(NULL, 0);
             filename = g_build_filename(cwd, basename, NULL);
             print_debug("filename = %s\n", filename);
+            file = g_file_new_for_path(filename);
+
+            stream = g_file_create(file, G_FILE_CREATE_REPLACE_DESTINATION, NULL, &error);
 
             hash_list = meta->hash_list;
             while (hash_list != NULL)
@@ -276,7 +280,8 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                     free_variable(hash);
                 }
 
-
+            g_output_stream_close((GOutputStream *) stream, NULL, &error);
+            free_object(file);
             free(cwd);
             free_variable(basename);
             free_variable(filename);
