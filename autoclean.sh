@@ -57,6 +57,7 @@ delete_file "configure"
 delete_file "config.status"
 delete_file "config.log"
 delete_file "libtool"
+delete_file "compile"
 delete_dir "autom4te.cache"
 
 delete_evrywhere "*~"
