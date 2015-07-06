@@ -1,5 +1,6 @@
-# monitor
+# client
 
 * integrates fanotify
+* Review entire design to fit into "small memory" systems.
 
 
