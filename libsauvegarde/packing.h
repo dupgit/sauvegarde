@@ -225,11 +225,22 @@ extern gchar *insert_json_into_hash_tree(hashs_t *hashs, gchar *json_str);
 
 
 /**
- * Function that converts json_str containing the keys "hash", "data" and
- * "read" into hash
+ * Function that converts json_str containing the keys "hash", "data"
+ * and "read" into hash_data_t structure.
+ * @param json_str is a json string containing the keys "hash", "data"
+ *        and read
+ * @returns a newly allocated hash_data_t structure with the
+ *          corresponding datas in it.
  */
 extern hash_data_t *convert_json_to_hash_data(gchar *json_str);
 
+/**
+ * Converts hash_data_t structure  to a json formatted string.
+ * @param hash_data the hash_data_t structure that contains the data to
+ *        be converted.
+ * @returns a json formatted string with those informations
+ */
+extern gchar *convert_hash_data_t_to_json(hash_data_t *hash_data);
 
 /**
  * This function should return a newly allocated meta_data_t * structure

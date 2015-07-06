@@ -398,9 +398,14 @@ gchar *insert_json_into_hash_tree(hashs_t *hashs, gchar *json_str)
 }
 
 
+
 /**
- * Function that converts json_str containing the keys "hash", "data" and
- * "read" into hash
+ * Function that converts json_str containing the keys "hash", "data"
+ * and "read" into hash_data_t structure.
+ * @param json_str is a json string containing the keys "hash", "data"
+ *        and read
+ * @returns a newly allocated hash_data_t structure with the
+ *          corresponding datas in it.
  */
 hash_data_t *convert_json_to_hash_data(gchar *json_str)
  {

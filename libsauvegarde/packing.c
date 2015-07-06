@@ -270,6 +270,40 @@ gchar *convert_data_to_json(data_t *a_data, gchar *encoded_hash)
 
 
 /**
+ * Converts hash_data_t structure  to a json formatted string.
+ * @param hash_data the hash_data_t structure that contains the data to
+ *        be converted.
+ * @returns a json formatted string with those informations
+ */
+gchar *convert_hash_data_t_to_json(hash_data_t *hash_data)
+{
+    gchar *encoded_data = NULL;
+    gchar *encoded_hash = NULL;
+    gchar *json_str = NULL;
+    json_t *root = NULL;
+
+    if (hash_data != NULL && hash_data->data != NULL && hash_data->hash != NULL && hash_data->read >= 0)
+        {
+            encoded_data = g_base64_encode((guchar*) hash_data->data, hash_data->read);
+            encoded_hash = g_base64_encode((guchar*) hash_data->hash, HASH_LEN);
+
+            root = json_object();
+            insert_string_into_json_root(root, "hash", encoded_hash);
+            insert_string_into_json_root(root, "data", encoded_data);
+            insert_guint64_into_json_root(root, "size", hash_data->read);
+            json_str = json_dumps(root, 0);
+
+            json_decref(root);
+            free_variable(encoded_data);
+            free_variable(encoded_hash);
+        }
+
+    return json_str;
+}
+
+
+
+/**
  * This function should return a JSON object with all informations from
  * the meta_data_t structure.
  * @param meta is the structure that contains all meta data for a file or

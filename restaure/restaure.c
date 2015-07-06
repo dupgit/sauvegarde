@@ -221,7 +221,7 @@ static void print_all_files(res_struct_t *res_struct, gchar *filename)
 /**
  * Creates the file to be restored.
  * @param res_struct is the main structure for restaure program (used here
- *        to communicate with serveur's server.
+ *        to communicate with serveur's server).
  * @param meta is the whole meta_data file describing the file to be
  *        restored
  */

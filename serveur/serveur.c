@@ -81,8 +81,27 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gchar *hash)
 {
     gchar *answer = NULL;
+    backend_t *backend = NULL;
+    hash_data_t *hash_data = NULL;
 
-    answer = g_strdup_printf(_("Not yet implemented: %s"), hash);
+    if (serveur_struct != NULL && serveur_struct->backend != NULL)
+        {
+            backend = serveur_struct->backend;
+
+            if (backend->file_retrieve_data != NULL)
+                {
+                    hash_data = backend->file_retrieve_data(serveur_struct, hash);
+                    answer = convert_hash_data_t_to_json(hash_data);
+                }
+            else
+                {
+                    g_strdup_printf(_("This backend's missing a file_retrieve_data function!\n"));
+                }
+        }
+    else
+        {
+            answer = g_strdup_printf(_("Something's wrong with server's initialisation!\n"));
+        }
 
     return answer;
 }
