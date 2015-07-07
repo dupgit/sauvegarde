@@ -560,7 +560,7 @@ static int print_out_key(void *cls, enum MHD_ValueKind kind, const char *key, co
  */
 static void print_headers(struct MHD_Connection *connection)
 {
-    fprintf(stdout, "Headers for this connection are:\n");
+    fprintf(stdout, _("Headers for this connection are:\n"));
     MHD_get_connection_values(connection, MHD_HEADER_KIND, &print_out_key, NULL);
 }
 
