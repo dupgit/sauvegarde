@@ -751,6 +751,8 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
             data_file = g_file_new_for_path(filename);
             stream = g_file_read(data_file, NULL, &error);
 
+            print_debug(_("file_backend: path: %s, filename: %s\n"), path, filename);
+
             if (stream != NULL)
                 {
                     data = (guint8 *) g_malloc0(FILE_BACKEND_BUFFER_SIZE + 1);
@@ -759,10 +761,14 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
                     if (error != NULL)
                         {
                             print_error(__FILE__, __LINE__, _("Error: unable to read from file %s (%ld bytes read).\n"), filename, read);
+                            free_variable(data);
+                        }
+                    else
+                        {
+                            hash_data = new_hash_data_t(data, read, hash);
                         }
 
                     g_input_stream_close((GInputStream *) stream, NULL, &error);
-                    hash_data = new_hash_data_t(data, read, hash);
                 }
             else
                 {

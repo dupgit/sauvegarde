@@ -72,9 +72,10 @@ typedef struct
  * @param init_backend a function to init the backend
  * @param build_needed_hash_list a function that must build a GSList * needed hash list
  * @param get_list_of_files gets the list of saved files
+ * @param file_retrieve_data retrieves data from a specified hash.
  * @returns a newly created backend_t structure initialized to nothing !
  */
-extern backend_t *init_backend_structure(void *store_smeta, void *store_data, void *init_backend, void *build_needed_hash_list, void *get_list_of_files);
+extern backend_t *init_backend_structure(void *store_smeta, void *store_data, void *init_backend, void *build_needed_hash_list, void *get_list_of_files, void * file_retrieve_data);
 
 
 

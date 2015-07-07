@@ -66,7 +66,7 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
     serveur_struct->data_queue = g_async_queue_new();
 
     /* default backend (file_backend) */
-    serveur_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend, build_needed_hash_list, file_get_list_of_files);
+    serveur_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend, build_needed_hash_list, file_get_list_of_files, file_retrieve_data);
 
     return serveur_struct;
 }
@@ -75,7 +75,7 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 /**
  * Function that gets the data of a specific hash
  * @param serveur_struct is the main structure for the server.
- * @param hash is the hash of which we want the data
+ * @param hash is the hash (in hex format) of which we want the data.
  * @returns a json formatted string.
  */
 static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gchar *hash)
@@ -92,6 +92,10 @@ static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gc
                 {
                     hash_data = backend->file_retrieve_data(serveur_struct, hash);
                     answer = convert_hash_data_t_to_json(hash_data);
+                    if (answer == NULL)
+                        {
+                            answer = g_strdup_printf("Error while trying to get data from hash %s", hash);
+                        }
                 }
             else
                 {
@@ -218,6 +222,7 @@ static gchar *get_json_answer(serveur_struct_t *serveur_struct, struct MHD_Conne
             hlen = strlen(hash);
             if (hlen == HASH_LEN*2)
                 {
+                    print_debug(_("Trying to get data for hash %s\n"), hash);
                     answer = get_data_from_a_specific_hash(serveur_struct, hash);
                 }
             else
