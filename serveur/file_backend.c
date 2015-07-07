@@ -66,20 +66,19 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
     gssize written = 0;
     gchar *buffer = NULL;
     gchar *hash_list = NULL;
-    meta_data_t *meta = smeta->meta;
+    meta_data_t *meta = NULL;
     gchar *prefix = NULL;
     file_backend_t *file_backend = NULL;
 
 
-    if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL)
+    if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL && smeta != NULL)
         {
+            meta = smeta->meta;
             file_backend = serveur_struct->backend->user_data;
             prefix = g_build_filename((gchar *) file_backend->prefix, "metas", NULL);
 
-            if (smeta != NULL && smeta->hostname != NULL && meta != NULL)
+            if (smeta->hostname != NULL && meta != NULL)
                 {
-                    print_debug("file_backend: Going to store meta-datas for file %s\n", meta->name);
-
                     filename = g_build_filename(prefix, smeta->hostname, NULL);
 
                     meta_file = g_file_new_for_path(filename);
@@ -92,7 +91,7 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
 
                             if (hash_list != NULL)
                                 {
-                                   buffer = g_strdup_printf("%d, %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", \"%s\", \"%s\", %d, %d, \"%s\", %s\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name, hash_list);
+                                    buffer = g_strdup_printf("%d, %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", \"%s\", \"%s\", %d, %d, \"%s\", %s\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name, hash_list);
                                     free_variable(hash_list);
                                 }
                             else
@@ -163,8 +162,6 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
                     hex_hash = hash_to_string(hash_data->hash);
                     filename = g_build_filename(path, hex_hash, NULL);
 
-                    print_debug("file_backend: Going to store datas for hash %s\n", hex_hash);
-
                     data_file = g_file_new_for_path(filename);
                     stream = g_file_replace(data_file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
 
@@ -221,6 +218,7 @@ GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_li
     gchar *path = NULL;
     gchar *prefix = NULL;
     file_backend_t *file_backend = NULL;
+    gchar *hash_data = NULL;
 
 
     if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL)
@@ -234,6 +232,7 @@ GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_li
                 {
                     path = make_path_from_hash(prefix, head->data, file_backend->level);
                     hex_hash = hash_to_string(head->data);
+
                     filename = g_build_filename(path, hex_hash, NULL);
 
                     data_file = g_file_new_for_path(filename);
@@ -241,7 +240,9 @@ GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_li
                     if (g_file_query_exists(data_file, NULL) == FALSE)
                         {
                             /* file does not exists and is needed thus putting it it the needed list */
-                            needed = g_slist_prepend(needed, head->data);
+                            hash_data = (gchar *) g_malloc0(sizeof(gchar) * HASH_LEN + 1);
+                            memcpy(hash_data, head->data, HASH_LEN);
+                            needed = g_slist_prepend(needed, hash_data);
                         }
 
                     free_variable(filename);

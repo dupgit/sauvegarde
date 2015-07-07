@@ -46,11 +46,16 @@
 
 #include "options.h"
 
+/**
+ * @struct res_struct_t
+ * @brief This structure is used to keep all parameters for restaure's
+ *        program.
+ */
 typedef struct
 {
-    options_t *opt;  /**< program's options                                        */
+    options_t *opt;  /**< Program's options                                        */
     comm_t *comm;    /**< Communication structure to operate with serveur's server */
-    gchar *hostname; /**< host name where the program is executing itself          */
+    gchar *hostname; /**< Host name where the program is executing itself          */
 } res_struct_t;
 
 

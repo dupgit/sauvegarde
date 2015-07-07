@@ -317,6 +317,7 @@ static void restore_last_file(res_struct_t *res_struct, gchar *filename)
                     meta = smeta->meta;
 
                     print_debug(_("File to be restored: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
+
                     create_file(res_struct, meta);
                 }
 

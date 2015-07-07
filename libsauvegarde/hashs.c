@@ -362,29 +362,26 @@ gchar *convert_hash_list_to_gchar(GSList *hash_list)
 {
     GSList *head = hash_list;
     gchar *base64 = NULL;
-    gchar *encoded_hash = NULL;
     gchar *list = NULL;
     gchar *old_list = NULL;
 
     while (head != NULL)
         {
             base64 = g_base64_encode(head->data, HASH_LEN);
-            encoded_hash = g_strdup_printf("\"%s\"", base64);
 
             if (old_list == NULL)
                 {
-                    list = g_strdup_printf("%s", encoded_hash);
+                    list = g_strdup_printf("\"%s\"", base64);
                     old_list = list;
                 }
             else
                 {
-                    list = g_strdup_printf("%s, %s", old_list, encoded_hash);
+                    list = g_strdup_printf("%s, \"%s\"", old_list, base64);
                     free_variable(old_list);
                     old_list = list;
                 }
 
             free_variable(base64);
-            free_variable(encoded_hash);
 
             head = g_slist_next(head);
         }

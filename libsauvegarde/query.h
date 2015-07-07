@@ -28,7 +28,7 @@
 #define _QUERY_H_
 
 /**
- * @struct queru_t
+ * @struct query_t
  * @brief This structure is used to pass parameters to query functions.
  * Fields of this structure may be searched into the selected backend.
  */

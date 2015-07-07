@@ -99,12 +99,12 @@ static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gc
                 }
             else
                 {
-                    g_strdup_printf(_("This backend's missing a file_retrieve_data function!\n"));
+                    answer = g_strdup(_("This backend's missing a file_retrieve_data function!\n"));
                 }
         }
     else
         {
-            answer = g_strdup_printf(_("Something's wrong with server's initialisation!\n"));
+            answer = g_strdup(_("Something's wrong with server's initialisation!\n"));
         }
 
     return answer;
@@ -362,7 +362,7 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
             print_debug(_("Received meta datas for file %s\n"), smeta->meta->name);
 
             /**
-             * Creating an answer an sending the hashs that are needed. If
+             * Creating an answer and sending the hashs that are needed. If
              * the selected backend does not have a build_needed_hash_list
              * function we are returning the whole hash_list !
              */
@@ -372,6 +372,7 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
                 {
                     needed = serveur_struct->backend->build_needed_hash_list(serveur_struct, smeta->meta->hash_list);
                     array = convert_hash_list_to_json(needed);
+                    needed = free_list(needed);
                 }
             else
                 {
@@ -382,18 +383,12 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
             json_str = json_dumps(root, 0);
             json_decref(root);
 
-            if (needed != NULL)
-                {
-                    needed = free_list(needed);
-                }
-
             /**
              * Sending smeta datas into the queue in order to be treated by
              * the corresponding thread. smeta is freed there and should not
              * be used after this "call" here.
              */
             g_async_queue_push(serveur_struct->meta_queue, smeta);
-
 
             response = MHD_create_response_from_buffer(strlen(json_str), (void *) json_str, MHD_RESPMEM_MUST_FREE);
             success = MHD_queue_response(connection, MHD_HTTP_OK, response);
