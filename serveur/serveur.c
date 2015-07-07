@@ -166,6 +166,8 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_C
                     group = get_argument_value_from_key(connection, "group");
                     filename = get_argument_value_from_key(connection, "filename");
 
+                    print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s\n"), hostname, uid, gid, owner, group, filename);
+
                     if (hostname != NULL && uid != NULL && gid != NULL && owner != NULL && group != NULL)
                         {
                             query = init_query_structure(hostname, uid, gid, owner, group, filename);
@@ -298,6 +300,7 @@ static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Conn
         {
             if (get_debug_mode() == TRUE)
                 {
+                    print_debug(_("Requested get url: %s\n"), url);
                     print_headers(connection);
                 }
 
@@ -576,7 +579,6 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
 {
     serveur_struct_t *serveur_struct = (serveur_struct_t *) cls;
     int success = MHD_NO;
-
 
 
     if (g_strcmp0(method, "GET") == 0)

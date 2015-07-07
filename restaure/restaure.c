@@ -166,6 +166,7 @@ static GSList *get_files_from_serveur(res_struct_t *res_struct, gchar *filename)
     if (query != NULL)
         {
             request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s", query->hostname, query->uid, query->gid, query->owner, query->group, filename);
+            print_debug(_("Query is: %s\n"), request);
             res = get_url(res_struct->comm, request);
 
             if (res == CURLE_OK && res_struct->comm->buffer != NULL)
@@ -260,7 +261,9 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                     print_debug(_("hash: %s\n"), base64_hash);
 
                     request = g_strdup_printf("/Data/%s.json", hash);
+                    print_debug(_("Query is: %s\n"), request);
                     res = get_url(res_struct->comm, request);
+
                     if (res == CURLE_OK)
                         {
                             /** We need to save the retrieved buffer */

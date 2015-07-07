@@ -25,6 +25,9 @@
  * This file contains all the functions for the file backend that saves
  * everything to some flat files somewhere into the filesystem.
  * @todo make a more complex structure to store directory prefix and level
+ *
+ * @note to translators: file_backend is the name of the backend please
+ * do not translate this. Thanks.
  */
 
 #include "serveur.h"
@@ -75,7 +78,7 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
 
             if (smeta != NULL && smeta->hostname != NULL && meta != NULL)
                 {
-                    /* print_debug("file_store_smeta: Going to store meta-datas for file %s\n", meta->name); */
+                    print_debug("file_backend: Going to store meta-datas for file %s\n", meta->name);
 
                     filename = g_build_filename(prefix, smeta->hostname, NULL);
 
@@ -157,11 +160,10 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
             if (hash_data != NULL && hash_data->hash != NULL && hash_data->data != NULL)
                 {
                     path = make_path_from_hash(prefix, hash_data->hash, file_backend->level);
-                    /* create_directory(path); */
                     hex_hash = hash_to_string(hash_data->hash);
                     filename = g_build_filename(path, hex_hash, NULL);
 
-                    /* print_debug("file_store_data: Going to store datas for hash %s\n", hex_hash); */
+                    print_debug("file_backend: Going to store datas for hash %s\n", hex_hash);
 
                     data_file = g_file_new_for_path(filename);
                     stream = g_file_replace(data_file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
@@ -540,7 +542,7 @@ static uint get_uint_from_string(gchar *string)
 
 
 /**
- * Extracts the filename from the line
+ * Extracts all meta datas from one line.
  * @param line the line that has been read.
  * @param a_regex is the regular expression to filter upon the filename
  * @param query is the structure that contains everything about the
@@ -593,13 +595,13 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
                     q_uid = get_uint_from_string(query->uid);
                     q_gid = get_uint_from_string(query->gid);
 
-                    if (strcmp(meta->owner, query->owner) == 0 && strcmp(meta->group, query->group) == 0 && (meta->uid == q_uid) && (meta->gid == q_gid) == 0)
+                    if (strcmp(meta->owner, query->owner) == 0 && strcmp(meta->group, query->group) == 0 && (meta->uid == q_uid) && (meta->gid == q_gid))
                         {
                             hash_list = make_hash_list_from_string(params[12]);
 
                             meta->hash_list = hash_list;
 
-                            print_debug(_("type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
+                            print_debug(_("file_backend: Found: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
                          }
                     else
                         {
@@ -653,6 +655,8 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
     if (serveur_struct != NULL && serveur_struct->backend != NULL &&  serveur_struct->backend->user_data != NULL && query != NULL)
         {
 
+            print_debug(_("file_backend: filter is: %s\n"), query->filename);
+
             a_regex = g_regex_new(query->filename, G_REGEX_CASELESS, 0, &error);
 
             file_backend = serveur_struct->backend->user_data;
@@ -689,8 +693,17 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
                     g_object_unref(stream);
                 }
+            else
+                {
+                     print_error(__FILE__, __LINE__, _("Error: unable to open file %s to read datas from it.\n"), filename);
+                }
 
+            free_variable(filename);
             g_regex_unref(a_regex);
+        }
+    else
+        {
+            print_debug(_("file_backend: Something is wrong with backend initialization!\n"));
         }
 
     root = json_object();
