@@ -1,6 +1,5 @@
 # Sauvegarde
 
-
 This is sauvegarde doxygen's @mainpage.
 
 Some experiments around backup and continuous data protection (CDP).
@@ -11,7 +10,9 @@ Some experiments around backup and continuous data protection (CDP).
        src="https://scan.coverity.com/projects/4150/badge.svg"/>
 </a>
 
-This code is still not usable for it's purpose. Please feel free to contribute !
+With this code you can backup and restore files. Compile the code put
+the "serveur" where you want to save your files. Let "client crawl your
+files to save them. Use restore to restore a file.
 
 
 ## License
@@ -74,9 +75,9 @@ evolve in the future.
     to    | | monitor + ciseaux + antememoire   |  <---> | serveur |
     user  | -------------------------------------        -----------
                                                                ^
-    user                     ----------------                  |
-    client                   | restauration | <----------------|
-    (GUI ?)                  ----------------
+    user                         ------------                  |
+    client                       | restaure | <----------------|
+    (GUI ?)                      ------------
     \                                          /          \          /
      ----- Client side (on a notebook) --------            - server -
                                                               side
@@ -89,7 +90,7 @@ evolve in the future.
   with "serveur"'s main sauvegarde server.
 * "serveur" is the main sauvegarde server. Each client communicates with it
   and it keeps every chunks of every files with their attributes.
-* "restauration" is a tool that will provide the ability to restore some
+* "restaure" is a tool that will provide the ability to restore some
   files or paths to some locations. It communicates directly with "serveur"
   main's sauvegarde server.
 
@@ -228,6 +229,11 @@ level 2 took only 2 seconds !
 
 
 ## Coding into this project
+
+Any help on the project will be very welcomed and appreciated. have a
+look at @todo notes in the code if you do not know where to begin or
+what to do. Translations are encouraged !
+
 
 ### irc
 
