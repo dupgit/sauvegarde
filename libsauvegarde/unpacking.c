@@ -410,7 +410,7 @@ gchar *insert_json_into_hash_tree(hashs_t *hashs, gchar *json_str)
 hash_data_t *convert_json_to_hash_data(gchar *json_str)
  {
     json_t *root = NULL;
-    guint8 *data = NULL;
+    guchar *data = NULL;
     guint8 *hash = NULL;
     gchar *string = NULL;
     gsize data_len = 0;
@@ -425,7 +425,7 @@ hash_data_t *convert_json_to_hash_data(gchar *json_str)
             if (root != NULL)
                 {
                     string = get_string_from_json_root(root, "data");
-                    data = (guint8 *) g_base64_decode(string, &data_len);
+                    data = (guchar *) g_base64_decode(string, &data_len);
                     free_variable(string);
 
                     string = get_string_from_json_root(root, "hash");

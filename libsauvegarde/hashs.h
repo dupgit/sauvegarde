@@ -73,7 +73,7 @@ typedef struct
 typedef struct
 {
     guint8 *hash;
-    guint8 *data;
+    guchar *data;
     gssize read;
 } hash_data_t;
 
@@ -155,10 +155,19 @@ extern gpointer free_data_t_structure(data_t *a_data);
 
 
 /**
+ * Frees hash_data_t *buffer and returns NULL.
+ * @param hash_data : the stucture that contains buffer data, hash data
+ * and its size to be freed.
+ * @returns always NULL.
+ */
+extern gpointer free_hash_data_t_structure(hash_data_t *hash_data);
+
+
+/**
  * Inits and returns a newly hash_data_t structure.
  * @returns a newly created hash_data_t structure.
  */
-extern hash_data_t *new_hash_data_t(guint8 * data, gssize read, guint8 *hash);
+extern hash_data_t *new_hash_data_t(guchar * data, gssize read, guint8 *hash);
 
 
 /**

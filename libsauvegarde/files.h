@@ -139,6 +139,14 @@ extern gchar *get_file_size_from_gfile(GFileInfo *fileinfo, meta_data_t *meta);
 
 
 /**
+ * Returns the file size from a GFile * file
+ * @param file is the GFile from which we want the size.
+ * @returns a guint64 that represents the file size or 0.
+ */
+extern guint64 get_file_size(GFile *file);
+
+
+/**
  * @returns a newly allocated meta_data_t * empty structure. We use 65534
  * as default uid and gid to avoid using 0 which is dedicated to a
  * priviledged user.

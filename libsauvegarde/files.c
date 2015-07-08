@@ -327,6 +327,28 @@ gchar *get_file_size_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 
 
 /**
+ * Returns the file size from a GFile * file
+ * @param file is the GFile from which we want the size.
+ * @returns a guint64 that represents the file size or 0.
+ */
+guint64 get_file_size(GFile *file)
+{
+    GError *error = NULL;
+    GFileInfo *fileinfo = NULL;
+    guint64 size = 0;
+
+    if (file != NULL)
+        {
+            fileinfo = g_file_query_info(file, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
+            size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+            g_object_unref(fileinfo);
+        }
+
+    return size;
+}
+
+
+/**
  * Checks if a filename exists or not.
  * @param filename that we want to check.
  * @returns TRUE if filename exists and FALSE if not.

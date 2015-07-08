@@ -1,4 +1,3 @@
-
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
  *    restaure.c
@@ -240,8 +239,8 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
     gint res = CURLE_FAILED_INIT;
     GFileOutputStream *stream =  NULL;
     GError *error = NULL;
-    guchar *data = NULL;
-    gsize data_len = 0;
+    hash_data_t *hash_data = NULL;
+
 
     if (meta != NULL)
         {
@@ -263,8 +262,8 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                     while (hash_list != NULL)
                         {
                             hash = hash_to_string(hash_list->data);
-
                             request = g_strdup_printf("/Data/%s.json", hash);
+
                             print_debug(_("Query is: %s\n"), request);
                             res = get_url(res_struct->comm, request);
 
@@ -273,10 +272,12 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                                     /** We need to save the retrieved buffer */
                                     if (res_struct->comm->buffer != NULL)
                                         {
-                                            data = g_base64_decode(res_struct->comm->buffer, &data_len);
-                                            g_output_stream_write((GOutputStream *) stream, data, data_len, NULL, &error);
+                                            hash_data = convert_json_to_hash_data(res_struct->comm->buffer);
                                             free_variable(res_struct->comm->buffer);
-                                            free_variable(data);
+
+                                            g_output_stream_write((GOutputStream *) stream, hash_data->data, hash_data->read, NULL, &error);
+
+                                            free_hash_data_t_structure(hash_data);
                                         }
                                 }
                             else

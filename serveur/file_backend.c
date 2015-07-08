@@ -24,7 +24,6 @@
  *
  * This file contains all the functions for the file backend that saves
  * everything to some flat files somewhere into the filesystem.
- * @todo make a more complex structure to store directory prefix and level
  *
  * @note to translators: file_backend is the name of the backend please
  * do not translate this. Thanks.
@@ -738,8 +737,9 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
     gchar *prefix = NULL;
     file_backend_t *file_backend = NULL;
     hash_data_t *hash_data = NULL;
-    guint8 *data = NULL;
+    guchar *data = NULL;
     guint8 *hash = NULL;
+    guint64 filesize = 0;
 
 
     if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL)
@@ -756,13 +756,17 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
 
             if (stream != NULL)
                 {
-                    data = (guint8 *) g_malloc0(FILE_BACKEND_BUFFER_SIZE + 1);
-                    read = g_input_stream_read((GInputStream *) stream, data, FILE_BACKEND_BUFFER_SIZE, NULL, &error);
+                    filesize = get_file_size(data_file);
+                    /* we can do this because files may not be too big: as large as FILE_BACKEND_BUFFER_SIZE */
+                    data = (guchar *) g_malloc0(filesize + 1);
+
+                    read = g_input_stream_read((GInputStream *) stream, data, filesize, NULL, &error);
 
                     if (error != NULL)
                         {
-                            print_error(__FILE__, __LINE__, _("Error: unable to read from file %s (%ld bytes read).\n"), filename, read);
+                            print_error(__FILE__, __LINE__, _("Error: unable to read from file %s (%ld bytes read): %s.\n"), filename, read, error->message);
                             free_variable(data);
+                            free_error(error);
                         }
                     else
                         {
@@ -778,7 +782,6 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
 
             free_object(data_file);
             free_variable(filename);
-            free_variable(hash);
             free_variable(path);
             free_variable(prefix);
         }
