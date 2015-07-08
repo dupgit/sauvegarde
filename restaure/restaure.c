@@ -225,6 +225,8 @@ static void print_all_files(res_struct_t *res_struct, gchar *filename)
  *        to communicate with serveur's server).
  * @param meta is the whole meta_data file describing the file to be
  *        restored
+ * @todo simplify this function.
+ * @todo error management.
  */
 static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 {
@@ -233,12 +235,13 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
     gchar *cwd = NULL;         /** current working directory                */
     gchar *filename = NULL;    /** filename of the restored file            */
     GSList *hash_list = NULL;  /** list of hashs of the file to be restored */
-    gchar *base64_hash = NULL;
     gchar *hash = NULL;
     gchar *request = NULL;
     gint res = CURLE_FAILED_INIT;
     GFileOutputStream *stream =  NULL;
     GError *error = NULL;
+    guchar *data = NULL;
+    gsize data_len = 0;
 
     if (meta != NULL)
         {
@@ -253,42 +256,50 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 
             stream = g_file_create(file, G_FILE_CREATE_REPLACE_DESTINATION, NULL, &error);
 
-            hash_list = meta->hash_list;
-            while (hash_list != NULL)
+            if (stream != NULL)
                 {
-                    base64_hash = g_base64_encode(hash_list->data, HASH_LEN);
-                    hash = hash_to_string(hash_list->data);
-                    print_debug(_("hash: %s\n"), base64_hash);
+                    hash_list = meta->hash_list;
 
-                    request = g_strdup_printf("/Data/%s.json", hash);
-                    print_debug(_("Query is: %s\n"), request);
-                    res = get_url(res_struct->comm, request);
-
-                    if (res == CURLE_OK)
+                    while (hash_list != NULL)
                         {
-                            /** We need to save the retrieved buffer */
-                            if (res_struct->comm->buffer != NULL)
+                            hash = hash_to_string(hash_list->data);
+
+                            request = g_strdup_printf("/Data/%s.json", hash);
+                            print_debug(_("Query is: %s\n"), request);
+                            res = get_url(res_struct->comm, request);
+
+                            if (res == CURLE_OK)
                                 {
-                                    free_variable(res_struct->comm->buffer);
+                                    /** We need to save the retrieved buffer */
+                                    if (res_struct->comm->buffer != NULL)
+                                        {
+                                            data = g_base64_decode(res_struct->comm->buffer, &data_len);
+                                            g_output_stream_write((GOutputStream *) stream, data, data_len, NULL, &error);
+                                            free_variable(res_struct->comm->buffer);
+                                            free_variable(data);
+                                        }
                                 }
-                        }
-                    else
-                        {
-                            print_error(__FILE__, __LINE__, _("Error while getting hash %s (%s)"), hash, base64_hash);
+                            else
+                                {
+                                    print_error(__FILE__, __LINE__, _("Error while getting hash %s"), hash);
+                                }
+
+                            hash_list = g_slist_next(hash_list);
+                            free_variable(request);
+                            free_variable(hash);
                         }
 
-                    hash_list = g_slist_next(hash_list);
-                    free_variable(base64_hash);
-                    free_variable(request);
-                    free_variable(hash);
+                    g_output_stream_close((GOutputStream *) stream, NULL, &error);
+                }
+            else
+                {
+                    print_error(__FILE__, __LINE__, _("Error: unable to open file %s to write datas in it (%s).\n"), filename, error->message);
                 }
 
-            g_output_stream_close((GOutputStream *) stream, NULL, &error);
             free_object(file);
             free(cwd);
             free_variable(basename);
             free_variable(filename);
-
         }
 }
 

@@ -182,7 +182,7 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
                         }
                     else
                         {
-                             print_error(__FILE__, __LINE__, _("Error: unable to open file %s to write datas in it.\n"), filename);
+                            print_error(__FILE__, __LINE__, _("Error: unable to open file %s to write datas in it.\n"), filename);
                         }
 
                     free_object(data_file);
