@@ -254,7 +254,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
             print_debug("filename = %s\n", filename);
             file = g_file_new_for_path(filename);
 
-            stream = g_file_create(file, G_FILE_CREATE_REPLACE_DESTINATION, NULL, &error);
+            stream = g_file_replace(file, NULL, TRUE, G_FILE_CREATE_PRIVATE, NULL, &error);
 
             if (stream != NULL)
                 {
