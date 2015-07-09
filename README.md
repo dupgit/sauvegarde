@@ -47,6 +47,11 @@ Debian Jessie, Ubuntu 12.04 LTS and raspbian 3 and on x86_64 and arm7l
 architectures. Please let me know if you have compiled Sauvegarde
 successfully in a system that is not listed here.
 
+## Download
+
+You can download the source code from github or a packed defined version
+at [http://src.delhomme.org/download/sauvegarde/releases/](http://src.delhomme.org/download/sauvegarde/releases/)
+
 
 ## Installation
 
