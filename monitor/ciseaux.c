@@ -79,7 +79,7 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
                             insert_into_tree(main_struct->hashs, a_hash, buffer, read, meta);
 
                             g_checksum_reset(checksum);
-                            i = i + 1;
+                            i = i + 1;  /** @todo kill this line ? */
                             digest_len = HASH_LEN;
                         }
                 }

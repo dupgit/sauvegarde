@@ -197,13 +197,15 @@ gint post_url(comm_t *comm, gchar *url)
             if (success != CURLE_OK)
                 {
                     print_error(__FILE__, __LINE__, _("Error while sending POST command (to \"%s\") with datas\n"), real_url);
+                    free_variable(comm->buffer);
                 }
             else if (comm->buffer != NULL)
                 {
                     print_debug("Answer is: \"%s\"\n", comm->buffer); /** @todo  Not sure that we will need this information later */
                 }
 
-            real_url = free_variable(real_url);
+            free_variable(real_url);
+            free_variable(buffer);
         }
 
     return success;
@@ -299,6 +301,8 @@ static gint send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash
                         {
                             all_ok = success;
                         }
+
+                    free_variable(comm->buffer);
                 }
             else
                 {

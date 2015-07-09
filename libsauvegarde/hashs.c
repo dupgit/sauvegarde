@@ -168,6 +168,10 @@ void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize rea
                     a_data = new_data_t_structure(buffer_dup, read, FALSE);
                     g_tree_insert(hashs->tree_hash, a_hash_dup, a_data); /* the checksum itself is the key to get buffer's data */
                 }
+            else
+                {
+                    free_variable(buffer_dup);
+                }
         }
 }
 

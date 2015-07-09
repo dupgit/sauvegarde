@@ -600,12 +600,16 @@ db_t *open_database(gchar *database_name)
     if (result != SQLITE_OK)
         {
             print_db_error(db, _("(%d) Error while trying to open %s database: %s\n"), result, database_name, sqlite3_errmsg(db));
+            free_variable(database);
+            sqlite3_close(db);
+
             return NULL;
         }
     else
         {
             database->db = db;
             verify_if_tables_exists(database);
+
             return database;
         }
 }
