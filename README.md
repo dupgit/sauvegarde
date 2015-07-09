@@ -326,4 +326,7 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
 * other dependencies :
  * libcurl         : [http://curl.haxx.se/](http://curl.haxx.se/)
  * glib            : [https://wiki.gnome.org/Projects/GLib](https://wiki.gnome.org/Projects/GLib)
+* Distribution doc :
+ * Debian          : [https://www.debian.org/devel/wnpp/](https://www.debian.org/devel/wnpp/)
+ * Gentoo          : [https://wiki.gentoo.org/wiki/Submitting_ebuilds](https://wiki.gentoo.org/wiki/Submitting_ebuilds)
 
