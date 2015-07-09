@@ -6,3 +6,5 @@ sauvegardeconfdir = $(sysconfdir)/sauvegarde
 sauvegardeconf_DATA = client.conf		\
 					  serveur.conf	    \
 					  restaure.conf
+
+EXTRA_DIST = $(sauvegardeconf_DATA)
