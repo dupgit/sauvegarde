@@ -1,4 +1,3 @@
-
 pkglib_LTLIBRARIES = libsauvegarde.la
 
 headerfiles = libsauvegarde.h	\
@@ -10,23 +9,23 @@ headerfiles = libsauvegarde.h	\
 			  database.h		\
 			  query.h
 
-libsauvegarde_la_SOURCES =	libsauvegarde.c 	\
-							configuration.c		\
-							communique.c		\
-							files.c				\
-							hashs.c				\
-							database.c			\
-							packing.c			\
-							unpacking.c			\
-							query.c				\
-							$(headerfiles)
+libsauvegarde_la_SOURCES = libsauvegarde.c 	    \
+						   configuration.c		\
+						   communique.c		    \
+						   files.c				\
+						   hashs.c				\
+						   database.c			\
+						   packing.c			\
+						   unpacking.c			\
+						   query.c				\
+						   $(headerfiles)
 
-libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)          \
-                          $(ZMQ_CFLAGS) $(SQLITE_CFLAGS) $(JANSSON_CFLAGS)\
+libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)   \
+                          $(SQLITE_CFLAGS) $(JANSSON_CFLAGS)       \
                           $(MHD_CFLAGS) $(CURL_CFLAGS)
 
-AM_LDFLAGS = $(LDFLAGS) $(GLIB_LIBS) $(GIO_LIBS) $(ZMQ_LIBS)              \
-             $(SQLITE_LIBS) $(JANSSON_LIBS) $(MHD_LIBS) $(CURL_LIBS)
+AM_LDFLAGS = $(LDFLAGS) $(GLIB_LIBS) $(GIO_LIBS) $(SQLITE_LIBS)    \
+             $(JANSSON_LIBS) $(MHD_LIBS) $(CURL_LIBS)
 
 include_HEADERS = $(headerfiles)
 

@@ -1,24 +1,23 @@
 bin_PROGRAMS = client
 
-DEFS =	-I../libsauvegarde $(GLIB_CFLAGS) $(GIO_CFLAGS) $(ZMQ_CFLAGS)     \
-		$(CZMQ_FLAGS) $(SQLITE_CFLAGS) $(JANSSON_CFLAGS) $(CURL_CFLAGS)
+DEFS = -I../libsauvegarde $(GLIB_CFLAGS) $(GIO_CFLAGS)   \
+	   $(SQLITE_CFLAGS) $(JANSSON_CFLAGS) $(CURL_CFLAGS)
 
 client_LDFLAGS = $(LDFLAGS)
-client_LDADD =  $(GLIB_LIBS) $(GIO_LIBS)  -L../libsauvegarde -lsauvegarde \
-				$(ZMQ_LIBS) $(CZMQ_LIBS) $(SQLITE_LIBS) $(JANSSON_LIBS)   \
-				$(CURL_LIBS)
+client_LDADD = $(GLIB_LIBS) $(GIO_LIBS)  -L../libsauvegarde -lsauvegarde \
+			   $(SQLITE_LIBS) $(JANSSON_LIBS) $(CURL_LIBS)
 
-MON_HEADERFILES = monitor.h               \
-                  options.h				  \
-                  ciseaux.h				  \
-                  antememoire.h			  \
-                  m_fanotify.h
+client_HEADERFILES = monitor.h            \
+                     options.h			  \
+                     ciseaux.h			  \
+                     antememoire.h	      \
+                     m_fanotify.h
 
-client_SOURCES =  monitor.c               \
-				  options.c				  \
-				  ciseaux.c				  \
-				  antememoire.c		      \
-				  m_fanotify.c			  \
-				  $(MON_HEADERFILES)
+client_SOURCES = monitor.c                \
+				 options.c				  \
+				 ciseaux.c				  \
+				 antememoire.c		      \
+				 m_fanotify.c			  \
+				 $(client_HEADERFILES)
 
 AM_CPPFLAGS = $(GLIB_CFLAGS) $(GIO_CFLAGS)

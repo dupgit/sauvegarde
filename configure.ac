@@ -1,10 +1,7 @@
 AC_PREREQ(2.59)
 
-AC_INIT([sauvegarde], [0.0.1],
-        [Olivier DELHOMME <olivier.delhomme@free.fr>],
-        [sauvegarde])
-
-AM_INIT_AUTOMAKE([$PACKAGE_TARNAME], [$PACKAGE_VERSION])
+AC_INIT([sauvegarde], [0.0.1], [Olivier DELHOMME <olivier.delhomme@free.fr>])
+AM_INIT_AUTOMAKE
 
 AC_PROG_CC
 AC_CONFIG_MACRO_DIR([m4])
@@ -16,6 +13,7 @@ dnl * Put the preprocessor macros in a header file                        *
 dnl * instead of command line                                             *
 dnl ***********************************************************************
 AC_CONFIG_HEADER([config.h])
+AC_CONFIG_SRCDIR([monitor/monitor.c])
 
 
 dnl ***********************************************************************
@@ -54,7 +52,6 @@ dnl * Checks for headers                                                  *
 dnl ***********************************************************************
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-
 AC_CHECK_HEADERS( \
  signal.h         \
  sys/signalfd.h   \
@@ -85,7 +82,7 @@ AM_GLIB_GNU_GETTEXT
 
 
 dnl ***********************************************************************
-dnl * checking for modules (glib, gio, sqlite, zmq...)                    *
+dnl * checking for modules (glib, gio, sqlite, mhd, curl...)              *
 dnl ***********************************************************************
 PKG_CHECK_MODULES(GLIB, [glib-2.0 >= $GLIB_VERSION])
 PKG_CHECK_MODULES(GIO, [gio-2.0 >= $GIO_VERSION])
