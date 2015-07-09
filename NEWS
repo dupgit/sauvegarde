@@ -1,0 +1,29 @@
+[09-07-2015] v0.0.1
+Since February 2014 I'm programming, when I have some time, something that may save my files live. The primary goal is to save files while they are being created or modified. It is still a goal to reach even if the first usable version is out today ! When I say usable I mean that one can backup files and restore them. It needs a lot of improvements and a lot of fine code review to track down the numerous memory leakages and bugs that are in this early code (Yes contributions are welcome :).
+
+Naming is usually a very difficult task for a project and as I remarked that successful projects have simple names - like "Word" and "Windows" for instance (yes I know this is not free software) I named my project "sauvegarde" (which means backup in French). This project is composed of 3 programs right now, the one that saves your file is named "client" and is talking to the server (named "serveur" in French). The third one can restore files (also by talking to the server) and is named "restaure" (restore in French).
+
+The whole project is known to compile on x86_64 and arm7l architecture and on Debian Jessie, Ubuntu 12.04 and Centos 7 (sometimes at the expense of compiling and installing more recent dependencies - which is pretty straight (look for .travis.yml in the source code)).
+
+With this version first you have to setup a server and have serveur running on it. Then you have to run client each time you need to backup things (live backup will come very soon - even if linux kernel FAN notification's interface lacks some notifiers). When you want to restore a file you have to use "restaure" program (server needs to be up and accessible). At the moment you can only restore the latest version of a file.
+
+The server has an interface to connect different backends. The first one is the flat file backend. One may program some database backend (postgresql, sqlite, mariadb...), or a different storage backend like Ceph for instance. All the data is saved in a deduplicated way and the network traffic is minimized. "client", "serveur" and "restore" talks in json language to each others.
+
+There is still a lot of things to do such as (in no specific order):
+
+    * Make live backup possible
+    * Having the ability to restore any version of a file
+    * Having the ability to restore a group of files
+    * Having the ability to restore a directory (may need to patch linux's kernel FAN interface)
+    * Saving symbolic links
+    * Having some security for transfers (for instance https)
+    * Having some security for authentication of programs each others
+    * Adding server backends
+    * Internationalization
+
+If you test this program, if you compile it under a new architecture/system, if you have any question or want to report a bug please feel free to useeither github's interface or your favorite emailer to email me (my email address is in the source code or in AUTHORS file).
+
+Links:
+
+    * Sauvegarde's project: https://github.com/dupgit/sauvegarde
+    * travis continuous integration status: https://travis-ci.org/dupgit/sauvegarde
