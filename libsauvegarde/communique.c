@@ -197,11 +197,11 @@ gint post_url(comm_t *comm, gchar *url)
             if (success != CURLE_OK)
                 {
                     print_error(__FILE__, __LINE__, _("Error while sending POST command (to \"%s\") with datas\n"), real_url);
-                    free_variable(comm->buffer);
+                    comm->buffer = free_variable(comm->buffer);
                 }
             else if (comm->buffer != NULL)
                 {
-                    print_debug("Answer is: \"%s\"\n", comm->buffer); /** @todo  Not sure that we will need this information later */
+                    print_debug("Answer is: \"%s\"\n", comm->buffer); /** @todo  Not sure that we will need this debug information later */
                 }
 
             free_variable(real_url);
@@ -302,7 +302,9 @@ static gint send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash
                             all_ok = success;
                         }
 
-                    free_variable(comm->buffer);
+                    /* comm->buffer may contain an answer from serveur
+                     * but as we do nothing with it now, just free it  */
+                    comm->buffer = free_variable(comm->buffer);
                 }
             else
                 {
@@ -344,6 +346,7 @@ gint send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer)
     if (hashs != NULL && answer != NULL)
         {
             root = load_json(answer);
+            free_variable(answer);
 
             if (root != NULL)
                 {
@@ -354,6 +357,8 @@ gint send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer)
 
                     json_decref(root);
                 }
+
+
         }
 
    return success;

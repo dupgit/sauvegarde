@@ -33,7 +33,6 @@ static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message);
 static int table_callback(void *num, int nbCol, char **data, char **nomCol);
 static void verify_if_tables_exists(db_t *database);
 static file_row_t *new_file_row_t(void);
-static void free_gchar(gpointer data);
 static void free_file_row_t(file_row_t *row);
 static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col);
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
@@ -142,6 +141,8 @@ static void verify_if_tables_exists(db_t *database)
             /* Creation of files table that contains everything about a file */
             exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL);", _("(%d) Error while creating database table 'files': %s\n"));
         }
+
+    free_variable(i);
 
     /**
      * We are setting the asynchronous mode of SQLITE here. Tradeoff is that any
@@ -272,16 +273,6 @@ static file_row_t *new_file_row_t(void)
 
 
 /**
- * Callback function (to g_slist_free_full) to free gchars in a GSList *
- * @param data is the gchar * pointer to be freed
- */
-static void free_gchar(gpointer data)
-{
-    free_variable(data);
-}
-
-
-/**
  * Frees everything whithin the file_row_t structure
  * @param row is the variable to be freed totaly
  */
@@ -289,7 +280,7 @@ static void free_file_row_t(file_row_t *row)
 {
     if (row != NULL)
         {
-            g_slist_free_full(row->id_list, free_gchar);
+            g_slist_free_full(row->id_list, free_gchar_variable);
             free_variable(row);
         }
 }

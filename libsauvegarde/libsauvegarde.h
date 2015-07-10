@@ -183,6 +183,14 @@ extern gpointer free_list(GSList *list);
 
 
 /**
+ * Wrapper for the g_slist_free_full function in order to free lists
+ * of gchar *
+ * @param data is the pointer to a gchar * string to be freed
+ */
+extern void free_gchar_variable(gpointer data);
+
+
+/**
  * Prints a message if the debug flag is set
  * @param format : the format of the message (as in printf)
  * @param ... : va_list of variable that are to be printed into format.

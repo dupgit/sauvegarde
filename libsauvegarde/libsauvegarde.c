@@ -320,6 +320,17 @@ gpointer free_variable(gpointer to_free)
 
 
 /**
+ * Wrapper for the g_slist_free_full function in order to free lists
+ * of gchar *
+ * @param data is the pointer to a gchar * string to be freed
+ */
+void free_gchar_variable(gpointer data)
+{
+    free_variable(data);
+}
+
+
+/**
  * Unrefs an object if it is not NULL and returns NULL
  * @param object_to_unref is the pointer to be unref'ed.
  * @returns NULL
@@ -360,15 +371,7 @@ gpointer free_error(gpointer error)
  */
 gpointer free_list(GSList *list)
 {
-    GSList *head = list;
-
-    while (list != NULL)
-        {
-            free_variable(list->data);
-            list = g_slist_next(list);
-        }
-
-    g_slist_free(head);
+    g_slist_free_full(list, free_gchar_variable);
 
     return NULL;
 }

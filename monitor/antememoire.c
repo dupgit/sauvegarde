@@ -55,7 +55,7 @@ static void send_meta_data_to_serveur_or_store_into_cache(meta_data_t *meta, mai
             main_struct->comm->buffer = json_str;
             success = post_url(main_struct->comm, "/Meta.json");
 
-            json_str = free_variable(json_str);
+            free_variable(json_str);
 
             if (success == CURLE_OK)
                 {   /**
@@ -69,8 +69,6 @@ static void send_meta_data_to_serveur_or_store_into_cache(meta_data_t *meta, mai
                      * comm->buffer
                      */
                     success = send_datas_to_server(main_struct->comm, main_struct->hashs, main_struct->comm->buffer);
-
-                    main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
 
                     if (success == CURLE_OK)
                         {
