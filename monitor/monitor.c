@@ -243,9 +243,11 @@ int main(int argc, char **argv)
              * the filesystem (on directories we watch).
              * @note fanotify's kernel interface does not provide the events
              * needed to know if a file has been deleted or it's attributes
-             * changed. Disabling this for now.
-             * fanotify_loop(main_struct);
+             * changed. ENabling this feature even if we know that files
+             * will never get deleted in our database.
              */
+            fanotify_loop(main_struct);
+
 
             /* There is no need to send the $END$ command as we use
              * cut and store thread in the loop above.
