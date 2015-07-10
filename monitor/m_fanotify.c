@@ -33,8 +33,7 @@
 
 static gchar *get_file_path_from_fd(gint fd);
 static char *get_program_name_from_pid(int pid);
-static void event_process(struct fanotify_event_metadata *event, GSList *dir_list);
-
+static void event_process(struct fanotify_event_metadata *event, GSList *dir_list, GAsyncQueue *queue);
 
 
 /**
@@ -216,7 +215,7 @@ static char *get_program_name_from_pid(int pid)
  * An example of processing events
  * @todo simplify code (CCN is 12 already !)
  */
-static void event_process(struct fanotify_event_metadata *event, GSList *dir_list)
+static void event_process(struct fanotify_event_metadata *event, GSList *dir_list, GAsyncQueue *queue)
 {
     gchar *path = NULL;
     gchar *progname = NULL;
@@ -293,6 +292,8 @@ static void event_process(struct fanotify_event_metadata *event, GSList *dir_lis
                 {
                     print_debug(_("\tFAN_CLOSE_NOWRITE\n"));
                 }
+
+            g_async_queue_push(queue, g_strdup(path));
 
             fflush (stdout);
 
@@ -402,7 +403,7 @@ void fanotify_loop(main_struct_t *main_struct)
 
                                     while (FAN_EVENT_OK(fe_mdata, length))
                                         {
-                                            event_process(fe_mdata, main_struct->opt->dirname_list);
+                                            event_process(fe_mdata, main_struct->opt->dirname_list, main_struct->queue);
 
                                             if (fe_mdata->fd > 0)
                                                 {
