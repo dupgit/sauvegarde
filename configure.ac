@@ -55,7 +55,8 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS( \
  signal.h         \
  sys/signalfd.h   \
- sys/fanotify.h
+ sys/fanotify.h   \
+ math.h
 )
 
 
