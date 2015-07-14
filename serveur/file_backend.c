@@ -207,7 +207,7 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
  * @returns to the client a list of hashs in no specific order for which
  *          the server needs the datas.
  */
-GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_list)
+GSList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_list)
 {
     GFile *data_file = NULL;
     GSList *head = hash_list;

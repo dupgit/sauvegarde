@@ -37,10 +37,10 @@
  * @param init_backend a function to init the backend
  * @param build_needed_hash_list a function that must build a GSList * needed hash list
  * @param get_list_of_files gets the list of saved files
- * @param file_retrieve_data retrieves data from a specified hash.
+ * @param retrieve_data retrieves data from a specified hash.
  * @returns a newly created backend_t structure initialized to nothing !
  */
-backend_t *init_backend_structure(void *store_smeta, void *store_data, void *init_backend, void *build_needed_hash_list, void *get_list_of_files, void * file_retrieve_data)
+backend_t *init_backend_structure(void *store_smeta, void *store_data, void *init_backend, void *build_needed_hash_list, void *get_list_of_files, void * retrieve_data)
 {
     backend_t *backend = NULL;
 
@@ -52,7 +52,7 @@ backend_t *init_backend_structure(void *store_smeta, void *store_data, void *ini
     backend->init_backend = init_backend;
     backend->build_needed_hash_list = build_needed_hash_list;
     backend->get_list_of_files = get_list_of_files;
-    backend->file_retrieve_data = file_retrieve_data;
+    backend->retrieve_data = retrieve_data;
 
     return backend;
 }

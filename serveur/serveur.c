@@ -66,7 +66,7 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
     serveur_struct->data_queue = g_async_queue_new();
 
     /* default backend (file_backend) */
-    serveur_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend, build_needed_hash_list, file_get_list_of_files, file_retrieve_data);
+    serveur_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend, file_build_needed_hash_list, file_get_list_of_files, file_retrieve_data);
 
     return serveur_struct;
 }
@@ -88,9 +88,9 @@ static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gc
         {
             backend = serveur_struct->backend;
 
-            if (backend->file_retrieve_data != NULL)
+            if (backend->retrieve_data != NULL)
                 {
-                    hash_data = backend->file_retrieve_data(serveur_struct, hash);
+                    hash_data = backend->retrieve_data(serveur_struct, hash);
                     answer = convert_hash_data_t_to_json(hash_data);
                     if (answer == NULL)
                         {

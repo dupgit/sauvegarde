@@ -83,6 +83,7 @@ gint start_fanotify(options_t *opt)
     gint fanotify_fd = -1;
     GSList *head = NULL;
 
+    /** @todo be certain that FAN_MODIFY is needed if not leave only FAN_CLOSE_WRITE */
     /* Setup fanotify notifications (FAN) mask. All these defined in linux/fanotify.h. */
     static uint64_t event_mask =
       (/*FAN_ACCESS        | */ /* File accessed                                              */

@@ -117,7 +117,7 @@ extern void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_
  *        informations needed by the program are stored.
  * @param hash_list is the list of hashs that we have to check for.
  */
-extern GSList *build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_list);
+extern GSList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_list);
 
 
 /**
