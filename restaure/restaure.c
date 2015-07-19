@@ -244,15 +244,16 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 
     if (meta != NULL)
         {
+            /* get the basename of the file to be restored */
             file = g_file_new_for_path(meta->name);
             basename = g_file_get_basename(file);
             free_object(file);
 
+            /* gets the current directory to make the file to be restored in it */
             cwd = getcwd(NULL, 0);
             filename = g_build_filename(cwd, basename, NULL);
             print_debug("filename = %s\n", filename);
             file = g_file_new_for_path(filename);
-
             stream = g_file_replace(file, NULL, TRUE, G_FILE_CREATE_PRIVATE, NULL, &error);
 
             if (stream != NULL)
