@@ -136,8 +136,8 @@ static void print_smeta_to_screen(serveur_meta_data_t *smeta)
                     break;
                 }
 
-            la_date = g_date_time_new_from_unix_utc(meta->mtime);
-            the_date = g_date_time_format(la_date, "%F %T");
+            la_date = g_date_time_new_from_unix_local(meta->mtime);
+            the_date = g_date_time_format(la_date, "%F %T %z");
 
             fprintf(stdout, "%s ", the_date);
 
