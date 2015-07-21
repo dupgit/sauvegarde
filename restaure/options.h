@@ -39,12 +39,13 @@
  */
 typedef struct
 {
-    gboolean version;   /**< TRUE if we have to display program's version                                          */
-    gchar *list;        /**< Should contain a filename to be searched into saved files filename's list             */
-    gchar *restore;     /**< Must contain a filename or a directory name to be restored (latest version by default */
-    gchar *configfile;  /**< Filename for the configuration file specified on the command line                     */
-    gchar *ip;          /**< A string representing the IP address where serveur is located (may be a hotsname)     */
-    gint port;          /**< Port number on which to send things to serveur's server (on which it must listen)     */
+    gboolean version;   /**< TRUE if we have to display program's version                                           */
+    gchar *list;        /**< Should contain a filename to be searched into saved files filename's list              */
+    gchar *restore;     /**< Must contain a filename or a directory name to be restored (latest version by default  */
+    gchar *date;        /**< Should contain a date in the correct format to filter only files at that specific date */
+    gchar *configfile;  /**< Filename for the configuration file specified on the command line                      */
+    gchar *ip;          /**< A string representing the IP address where serveur is located (may be a hotsname)      */
+    gint port;          /**< Port number on which to send things to serveur's server (on which it must listen)      */
 } options_t;
 
 

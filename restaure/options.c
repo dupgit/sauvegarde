@@ -163,12 +163,14 @@ static options_t *manage_command_line_options(int argc, char **argv)
     gint port = 0;                 /** Port number on which to send things to the server          */
     gchar *list = NULL;            /** Should contain a filename or a directory to filter out     */
     gchar *restore = NULL;         /** Must contain a filename or a directory name to be restored */
+    gchar *date = NULL;
 
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version."), NULL},
         { "list", 'l', 0, G_OPTION_ARG_FILENAME, &list, N_("Gives a list of saved files that correspond to the given REGEX."), "REGEX"},
         { "restore", 'r', 0, G_OPTION_ARG_FILENAME, &restore, N_("Restore requested filename (REGEX) (by default latest version)."), "REGEX"},
+        { "date", 't', 0, G_OPTION_ARG_STRING, &date, N_("restores the selected file at that specific DATE."), "DATE"},
         { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode."), N_("BOOLEAN")},
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), "IP"},
@@ -233,6 +235,11 @@ static options_t *manage_command_line_options(int argc, char **argv)
      */
     opt->version = version; /* only TRUE if -v or --version was invoked */
 
+    if (date != NULL)
+        {
+            opt->date = g_strdup(date);
+        }
+
     if (list != NULL)
         {
             opt->list = g_strdup(list);
@@ -260,6 +267,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     free_variable(summary);
     free_variable(list);
     free_variable(restore);
+    free_variable(date);
 
     return opt;
 }
