@@ -153,6 +153,9 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_C
     gchar *owner = NULL;
     gchar *group = NULL;
     gchar *filename = NULL;
+    gchar *encoded_date = NULL;
+    gchar *date = NULL;
+    gsize len = 0;
     backend_t *backend = NULL;
     query_t *query = NULL;
 
@@ -169,12 +172,15 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_C
                     owner = get_argument_value_from_key(connection, "owner");
                     group = get_argument_value_from_key(connection, "group");
                     filename = get_argument_value_from_key(connection, "filename");
+                    encoded_date = get_argument_value_from_key(connection, "date");
+                    date = (gchar *) g_base64_decode(encoded_date, &len);
+                    free_variable(encoded_date);
 
-                    print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s\n"), hostname, uid, gid, owner, group, filename);
+                    print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s && %s\n"), hostname, uid, gid, owner, group, filename, date);
 
                     if (hostname != NULL && uid != NULL && gid != NULL && owner != NULL && group != NULL)
                         {
-                            query = init_query_structure(hostname, uid, gid, owner, group, filename, NULL);
+                            query = init_query_structure(hostname, uid, gid, owner, group, filename, date);
                             answer = backend->get_list_of_files(serveur_struct, query);
                             free_query_structure(query); /** All variables hostname ... are freed there ! */
                         }

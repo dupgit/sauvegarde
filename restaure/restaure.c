@@ -88,6 +88,7 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
     gchar *the_gid = NULL;
     gchar *owner = NULL;
     gchar *group = NULL;
+    gchar *encoded_date = NULL;
 
     uid = geteuid();
     pass = getpwuid(uid);
@@ -100,7 +101,16 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
             the_uid = g_strdup_printf("%d", uid);
             the_gid = g_strdup_printf("%d", pass->pw_gid);
 
-            query = init_query_structure(hostname, the_uid, the_gid, owner, group, filename, date);
+            if (date != NULL)
+                {
+                    encoded_date = g_base64_encode((const guchar *) date, strlen(date));
+                }
+            else
+                {
+                    encoded_date = NULL;
+                }
+
+            query = init_query_structure(hostname, the_uid, the_gid, owner, group, filename, encoded_date);
             print_debug("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n", hostname, the_uid, the_gid, owner, group);
         }
 
@@ -115,7 +125,7 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
  */
 static void print_smeta_to_screen(serveur_meta_data_t *smeta)
 {
-    meta_data_t *meta = NULL;
+    meta_data_t *meta = NULL;   /**< helper to access smeta->meta structure do not free ! */
     GDateTime *la_date = NULL;
     gchar *the_date = NULL;
 
@@ -161,12 +171,20 @@ static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query)
 {
     gchar *request = NULL;
     json_t *root = NULL;
-    GSList *list = NULL;    /** List of serveur_meta_data_t * */
+    GSList *list = NULL;    /** List of serveur_meta_data_t * returned by this function */
     gint res = CURLE_FAILED_INIT;
 
     if (res_struct != NULL && query != NULL)
         {
-            request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s", query->hostname, query->uid, query->gid, query->owner, query->group, query->filename);
+            if (query->date == NULL)
+                {
+                    request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s", query->hostname, query->uid, query->gid, query->owner, query->group, query->filename);
+                }
+            else
+                {
+                    request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s&date=%s", query->hostname, query->uid, query->gid, query->owner, query->group, query->filename, query->date);
+                }
+
             print_debug(_("Query is: %s\n"), request);
             res = get_url(res_struct->comm, request);
 

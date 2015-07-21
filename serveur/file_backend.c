@@ -39,6 +39,7 @@ static void read_one_buffer(buffer_t *a_buffer);
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer);
 static guint64 get_guint64_from_string(gchar *string);
 static uint get_uint_from_string(gchar *string);
+static gboolean compare_mtime_to_date(guint64 mtime, gchar *date);
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query);
 
 
@@ -542,6 +543,34 @@ static uint get_uint_from_string(gchar *string)
 
 
 /**
+ * Compares mtime to a YYYY-MM-DD HH:MM:SS gchar * string formated date
+ * @param mtime the time in unix time
+ * @param date the date in YYYY-MM-DD HH:MM:SS format - it may lack
+ *        things from the end ie: YYYY-MM-DD HH: for instance.
+ */
+static gboolean compare_mtime_to_date(guint64 mtime, gchar *date)
+{
+    GDateTime *la_date = NULL;
+    gchar *the_date = NULL;
+    gboolean result = TRUE;
+
+    if (date != NULL)
+        {
+            la_date = g_date_time_new_from_unix_local(mtime);
+            the_date = g_date_time_format(la_date, "%F %T %z");
+
+            result = g_str_has_prefix(the_date, date);
+
+            free_variable(the_date);
+            g_date_time_unref(la_date);
+        }
+
+    return result;
+}
+
+
+
+/**
  * Extracts all meta datas from one line.
  * @param line the line that has been read.
  * @param a_regex is the regular expression to filter upon the filename
@@ -585,27 +614,36 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
                     meta->atime = get_guint64_from_string(params[3]);
                     meta->ctime = get_guint64_from_string(params[4]);
                     meta->mtime = get_guint64_from_string(params[5]);
-                    meta->size = get_guint64_from_string(params[6]);
 
-                    meta->owner = g_strndup(params[7]+2, strlen(params[7])-3);
-                    meta->group = g_strndup(params[8]+2, strlen(params[8])-3);
-
-                    meta->uid = get_uint_from_string(params[9]);
-                    meta->gid = get_uint_from_string(params[10]);
-                    q_uid = get_uint_from_string(query->uid);
-                    q_gid = get_uint_from_string(query->gid);
-
-                    if (strcmp(meta->owner, query->owner) == 0 && strcmp(meta->group, query->group) == 0 && (meta->uid == q_uid) && (meta->gid == q_gid))
+                    if (compare_mtime_to_date(meta->mtime, query->date))
                         {
-                            hash_list = make_hash_list_from_string(params[12]);
 
-                            meta->hash_list = hash_list;
+                            meta->size = get_guint64_from_string(params[6]);
 
-                            print_debug(_("file_backend: Found: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
-                         }
+                            meta->owner = g_strndup(params[7]+2, strlen(params[7])-3);
+                            meta->group = g_strndup(params[8]+2, strlen(params[8])-3);
+
+                            meta->uid = get_uint_from_string(params[9]);
+                            meta->gid = get_uint_from_string(params[10]);
+                            q_uid = get_uint_from_string(query->uid);
+                            q_gid = get_uint_from_string(query->gid);
+
+                            if (strcmp(meta->owner, query->owner) == 0 && strcmp(meta->group, query->group) == 0 && (meta->uid == q_uid) && (meta->gid == q_gid))
+                                {
+                                    hash_list = make_hash_list_from_string(params[12]);
+
+                                    meta->hash_list = hash_list;
+
+                                    print_debug(_("file_backend: Found: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
+                                 }
+                            else
+                                {
+                                    meta = free_meta_data_t(meta);
+                                }
+                        }
                     else
                         {
-                            meta = free_meta_data_t(meta);
+                             meta = free_meta_data_t(meta);
                         }
 
                 }
@@ -655,7 +693,7 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
     if (serveur_struct != NULL && serveur_struct->backend != NULL &&  serveur_struct->backend->user_data != NULL && query != NULL)
         {
 
-            print_debug(_("file_backend: filter is: %s\n"), query->filename);
+            print_debug(_("file_backend: filter is: %s && %s\n"), query->filename, query->date);
 
             a_regex = g_regex_new(query->filename, G_REGEX_CASELESS, 0, &error);
 

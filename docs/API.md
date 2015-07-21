@@ -55,6 +55,9 @@ least all theses parameters:
 'filename' may be used to filter results for a specific filename (or
 directory name).
 
+'date' may be used to filter results for a specific date. it must be
+base 64 encoded and the string must be formatted "YYYY-MM-DD HH:MM:SS".
+
 The answer contains a json array named "file_list" that contains a
 serveur_meta_data_t structure (a JSON structure for a file as stated in
 [README.md](../README.md) file) for each file.
