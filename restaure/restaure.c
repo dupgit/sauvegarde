@@ -28,10 +28,13 @@
 #include "restaure.h"
 
 static res_struct_t *init_res_struct(int argc, char **argv);
-static query_t *get_user_infos(gchar *hostname, gchar *filename);
+static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date);
 static void print_smeta_to_screen(serveur_meta_data_t *smeta);
-static GSList *get_files_from_serveur(res_struct_t *res_struct, gchar *filename);
-static void print_all_files(res_struct_t *res_struct, gchar *filename);
+static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query);
+static void print_all_files(res_struct_t *res_struct, query_t *query);
+static void create_file(res_struct_t *res_struct, meta_data_t *meta);
+static void restore_last_file(res_struct_t *res_struct, query_t *query);
+
 
 /**
  * Inits a res_struct_t * structure. Manages the command line options.
@@ -72,8 +75,10 @@ static res_struct_t *init_res_struct(int argc, char **argv)
 /**
  * Gets all user infos and fills a query_t * structure accordingly.
  * @param hostname the hostname where the program is run
+ * @param filename is the name of the file we want to restore.
+ * @param date is the date of the version of this file.
  */
-static query_t *get_user_infos(gchar *hostname, gchar *filename)
+static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
 {
     uid_t uid;
     struct passwd *pass = NULL;
@@ -95,7 +100,7 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename)
             the_uid = g_strdup_printf("%d", uid);
             the_gid = g_strdup_printf("%d", pass->pw_gid);
 
-            query = init_query_structure(hostname, the_uid, the_gid, owner, group, filename);
+            query = init_query_structure(hostname, the_uid, the_gid, owner, group, filename, date);
             print_debug("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n", hostname, the_uid, the_gid, owner, group);
         }
 
@@ -148,23 +153,20 @@ static void print_smeta_to_screen(serveur_meta_data_t *smeta)
 /**
  * Gets the file the serveur_metat_data_t * file list if any
  * @param res_struct is the main structure for restaure program.
- * @param filename is the filename used to filter out the query. It must
- *        not be NULL.
+ * @param query is the structure that contains everything needed to
+ *        query the serveur (and filter a bit). It must not be NULL.
  * @returns a GSList * of serveur_meta_data_t *
  */
-static GSList *get_files_from_serveur(res_struct_t *res_struct, gchar *filename)
+static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query)
 {
-    query_t *query = NULL;
     gchar *request = NULL;
     json_t *root = NULL;
     GSList *list = NULL;    /** List of serveur_meta_data_t * */
     gint res = CURLE_FAILED_INIT;
 
-    query = get_user_infos(res_struct->hostname, filename);
-
-    if (query != NULL)
+    if (res_struct != NULL && query != NULL)
         {
-            request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s", query->hostname, query->uid, query->gid, query->owner, query->group, filename);
+            request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s", query->hostname, query->uid, query->gid, query->owner, query->group, query->filename);
             print_debug(_("Query is: %s\n"), request);
             res = get_url(res_struct->comm, request);
 
@@ -180,7 +182,6 @@ static GSList *get_files_from_serveur(res_struct_t *res_struct, gchar *filename)
                 }
 
             free_variable(request);
-            free_query_structure(query);
         }
 
     return list;
@@ -190,18 +191,18 @@ static GSList *get_files_from_serveur(res_struct_t *res_struct, gchar *filename)
 /**
  * Prints all saved files
  * @param res_struct is the main structure for restaure program.
- * @param filename is the filename used to filter out the query. It must
- *        not be NULL.
+ * @param query is the structure that contains everything needed to
+ *        query the serveur (and filter a bit). It must not be NULL.
  */
-static void print_all_files(res_struct_t *res_struct, gchar *filename)
+static void print_all_files(res_struct_t *res_struct, query_t *query)
 {
     GSList *list = NULL;   /** List of serveur_meta_data_t * */
     GSList *head = NULL;   /** head of the list to be freed  */
     serveur_meta_data_t *smeta = NULL;
 
-    if (res_struct != NULL && filename != NULL)
+    if (res_struct != NULL && query != NULL)
         {
-            list = get_files_from_serveur(res_struct, filename);
+            list = get_files_from_serveur(res_struct, query);
             head = list;
 
             while (list != NULL)
@@ -309,19 +310,19 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 /**
  * Restores the last file that the fetched list contains.
  * @param res_struct is the main structure for restaure program.
- * @param filename is the filename used to filter out the query. It must
- *        not be NULL.
+ * @param query is the structure that contains everything needed to
+ *        query the serveur (and filter a bit). It must not be NULL.
  */
-static void restore_last_file(res_struct_t *res_struct, gchar *filename)
+static void restore_last_file(res_struct_t *res_struct, query_t *query)
 {
     GSList *list = NULL;      /** List of serveur_meta_data_t *            */
     GSList *last = NULL;      /** last element of the list                 */
     serveur_meta_data_t *smeta = NULL;
     meta_data_t *meta = NULL;
 
-    if (res_struct != NULL && filename != NULL)
+    if (res_struct != NULL && query != NULL)
         {
-            list = get_files_from_serveur(res_struct, filename);
+            list = get_files_from_serveur(res_struct, query);
             last = g_slist_last(list);
 
             if (last != NULL)
@@ -348,6 +349,7 @@ static void restore_last_file(res_struct_t *res_struct, gchar *filename)
 int main(int argc, char **argv)
 {
     res_struct_t *res_struct = NULL;
+    query_t *query =  NULL;
 
 
     #if !GLIB_CHECK_VERSION(2, 36, 0)
@@ -363,13 +365,17 @@ int main(int argc, char **argv)
 
             if (res_struct->opt->list != NULL)
                 {
-                    print_all_files(res_struct, res_struct->opt->list);
+                    query = get_user_infos(res_struct->hostname, res_struct->opt->list, NULL);
+                    print_all_files(res_struct, query);
+                    free_query_structure(query);
                 }
 
             if (res_struct->opt->restore != NULL)
                 {
+                    query = get_user_infos(res_struct->hostname, res_struct->opt->restore, NULL);
                     fprintf(stdout, "We should restore %s!\n", res_struct->opt->restore);
-                    restore_last_file(res_struct, res_struct->opt->restore);
+                    restore_last_file(res_struct, query);
+                    free_query_structure(query);
                 }
 
             return EXIT_SUCCESS;

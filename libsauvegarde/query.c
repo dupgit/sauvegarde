@@ -37,10 +37,12 @@
  * @param gid gid for the file(s)
  * @param owner owner for the file(s) hopefully corresponding to uid
  * @param group group for the file(s) hopefully corresponding to gid
+ * @param filename is the filename that we are looking for.
+ * @param date is the date at which we want the file's version back.
  * @returns a newly allocated query_t * structure filled  with the
  *          corresponding datas that may be freed when no longer needed.
  */
-query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group, gchar *filename)
+query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group, gchar *filename, gchar *date)
 {
     query_t *query = NULL;
 
@@ -52,6 +54,7 @@ query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *ow
     query->owner = owner;
     query->group = group;
     query->filename = filename;
+    query->date = date;
 
     return query;
 }
@@ -72,6 +75,7 @@ gpointer free_query_structure(query_t *query)
             free_variable(query->owner);
             free_variable(query->group);
             free_variable(query->filename);
+            free_variable(query->date);
             g_free(query);
         }
 
