@@ -197,7 +197,6 @@ gint post_url(comm_t *comm, gchar *url)
             if (success != CURLE_OK)
                 {
                     print_error(__FILE__, __LINE__, _("Error while sending POST command (to \"%s\") with datas\n"), real_url);
-                    comm->buffer = free_variable(comm->buffer);
                 }
             else if (comm->buffer != NULL)
                 {
