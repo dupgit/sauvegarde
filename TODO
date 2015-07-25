@@ -1,6 +1,13 @@
 # client
 
-* integrates fanotify
+* integrates fanotify in a cleaner way
 * Review entire design to fit into "small memory" systems.
+
+
+# ideas
+
+* use some cryptography to cypher exchanges (gpg ?)
+* add a fourth program to clean older datas and metas datas (nettoie ?)
+
 
 
