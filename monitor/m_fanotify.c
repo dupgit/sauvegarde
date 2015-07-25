@@ -83,16 +83,16 @@ gint start_fanotify(options_t *opt)
     gint fanotify_fd = -1;
     GSList *head = NULL;
 
-    /** @todo be certain that FAN_MODIFY is needed if not leave only FAN_CLOSE_WRITE */
+    /** Leaving only FAN_CLOSE_WRITE for some tests */
     /* Setup fanotify notifications (FAN) mask. All these defined in linux/fanotify.h. */
     static uint64_t event_mask =
       (/*FAN_ACCESS        | */ /* File accessed                                              */
-       FAN_MODIFY        |  /* File modified                                              */
-       FAN_CLOSE_WRITE   |  /* Writtable file closed                                      */
+       /*FAN_MODIFY        | */ /* File modified                                              */
+       FAN_CLOSE_WRITE   |      /* Writtable file closed                                      */
        /*FAN_CLOSE_NOWRITE | */ /* Read only file closed                                      */
        /*FAN_OPEN          | */ /* File was opened                                            */
-       FAN_ONDIR         |  /* We want to be reported of events in the directory          */
-       FAN_EVENT_ON_CHILD); /* We want to be reported of events in files of the directory */
+       FAN_ONDIR         |      /* We want to be reported of events in the directory          */
+       FAN_EVENT_ON_CHILD);     /* We want to be reported of events in files of the directory */
 
     unsigned int mark_flags = FAN_MARK_ADD | FAN_MARK_MOUNT;
 
@@ -212,9 +212,24 @@ static char *get_program_name_from_pid(int pid)
 }
 
 
+static size_t min(size_t len1, size_t len2)
+{
+    if (len1 <= len2)
+        {
+            return len1;
+        }
+    else
+        {
+            return len2;
+        }
+}
+
+
 /**
  * An example of processing events
  * @todo simplify code (CCN is 12 already !)
+ * @param dir_list MUST be a list of gchar * g_utf8_casefold()
+ *        transformed.
  */
 static void event_process(struct fanotify_event_metadata *event, GSList *dir_list, GAsyncQueue *queue)
 {
@@ -230,23 +245,14 @@ static void event_process(struct fanotify_event_metadata *event, GSList *dir_lis
 
     path = get_file_path_from_fd(event->fd);
 
-    lenp = strlen(path);
-    pathutf8 = g_utf8_casefold(path, lenp);
+    pathutf8 = g_utf8_casefold(path, -1);
+    lenp = strlen(pathutf8);
 
     while (head != NULL && found == FALSE)
         {
             lend = strlen(head->data);
-            /** @todo allocate an already transformed list to avoid this */
-            dirutf8 = g_utf8_casefold(head->data, lend);
-
-            if (lenp < lend)
-                {
-                    lencmp = lenp;
-                }
-            else
-                {
-                    lencmp = lend;
-                }
+            dirutf8 = head->data;
+            lencmp = min(lenp, lend);
 
             if (strncmp(dirutf8, pathutf8, lencmp) == 0)
                 {
@@ -256,7 +262,6 @@ static void event_process(struct fanotify_event_metadata *event, GSList *dir_lis
                 {
                     head = g_slist_next(head);
                 }
-            dirutf8 = free_variable(dirutf8);
         }
 
     pathutf8 = free_variable(pathutf8);
@@ -335,7 +340,37 @@ void stop_fanotify(options_t *opt, int fanotify_fd)
 
         }
 
-  close(fanotify_fd);
+    close(fanotify_fd);
+}
+
+
+/**
+ * Transforms a list of directory into a list of directory ready for
+ * comparison
+ * @param dir_list is the list of directories to be transformed. This
+ *        list is leaved untouched.
+ * @returns a newly allocated list that may be freed when no longer
+ *          needed.
+ */
+static GSList *transform_to_utf8_casefold(GSList *dir_list)
+{
+    GSList *head = NULL;
+    GSList *utf8 = NULL;
+    gchar *charutf8 = NULL;
+
+    head = dir_list;
+
+    while (head != NULL)
+        {
+            charutf8 = g_utf8_casefold(head->data, -1);
+
+            /* Order of utf8 list is not very important */
+            utf8 = g_slist_prepend(utf8, charutf8);
+
+            head = g_slist_next(head);
+        }
+
+    return utf8;
 }
 
 
@@ -350,6 +385,8 @@ void fanotify_loop(main_struct_t *main_struct)
     char buffer[FANOTIFY_BUFFER_SIZE];
     ssize_t length = 0;
     struct fanotify_event_metadata *fe_mdata = NULL;
+    GSList *dir_list_utf8 = NULL;
+
 
     gint signal_fd = 0;
     gint fanotify_fd = 0;
@@ -365,6 +402,9 @@ void fanotify_loop(main_struct_t *main_struct)
             fds[FD_POLL_SIGNAL].events = POLLIN;
             fds[FD_POLL_FANOTIFY].fd = fanotify_fd;
             fds[FD_POLL_FANOTIFY].events = POLLIN;
+
+
+            dir_list_utf8 = transform_to_utf8_casefold(main_struct->opt->dirname_list);
 
             while (1)
                 {
@@ -404,7 +444,7 @@ void fanotify_loop(main_struct_t *main_struct)
 
                                     while (FAN_EVENT_OK(fe_mdata, length))
                                         {
-                                            event_process(fe_mdata, main_struct->opt->dirname_list, main_struct->queue);
+                                            event_process(fe_mdata, dir_list_utf8, main_struct->queue);
 
                                             if (fe_mdata->fd > 0)
                                                 {
