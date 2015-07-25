@@ -212,19 +212,6 @@ static char *get_program_name_from_pid(int pid)
 }
 
 
-static size_t min(size_t len1, size_t len2)
-{
-    if (len1 <= len2)
-        {
-            return len1;
-        }
-    else
-        {
-            return len2;
-        }
-}
-
-
 /**
  * An example of processing events
  * @todo simplify code (CCN is 12 already !)
@@ -239,22 +226,16 @@ static void event_process(struct fanotify_event_metadata *event, GSList *dir_lis
     gboolean found = FALSE;
     gchar *pathutf8 = NULL;
     gchar *dirutf8 = NULL;
-    size_t lenp = 0;
-    size_t lend = 0;
-    size_t lencmp = 0;
 
     path = get_file_path_from_fd(event->fd);
 
     pathutf8 = g_utf8_casefold(path, -1);
-    lenp = strlen(pathutf8);
 
     while (head != NULL && found == FALSE)
         {
-            lend = strlen(head->data);
             dirutf8 = head->data;
-            lencmp = min(lenp, lend);
 
-            if (strncmp(dirutf8, pathutf8, lencmp) == 0)
+            if (g_str_has_prefix(pathutf8, dirutf8) == TRUE)
                 {
                     found = TRUE;
                 }
