@@ -214,7 +214,6 @@ static char *get_program_name_from_pid(int pid)
 
 /**
  * An example of processing events
- * @todo simplify code (CCN is 12 already !)
  * @param dir_list MUST be a list of gchar * g_utf8_casefold()
  *        transformed.
  */
@@ -254,30 +253,9 @@ static void event_process(struct fanotify_event_metadata *event, GSList *dir_lis
             print_debug(_(" matching directory is       : %s\n"), head->data);
             print_debug(_(" pid=%d (%s): \n"), event->pid, progname);
 
-
-            if (event->mask & FAN_OPEN)
-                {
-                     print_debug(_("\tFAN_OPEN\n"));
-                }
-
-            if (event->mask & FAN_ACCESS)
-                {
-                    print_debug(_("\tFAN_ACCESS\n"));
-                }
-
-            if (event->mask & FAN_MODIFY)
-                {
-                    print_debug(_("\tFAN_MODIFY\n"));
-                }
-
             if (event->mask & FAN_CLOSE_WRITE)
                 {
                     print_debug(_("\tFAN_CLOSE_WRITE\n"));
-                }
-
-            if (event->mask & FAN_CLOSE_NOWRITE)
-                {
-                    print_debug(_("\tFAN_CLOSE_NOWRITE\n"));
                 }
 
             g_async_queue_push(queue, g_strdup(path));
@@ -289,7 +267,6 @@ static void event_process(struct fanotify_event_metadata *event, GSList *dir_lis
 
     close(event->fd);
     free_variable(path);
-
 }
 
 
@@ -407,6 +384,7 @@ void fanotify_loop(main_struct_t *main_struct)
                             if (fdsi.ssi_signo == SIGINT || fdsi.ssi_signo == SIGTERM)
                                 {
                                     stop_fanotify(main_struct->opt, main_struct->fanotify_fd);
+                                    free_list(dir_list_utf8);
                                     break;
                                 }
 
