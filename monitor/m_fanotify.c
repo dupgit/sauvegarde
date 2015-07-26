@@ -86,11 +86,7 @@ gint start_fanotify(options_t *opt)
     /** Leaving only FAN_CLOSE_WRITE for some tests */
     /* Setup fanotify notifications (FAN) mask. All these defined in linux/fanotify.h. */
     static uint64_t event_mask =
-      (/*FAN_ACCESS        | */ /* File accessed                                              */
-       /*FAN_MODIFY        | */ /* File modified                                              */
-       FAN_CLOSE_WRITE   |      /* Writtable file closed                                      */
-       /*FAN_CLOSE_NOWRITE | */ /* Read only file closed                                      */
-       /*FAN_OPEN          | */ /* File was opened                                            */
+      (FAN_CLOSE_WRITE   |      /* Writtable file closed                                      */
        FAN_ONDIR         |      /* We want to be reported of events in the directory          */
        FAN_EVENT_ON_CHILD);     /* We want to be reported of events in files of the directory */
 
@@ -272,17 +268,16 @@ static void event_process(struct fanotify_event_metadata *event, GSList *dir_lis
 
 /**
  * Stops fanotify notifications
+ * @param opt is the options of the program
+ * @param fanotify_fd is the file descriptor of the file which is
+ *        concerned by the event.
  */
 void stop_fanotify(options_t *opt, int fanotify_fd)
 {
     GSList *head = NULL;
-    /* Setup fanotify notifications (FAN) mask. All these defined in linux/fanotify.h. */
+    /* Setup fanotify notifications (FAN) mask. All these defined in linux/fanotify.h.    */
     static uint64_t event_mask =
-      (/*FAN_ACCESS        | */ /* File accessed                                              */
-       FAN_MODIFY        |  /* File modified                                              */
-       FAN_CLOSE_WRITE   |  /* Writtable file closed                                      */
-       /*FAN_CLOSE_NOWRITE | */ /* Read only file closed                                      */
-       /*FAN_OPEN          | */ /* File was opened                                            */
+      (FAN_CLOSE_WRITE   |  /* Writtable file closed                                      */
        FAN_ONDIR         |  /* We want to be reported of events in the directory          */
        FAN_EVENT_ON_CHILD); /* We want to be reported of events in files of the directory */
 
