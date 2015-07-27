@@ -1,13 +1,13 @@
 # Sauvegarde
 
-This is sauvegarde doxygen's @mainpage.
+Continuous data protection under GNU/Linux.
 
-Some experiments around backup and continuous data protection (CDP).
+This page is sauvegarde doxygen's @mainpage.
 
 [![Build Status](https://travis-ci.org/dupgit/sauvegarde.png?branch=master)](https://travis-ci.org/dupgit/sauvegarde)
 
 With this code you can backup and restore files. Compile the code put
-the "serveur" where you want to save your files. Let "client crawl your
+the `serveur` where you want to save your files. Let `client` crawl your
 files to save them. Use restore to restore a file.
 
 
