@@ -1,6 +1,6 @@
 # Sauvegarde
 
-Continuous data protection under GNU/Linux.
+Continuous data protection for GNU/Linux.
 
 This page is sauvegarde doxygen's @mainpage.
 
