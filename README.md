@@ -43,6 +43,7 @@ Debian Jessie, Ubuntu 12.04 LTS and raspbian 3 and on x86_64 and arm7l
 architectures. Please let me know if you have compiled Sauvegarde
 successfully in a system that is not listed here.
 
+
 ## Download
 
 You can download the source code from github or a packed defined version
@@ -62,6 +63,75 @@ in the classic way :
     make install
 
 
+## Usage
+
+First you need to run the program serveur on a machine that will act as
+a server. You can configure options in `serveur.conf` (located by default
+in `{prefix}/etc/sauvegarde/`) or use the command's line options:
+
+    Usage:
+      serveur [OPTION...]
+
+    This program is monitoring file changes in the filesystem and is hashing
+    files with SHA256 algorithms from Glib.
+
+    Help Options:
+      -h, --help                       Show help options
+
+    Application Options:
+      -v, --version                    Prints program version.
+      -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
+      -c, --configuration=FILENAME     Specify an alternative configuration file.
+      -p, --port=NUMBER                Port NUMBER on which to listen.
+
+Then you may use client program to report modified files to the serveur
+and save them accordingly. Configuration file is named `client.conf` and
+command line options are:
+
+    Usage:
+      client [OPTION...]
+
+    This program is monitoring file changes in the filesystem and is hashing
+    files with SHA256 algorithms from Glib.
+
+    Help Options:
+      -h, --help                       Show help options
+
+    Application Options:
+      -v, --version                    Prints program version
+      -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
+      -c, --configuration=FILENAME     Specify an alternative configuration file.
+      -b, --blocksize=SIZE             Block SIZE used to compute hashs.
+      -n, --noprint                    Quiets the program while calculating checksum.
+      -r, --dircache=DIRNAME           Directory DIRNAME where to cache files.
+      -f, --dbname=FILENAME            Database FILENAME.
+      -i, --ip=IP                      IP address where serveur program is.
+      -p, --port=NUMBER                Port NUMBER on which to listen.
+
+At a time you may need to restaure a file then you'll have to use restaure
+program. Configuration file is named `restaure.conf` and command line
+options are:
+
+    Usage:
+      restaure [OPTION...]
+
+    This program is restoring files from serveur's server.
+
+
+    Help Options:
+      -h, --help                       Show help options
+
+    Application Options:
+      -v, --version                    Prints program version.
+      -l, --list=REGEX                 Gives a list of saved files that correspond to the given REGEX.
+      -r, --restore=REGEX              Restore requested filename (REGEX) (by default latest version).
+      -t, --date=DATE                  restores the selected file at that specific DATE.
+      -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
+      -c, --configuration=FILENAME     Specify an alternative configuration file.
+      -i, --ip=IP                      IP address where serveur program is.
+      -p, --port=NUMBER                Port NUMBER on which serveur program is listening.
+
+
 ## Roadmap
 
 As I'm coding on spare hours I have no roadmap for now.
@@ -71,6 +141,7 @@ As I'm coding on spare hours I have no roadmap for now.
 
 Some inside insights are in the [infrastructure](docs/infrastructure.md)
 documentation as well for the [API](docs/API.md) part.
+
 
 ## Coding into this project
 
