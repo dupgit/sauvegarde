@@ -35,6 +35,7 @@
 static void file_create_directory(gchar *save_dir, gchar *sub_dir);
 static void make_all_subdirectories(file_backend_t *file_backend);
 static buffer_t *init_buffer_structure(GFileInputStream *stream);
+static void free_buffer_t(buffer_t *a_buffer);
 static void read_one_buffer(buffer_t *a_buffer);
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer);
 static guint64 get_guint64_from_string(gchar *string);
@@ -410,6 +411,18 @@ static buffer_t *init_buffer_structure(GFileInputStream *stream)
 
 
 /**
+ * Frees the buffer structrure
+ * @param a_buffer is the buffer structure to be freed
+ */
+static void free_buffer_t(buffer_t *a_buffer)
+{
+    free_variable(a_buffer->buf);
+    g_object_unref(a_buffer->stream);
+    free_variable(a_buffer);
+}
+
+
+/**
  * Reads one entire buffer
  * @param[in,out] a_buffer is a buffer_t * structure containing all that is
  *                needed to read a buffer and to know where we are in it
@@ -591,8 +604,6 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
     if (line != NULL && strlen(line) > 16)
         {
-            meta = new_meta_data_t();
-
             /**
              * line example : 1, 1049893, 33261, 1432131763, 1432129404, 1425592185, 38680, "root", "root", 0, 0, "/bin/locale", "eAAAdPN/AAAQFgB0838AAFNKQtsAlNrU4QHmJlkxiKA=",
              * "IBUAdPN/AADgCQB0838AACuk6dHfqsfcXvECD/HXSbU=", "4AwAdPN/AAAQFgB0838AAPJ18vuZ+mHsaFOztwu6IWw="
@@ -604,6 +615,8 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
             if (g_regex_match(a_regex, filename, 0, NULL))
                 {
+                    meta = new_meta_data_t();
+
                     meta->name = filename;
 
                     meta->file_type = get_uint_from_string(params[0]);
@@ -645,7 +658,6 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
                         {
                              meta = free_meta_data_t(meta);
                         }
-
                 }
             else
                 {
@@ -729,7 +741,7 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
                         }
                     while (a_buffer->size != 0);
 
-                    g_object_unref(stream);
+                    free_buffer_t(a_buffer);
                 }
             else
                 {

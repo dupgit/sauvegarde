@@ -92,7 +92,7 @@ gpointer free_meta_data_t(meta_data_t *meta)
             free_variable(meta->owner);
             free_variable(meta->group);
             free_variable(meta->name);
-            g_slist_free(meta->hash_list);
+            g_slist_free_full(meta->hash_list, g_free);
             free_variable(meta);
         }
 
