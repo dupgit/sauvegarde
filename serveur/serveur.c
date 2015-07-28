@@ -92,14 +92,16 @@ static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gc
                 {
                     hash_data = backend->retrieve_data(serveur_struct, hash);
                     answer = convert_hash_data_t_to_json(hash_data);
+                    free_hash_data_t_structure(hash_data);
+
                     if (answer == NULL)
                         {
-                            answer = g_strdup_printf("Error while trying to get data from hash %s", hash);
+                            answer = g_strdup_printf("Error while trying to get data from hash %s\n", hash);
                         }
                 }
             else
                 {
-                    answer = g_strdup(_("This backend's missing a file_retrieve_data function!\n"));
+                    answer = g_strdup(_("This backend's missing a retrieve_data function!\n"));
                 }
         }
     else

@@ -694,7 +694,6 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
     json_t *array = NULL;
     json_t *root = NULL;
     gchar *json_string = NULL;
-    /* gchar *a_filename = NULL; */
     GRegex *a_regex = NULL;
     meta_data_t *meta = NULL;
     json_t *meta_json = NULL;
@@ -740,6 +739,8 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
                         }
                     while (a_buffer->size != 0);
+
+                    g_input_stream_close((GInputStream *) stream, NULL, &error);
 
                     free_buffer_t(a_buffer);
                 }
@@ -807,7 +808,7 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
             if (stream != NULL)
                 {
                     filesize = get_file_size(data_file);
-                    /* we can do this because files may not be too big: as large as FILE_BACKEND_BUFFER_SIZE */
+                    /* we can do this because files may not be too big: as large as FILE_BACKEND_BUFFER_SIZE ? */
                     data = (guchar *) g_malloc0(filesize + 1);
 
                     read = g_input_stream_read((GInputStream *) stream, data, filesize, NULL, &error);
@@ -824,6 +825,7 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
                         }
 
                     g_input_stream_close((GInputStream *) stream, NULL, &error);
+                    g_object_unref(stream);
                 }
             else
                 {
@@ -833,6 +835,7 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
             free_object(data_file);
             free_variable(filename);
             free_variable(path);
+            free_variable(hash);
             free_variable(prefix);
         }
 

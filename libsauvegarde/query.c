@@ -76,7 +76,7 @@ gpointer free_query_structure(query_t *query)
             free_variable(query->group);
             free_variable(query->filename);
             free_variable(query->date);
-            g_free(query);
+            free_variable(query);
         }
 
     return NULL;
