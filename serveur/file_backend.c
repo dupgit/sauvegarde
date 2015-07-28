@@ -835,7 +835,6 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
             free_object(data_file);
             free_variable(filename);
             free_variable(path);
-            free_variable(hash);
             free_variable(prefix);
         }
 
