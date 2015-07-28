@@ -28,6 +28,7 @@
 #include "restaure.h"
 
 static res_struct_t *init_res_struct(int argc, char **argv);
+static gchar *encode_to_base64(gchar *string);
 static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date);
 static void print_smeta_to_screen(serveur_meta_data_t *smeta);
 static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query);
@@ -73,6 +74,25 @@ static res_struct_t *init_res_struct(int argc, char **argv)
 
 
 /**
+ * Encodes a gchar string into a base64 formated gchar * string.
+ * @param string is the gchar string to be encoded (MUST be 0 terminated).
+ * @returns a newly allocated gchar * string in base64 or NULL.
+ */
+static gchar *encode_to_base64(gchar *string)
+{
+    gchar *encoded_string = NULL;
+
+    if (string != NULL)
+        {
+            encoded_string = g_base64_encode((const guchar *) string, strlen(string));
+        }
+
+    return encoded_string;
+}
+
+
+
+/**
  * Gets all user infos and fills a query_t * structure accordingly.
  * @param hostname the hostname where the program is run
  * @param filename is the name of the file we want to restore.
@@ -89,6 +109,7 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
     gchar *owner = NULL;
     gchar *group = NULL;
     gchar *encoded_date = NULL;
+    gchar *encoded_filename = NULL;
 
     uid = geteuid();
     pass = getpwuid(uid);
@@ -101,16 +122,10 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
             the_uid = g_strdup_printf("%d", uid);
             the_gid = g_strdup_printf("%d", pass->pw_gid);
 
-            if (date != NULL)
-                {
-                    encoded_date = g_base64_encode((const guchar *) date, strlen(date));
-                }
-            else
-                {
-                    encoded_date = NULL;
-                }
+            encoded_filename = encode_to_base64(filename);
+            encoded_date = encode_to_base64(date);
 
-            query = init_query_structure(hostname, the_uid, the_gid, owner, group, filename, encoded_date);
+            query = init_query_structure(hostname, the_uid, the_gid, owner, group, encoded_filename, encoded_date);
             print_debug("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n", hostname, the_uid, the_gid, owner, group);
         }
 

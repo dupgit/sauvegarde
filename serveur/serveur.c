@@ -31,7 +31,7 @@
 
 static serveur_struct_t *init_serveur_main_structure(int argc, char **argv);
 static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gchar *hash);
-static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key);
+static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key, gboolean encoded);
 static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_Connection *connection);
 static gchar *get_json_answer(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, const char *url);
 static gchar *get_unformatted_answer(serveur_struct_t *serveur_struct, const char *url);
@@ -116,12 +116,14 @@ static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gc
  * url (from connection)
  * @param connection is the connection in MHD
  * @param key the key to look for into the url
+ * @param encoded is a boolean that is TRUE if value is base64 encoded
  * @returns a gchar * string that may be freed when no longer needed
  */
-static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key)
+static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key, gboolean encoded)
 {
     const char *value = NULL;
     gchar *value_dup = NULL;
+    gsize len = 0;
 
     if (connection != NULL && key != NULL)
         {
@@ -129,7 +131,14 @@ static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gch
 
             if (value != NULL)
                 {
-                    value_dup = g_strdup(value);
+                    if (encoded == TRUE)
+                        {
+                            value_dup = (gchar *) g_base64_decode(value, &len);
+                        }
+                    else
+                        {
+                            value_dup = g_strdup(value);
+                        }
                 }
         }
 
@@ -153,9 +162,7 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_C
     gchar *owner = NULL;
     gchar *group = NULL;
     gchar *filename = NULL;
-    gchar *encoded_date = NULL;
     gchar *date = NULL;
-    gsize len = 0;
     backend_t *backend = NULL;
     query_t *query = NULL;
 
@@ -166,15 +173,13 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_C
 
             if (backend->get_list_of_files != NULL)
                 {
-                    hostname = get_argument_value_from_key(connection, "hostname");
-                    uid = get_argument_value_from_key(connection, "uid");
-                    gid = get_argument_value_from_key(connection, "gid");
-                    owner = get_argument_value_from_key(connection, "owner");
-                    group = get_argument_value_from_key(connection, "group");
-                    filename = get_argument_value_from_key(connection, "filename");
-                    encoded_date = get_argument_value_from_key(connection, "date");
-                    date = (gchar *) g_base64_decode(encoded_date, &len);
-                    free_variable(encoded_date);
+                    hostname = get_argument_value_from_key(connection, "hostname", FALSE);
+                    uid = get_argument_value_from_key(connection, "uid", FALSE);
+                    gid = get_argument_value_from_key(connection, "gid", FALSE);
+                    owner = get_argument_value_from_key(connection, "owner", FALSE);
+                    group = get_argument_value_from_key(connection, "group", FALSE);
+                    filename = get_argument_value_from_key(connection, "filename", TRUE);
+                    date = get_argument_value_from_key(connection, "date", TRUE);
 
                     print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s && %s\n"), hostname, uid, gid, owner, group, filename, date);
 
@@ -182,11 +187,18 @@ static gchar *get_a_list_of_files(serveur_struct_t *serveur_struct, struct MHD_C
                         {
                             query = init_query_structure(hostname, uid, gid, owner, group, filename, date);
                             answer = backend->get_list_of_files(serveur_struct, query);
-                            free_query_structure(query); /** All variables hostname ... are freed there ! */
+                            free_query_structure(query); /** All variables hostname, uid... are freed there ! */
                         }
                     else
                         {
                             answer = g_strdup_printf(_("Malformed request. hostname: %s, uid: %s, gid: %s, owner: %s, group: %s"), hostname, uid, gid, owner, group);
+                            free_variable(hostname);
+                            free_variable(uid);
+                            free_variable(gid);
+                            free_variable(owner);
+                            free_variable(group);
+                            free_variable(filename);
+                            free_variable(date);
                         }
                 }
         }

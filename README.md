@@ -34,7 +34,7 @@ doxygen (1.6.1) is used to generate code's documentation but is not
 required to build the project. jansson's library version is quite recent
 but it compiles nicely and depends on nothing (as far as I know).
 Compiling sauvegarde also needs gnutls development files (used by
-libmicrohttpd. Please have a look at .travis.yml file in order to see how
+libmicrohttpd). Please have a look at .travis.yml file in order to see how
 to compile dependencies before compiling sauvegarde.
 
 Sauvegarde's project is known to compile (sometimes at the expense of
@@ -244,4 +244,3 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
 * Distribution doc :
  * Debian          : [https://www.debian.org/devel/wnpp/](https://www.debian.org/devel/wnpp/)
  * Gentoo          : [https://wiki.gentoo.org/wiki/Submitting_ebuilds](https://wiki.gentoo.org/wiki/Submitting_ebuilds)
-
