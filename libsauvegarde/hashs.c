@@ -209,6 +209,8 @@ gchar *hash_to_string(guint8 *a_hash)
 /**
  * @param value is the gchar to be evaluated (should be 0 to 9 or a to f)
  * @returns the guint value of a gchar character.
+ * @note this "stupid" function as a CCN of 17 ! Avoid complexification
+ *       of this function if you want to go for a CCN below 10.
  */
 static guint int_value(gchar value)
 {

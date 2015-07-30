@@ -816,7 +816,6 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
                     if (error != NULL)
                         {
                             print_error(__FILE__, __LINE__, _("Error: unable to read from file %s (%ld bytes read): %s.\n"), filename, read, error->message);
-                            free_variable(data);
                             free_error(error);
                         }
                     else
