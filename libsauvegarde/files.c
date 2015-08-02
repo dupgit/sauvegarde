@@ -292,7 +292,23 @@ gchar *get_file_mode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
         }
 
     return result;
+}
 
+
+/**
+ * Set unix mode of a file
+ * @param fileinfo : a GFileInfo pointer obtained from an opened file
+ *        (GFile *)
+ * @param meta : meta_data_t * structure that contains all meta data for
+ *        the corresponding file.
+ */
+void set_file_mode_to_gfile(GFileInfo *fileinfo, meta_data_t *meta)
+{
+    if (fileinfo != NULL && meta != NULL)
+        {
+            print_debug(_("Setting mode: %d\n"), meta->mode);
+            g_file_info_set_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_MODE, meta->mode);
+        }
 }
 
 

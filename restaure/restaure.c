@@ -253,6 +253,48 @@ static void print_all_files(res_struct_t *res_struct, query_t *query)
 
 
 /**
+ * Sets file attributes
+ * @param file is a GFile pointer and must not be null
+ * @param meta is the structure that contains all meta datas for the
+ *        file that we want to set.
+ */
+static void set_file_attributes(GFile *file, meta_data_t *meta)
+{
+    GError *error = NULL;
+    GFileInfo *fileinfo = NULL;
+
+    if (file != NULL && meta != NULL)
+        {
+            fileinfo = g_file_query_info(file, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
+
+            if (fileinfo == NULL || error != NULL)
+                {
+                    print_error(__FILE__, __LINE__, _("Error while getting file information: %s\n"), error->message);
+                    error = free_error(error);
+                }
+            else
+                {
+                    set_file_mode_to_gfile(fileinfo, meta);
+
+                    if (g_file_set_attributes_from_info(file, fileinfo, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error) == FALSE)
+                        {
+                            print_error(__FILE__, __LINE__, _("Error or warning: %s\n"), error->code, error->message);
+                            error = free_error(error);
+                        }
+
+                    free_object(fileinfo);
+                }
+        }
+    else
+        {
+            /* To translators : do not translate this ! */
+            print_error(__FILE__, __LINE__, "set_file_attribute(file = %p, meta = %p)\n", file, meta);
+        }
+}
+
+
+
+/**
  * Creates the file to be restored.
  * @param res_struct is the main structure for restaure program (used here
  *        to communicate with serveur's server).
@@ -275,7 +317,6 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
     GError *error = NULL;
     hash_data_t *hash_data = NULL;
 
-
     if (meta != NULL)
         {
             /* get the basename of the file to be restored */
@@ -288,7 +329,10 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
             filename = g_build_filename(cwd, basename, NULL);
             print_debug("filename = %s\n", filename);
             file = g_file_new_for_path(filename);
-            stream = g_file_replace(file, NULL, TRUE, G_FILE_CREATE_PRIVATE, NULL, &error);
+
+            stream = g_file_replace(file, NULL, TRUE, G_FILE_CREATE_NONE, NULL, &error);
+
+            set_file_attributes(file, meta);
 
             if (stream != NULL)
                 {

@@ -127,6 +127,17 @@ extern gchar *get_file_mode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta);
 
 
 /**
+ * Set unix mode of a file
+ * @param fileinfo : a GFileInfo pointer obtained from an opened file
+ *        (GFile *)
+ * @param meta : meta_data_t * structure that contains all meta data for
+ *        the corresponding file.
+ */
+extern void set_file_mode_to_gfile(GFileInfo *fileinfo, meta_data_t *meta);
+
+
+
+/**
  * Gets the size of a file
  * @param fileinfo : a GFileInfo pointer obtained from an opened file
  *        (GFile *)
