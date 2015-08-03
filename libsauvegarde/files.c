@@ -189,36 +189,19 @@ guint64 get_inode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
  */
 gchar *get_username_owner_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 {
-    gchar *owner = NULL;
-    gchar *group = NULL;
     gchar *result = NULL;
-    gchar *ids = NULL;
-    guint32 uid = 0;
-    guint32 gid = 0;
-
 
     if (fileinfo != NULL && meta != NULL)
         {
 
 
-            owner = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_USER);
-            group = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_GROUP);
+            meta->owner = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_USER);
+            meta->group = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_GROUP);
 
-            uid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_UID);
-            gid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_GID);
+            meta->uid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_UID);
+            meta->gid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_GID);
 
-            ids = g_strdup_printf("%d:%d", uid, gid);
-
-            meta->owner = g_strdup(owner);
-            meta->group = g_strdup(group);
-            meta->uid = uid;
-            meta->gid = gid;
-
-            result = g_strconcat(owner, ":", group, " ", ids, NULL);
-
-            free_variable(ids);
-            free_variable(group);
-            free_variable(owner);
+            result = g_strdup_printf("%s:%s %d:%d", meta->owner, meta->group, meta->uid, meta->gid);
         }
     else
         {
