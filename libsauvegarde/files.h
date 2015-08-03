@@ -115,6 +115,16 @@ extern gchar *get_dates_from_gfile(GFileInfo *fileinfo, meta_data_t *meta);
 
 
 /**
+ * sets the dates to a file
+ * @param fileinfo : a GFileInfo pointer obtained from an opened file
+ *        (GFile *)
+ * @param meta : meta_data_t * structure that contains all meta data for
+ *        to set to the corresponding file.
+ */
+extern void set_dates_to_gfile(GFileInfo *fileinfo, meta_data_t *meta);
+
+
+/**
  * Get unix mode of a file
  * @param fileinfo : a GFileInfo pointer obtained from an opened file
  *        (GFile *)

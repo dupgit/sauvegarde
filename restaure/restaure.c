@@ -275,10 +275,11 @@ static void set_file_attributes(GFile *file, meta_data_t *meta)
             else
                 {
                     set_file_mode_to_gfile(fileinfo, meta);
+                    set_dates_to_gfile(fileinfo, meta);
 
                     if (g_file_set_attributes_from_info(file, fileinfo, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error) == FALSE)
                         {
-                            print_error(__FILE__, __LINE__, _("Error or warning: %s\n"), error->code, error->message);
+                            print_error(__FILE__, __LINE__, _("Error or warning: %s\n"), error->message);
                             error = free_error(error);
                         }
 
@@ -291,7 +292,6 @@ static void set_file_attributes(GFile *file, meta_data_t *meta)
             print_error(__FILE__, __LINE__, "set_file_attribute(file = %p, meta = %p)\n", file, meta);
         }
 }
-
 
 
 /**
@@ -331,8 +331,6 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
             file = g_file_new_for_path(filename);
 
             stream = g_file_replace(file, NULL, TRUE, G_FILE_CREATE_NONE, NULL, &error);
-
-            set_file_attributes(file, meta);
 
             if (stream != NULL)
                 {
@@ -375,6 +373,9 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                 {
                     print_error(__FILE__, __LINE__, _("Error: unable to open file %s to write datas in it (%s).\n"), filename, error->message);
                 }
+
+            /* Setting before closing the file does not alter acces and modification time */
+            set_file_attributes(file, meta);
 
             free_object(file);
             free(cwd);

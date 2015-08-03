@@ -266,6 +266,24 @@ gchar *get_dates_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 
 
 /**
+ * sets the dates to a file
+ * @param fileinfo : a GFileInfo pointer obtained from an opened file
+ *        (GFile *)
+ * @param meta : meta_data_t * structure that contains all meta data for
+ *        to set to the corresponding file.
+ */
+void set_dates_to_gfile(GFileInfo *fileinfo, meta_data_t *meta)
+{
+    if (fileinfo != NULL && meta != NULL)
+        {
+            g_file_info_set_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_ACCESS, meta->atime);
+            g_file_info_set_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_CHANGED, meta->ctime);
+            g_file_info_set_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_MODIFIED, meta->mtime);
+        }
+}
+
+
+/**
  * Get unix mode of a file
  * @param fileinfo : a GFileInfo pointer obtained from an opened file
  *        (GFile *)
