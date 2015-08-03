@@ -239,22 +239,15 @@ gchar *get_username_owner_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
  */
 gchar *get_dates_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 {
-    guint64 atime = 0;
-    guint64 ctime = 0;
-    guint64 mtime = 0;
     gchar *result = NULL;
 
-    if (fileinfo != NULL)
+    if (fileinfo != NULL && meta != NULL)
         {
-            atime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_ACCESS);
-            ctime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_CHANGED);
-            mtime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+            meta->atime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_ACCESS);
+            meta->ctime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_CHANGED);
+            meta->mtime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_MODIFIED);
 
-            meta->atime = atime;
-            meta->ctime = ctime;
-            meta->mtime = mtime;
-
-            result = g_strdup_printf("%" G_GUINT64_FORMAT " %"  G_GUINT64_FORMAT " %"  G_GUINT64_FORMAT "", atime, ctime, mtime);
+            result = g_strdup_printf("%" G_GUINT64_FORMAT " %"  G_GUINT64_FORMAT " %"  G_GUINT64_FORMAT "", meta->atime, meta->ctime, meta->mtime);
         }
     else
         {
