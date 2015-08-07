@@ -128,7 +128,7 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
             encoded_date = encode_to_base64(date);
 
             query = init_query_structure(hostname, the_uid, the_gid, owner, group, encoded_filename, encoded_date);
-            print_debug("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n", hostname, the_uid, the_gid, owner, group);
+            print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n"), hostname, the_uid, the_gid, owner, group);
         }
 
     return query;
