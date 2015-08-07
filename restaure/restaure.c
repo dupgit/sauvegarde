@@ -456,6 +456,9 @@ int main(int argc, char **argv)
                     free_query_structure(query);
                 }
 
+            free_options_t_structure(res_struct->opt);
+
+
             return EXIT_SUCCESS;
         }
     else
