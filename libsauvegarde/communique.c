@@ -73,7 +73,6 @@ gchar *make_connexion_string(gchar *ip, gint port)
 }
 
 
-
 /**
  * Used by libcurl to retrieve informations
  * @param buffer is the buffer where received data are written by libcurl
@@ -205,6 +204,7 @@ gint post_url(comm_t *comm, gchar *url)
     return success;
 }
 
+
 /**
  * Checks wether the serveur is alive or not and checks its version
  * @param comm a comm_t * structure that must contain an initialized
@@ -297,7 +297,8 @@ static gint send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash
                         }
 
                     /* comm->buffer may contain an answer from serveur
-                     * but as we do nothing with it now, just free it  */
+                     * but as we do nothing with it now, just free it
+                     */
                     comm->buffer = free_variable(comm->buffer);
                 }
             else
@@ -311,8 +312,10 @@ static gint send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash
             hash_list = g_slist_next(hash_list);
         }
 
+    /* All intern datas of the list has been freed previously while
+     * iterating the list.
+     */
     g_slist_free(head);
-
 
     return all_ok;
 }
@@ -351,8 +354,6 @@ gint send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer)
 
                     json_decref(root);
                 }
-
-
         }
 
    return success;
@@ -379,3 +380,18 @@ comm_t *init_comm_struct(gchar *conn)
     return comm;
 }
 
+
+/**
+ * Frees and releases a comm_t * structure
+ * @param comm a comm_t * structure to be freed
+ */
+void free_comm_t(comm_t *comm)
+{
+    if (comm != NULL)
+        {
+            curl_easy_cleanup(comm->curl_handle);
+            free_variable(comm->buffer);
+            free_variable(comm->conn);
+            free_variable(comm);
+        }
+}

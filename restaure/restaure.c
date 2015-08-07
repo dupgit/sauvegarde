@@ -35,7 +35,7 @@ static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query);
 static void print_all_files(res_struct_t *res_struct, query_t *query);
 static void create_file(res_struct_t *res_struct, meta_data_t *meta);
 static void restore_last_file(res_struct_t *res_struct, query_t *query);
-
+static void free_res_struct_t(res_struct_t *res_struct);
 
 /**
  * Inits a res_struct_t * structure. Manages the command line options.
@@ -211,7 +211,7 @@ static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query)
                     list = g_slist_sort(list, compare_filenames);
 
                     json_decref(root);
-                    free_variable(res_struct->comm->buffer);
+                    res_struct->comm->buffer = free_variable(res_struct->comm->buffer);
                 }
 
             free_variable(request);
@@ -350,7 +350,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                                     if (res_struct->comm->buffer != NULL)
                                         {
                                             hash_data = convert_json_to_hash_data(res_struct->comm->buffer);
-                                            free_variable(res_struct->comm->buffer);
+                                            res_struct->comm->buffer = free_variable(res_struct->comm->buffer);
 
                                             g_output_stream_write((GOutputStream *) stream, hash_data->data, hash_data->read, NULL, &error);
 
@@ -419,6 +419,22 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
 
 
 /**
+ * Frees a previously allocated res_struct_t * structure.
+ * @param res_struct is the res_struct_t * structure to be freed.
+ */
+static void free_res_struct_t(res_struct_t *res_struct)
+{
+    if (res_struct != NULL)
+        {
+            free_options_t_structure(res_struct->opt);
+            free_comm_t(res_struct->comm);
+            free_variable(res_struct->hostname);
+            free_variable(res_struct);
+        }
+}
+
+
+/**
  * Main function
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
@@ -456,8 +472,7 @@ int main(int argc, char **argv)
                     free_query_structure(query);
                 }
 
-            free_options_t_structure(res_struct->opt);
-
+            free_res_struct_t(res_struct);
 
             return EXIT_SUCCESS;
         }

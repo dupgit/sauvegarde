@@ -135,4 +135,11 @@ extern gboolean is_serveur_alive(comm_t *comm);
  */
 extern gint send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer);
 
+
+/**
+ * Frees and releases a comm_t *structure
+ * @param comm a comm_t * structure to be freed
+ */
+extern void free_comm_t(comm_t *comm);
+
 #endif /* #ifndef _COMMUNIQUE_H_ */
