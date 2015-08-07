@@ -143,10 +143,6 @@ gchar *get_filename_from_gfile(GFile *a_file)
         {
             filename = g_file_get_parse_name(a_file);
         }
-    else
-        {
-            filename = NULL;
-        }
 
     return filename;
 }
@@ -270,15 +266,13 @@ void set_dates_to_gfile(GFileInfo *fileinfo, meta_data_t *meta)
  */
 gchar *get_file_mode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 {
-    guint32 mode = 0;
     gchar *result = NULL;
 
     if (fileinfo != NULL)
         {
-            mode = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_MODE);
-            meta->mode = mode;
+            meta->mode = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_MODE);
 
-            result =  g_strdup_printf("%d", mode);
+            result =  g_strdup_printf("%d", meta->mode);
         }
     else
         {
@@ -317,15 +311,13 @@ void set_file_mode_to_gfile(GFileInfo *fileinfo, meta_data_t *meta)
  */
 gchar *get_file_size_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 {
-    guint64 size = 0;
     gchar *result = NULL;
 
     if (fileinfo != NULL)
         {
-            size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
-            meta->size = size;
+            meta->size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
 
-            result = g_strdup_printf("%"  G_GUINT64_FORMAT "", size);
+            result = g_strdup_printf("%"  G_GUINT64_FORMAT "", meta->size);
         }
     else
         {
