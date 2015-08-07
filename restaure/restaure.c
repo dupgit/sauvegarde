@@ -97,6 +97,8 @@ static gchar *encode_to_base64(gchar *string)
  * @param hostname the hostname where the program is run
  * @param filename is the name of the file we want to restore.
  * @param date is the date of the version of this file.
+ * @return a pointer to a newly allocated query_t structure that may be
+ *         freed when no longer needed.
  */
 static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
 {
