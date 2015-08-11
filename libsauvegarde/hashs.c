@@ -171,6 +171,7 @@ void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize rea
             else
                 {
                     free_variable(buffer_dup);
+                    free_variable(a_hash_dup);
                 }
         }
 }

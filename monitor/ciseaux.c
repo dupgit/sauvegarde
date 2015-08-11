@@ -87,6 +87,9 @@ static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gc
 
     meta->hash_list = g_slist_reverse(meta->hash_list);
 
+    /* a_hash and buffer variables are duplicated in memory in
+     * insert_into_tree function so they can be safely freed here.
+     */
     free_variable(a_hash);
     free_variable(buffer);
     g_checksum_free(checksum);

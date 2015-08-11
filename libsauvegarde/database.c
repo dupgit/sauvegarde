@@ -457,6 +457,7 @@ hashs_t *get_all_inserted_hashs(db_t *database)
  * @param cache_time is used to identify files uniquely (some sort of id)
  * @param only_meta : a gboolean that when set to TRUE only meta_data will
  *        be saved and hashs data will not !
+ * @note something is bad, broken or weird here. Rewrite the whole thing.
  */
 static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 cache_time, gboolean only_meta)
 {

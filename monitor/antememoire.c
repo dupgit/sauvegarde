@@ -119,7 +119,7 @@ gpointer store_buffer_data(gpointer data)
                                 {
                                     case ENC_META_DATA:
                                         send_meta_data_to_serveur_or_store_into_cache((meta_data_t *) capsule->data, main_struct);
-                                        free_meta_data_t((meta_data_t *) capsule->data);
+                                        /* free_meta_data_t((meta_data_t *) capsule->data); */
                                     break;
 
                                     case ENC_END:
