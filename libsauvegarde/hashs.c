@@ -332,7 +332,7 @@ gpointer free_data_t_structure(data_t *a_data)
 
     if (a_data != NULL)
         {
-            free_variable(a_data->buffer);
+            a_data->buffer = free_variable(a_data->buffer);
             free_variable(a_data);
         }
 

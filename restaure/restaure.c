@@ -354,9 +354,15 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                                             hash_data = convert_json_to_hash_data(res_struct->comm->buffer);
                                             res_struct->comm->buffer = free_variable(res_struct->comm->buffer);
 
-                                            g_output_stream_write((GOutputStream *) stream, hash_data->data, hash_data->read, NULL, &error);
-
-                                            free_hash_data_t_structure(hash_data);
+                                            if (hash_data != NULL)
+                                                {
+                                                    g_output_stream_write((GOutputStream *) stream, hash_data->data, hash_data->read, NULL, &error);
+                                                    free_hash_data_t_structure(hash_data);
+                                                }
+                                            else
+                                                {
+                                                    print_error(__FILE__, __LINE__, _("Error while trying to restore %s hash\n"), hash);
+                                                }
                                         }
                                 }
                             else

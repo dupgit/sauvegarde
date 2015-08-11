@@ -462,10 +462,10 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
 {
     GSList *head = NULL;
     guint8 *a_hash = NULL;
-    gchar *encoded_hash = NULL;  /** encoded_hash is a base64 encoded hash        */
-    gchar *encoded_data = NULL;  /** encoded_data is a base64 encoded data buffer */
+    gchar *encoded_hash = NULL;  /** encoded_hash is a base64 encoded hash                     */
+    gchar *encoded_data = NULL;  /** encoded_data is a base64 encoded data buffer              */
     data_t *a_data = NULL;
-    guint64 i = 0;
+    guint64 i = 0;               /** Buffer ordering number to know in which order buffers are */
     gchar *sql_command = NULL;
 
     if (database != NULL && meta != NULL)
@@ -507,7 +507,7 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
                             a_data->buffer = free_variable(a_data->buffer);
                             a_data->into_cache = TRUE;
                         }
-                    else if (only_meta == TRUE)
+                    else if (only_meta == TRUE && a_data != NULL && a_data->into_cache == TRUE)
                         {
                             a_data->buffer = free_variable(a_data->buffer);
                             a_data->into_cache = FALSE;

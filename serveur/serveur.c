@@ -96,17 +96,17 @@ static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gc
 
                     if (answer == NULL)
                         {
-                            answer = g_strdup_printf("Error while trying to get data from hash %s\n", hash);
+                            answer = g_strdup_printf("Error while trying to get data from hash %s", hash);
                         }
                 }
             else
                 {
-                    answer = g_strdup(_("This backend's missing a retrieve_data function!\n"));
+                    answer = g_strdup(_("This backend's missing a retrieve_data function!"));
                 }
         }
     else
         {
-            answer = g_strdup(_("Something's wrong with server's initialisation!\n"));
+            answer = g_strdup(_("Something's wrong with server's initialisation!"));
         }
 
     return answer;
