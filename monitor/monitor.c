@@ -199,6 +199,158 @@ static main_struct_t *init_main_structure(options_t *opt)
 }
 
 
+
+
+/**
+ * Gets all meta data for a file and returns a filled meta_data_t *
+ * structure.
+ * @param directory is the directory we are iterating over it is used
+ *        here to build the filename name.
+ * @param fileinfo is a glib structure that contains all meta datas and
+ *        more for a file.
+ * @returns a newly allocated and filled meta_data_t * structure.
+ */
+meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo)
+{
+    meta_data_t *meta = NULL;
+
+    if (directory != NULL && fileinfo != NULL)
+        {
+            /* filling meta data for the file represented by fileinfo */
+            meta = new_meta_data_t();
+
+            meta->file_type = g_file_info_get_file_type(fileinfo);
+            meta->filename = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
+            meta->inode = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_UNIX_INODE);
+            meta->owner = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_USER);
+            meta->group = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_GROUP);
+            meta->uid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_UID);
+            meta->gid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_GID);
+            meta->atime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_ACCESS);
+            meta->ctime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_CHANGED);
+            meta->mtime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+            meta->mode = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_MODE);
+            meta->size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+
+             /* Do the right things with specific cases */
+            if (meta->file_type == G_FILE_TYPE_SYMBOLIC_LINK)
+                {
+                    /* Save where the link points */
+                }
+            else if (meta->file_type == G_FILE_TYPE_REGULAR)
+                {
+                    /* Checksum the file */
+                }
+        }
+
+    return meta;
+}
+
+
+/**
+ * Iterates over an enumerator obtained from a directory.
+ * @param main_struct : main structure of the program
+ * @param directory is the directory we are iterating over
+ * @param file_enum is the enumerator obtained when opening a directory
+ *        to carve it.
+ */
+static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum)
+{
+    GError *error = NULL;
+    GFileInfo *fileinfo = NULL;
+    gchar *filename = NULL;
+    GFileType filetype = G_FILE_TYPE_UNKNOWN;
+    meta_data_t *meta = NULL;
+
+    if (main_struct != NULL && file_enum != NULL)
+        {
+            fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
+
+            while (error == NULL && fileinfo != NULL)
+                {
+                    meta = get_meta_data_from_fileinfo(directory, fileinfo);
+
+                    /* Send the meta datas       */
+                    /* Save them to the db cache */
+
+
+                    if (meta->file_type == G_FILE_TYPE_DIRECTORY)
+                        {
+                            /* recursive call */
+                            carve_one_directory(filename, main_struct);
+                        }
+
+                    /* free meta_data along with fileinfo */
+
+                    fileinfo = free_object(fileinfo);
+                    fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
+                }
+        }
+}
+
+
+/**
+ * Call back for the g_slist_foreach function that carves one directory
+ * and sub directories in a recursive way.
+ * @param data is an element of opt->list ie: a gchar * that represents
+ *        a directory name
+ * @param user_data is the main_struct_t * pointer to the main structure.
+ */
+static void carve_one_directory(gpointer data, gpointer user_data)
+{
+    gchar *directory = (gchar *) data;
+    main_struct_t *main_struct = (main_struct_t *) user_data;
+
+    GFile *a_dir = NULL;
+    GFileEnumerator *file_enum = NULL;
+    GError *error = NULL;
+
+
+    a_dir = g_file_new_for_path(directory);
+    file_enum = g_file_enumerate_children(a_dir, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
+
+    if (error == NULL)
+        {
+            if (file_enum != NULL)
+                {
+                    iterate_over_enum(main_struct, directory, file_enum);
+
+                    g_file_enumerator_close(file_enum, NULL, NULL);
+                    file_enum = free_object(file_enum);
+                }
+            else
+                {
+                    print_error(__FILE__, __LINE__, _("Enumerating directory '%s' returned no results!\n"), directory);
+                }
+
+        }
+    else
+        {
+            print_error(__FILE__, __LINE__, _("Unable to enumerate directory %s: %s\n"), directory, error->message);
+            error = free_error(error);
+        }
+
+    a_dir = free_object(a_dir);
+}
+
+
+/**
+ * Does carve all directories from the list in the option list
+ * @param main_struct : main structure of the program that contains also
+ *        the options structure that should have a list of directories
+ *        to save.
+ */
+static void carve_all_directories(main_struct_t *main_struct)
+{
+    GSList *head = NULL; /** 'head' is a pointer used to traverse the list of directories to save*/
+
+    if (main_struct != NULL && main_struct->opt != NULL)
+        {
+            g_slist_foreach(main_struct->opt->list, carve_one_directory, main_struct);
+        }
+}
+
+
 /**
  * Main function
  * @param argc : number of arguments given on the command line.

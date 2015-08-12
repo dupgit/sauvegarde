@@ -38,10 +38,11 @@ static gpointer calculate_hashs_on_a_file(gpointer data);
  * Does the checksum on the opened stream.
  * @param main_struct is the mains structure fro the program
  * @param stream the stream on which we want to calculate the checksum
- * @param filename is the filename of the opened stream (to be displayed in
- *        case of error.
- * @param meta : meta_data_t * structure that contains all meta data for
- *        the corresponding file.
+ * @param filename is the filename of the opened stream (to be displayed
+ *        in case of error.
+ * @param[in,out] meta : meta_data_t * structure that contains all meta
+ *                data for the corresponding file and whose hash_list is
+ *                filled here.
  */
 static void do_checksum(main_struct_t *main_struct, GFileInputStream *stream, gchar *filename, meta_data_t *meta)
 {
