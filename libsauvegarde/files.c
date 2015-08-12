@@ -54,6 +54,7 @@ meta_data_t *new_meta_data_t(void)
             meta->uid = 65534;  /* nfsnobody on my system ie unpriviledged user */
             meta->gid = 65534;  /* nfsnobody on my system ie unpriviledged user */
             meta->name = NULL;
+            meta->link = NULL;
             meta->hash_list = NULL;
         }
 
