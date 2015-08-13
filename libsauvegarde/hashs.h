@@ -164,6 +164,13 @@ extern gpointer free_hash_data_t_structure(hash_data_t *hash_data);
 
 
 /**
+ * handler for g_slist_free_full
+ * @param data must be a hash_data_t * structure.
+ */
+extern void free_hdt_struct(gpointer data);
+
+
+/**
  * Inits and returns a newly hash_data_t structure.
  * @returns a newly created hash_data_t structure.
  */

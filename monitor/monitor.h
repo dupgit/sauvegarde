@@ -88,6 +88,13 @@
 
 
 /**
+ * @def CISEAUX_BLOCK_SIZE
+ * default block size in bytes
+ */
+#define CLIENT_BLOCK_SIZE (16384)
+
+
+/**
  * @struct main_struct_t
  * @brief Structure that contains everything needed by the program.
  */
@@ -95,8 +102,6 @@ typedef struct
 {
     options_t *opt;           /**< Options of the program from the command line                                                */
     const gchar *hostname;    /**< Name of the current machine                                                                 */
-    GAsyncQueue *queue;       /**< Communication queue between threads                                                         */
-    GAsyncQueue *store_queue; /**< Communication queue between calculation thread and the on that stores or sends to th server */
     hashs_t *hashs;           /**< Calculated hashs stored in a balanced binary tree                                           */
     db_t *database;           /**< Database structure that stores everything that is related to the database                   */
     comm_t *comm;             /**< This is used to communicate with the 'serveur' program (which is the server)                */

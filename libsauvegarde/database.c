@@ -37,7 +37,6 @@ static void free_file_row_t(file_row_t *row);
 static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col);
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
 static int get_data_callback(void *a_data, int nb_col, char **data, char **name_col);
-static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 cache_time, gboolean only_meta);
 static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash);
 static gboolean is_checksum_in_db(hashs_t *inserted_hashs, guint8 *a_hash);
 static int get_all_checksum_callback(void *inserted_hashs, int nb_col, char **data, char **name_col);
@@ -139,7 +138,7 @@ static void verify_if_tables_exists(db_t *database)
             exec_sql_cmd(database, "CREATE TABLE buffers (cache_time INTEGER, buf_order INTEGER, checksum TEXT);", _("(%d) Error while creating database table 'buffers': %s\n"));
 
             /* Creation of files table that contains everything about a file */
-            exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL);", _("(%d) Error while creating database table 'files': %s\n"));
+            exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL, link TEXT);", _("(%d) Error while creating database table 'files': %s\n"));
         }
 
     free_variable(i);
@@ -446,92 +445,6 @@ hashs_t *get_all_inserted_hashs(db_t *database)
 
 
 /**
- * Inserts the checksums related to the file into the database.
- * @param database is the structure that contains everything that is
- *        related to the database (it's connexion for instance).
- * @param meta is the file's metadata that we want to insert into the
- *        cache.
- * @param hashs : a balanced binary tree that stores hashs.
- * @param file_id : the file_id we are going to insert checksums into the
- *        database.
- * @param cache_time is used to identify files uniquely (some sort of id)
- * @param only_meta : a gboolean that when set to TRUE only meta_data will
- *        be saved and hashs data will not !
- * @note something is bad, broken or weird here. Rewrite the whole thing.
- */
-static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *hashs, guint64 cache_time, gboolean only_meta)
-{
-    GSList *head = NULL;
-    guint8 *a_hash = NULL;
-    gchar *encoded_hash = NULL;  /** encoded_hash is a base64 encoded hash                     */
-    gchar *encoded_data = NULL;  /** encoded_data is a base64 encoded data buffer              */
-    data_t *a_data = NULL;
-    guint64 i = 0;               /** Buffer ordering number to know in which order buffers are */
-    gchar *sql_command = NULL;
-
-    if (database != NULL && meta != NULL)
-        {
-            head = meta->hash_list;
-            i = 0;
-
-            while (head != NULL)
-                {
-                    a_hash = head->data;
-                    encoded_hash = g_base64_encode((guchar*) a_hash, HASH_LEN);
-
-                    /* Inserting the hash and it's order into buffers table */
-                    sql_command = g_strdup_printf("INSERT INTO buffers (cache_time, buf_order, checksum) VALUES (%" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", '%s');", cache_time, i, encoded_hash);
-                    exec_sql_cmd(database, sql_command,  _("(%d) Error while inserting into the table 'buffers': %s\n"));
-                    free_variable(sql_command);
-
-                    a_data = g_tree_lookup(hashs->tree_hash, a_hash);
-
-                    /* Is encoded hash already in the database ? */
-                    if (only_meta == FALSE && a_data != NULL && a_data->into_cache == FALSE && a_data->buffer != NULL)
-                        {
-                            /* encoded_hash is not in the database and something went wrong with serveur server */
-                            /* Inserting checksum and the corresponding data into 'data' table                  */
-                            encoded_data = g_base64_encode((guchar*) a_data->buffer, a_data->read);
-
-                            sql_command = g_strdup_printf("INSERT INTO data (checksum, size, data) VALUES ('%s', %" G_GSSIZE_FORMAT ", '%s');", encoded_hash, a_data->read, encoded_data);
-
-                            exec_sql_cmd(database, sql_command,  _("(%d) Error while inserting into the table 'data': %s\n"));
-
-                            free_variable(sql_command);
-                            free_variable(encoded_data);
-
-                            /* The hash is already in the database or has just been inserted.
-                             * We can safely free the data from the tree_hash structure but we
-                             * need to keep the key (the hash) into the tree and can keep the
-                             * old size of the data. 'buffer' is freed and set to NULL.
-                             */
-                            a_data->buffer = free_variable(a_data->buffer);
-                            a_data->into_cache = TRUE;
-                        }
-                    else if (only_meta == TRUE && a_data != NULL && a_data->into_cache == TRUE)
-                        {
-                            a_data->buffer = free_variable(a_data->buffer);
-                            a_data->into_cache = FALSE;
-                        }
-                    else if (a_data != NULL)
-                        {
-                            print_debug("Deduplicated hash!? %s\n", encoded_hash);
-                        }
-                    else if (a_data == NULL)
-                        {
-                            print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash %s\n", encoded_hash);
-                        }
-
-                    free_variable(encoded_hash);
-
-                    head = g_slist_next(head);
-                    i = i + 1;
-                }
-        }
-}
-
-
-/**
  * Insert file into cache. One should have verified that the file
  * does not already exists in the database.
  * @note insert_file_into_cache is fast but does not garantee that the
@@ -540,12 +453,11 @@ static void insert_file_checksums(db_t *database, meta_data_t *meta, hashs_t *ha
  *        related to the database (it's connexion for instance).
  * @param meta is the file's metadata that we want to insert into the
  *        cache.
- * @param hashs : a balanced binary tree that stores hashs.
  * @param only_meta : a gboolean that when set to TRUE only meta_data will
  *        be saved and hashs data will not ! FALSE means that something
  *        went wrong with serveur and that all data will be cached localy.
  */
-void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, gboolean only_meta)
+void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
 {
     gchar *sql_command = NULL;     /** gchar *sql_command is the command to be executed */
     guint64 cache_time = 0;
@@ -558,13 +470,11 @@ void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, g
             exec_sql_cmd(database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n"));
 
             /* Inserting the file into the files table */
-            sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted) VALUES (%" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', '%s', %d, %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', %d);", cache_time, meta->file_type, meta->inode, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name, only_meta);
+            sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted, link) VALUES (%" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', '%s', %d, %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', %d, '%s');", cache_time, meta->file_type, meta->inode, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name, only_meta, meta->link);
 
             exec_sql_cmd(database, sql_command,  _("(%d) Error while inserting into the table 'files': %s\n"));
 
             free_variable(sql_command);
-
-            insert_file_checksums(database, meta, hashs, cache_time, only_meta);
 
             /* ending the transaction here */
             exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));

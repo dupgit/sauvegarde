@@ -162,9 +162,10 @@ static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 
  */
 json_t *convert_hash_list_to_json(GSList *hash_list)
 {
-    json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs   */
-    gchar *encoded_hash = NULL; /** gchar encoded_hash is an hash base64 encoded                        */
-    GSList *head = NULL;        /** GSList *head is a list to iter over that will contain the hash list */
+    json_t *array = NULL;           /** json_t *array is the array that will receive base64 encoded hashs        */
+    gchar *encoded_hash = NULL;     /** gchar encoded_hash is an hash base64 encoded                             */
+    GSList *head = NULL;            /** GSList *head is a list to iter over that will contain the hash data list */
+    hash_data_t *hash_data = NULL;  /** A pointer to get the hash_data structure */
 
     /* creating an array with the whole hash list */
     array = json_array();
@@ -172,7 +173,8 @@ json_t *convert_hash_list_to_json(GSList *hash_list)
 
     while (head != NULL)
         {
-            encoded_hash = g_base64_encode(head->data, HASH_LEN);
+            hash_data = head->data;
+            encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
 
             append_string_to_array(array, encoded_hash);
 
@@ -340,7 +342,7 @@ json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
             insert_string_into_json_root(root, "name", meta->name);
             insert_string_into_json_root(root, "hostname", (gchar *) hostname);
 
-            array = convert_hash_list_to_json(meta->hash_list);
+            array = convert_hash_list_to_json(meta->hash_data_list);
 
             insert_json_value_into_json_root(root, "hash_list", array);
         }

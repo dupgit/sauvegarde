@@ -390,13 +390,13 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
 
             if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->build_needed_hash_list != NULL)
                 {
-                    needed = serveur_struct->backend->build_needed_hash_list(serveur_struct, smeta->meta->hash_list);
+                    needed = serveur_struct->backend->build_needed_hash_list(serveur_struct, smeta->meta->hash_data_list);
                     array = convert_hash_list_to_json(needed);
                     needed = free_list(needed);
                 }
             else
                 {
-                    array = convert_hash_list_to_json(smeta->meta->hash_list);
+                    array = convert_hash_list_to_json(smeta->meta->hash_data_list);
                 }
 
             insert_json_value_into_json_root(root, "hash_list", array);

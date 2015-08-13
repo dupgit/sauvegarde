@@ -88,7 +88,7 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
 
                     if (stream != NULL)
                         {
-                            hash_list = convert_hash_list_to_gchar(meta->hash_list);
+                            hash_list = convert_hash_list_to_gchar(meta->hash_data_list);
 
                             if (hash_list != NULL)
                                 {
@@ -645,7 +645,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
                                 {
                                     hash_list = make_hash_list_from_string(params[12]);
 
-                                    meta->hash_list = hash_list;
+                                    meta->hash_data_list = hash_list;
 
                                     print_debug(_("file_backend: Found: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
                                  }

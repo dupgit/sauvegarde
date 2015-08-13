@@ -34,8 +34,11 @@
 
 static main_struct_t *init_main_structure(options_t *opt);
 
-static GSList *calculate_hash_list_for_file(GFile *a_file, gint64 blocksize);
+static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize);
 static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, GFile *a_file, gint64 blocksize);
+static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta);
+static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash);
+static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
 static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum);
 static void carve_one_directory(gpointer data, gpointer user_data);
 static void carve_all_directories(main_struct_t *main_struct);
@@ -69,8 +72,6 @@ static main_struct_t *init_main_structure(options_t *opt)
 
             main_struct->opt = opt;
             main_struct->hostname = g_get_host_name();
-            main_struct->queue = g_async_queue_new();
-            main_struct->store_queue = g_async_queue_new();
 
             main_struct->hashs = get_all_inserted_hashs(main_struct->database);
 
@@ -96,29 +97,32 @@ static main_struct_t *init_main_structure(options_t *opt)
     return main_struct;
 }
 
-/************************************************/
-
 
 /**
  * Calculates hashs for each block of blocksize bytes long on the file
  * and returns a list of all hashs in correct order stored in a binary
  * form to save space.
+ * @note This technique has some limits in term of memory footprint
+ *       because one file is entirely in memory at a time. Saving huge
+ *       files may not be possible with this, depending on the size of
+ *       the file and the size of the memory.
+ * @todo Imagine a new way to checksum huge files because of limitations.
+ *       May be with the local sqlite database ?
  * @param a_file is the file from which we want the hashs.
  * @param blocksize is the blocksize to be used to calculate hashs upon.
  * @returns a GSList * list of hashs stored in a binary form.
  */
-static GSList *calculate_hash_list_for_file(GFile *a_file, gint64 blocksize)
+static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
 {
     GFileInputStream *stream = NULL;
     GError *error = NULL;
-    GSList *hash_list = NULL;
-
+    GSList *hash_data_list = NULL;
+    hash_data_t *hash_data = NULL;
     gssize read = 0;
     guchar *buffer = NULL;
     GChecksum *checksum = NULL;
     guint8 *a_hash = NULL;
     gsize digest_len = HASH_LEN;
-
 
     if (a_file != NULL)
         {
@@ -139,7 +143,9 @@ static GSList *calculate_hash_list_for_file(GFile *a_file, gint64 blocksize)
                             g_checksum_get_digest(checksum, a_hash, &digest_len);
 
                             /* Need to save data and read in hashs_data_t structure */
-                            hash_list = g_slist_prepend(hash_list, a_hash);
+                            hash_data = new_hash_data_t(buffer, read, a_hash);
+
+                            hash_data_list = g_slist_prepend(hash_data_list, hash_data);
                             g_checksum_reset(checksum);
                             digest_len = HASH_LEN;
                             read = g_input_stream_read((GInputStream *) stream, buffer, blocksize, NULL, &error);
@@ -149,11 +155,12 @@ static GSList *calculate_hash_list_for_file(GFile *a_file, gint64 blocksize)
                         {
                             print_error(__FILE__, __LINE__, _("Error while reading file: %s\n"), error->message);
                             error = free_error(error);
-                            hash_list = free_list(hash_list);
+                            g_slist_free_full(hash_data_list, free_hdt_struct);
+                            hash_data_list =  NULL;
                         }
 
                     /* get the list in correct order (because we prepended the hashs to get speed when inserting hashs in the list) */
-                    hash_list = g_slist_reverse(hash_list);
+                    hash_data_list = g_slist_reverse(hash_data_list);
 
                     free_variable(a_hash);
                     free_variable(buffer);
@@ -168,7 +175,7 @@ static GSList *calculate_hash_list_for_file(GFile *a_file, gint64 blocksize)
                 }
         }
 
-    return hash_list;
+    return hash_data_list;
 }
 
 
@@ -214,12 +221,142 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
             else if (meta->file_type == G_FILE_TYPE_REGULAR)
                 {
                     /* Need to save buffer also in hash_data_t list */
-                    meta->hash_list = calculate_hash_list_for_file(a_file, blocksize);
+                    meta->hash_data_list = calculate_hash_data_list_for_file(a_file, blocksize);
                 }
         }
 
     return meta;
 }
+
+
+/**
+ * Sends meta datas to the serveur and returns it's answer or NULL in
+ * case of an error.
+ * @param main_struct : main structure of the program (contains pointers
+ *        to the communication socket.
+ * @param meta : the meta_data_t * structure to be saved.
+ */
+static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta)
+{
+    gchar *json_str = NULL;
+    gchar *answer = NULL;
+    gint success = CURLE_FAILED_INIT;
+
+    if (main_struct != NULL && meta != NULL && main_struct->hostname != NULL)
+        {
+            json_str = convert_meta_data_to_json_string(meta, main_struct->hostname);
+
+            /* Sends meta data here */
+            print_debug(_("Sending meta datas for file: \"%s\"\n"), meta->name);
+            main_struct->comm->buffer = json_str;
+            success = post_url(main_struct->comm, "/Meta.json");
+
+            free_variable(json_str);
+
+            if (success == CURLE_OK)
+                {
+                    answer = g_strdup(main_struct->comm->buffer);
+                    main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
+                }
+            else
+                {
+                    /* Need to manage HTTP errors */
+                }
+        }
+
+    return answer;
+}
+
+
+/**
+ * Finds a hash in the hash data list and returns the hash_data_t that
+ * corresponds to it. In normal operations it should always find
+ * something.
+ * @param hash_data_list is the list to look into for the hash 'hash'
+ * @param hash is the hash to look for.
+ * @returns the hash_data_t  structure that corresponds to the hash 'hash'.
+ */
+static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash)
+{
+    GSList *iter = hash_data_list;
+    hash_data_t *found = NULL;
+    gboolean ok = FALSE;
+
+    while (iter != NULL && ok == FALSE)
+        {
+            found = iter->data;
+
+            if (compare_two_hashs(hash, found->hash) == TRUE)
+                {
+                    ok = TRUE;
+                }
+            else
+                {
+                   iter = g_slist_next(iter);
+                }
+        }
+
+    if (ok == TRUE)
+        {
+            return found;
+        }
+    else
+        {
+            return NULL;
+        }
+}
+
+
+/**
+ * Sends datas as requested by the server 'serveur'.
+ * @param main_struct : main structure of the program.
+ * @param meta : the meta_data_t * structure to be saved and that
+ *        contains the datas.
+ * @param answer is the request sent back by serveur when we had send
+ *        meta datas.
+ */
+static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
+{
+    json_t *root = NULL;
+    GSList *hash_list = NULL;
+    GSList *head = NULL;
+    gint success = CURLE_FAILED_INIT;
+    hash_data_t *found = NULL;
+    gint all_ok = CURLE_OK;
+
+    if (answer != NULL && meta != NULL)
+        {
+            root = load_json(answer);
+
+            if (root != NULL)
+                {
+                    hash_list = extract_gslist_from_array(root, "hash_list");
+                    json_decref(root);
+                    head = hash_list;
+
+                    while (hash_list != NULL && all_ok == CURLE_OK)
+                        {
+                            found = find_hash_in_list(meta->hash_data_list, hash_list->data);
+
+                            /* main_struct->comm->buffer is the buffer sent to serveur */
+                            main_struct->comm->buffer = convert_hash_data_t_to_json(found);
+                            success = post_url(main_struct->comm, "/Data.json");
+                            all_ok = success;
+                            main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
+                            hash_list = g_slist_next(hash_list);
+                        }
+
+                    free_list(head);
+                }
+            else
+                {
+                    print_error(__FILE__, __LINE__, _("Error while loading JSON answer from serveur\n"));
+                }
+        }
+
+   return all_ok;
+}
+
 
 
 /**
@@ -236,7 +373,9 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
     GFileInfo *fileinfo = NULL;
     gchar *filename = NULL;
     meta_data_t *meta = NULL;
-    gint64 blocksize = CISEAUX_BLOCK_SIZE;
+    gint64 blocksize = CLIENT_BLOCK_SIZE;
+    gchar *answer = NULL;
+    gint success = 0;
 
     if (main_struct != NULL && file_enum != NULL)
         {
@@ -250,11 +389,20 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
             while (error == NULL && fileinfo != NULL)
                 {
                     a_file = g_file_enumerator_get_child(file_enum, fileinfo);
+
+                    /* We need to determine if the file has already been saved by looking into the database */
+
+                    /* Get datas and meta_datas for a file */
                     meta = get_meta_data_from_fileinfo(directory, fileinfo, a_file, blocksize);
 
-                    /* Send the meta datas       */
-                    /* Save them to the db cache */
+                    /* Send datas and meta datas */
+                    answer = send_meta_data_to_serveur(main_struct, meta);
+                    success = send_datas_to_serveur(main_struct, meta, answer);
+                    free_variable(answer);
 
+                    /* Save them to the db cache */
+                    db_save_meta_data(main_struct->database, meta, TRUE);
+                    /* Need to save datas only if an error when transmitting answer and success may tell this */
 
                     if (meta->file_type == G_FILE_TYPE_DIRECTORY)
                         {
@@ -262,7 +410,6 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
                             carve_one_directory(filename, main_struct);
                         }
 
-                    /* free meta_data along with fileinfo */
                     meta = free_meta_data_t(meta);
                     fileinfo = free_object(fileinfo);
                     fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);

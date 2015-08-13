@@ -28,11 +28,7 @@
 #define _CISEAUX_H_
 
 
-/**
- * @def CISEAUX_BLOCK_SIZE
- * default block size in bytes
- */
-#define CISEAUX_BLOCK_SIZE (16384)
+
 
 
 /**

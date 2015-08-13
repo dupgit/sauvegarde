@@ -55,7 +55,7 @@ meta_data_t *new_meta_data_t(void)
             meta->gid = 65534;  /* nfsnobody on my system ie unpriviledged user */
             meta->name = NULL;
             meta->link = NULL;
-            meta->hash_list = NULL;
+            meta->hash_data_list = NULL;
         }
 
     return meta;
@@ -93,7 +93,7 @@ gpointer free_meta_data_t(meta_data_t *meta)
             free_variable(meta->owner);
             free_variable(meta->group);
             free_variable(meta->name);
-            g_slist_free_full(meta->hash_list, g_free);
+            g_slist_free_full(meta->hash_data_list, free_hdt_struct);
             free_variable(meta);
         }
 

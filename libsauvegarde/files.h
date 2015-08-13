@@ -38,20 +38,21 @@
  */
 typedef struct
 {
-    guint64 inode;     /**< file's inode.                                          */
-    guint8 file_type;  /**< type of the file : FILE, DIR, SYMLINK...               */
-    guint32 mode;      /**< UNIX mode of the file : contains rights for the file   */
-    guint64 atime;     /**< access time                                            */
-    guint64 ctime;     /**< changed time                                           */
-    guint64 mtime;     /**< modified time                                          */
-    guint64 size;      /**< size of the file                                       */
-    gchar *owner;      /**< owner for the file ie root, apache, dup...             */
-    gchar *group;      /**< group for the file ie root, apache, admin...           */
-    guint32 uid;       /**< uid (owner)                                            */
-    guint32 gid;       /**< gid (group owner)                                      */
-    gchar *name;       /**< name for the file or the directory                     */
-    const gchar *link; /**< link name where points the LINK if file_type is a link */
-    GSList *hash_list; /**< List of hashs of the file (in a binary form)           */
+    guint64 inode;          /**< file's inode.                                                                    */
+    guint8 file_type;       /**< type of the file : FILE, DIR, SYMLINK...                                         */
+    guint32 mode;           /**< UNIX mode of the file : contains rights for the file                             */
+    guint64 atime;          /**< access time                                                                      */
+    guint64 ctime;          /**< changed time                                                                     */
+    guint64 mtime;          /**< modified time                                                                    */
+    guint64 size;           /**< size of the file                                                                 */
+    gchar *owner;           /**< owner for the file ie root, apache, dup...                                       */
+    gchar *group;           /**< group for the file ie root, apache, admin...                                     */
+    guint32 uid;            /**< uid (owner)                                                                      */
+    guint32 gid;            /**< gid (group owner)                                                                */
+    gchar *name;            /**< name for the file or the directory                                               */
+    const gchar *link;      /**< link name where points the LINK if file_type is a link                           */
+    GSList *hash_data_list; /**< List of hash_data_t structures of the file (hash and datas are in a binary form)
+                                 used as a simple hash list for now in serveur and restaure                       */
 } meta_data_t;
 
 

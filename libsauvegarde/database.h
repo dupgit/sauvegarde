@@ -86,17 +86,16 @@ extern gboolean is_file_in_cache(db_t *database, meta_data_t *meta);
 
 
 /**
- * Insert file into cache. One should have verified that the file
- * does not already exists in the database.
+ * Insert meta data into cache (db). One should have verified that the
+ * file does not already exists in the database.
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
  * @param meta is the file's metadata that we want to insert into the
  *        cache.
- * @param hashs : a balanced binary tree that stores hashs.
  * @param only_meta : a gboolean that when set to TRUE only meta_data will
  *        be saved and hashs data will not !
  */
-extern void insert_file_into_cache(db_t *database, meta_data_t *meta, hashs_t *hashs, gboolean only_meta);
+extern void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta);
 
 
 /**

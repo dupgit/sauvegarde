@@ -276,7 +276,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt = (options_t *) g_malloc0(sizeof(options_t));
 
     opt->dirname_list = NULL;
-    opt->blocksize = CISEAUX_BLOCK_SIZE;
+    opt->blocksize = CLIENT_BLOCK_SIZE;
     opt->noprint = FALSE;
     opt->configfile = NULL;
     opt->dircache = g_strdup("/var/tmp/sauvegarde");

@@ -9,14 +9,10 @@ client_LDADD = $(GLIB_LIBS) $(GIO_LIBS)  -L../libsauvegarde -lsauvegarde \
 
 client_HEADERFILES = monitor.h            \
                      options.h			  \
-                     ciseaux.h			  \
-                     antememoire.h	      \
                      m_fanotify.h
 
 client_SOURCES = monitor.c                \
 				 options.c				  \
-				 ciseaux.c				  \
-				 antememoire.c		      \
 				 m_fanotify.c			  \
 				 $(client_HEADERFILES)
 

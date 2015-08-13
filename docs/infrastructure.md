@@ -3,25 +3,25 @@
 This is how I imagine the programs may interact themselves but it may
 evolve in the future.
 
-    hid   | -------------------------------------        -----------
-    to    | | monitor + ciseaux + antememoire   |  <---> | serveur |
-    user  | -------------------------------------        -----------
+    hid   | ----------                                   -----------
+    to    | | client |  <------------------------------> | serveur |
+    user  | ----------                                   -----------
                                                                ^
-    user                         ------------                  |
-    client                       | restaure | <----------------|
-    (GUI ?)                      ------------
-    \                                          /          \          /
-     ----- Client side (on a notebook) --------            - server -
-                                                              side
+    user                  ------------                         |
+    client                | restaure | <-----------------------|
+    (GUI ?)               ------------
+    \                                       /            \          /
+     ----- Client side (on a notebook) -----              - server -
+                                                             side
 
 
-* "monitor" may monitor a filesystem and send events to "ciseaux".
-* "ciseaux" cuts files into pieces of 32768 bytes (by default) and transmits
-  every pieces to "antememoire"
-* "antememoire" stores everything in a local database before communicating
-  with "serveur"'s main sauvegarde server.
+* "client" carve and monitors a filesystem, cuts files into pieces of
+  16384 bytes (by default) and transmits every pieces along side with
+  meta datas of each files to serveur, the server that saves everything.
+
 * "serveur" is the main sauvegarde server. Each client communicates with it
   and it keeps every chunks of every files with their attributes.
+
 * "restaure" is a tool that will provide the ability to restore some
   files or paths to some locations. It communicates directly with "serveur"
   main's sauvegarde server.
@@ -121,6 +121,8 @@ For now Information is stored with the following scheme :
     | mode       |
     | size       |
     | name       |
+    | transmitted|
+    | link       |
     --------------
 
 Buffer order has to be kept. In the SQLITE cache we can keep it in an

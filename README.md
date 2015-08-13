@@ -8,7 +8,7 @@ This page is sauvegarde doxygen's @mainpage.
 
 With this code you can backup and restore files. Compile the code put
 the `serveur` where you want to save your files. Let `client` crawl your
-files to save them. Use restore to restore a file.
+files to save them. Use `restaure` to restore a file.
 
 
 ## License
@@ -23,12 +23,12 @@ projects used here (see dependencies section).
 This project depends on the following projects (minimum version required is
 stated between brakets):
 
-* autotools     (2.59)
-* glib and gio  (2.26)
-* libmicrohttpd (0.9.5)
-* libcurl       (7.22.0)
-* sqlite        (3.6.20)
-* jansson       (2.5)
+* `autotools`      (2.59)
+* `glib` and `gio` (2.26)
+* `libmicrohttpd`  (0.9.5)
+* `libcurl`        (7.22.0)
+* `sqlite`         (3.6.20)
+* `jansson`        (2.5)
 
 doxygen (1.6.1) is used to generate code's documentation but is not
 required to build the project. jansson's library version is quite recent

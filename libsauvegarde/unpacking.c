@@ -328,7 +328,7 @@ GSList *extract_smeta_gslist_from_file_list(json_t *root)
 
                     meta->name = get_string_from_json_root(value, "name");
 
-                    meta->hash_list = extract_gslist_from_array(value, "hash_list");
+                    meta->hash_data_list = extract_gslist_from_array(value, "hash_list");
 
                     smeta->meta = meta;
                     smeta->hostname =  get_string_from_json_root(value, "hostname");
@@ -501,7 +501,7 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
 
                     meta->name = get_string_from_json_root(root, "name");
 
-                    meta->hash_list = extract_gslist_from_array(root, "hash_list");
+                    meta->hash_data_list = extract_gslist_from_array(root, "hash_list");
 
                     smeta->meta = meta;
                     smeta->hostname =  get_string_from_json_root(root, "hostname");

@@ -336,7 +336,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 
             if (stream != NULL)
                 {
-                    hash_list = meta->hash_list;
+                    hash_list = meta->hash_data_list;
 
                     while (hash_list != NULL)
                         {

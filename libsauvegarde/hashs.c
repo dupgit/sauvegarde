@@ -158,7 +158,7 @@ void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize rea
             a_hash_dup = g_memdup(a_hash, HASH_LEN);
             buffer_dup = g_memdup(buffer, read);
 
-            meta->hash_list = g_slist_prepend(meta->hash_list, a_hash_dup);
+            /* meta->hash_list = g_slist_prepend(meta->hash_list, a_hash_dup); */
 
             hashs->total_bytes = hashs->total_bytes + read;
 
@@ -358,6 +358,16 @@ gpointer free_hash_data_t_structure(hash_data_t *hash_data)
         }
 
     return NULL;
+}
+
+
+/**
+ * handler for g_slist_free_full
+ * @param data must be a hash_data_t * structure.
+ */
+void free_hdt_struct(gpointer data)
+{
+    free_hash_data_t_structure(data);
 }
 
 
