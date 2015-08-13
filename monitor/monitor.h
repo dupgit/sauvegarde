@@ -88,7 +88,7 @@
 
 
 /**
- * @def CISEAUX_BLOCK_SIZE
+ * @def CLIENT_BLOCK_SIZE
  * default block size in bytes
  */
 #define CLIENT_BLOCK_SIZE (16384)
