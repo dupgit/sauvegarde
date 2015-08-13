@@ -385,7 +385,6 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
     /* GFile *a_file = NULL; */
     GError *error = NULL;
     GFileInfo *fileinfo = NULL;
-    gchar *filename = NULL;
     meta_data_t *meta = NULL;
     gint64 blocksize = CLIENT_BLOCK_SIZE;
     gchar *answer = NULL;
@@ -419,8 +418,7 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
                     if (meta->file_type == G_FILE_TYPE_DIRECTORY)
                         {
                             /* recursive call */
-                            print_debug(_("Recursive call to carve_one_directory\n"));
-                            carve_one_directory(filename, main_struct);
+                            carve_one_directory(meta->name, main_struct);
                         }
 
                     fileinfo = free_object(fileinfo);
