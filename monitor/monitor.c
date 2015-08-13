@@ -142,12 +142,15 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
                             g_checksum_update(checksum, buffer, read);
                             g_checksum_get_digest(checksum, a_hash, &digest_len);
 
-                            /* Need to save data and read in hashs_data_t structure */
+                            /* Need to save data and read in hash_data_t structure */
                             hash_data = new_hash_data_t(buffer, read, a_hash);
 
                             hash_data_list = g_slist_prepend(hash_data_list, hash_data);
                             g_checksum_reset(checksum);
                             digest_len = HASH_LEN;
+
+                            buffer = (guchar *) g_malloc0 (blocksize);
+                            a_hash = (guint8 *) g_malloc0 (digest_len);
                             read = g_input_stream_read((GInputStream *) stream, buffer, blocksize, NULL, &error);
                         }
 
@@ -158,12 +161,12 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
                             g_slist_free_full(hash_data_list, free_hdt_struct);
                             hash_data_list =  NULL;
                         }
+                    else
+                        {
+                            /* get the list in correct order (because we prepended the hashs to get speed when inserting hashs in the list) */
+                            hash_data_list = g_slist_reverse(hash_data_list);
+                        }
 
-                    /* get the list in correct order (because we prepended the hashs to get speed when inserting hashs in the list) */
-                    hash_data_list = g_slist_reverse(hash_data_list);
-
-                    free_variable(a_hash);
-                    free_variable(buffer);
                     g_checksum_free(checksum);
                     g_input_stream_close((GInputStream *) stream, NULL, NULL);
                     free_object(stream);
