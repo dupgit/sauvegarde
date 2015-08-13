@@ -51,8 +51,6 @@
 #include <libsauvegarde.h>
 
 #include "options.h"
-#include "ciseaux.h"
-#include "antememoire.h"
 
 
 /**
@@ -121,7 +119,6 @@ typedef struct
     GSList *dir_list;           /**< List of directories to be monitored */
 } thread_data_t;
 
-#include "ciseaux.h"
 #include "m_fanotify.h"
 
 #endif /* #IFNDEF _MONITOR_H_ */
