@@ -259,7 +259,6 @@ static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t 
             if (success == CURLE_OK)
                 {
                     answer = g_strdup(main_struct->comm->buffer);
-                    print_debug(_("Serveur answered: %s\n"), answer);
                     main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
                 }
             else
@@ -322,10 +321,11 @@ static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash)
 static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
 {
     json_t *root = NULL;
-    GSList *hash_list = NULL;
+    GSList *hash_list = NULL;         /** hash_list is local to this function */
     GSList *head = NULL;
     gint success = CURLE_FAILED_INIT;
     hash_data_t *found = NULL;
+    hash_data_t *hash_data = NULL;
     gint all_ok = CURLE_OK;
 
     if (answer != NULL && meta != NULL)
@@ -334,23 +334,28 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
 
             if (root != NULL)
                 {
+                    print_debug("JSON loaded\n");
+
                     hash_list = extract_gslist_from_array(root, "hash_list");
                     json_decref(root);
                     head = hash_list;
 
                     while (hash_list != NULL && all_ok == CURLE_OK)
                         {
-                            found = find_hash_in_list(meta->hash_data_list, hash_list->data);
+                            hash_data = hash_list->data;
+                            found = find_hash_in_list(meta->hash_data_list, hash_data->hash);
 
                             /* main_struct->comm->buffer is the buffer sent to serveur */
                             main_struct->comm->buffer = convert_hash_data_t_to_json(found);
                             success = post_url(main_struct->comm, "/Data.json");
+
                             all_ok = success;
+
                             main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
                             hash_list = g_slist_next(hash_list);
                         }
 
-                    free_list(head);
+                    g_slist_free_full(head, free_hdt_struct);
                 }
             else
                 {
