@@ -35,7 +35,7 @@
 static main_struct_t *init_main_structure(options_t *opt);
 
 static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize);
-static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, GFile *a_file, gint64 blocksize);
+static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, gint64 blocksize);
 static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta);
 static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash);
 static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
@@ -132,8 +132,8 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
                 {
 
                     checksum = g_checksum_new(G_CHECKSUM_SHA256);
-                    buffer = (guchar *) g_malloc0 (blocksize);
-                    a_hash = (guint8 *) g_malloc0 (digest_len);
+                    buffer = (guchar *) g_malloc0(blocksize);
+                    a_hash = (guint8 *) g_malloc0(digest_len);
 
                     read = g_input_stream_read((GInputStream *) stream, buffer, blocksize, NULL, &error);
 
@@ -149,8 +149,8 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
                             g_checksum_reset(checksum);
                             digest_len = HASH_LEN;
 
-                            buffer = (guchar *) g_malloc0 (blocksize);
-                            a_hash = (guint8 *) g_malloc0 (digest_len);
+                            buffer = (guchar *) g_malloc0(blocksize);
+                            a_hash = (guint8 *) g_malloc0(digest_len);
                             read = g_input_stream_read((GInputStream *) stream, buffer, blocksize, NULL, &error);
                         }
 
@@ -189,14 +189,13 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
  *        here to build the filename name.
  * @param fileinfo is a glib structure that contains all meta datas and
  *        more for a file.
- * @param a_file is the corresponding GFile pointer of fileinfo's
- *        structure.
  * @param blocksize is the blocksize to be used to calculate hashs upon.
  * @returns a newly allocated and filled meta_data_t * structure.
  */
-static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, GFile *a_file, gint64 blocksize)
+static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, gint64 blocksize)
 {
     meta_data_t *meta = NULL;
+    GFile *a_file = NULL;
 
     if (directory != NULL && fileinfo != NULL)
         {
@@ -221,10 +220,13 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
                 {
                     meta->link = (gchar *) g_file_info_get_attribute_byte_string(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET);
                 }
-            else if (meta->file_type == G_FILE_TYPE_REGULAR)
+
+            if (meta->file_type == G_FILE_TYPE_REGULAR)
                 {
                     /* Calculates hashs and takes care of data */
+                    a_file = g_file_new_for_path(meta->name);
                     meta->hash_data_list = calculate_hash_data_list_for_file(a_file, blocksize);
+                    a_file = free_object(a_file);
                 }
         }
 
@@ -334,7 +336,7 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
 
             if (root != NULL)
                 {
-                    print_debug("JSON loaded\n");
+
 
                     hash_list = extract_gslist_from_array(root, "hash_list");
                     json_decref(root);
@@ -355,7 +357,10 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
                             hash_list = g_slist_next(hash_list);
                         }
 
-                    g_slist_free_full(head, free_hdt_struct);
+                    if (head != NULL)
+                        {
+                            g_slist_free_full(head, free_hdt_struct);
+                        }
                 }
             else
                 {
@@ -377,7 +382,7 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
  */
 static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum)
 {
-    GFile *a_file = NULL;
+    /* GFile *a_file = NULL; */
     GError *error = NULL;
     GFileInfo *fileinfo = NULL;
     gchar *filename = NULL;
@@ -397,12 +402,10 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
 
             while (error == NULL && fileinfo != NULL)
                 {
-                    a_file = g_file_enumerator_get_child(file_enum, fileinfo);
-
                     /* We need to determine if the file has already been saved by looking into the database */
 
-                    /* Get datas and meta_datas for a file */
-                    meta = get_meta_data_from_fileinfo(directory, fileinfo, a_file, blocksize);
+                    /* Get datas and meta_datas for a file. */
+                    meta = get_meta_data_from_fileinfo(directory, fileinfo, blocksize);
 
                     /* Send datas and meta datas */
                     answer = send_meta_data_to_serveur(main_struct, meta);
@@ -416,11 +419,13 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
                     if (meta->file_type == G_FILE_TYPE_DIRECTORY)
                         {
                             /* recursive call */
+                            print_debug(_("Recursive call to carve_one_directory\n"));
                             carve_one_directory(filename, main_struct);
                         }
 
-                    meta = free_meta_data_t(meta);
                     fileinfo = free_object(fileinfo);
+                    meta = free_meta_data_t(meta);
+
                     fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
                 }
         }
@@ -443,23 +448,25 @@ static void carve_one_directory(gpointer data, gpointer user_data)
     GFileEnumerator *file_enum = NULL;
     GError *error = NULL;
 
-
-    a_dir = g_file_new_for_path(directory);
-    file_enum = g_file_enumerate_children(a_dir, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
-
-    if (error == NULL && file_enum != NULL)
+    if (directory != NULL && main_struct != NULL)
         {
-            iterate_over_enum(main_struct, directory, file_enum);
-            g_file_enumerator_close(file_enum, NULL, NULL);
-            file_enum = free_object(file_enum);
-        }
-    else
-        {
-            print_error(__FILE__, __LINE__, _("Unable to enumerate directory %s: %s\n"), directory, error->message);
-            error = free_error(error);
-        }
+            a_dir = g_file_new_for_path(directory);
+            file_enum = g_file_enumerate_children(a_dir, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
 
-    a_dir = free_object(a_dir);
+            if (error == NULL && file_enum != NULL)
+                {
+                    iterate_over_enum(main_struct, directory, file_enum);
+                    g_file_enumerator_close(file_enum, NULL, NULL);
+                    file_enum = free_object(file_enum);
+                }
+            else
+                {
+                    print_error(__FILE__, __LINE__, _("Unable to enumerate directory %s: %s\n"), directory, error->message);
+                    error = free_error(error);
+                }
+
+            a_dir = free_object(a_dir);
+        }
 }
 
 
