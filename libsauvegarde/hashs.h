@@ -183,7 +183,7 @@ extern hash_data_t *new_hash_data_t(guchar * data, gssize read, guint8 *hash);
  * @param hash_list à GSList of hashs
  * @returns a list of comma separated hashs in one gchar * string.
  */
-extern gchar *convert_hash_list_to_gchar(GSList *hash_list);
+extern gchar *convert_hash_data_list_to_gchar(GSList *hash_list);
 
 
 /**
@@ -204,14 +204,16 @@ extern gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level);
 
 
 /**
- * makes a GSList of base64 decoded hashs from a string containning base64
- * encoded hashs that may be separated by comas.
+ * makes a GSList of hash_data_t * element where 'hash' field is base64
+ * decoded hashs from a string containning base64 * encoded hashs that
+ * must be separated by comas.
  * @param the string containing base64 encoded hashs such as : *
  *        "cCoCVkt/AABf04jn2+rfDmqJaln6P2A9uKolBjEFJV4=", "0G8MaPZ/AADNyaPW7ZP2s0BI4hAdZZIE2xO1EwdOzhE="
  *        for instance.
- * @returns a GSList of base64 decoded hashs (binary form).
+ * @returns a GSList of hash_data_t * where each elements contains a
+ *          base64 decoded hash (binary form).
  */
-extern GSList *make_hash_list_from_string(gchar *hash_string);
+extern GSList *make_hash_data_list_from_string(gchar *hash_string);
 
 
 #endif /* #ifndef _HASHS_H_ */

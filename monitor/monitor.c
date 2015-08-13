@@ -216,11 +216,11 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
              /* Do the right things with specific cases */
             if (meta->file_type == G_FILE_TYPE_SYMBOLIC_LINK)
                 {
-                    meta->link = g_file_info_get_attribute_byte_string(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET);
+                    meta->link = (gchar *) g_file_info_get_attribute_byte_string(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET);
                 }
             else if (meta->file_type == G_FILE_TYPE_REGULAR)
                 {
-                    /* Need to save buffer also in hash_data_t list */
+                    /* Calculates hashs and takes care of data */
                     meta->hash_data_list = calculate_hash_data_list_for_file(a_file, blocksize);
                 }
         }
@@ -247,7 +247,7 @@ static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t 
             json_str = convert_meta_data_to_json_string(meta, main_struct->hostname);
 
             /* Sends meta data here */
-            print_debug(_("Sending meta datas for file: \"%s\"\n"), meta->name);
+            print_debug(_("Sending meta datas: %s\n"), json_str);
             main_struct->comm->buffer = json_str;
             success = post_url(main_struct->comm, "/Meta.json");
 
@@ -256,6 +256,7 @@ static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t 
             if (success == CURLE_OK)
                 {
                     answer = g_strdup(main_struct->comm->buffer);
+                    print_debug(_("Serveur answered: %s\n"), answer);
                     main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
                 }
             else
@@ -286,7 +287,7 @@ static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash)
         {
             found = iter->data;
 
-            if (compare_two_hashs(hash, found->hash) == TRUE)
+            if (compare_two_hashs(hash, found->hash) == 0)
                 {
                     ok = TRUE;
                 }
@@ -502,7 +503,7 @@ int main(int argc, char **argv)
              * changed. Enabling this feature even if we know that files
              * will never get deleted in our database.
              */
-            fanotify_loop(main_struct);
+            /* fanotify_loop(main_struct); */
 
             free_options_t_structure(main_struct->opt);
         }

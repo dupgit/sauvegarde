@@ -90,20 +90,23 @@ static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
     gchar *buf1 = NULL;
     gchar *concat = NULL;
 
-    if (comm->seq == 0)
+    if (comm != NULL)
         {
-            comm->buffer = g_strndup(buffer, size * nmemb);
-        }
-    else
-        {
-            buf1 = g_strndup(buffer, size * nmemb);
-            concat = g_strdup_printf("%s%s", comm->buffer, buf1);
-            free_variable(buf1);
-            free_variable(comm->buffer);
-            comm->buffer = concat;
-        }
+            if (comm->seq == 0)
+                {
+                    comm->buffer = g_strndup(buffer, size * nmemb);
+                }
+            else
+                {
+                    buf1 = g_strndup(buffer, size * nmemb);
+                    concat = g_strdup_printf("%s%s", comm->buffer, buf1);
+                    free_variable(buf1);
+                    free_variable(comm->buffer);
+                    comm->buffer = concat;
+                }
 
-    comm->seq = comm->seq + 1;
+            comm->seq = comm->seq + 1;
+        }
 
     return (size * nmemb);
 }

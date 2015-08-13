@@ -88,7 +88,7 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
 
                     if (stream != NULL)
                         {
-                            hash_list = convert_hash_list_to_gchar(meta->hash_data_list);
+                            hash_list = convert_hash_data_list_to_gchar(meta->hash_data_list);
 
                             if (hash_list != NULL)
                                 {
@@ -209,17 +209,19 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
  * @returns to the client a list of hashs in no specific order for which
  *          the server needs the datas.
  */
-GSList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_list)
+GSList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_data_list)
 {
     GFile *data_file = NULL;
-    GSList *head = hash_list;
+    GSList *head = hash_data_list;
     GSList *needed = NULL;
     gchar *hex_hash = NULL;
     gchar *filename = NULL;
     gchar *path = NULL;
     gchar *prefix = NULL;
     file_backend_t *file_backend = NULL;
-    gchar *hash_data = NULL;
+    guint8 *a_hash = NULL;
+    hash_data_t *hash_data = NULL;
+    hash_data_t *needed_hash_data = NULL;
 
 
     if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL)
@@ -228,34 +230,33 @@ GSList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *ha
 
             prefix = g_build_filename((gchar *) file_backend->prefix, "datas", NULL);
 
-
             while (head != NULL)
                 {
-                    path = make_path_from_hash(prefix, head->data, file_backend->level);
-                    hex_hash = hash_to_string(head->data);
+                    hash_data = head->data;
+                    path = make_path_from_hash(prefix, hash_data->hash, file_backend->level);
+                    hex_hash = hash_to_string(hash_data->hash);
 
                     filename = g_build_filename(path, hex_hash, NULL);
-
                     data_file = g_file_new_for_path(filename);
 
                     if (g_file_query_exists(data_file, NULL) == FALSE)
                         {
                             /* file does not exists and is needed thus putting it it the needed list */
-                            hash_data = (gchar *) g_malloc0(sizeof(gchar) * HASH_LEN + 1);
-                            memcpy(hash_data, head->data, HASH_LEN);
-                            needed = g_slist_prepend(needed, hash_data);
+                            a_hash = (guint8 *) g_malloc0(sizeof(guint8) * HASH_LEN);
+                            memcpy(a_hash, hash_data->hash, HASH_LEN);
+                            needed_hash_data = new_hash_data_t(NULL, 0, a_hash);
+                            needed = g_slist_prepend(needed, needed_hash_data);
                         }
 
+                    free_object(data_file);
                     free_variable(filename);
                     free_variable(hex_hash);
                     free_variable(path);
-                    free_object(data_file);
 
                     head = g_slist_next(head);
                 }
 
             free_variable(prefix);
-
         }
 
     return needed;
@@ -596,7 +597,6 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 {
     gchar **params = NULL;
     gchar *filename = NULL;
-    GSList *hash_list = NULL;
     meta_data_t *meta = NULL;
     guint32 q_uid = 0;
     guint32 q_gid = 0;
@@ -643,9 +643,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
                             if (strcmp(meta->owner, query->owner) == 0 && strcmp(meta->group, query->group) == 0 && (meta->uid == q_uid) && (meta->gid == q_gid))
                                 {
-                                    hash_list = make_hash_list_from_string(params[12]);
-
-                                    meta->hash_data_list = hash_list;
+                                    meta->hash_data_list = make_hash_data_list_from_string(params[12]);
 
                                     print_debug(_("file_backend: Found: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
                                  }

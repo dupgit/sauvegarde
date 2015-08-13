@@ -50,9 +50,8 @@ typedef struct
     guint32 uid;            /**< uid (owner)                                                                      */
     guint32 gid;            /**< gid (group owner)                                                                */
     gchar *name;            /**< name for the file or the directory                                               */
-    const gchar *link;      /**< link name where points the LINK if file_type is a link                           */
-    GSList *hash_data_list; /**< List of hash_data_t structures of the file (hash and datas are in a binary form)
-                                 used as a simple hash list for now in serveur and restaure                       */
+    gchar *link;            /**< link name where points the LINK if file_type is a link                           */
+    GSList *hash_data_list; /**< List of hash_data_t structures of the file (hash and datas are in a binary form) */
 } meta_data_t;
 
 

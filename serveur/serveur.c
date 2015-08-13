@@ -519,9 +519,7 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
     gchar *received_data = NULL;
     gchar *buf1 = NULL;
 
-
-
-    /* print_debug("%ld, %s, %p\n", *upload_data_size, url, pp); */ /* This is for early debug only ! */
+    /* print_debug("%ld, %s, %p\n", *upload_data_size, url, pp); */  /* This is for early debug only ! */
 
     if (pp == NULL)
         {

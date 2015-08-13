@@ -93,6 +93,7 @@ gpointer free_meta_data_t(meta_data_t *meta)
             free_variable(meta->owner);
             free_variable(meta->group);
             free_variable(meta->name);
+            free_variable(meta->link);
             g_slist_free_full(meta->hash_data_list, free_hdt_struct);
             free_variable(meta);
         }

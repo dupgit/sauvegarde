@@ -237,14 +237,11 @@ gchar *get_json_version(gchar *json_str)
 
 
 /**
- * This function returns a list from an json array
+ * This function returns a list of hash_data_t * from an json array
  * @param root is the root json string that may contain an array named "name"
  * @param name is the name of the array to look for into
  * @returns a GSList that me be composed of 0 element (ie NULL). Elements
- *          are of type gchar *.
- * @todo : I'm not sure that the order of the list is respected when using
- *         json. We get this order with the explicit manner :
- *         [ {number : n, hash : sdsdd}, {number : m, hash : sazsdd}, ... ]
+ *          are of type hash_data_t *.
  */
 GSList *extract_gslist_from_array(json_t *root, gchar *name)
 {
@@ -254,6 +251,7 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
     GSList *head = NULL;     /** GSList *head the list to build and iclude into meta_data_t *meta            */
     guchar *a_hash = NULL;   /** guchar *a_hash is one base64 decoded hash (binary format)                   */
     gsize hash_len = 0;      /** gsize hash_len is the length of the decoded hash (must alwas be HASH_LEN)   */
+    hash_data_t *hash_data = NULL;
 
     if (root != NULL && name != NULL)
         {
@@ -268,8 +266,9 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
             json_array_foreach(array, index, value)
                 {
                     a_hash = g_base64_decode(json_string_value(value), &hash_len);
-                    head = g_slist_prepend(head, a_hash);
+                    hash_data = new_hash_data_t(NULL, 0, a_hash);
 
+                    head = g_slist_prepend(head, hash_data);
                 }
 
             head = g_slist_reverse(head);
@@ -472,7 +471,6 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
      * @todo : validate that we have a json string and make
      *         sure that this is a meta_data one.
      */
-
 
     if (json_str != NULL)
         {

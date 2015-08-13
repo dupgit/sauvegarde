@@ -344,7 +344,7 @@ gpointer free_data_t_structure(data_t *a_data)
 /**
  * Frees hash_data_t *buffer and returns NULL.
  * @param hash_data : the stucture that contains buffer data, hash data
- * and its size to be freed.
+ *        and its size to be freed.
  * @returns always NULL.
  */
 gpointer free_hash_data_t_structure(hash_data_t *hash_data)
@@ -392,19 +392,21 @@ hash_data_t *new_hash_data_t(guchar *data, gssize read, guint8 *hash)
 /**
  * Converts the hash list to a list of comma separated hashs in one gchar *
  * string. Hashs are base64 encoded
- * @param hash_list à GSList of hashs
+ * @param hash_list à GSList of hash_data_t * elements
  * @returns a list of comma separated hashs in one gchar * string.
  */
-gchar *convert_hash_list_to_gchar(GSList *hash_list)
+gchar *convert_hash_data_list_to_gchar(GSList *hash_list)
 {
     GSList *head = hash_list;
     gchar *base64 = NULL;
     gchar *list = NULL;
     gchar *old_list = NULL;
+    hash_data_t *hash_data = NULL;
 
     while (head != NULL)
         {
-            base64 = g_base64_encode(head->data, HASH_LEN);
+            hash_data = head->data;
+            base64 = g_base64_encode(hash_data->hash, HASH_LEN);
 
             if (old_list == NULL)
                 {
@@ -472,18 +474,21 @@ gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level)
 
 
 /**
- * makes a GSList of base64 decoded hashs from a string containning base64
- * encoded hashs that may be separated by comas.
+ * makes a GSList of hash_data_t * element where 'hash' field is base64
+ * decoded hashs from a string containning base64 * encoded hashs that
+ * must be separated by comas.
  * @param the string containing base64 encoded hashs such as : *
  *        "cCoCVkt/AABf04jn2+rfDmqJaln6P2A9uKolBjEFJV4=", "0G8MaPZ/AADNyaPW7ZP2s0BI4hAdZZIE2xO1EwdOzhE="
  *        for instance.
- * @returns a GSList of base64 decoded hashs (binary form).
+ * @returns a GSList of hash_data_t * where each elements contains a
+ *          base64 decoded hash (binary form).
  */
-GSList *make_hash_list_from_string(gchar *hash_string)
+GSList *make_hash_data_list_from_string(gchar *hash_string)
 {
     uint i = 0;
     gchar **hashs = NULL;
     gchar *a_hash = NULL;
+    hash_data_t *hash_data = NULL;
     GSList *hash_list = NULL;
     gsize len = 0;
 
@@ -496,8 +501,11 @@ GSList *make_hash_list_from_string(gchar *hash_string)
                 {
                     a_hash = g_strndup(g_strchug(hashs[i] + 1), strlen(g_strchug(hashs[i])) - 2);
 
-                    /* we have to base64 encode it to insert it into the meta_data_t * structure */
-                    hash_list = g_slist_prepend(hash_list, g_base64_decode(a_hash, &len));
+                    /* we have to base64 decode it to insert it into the hash_data_t * structure
+                     * and then into the meta_data one.
+                     */
+                    hash_data = new_hash_data_t(NULL, 0, g_base64_decode(a_hash, &len));
+                    hash_list = g_slist_prepend(hash_list, hash_data);
                     free_variable(a_hash);
                     i = i + 1;
                 }
