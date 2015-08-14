@@ -69,6 +69,7 @@ static main_struct_t *init_main_structure(options_t *opt)
             create_directory(opt->dircache);
             db_uri = g_build_filename(opt->dircache, opt->dbname , NULL);
             main_struct->database = open_database(db_uri);
+            db_uri = free_variable(db_uri);
 
             main_struct->opt = opt;
             main_struct->hostname = g_get_host_name();
@@ -370,7 +371,6 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
 
    return all_ok;
 }
-
 
 
 /**

@@ -360,23 +360,9 @@ options_t *manage_command_line_options(int argc, char **argv)
  */
 void free_options_t_structure(options_t *opt)
 {
-    GSList *head = NULL;
-    GSList *next = NULL;
-
-
     if (opt != NULL)
         {
-            /* free the list */
-            head = opt->dirname_list;
-
-            while (head != NULL)
-                {
-                    head->data = free_variable(head->data);
-                    next = g_slist_next(head);
-                    g_slist_free_1(head);
-                    head = next;
-                }
-
+            free_list(opt->dirname_list);
             free_variable(opt->dircache);
             free_variable(opt->configfile);
             free_variable(opt->dbname);
