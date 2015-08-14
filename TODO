@@ -9,6 +9,7 @@
 
 * use some cryptography to cypher exchanges (gpg ?)
 * add a fourth program to clean older datas and metas datas (nettoie ?)
-
+* add to serveur a specific url to send more than one buffer of data
+  associated to their hashs. This may speed up data transfert.
 
 

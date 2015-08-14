@@ -381,6 +381,8 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
  * @param directory is the directory we are iterating over
  * @param fileinfo is a glib structure that contains all meta datas and
  *        more for a file.
+ * @note This function is not threadable as is. One may have problems
+ *       when writing to the database for instance.
  */
 void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *fileinfo)
 {
