@@ -340,7 +340,8 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 
                     while (hash_list != NULL)
                         {
-                            hash = hash_to_string(hash_list->data);
+                            hash_data = hash_list->data;
+                            hash = hash_to_string(hash_data->hash);
                             request = g_strdup_printf("/Data/%s.json", hash);
 
                             print_debug(_("Query is: %s\n"), request);

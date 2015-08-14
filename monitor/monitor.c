@@ -422,7 +422,7 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
                             /* Save them to the db cache */
                             db_save_meta_data(main_struct->database, meta, TRUE);
 
-                            /* Need to save datas only if an error when transmitting answer and success may tell this */
+                            /* Need to save datas only if an error occured when transmitting. 'success' may tell this */
                         }
 
                     if (meta->file_type == G_FILE_TYPE_DIRECTORY)
