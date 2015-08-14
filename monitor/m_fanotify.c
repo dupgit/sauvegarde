@@ -125,6 +125,8 @@ gint start_fanotify(options_t *opt)
 
 /**
  * gets path from file descriptor
+ * @param fd is the file descriptor as seen in /proc filesystem
+ * @returns the name of the file pointed to by this file descriptor
  */
 static gchar *get_file_path_from_fd(gint fd)
 {
@@ -279,7 +281,7 @@ static void event_process(main_struct_t *main_struct, struct fanotify_event_meta
                             /* Don't try to save files that comes from our activity */
                             print_debug(_("Received event file/directory: %s\n"), path);
                             print_debug(_(" matching directory is       : %s\n"), head->data);
-                            print_debug(_(" pid=%d (%s): \n"), event->pid, progname);
+                            print_debug(_(" pid=%d (%s): "), event->pid, progname);
 
                             if (event->mask & FAN_CLOSE_WRITE)
                                 {

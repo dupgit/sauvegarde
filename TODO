@@ -1,6 +1,7 @@
 # client
 
-* integrates fanotify in a cleaner way
+* integrates fanotify in a cleaner way and try to see wether a directory
+  creation can be detected.
 * Review entire design to fit into "small memory" systems.
 
 
