@@ -36,22 +36,6 @@
 
 
 /**
- * @struct hashs_t
- * @brief Storing hashs and things related in a balanced binary tree.
- *
- * Structure that contains a balanced binary tree to store hashs in a
- * binary form to save space. keys are hashs and value is the data that
- * generated the corresponding checksum.
- */
-typedef struct
-{
-    GTree *tree_hash;    /**< A balanced binary tree to stores hashs and data               */
-    guint64 total_bytes; /**< Total number of bytes that were computed to get the checksums */
-    guint64 in_bytes;    /**< Number of bytes into the GTree (deduplicated)                 */
-} hashs_t;
-
-
-/**
  * @struct data_t
  * @brief Structure that stores buffer data (buffer) and its size (read).
  *
@@ -77,22 +61,6 @@ typedef struct
     gssize read;
 } hash_data_t;
 
-/**
- * Allocate a new hashs_t structure with a GTree
- * @returns a newly allocated hashs_t structure with a GTree initialized
- *          with compare_two_hashs function to sort the hashs.
- */
-extern hashs_t *new_hash_struct(void);
-
-
-/**
- * Prints statistics from the binary tree hash
- * @param hashs : the structure that contains all hashs and some values
- *        that may give some stats about the datas
- * @todo refactor to also have a json string ?
- */
-extern void print_tree_hashs_stats(hashs_t *hashs);
-
 
 /**
  * Comparison function used with the GTree structure to sort hashs
@@ -101,19 +69,6 @@ extern void print_tree_hashs_stats(hashs_t *hashs);
  * if a > b.
  */
 extern gint compare_two_hashs(gconstpointer a, gconstpointer b);
-
-
-/**
- * A function to insert a binary hash into the GTree structure
- * @param hashs : the hash structure that contains the binary tree in which
- *        we want to insert the second parameter
- * @param a_hash is a hash in a binary form
- * @param buffer is the data whom checksum is a_hashs
- * @param read is the number of bytes in guchar *buffer
- * @param meta : meta_data_t * structure that contains all meta data for
- *        the corresponding file.
- */
-extern void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize read, meta_data_t *meta);
 
 
 /**

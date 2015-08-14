@@ -213,18 +213,6 @@ extern gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *h
 
 
 /**
- * Inserts a json formatted string into a hashs_t * balanced binary tree
- * structure and returns.
- * @param[in,out] hashs an initialized balanced binary tree structure
- *               (hashs_t *)
- * @param json_str a json string containing all data informations to be
- *        inserted into the tree.
- * @returns the base 64 encoded hash of the data beeing inserted.
- */
-extern gchar *insert_json_into_hash_tree(hashs_t *hashs, gchar *json_str);
-
-
-/**
  * Function that converts json_str containing the keys "hash", "data"
  * and "read" into hash_data_t structure.
  * @param json_str is a json string containing the keys "hash", "data"

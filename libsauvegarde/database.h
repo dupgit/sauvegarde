@@ -104,7 +104,7 @@ extern void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_m
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
  */
-extern hashs_t *get_all_inserted_hashs(db_t *database);
+/* extern hashs_t *get_all_inserted_hashs(db_t *database); */
 
 
 #endif /* #ifndef _DATABASE_H_ */

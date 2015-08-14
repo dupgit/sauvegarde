@@ -121,22 +121,6 @@ extern gboolean is_serveur_alive(comm_t *comm);
 
 
 /**
- * This function sends the datas that corresponds to the hashs in the json
- * formatted string's answer.
- * @param comm a comm_t * structure that must contain an initialized
- *             curl_handle (must not be NULL). Buffer field of this
- *             structure is sent as data in the POST command.
- * @param hashs is the hash structure that contains the binary tree.
- * @param answer is the answer of the serveur containing a json formatted
- *        hash list.
- * @returns a CURLcode (http://curl.haxx.se/libcurl/c/libcurl-errors.html)
- *          CURLE_OK upon success of whole hash's transmissions, any other
- *          error code in any other situation.
- */
-extern gint send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer);
-
-
-/**
  * Frees and releases a comm_t *structure
  * @param comm a comm_t * structure to be freed
  */

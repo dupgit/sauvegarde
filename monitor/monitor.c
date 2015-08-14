@@ -74,9 +74,6 @@ static main_struct_t *init_main_structure(options_t *opt)
             main_struct->opt = opt;
             main_struct->hostname = g_get_host_name();
 
-            main_struct->hashs = get_all_inserted_hashs(main_struct->database);
-
-
             if (opt != NULL && opt->ip != NULL)
                 {
                     conn = make_connexion_string(opt->ip, opt->port);

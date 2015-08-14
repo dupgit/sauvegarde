@@ -100,7 +100,6 @@ typedef struct
 {
     options_t *opt;           /**< Options of the program from the command line                                                */
     const gchar *hostname;    /**< Name of the current machine                                                                 */
-    hashs_t *hashs;           /**< Calculated hashs stored in a balanced binary tree                                           */
     db_t *database;           /**< Database structure that stores everything that is related to the database                   */
     comm_t *comm;             /**< This is used to communicate with the 'serveur' program (which is the server)                */
     gint signal_fd;           /**< signal handler   */

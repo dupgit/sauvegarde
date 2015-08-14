@@ -342,63 +342,6 @@ GSList *extract_smeta_gslist_from_file_list(json_t *root)
 
 
 /**
- * Inserts a json formatted string into a hashs_t * balanced binary tree
- * structure and returns.
- * @param[in,out] hashs an initialized balanced binary tree structure
- *               (hashs_t *)
- * @param json_str a json string containing all data informations to be
- *        inserted into the tree.
- * @returns the base 64 encoded hash of the data beeing inserted.
- */
-gchar *insert_json_into_hash_tree(hashs_t *hashs, gchar *json_str)
-{
-    json_t *root = NULL;
-    guchar *data = NULL;
-    guint8 *hash = NULL;
-    gchar *encoded_hash = NULL;
-    gssize read = 0;
-    gsize data_len = 0;
-    gsize hash_len = 0;
-    data_t *a_data = NULL;
-
-    if (json_str != NULL)
-        {
-            root = load_json(json_str);
-
-            if (root != NULL)
-                {
-                    data = g_base64_decode(get_string_from_json_root(root, "data"), &data_len);
-                    encoded_hash = get_string_from_json_root(root, "hash");
-                    hash = (guint8 *) g_base64_decode(encoded_hash, &hash_len);
-                    read = get_guint64_from_json_root(root, "size");
-
-                    /* Some basic verifications */
-                    if (data_len == read && hash_len == HASH_LEN)
-                        {
-                            hashs->total_bytes = hashs->total_bytes + read;
-
-                            if (g_tree_lookup(hashs->tree_hash, hash) == NULL)
-                                {
-                                    a_data = new_data_t_structure(data, read, FALSE);
-                                    hashs->in_bytes = hashs->in_bytes + read;
-                                    g_tree_insert(hashs->tree_hash, hash, a_data);
-                                }
-                        }
-                    else
-                        {
-                            print_error(__FILE__, __LINE__, _("Something is wrong with lengths: data_len = %ld, read = %ld, hash_len = %ld, HASH_LEN = %ld\n"), data_len, read, hash_len, HASH_LEN);
-                        }
-
-                    json_decref(root);
-                }
-        }
-
-    return encoded_hash;
-}
-
-
-
-/**
  * Function that converts json_str containing the keys "hash", "data"
  * and "read" into hash_data_t structure.
  * @param json_str is a json string containing the keys "hash", "data"

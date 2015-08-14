@@ -38,9 +38,6 @@ static int get_file_callback(void *a_row, int nb_col, char **data, char **name_c
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
 static int get_data_callback(void *a_data, int nb_col, char **data, char **name_col);
 static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash);
-static gboolean is_checksum_in_db(hashs_t *inserted_hashs, guint8 *a_hash);
-static int get_all_checksum_callback(void *inserted_hashs, int nb_col, char **data, char **name_col);
-
 
 /**
  * @returns a string containing the version of the database used.
@@ -339,71 +336,6 @@ static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash)
 }
 
 
-/**
- * Says wether a hash is already in the data table of the database (with
- * it's datas).
- * @param inserted_hashs is a hashs_t * structure that stores only hashs
- * that has already been inserted into the database (it stores a "1" as
- * it's fake data value).
- * @param a_hash is the hash we want to look for.
- * @returns a boolean that is TRUE if the hash is in the inserted_hashs
- * structure and FALSE in all other cases.
- */
-static gboolean is_checksum_in_db(hashs_t *inserted_hashs, guint8 *a_hash)
-{
-    guint8 *hash = NULL;
-
-    if (inserted_hashs != NULL)
-        {
-            hash = g_tree_lookup(inserted_hashs->tree_hash, a_hash);
-
-            if (hash == NULL)
-                {
-                    return FALSE;
-                }
-            else
-                {
-                    return TRUE;
-                }
-        }
-    else
-        {
-            return FALSE;
-        }
-
-}
-
-
-/**
- * This function is a callback for SQLITE in order to retreive all
- * checksums from the database.
- * @param inserted_hashs is a hashs_t * structure that is filled here with
- *        the results of the query (executed in get_all_inserted_hashs
- *        function).
- * @param nb_col gives the number of columns in this row.
- * @param data contains the data of each column.
- * @param name_col contains the name of each column.
- * @returns always 0.
- */
-static int get_all_checksum_callback(void *inserted_hashs, int nb_col, char **data, char **name_col)
-{
-    hashs_t *all_hashs = (hashs_t *) inserted_hashs;
-    data_t *a_data = NULL;
-    guint8 *a_hash = NULL;
-    gssize read = 0;
-    gsize len = 0;
-
-    if (data != NULL)
-        {
-            a_hash = g_base64_decode(data[0], &len);
-            read = g_ascii_strtoull(data[1], NULL, 10);       /* 10 is the base to be used to convert the number */
-            a_data = new_data_t_structure(NULL, read, TRUE);  /* We keep the size of the data checksum but do not need the data itself has it is already in the cache */
-            g_tree_insert(all_hashs->tree_hash, a_hash, a_data);
-        }
-
-    return 0;
-}
-
 
 /**
  * Gets all encoded hashs already inserted into the 'data' table from the
@@ -414,6 +346,7 @@ static int get_all_checksum_callback(void *inserted_hashs, int nb_col, char **da
  *          'data' table of the database but without it's datas (the buffer
  *          field is set to NULL but into_cache is set to TRUE).
  */
+ /*
 hashs_t *get_all_inserted_hashs(db_t *database)
 {
     hashs_t *inserted_hashs = NULL;
@@ -436,9 +369,10 @@ hashs_t *get_all_inserted_hashs(db_t *database)
     else
         {
             print_db_error(database->db, _("(%d) Error while searching into the table 'data': %s\n"), db_result, error_message);
-            return NULL; /* to avoid a compilation warning as we exited with failure in print_db_error */
+            return NULL;  to avoid a compilation warning as we exited with failure in print_db_error
         }
 }
+*/
 
 
 /**

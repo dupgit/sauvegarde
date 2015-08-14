@@ -29,7 +29,6 @@
 #include "libsauvegarde.h"
 
 static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
-static gint send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash_list);
 
 
 /**
@@ -253,113 +252,6 @@ gboolean is_serveur_alive(comm_t *comm)
             free_variable(version);
             return FALSE;
         }
-}
-
-
-/**
- * This functions iters over a GSList of hashs searching into the binary
- * tree if we have the datas and then sends them to serveur server.
- * @param comm a comm_t * structure that must contain an initialized
- *        curl_handle (must not be NULL). buffer field of this structure
- *        is sent as data in the POST command.
- * @param hashs is the hash structure that contains the binary tree.
- * @param hash_list is the GSList of hashs to send.
- * @returns a CURLcode (http://curl.haxx.se/libcurl/c/libcurl-errors.html)
- *          CURLE_OK upon success, any other error code in any other
- *          situation.
- */
-static gint send_datas_from_hash_list(comm_t *comm, hashs_t *hashs, GSList *hash_list)
-{
-    data_t *a_data = NULL;
-    GSList *head = hash_list;
-    gchar *encoded_hash = NULL;
-    gint success = CURLE_FAILED_INIT;
-    gint all_ok = CURLE_OK;  /* If hash list is NULL there is nothing to be transmitted so it is a success ! */
-
-    while (hash_list != NULL && all_ok == CURLE_OK)
-        {
-            a_data = g_tree_lookup(hashs->tree_hash, hash_list->data);
-
-            encoded_hash = g_base64_encode(hash_list->data, HASH_LEN);
-
-            if (a_data != NULL)
-                {
-                    print_debug(_("Sending datas for hash: \"%s\"\n"), encoded_hash);
-                    comm->buffer = convert_data_to_json(a_data, encoded_hash);
-                    success = post_url(comm, "/Data.json");
-
-                    if (success == CURLE_OK)
-                        {
-                            a_data->buffer = free_variable(a_data->buffer);
-                            a_data->read = 0;
-                            a_data->into_cache = FALSE;
-                        }
-                    else
-                        {
-                            all_ok = success;
-                        }
-
-                    /* comm->buffer may contain an answer from serveur
-                     * but as we do nothing with it now, just free it
-                     */
-                    comm->buffer = free_variable(comm->buffer);
-                }
-            else
-                {
-                    print_error(__FILE__, __LINE__, "Error, some data may be missing : unable to find datas for hash: \"%s\"\n", encoded_hash);
-                }
-
-            free_variable(hash_list->data);
-            free_variable(encoded_hash);
-
-            hash_list = g_slist_next(hash_list);
-        }
-
-    /* All intern datas of the list has been freed previously while
-     * iterating the list.
-     */
-    g_slist_free(head);
-
-    return all_ok;
-}
-
-
-/**
- * This function sends the datas that corresponds to the hashs in the json
- * formatted string's answer.
- * @param comm a comm_t * structure that must contain an initialized
- *             curl_handle (must not be NULL). Buffer field of this
- *             structure is sent as data in the POST command.
- * @param hashs is the hash structure that contains the binary tree.
- * @param answer is the answer of the serveur containing a json formatted
- *        hash list.
- * @returns a CURLcode (http://curl.haxx.se/libcurl/c/libcurl-errors.html)
- *          CURLE_OK upon success of whole hash's transmissions, any other
- *          error code in any other situation.
- */
-gint send_datas_to_server(comm_t *comm, hashs_t *hashs, gchar *answer)
-{
-    json_t *root = NULL;
-    GSList *hash_list = NULL;
-    gint success = CURLE_FAILED_INIT;
-
-    if (hashs != NULL && answer != NULL)
-        {
-            root = load_json(answer);
-            free_variable(answer);
-
-            if (root != NULL)
-                {
-
-                    hash_list = extract_gslist_from_array(root, "hash_list");
-
-                    success = send_datas_from_hash_list(comm, hashs, hash_list);
-
-                    json_decref(root);
-                }
-        }
-
-   return success;
 }
 
 

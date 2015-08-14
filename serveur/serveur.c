@@ -60,7 +60,6 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
     serveur_struct = (serveur_struct_t *) g_malloc0(sizeof(serveur_struct_t));
 
     serveur_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
-    serveur_struct->hashs = new_hash_struct();
     serveur_struct->d = NULL;            /* libmicrohttpd daemon pointer */
     serveur_struct->meta_queue = g_async_queue_new();
     serveur_struct->data_queue = g_async_queue_new();
@@ -454,13 +453,6 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
         }
     else if (g_strcmp0(url, "/Data.json") == 0 && received_data != NULL)
         {
-            /**
-             * @note do we need to insert datas into an hash tree ?
-             *
-             * encoded_hash = insert_json_into_hash_tree(serveur_struct->hashs, received_data);
-             * print_debug(_("Received data for hash: \"%s\"\n"), encoded_hash);
-             * encoded_hash = free_variable(encoded_hash);
-             */
 
             hash_data = convert_json_to_hash_data(received_data);
             received_data = free_variable(received_data);

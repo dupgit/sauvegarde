@@ -29,53 +29,6 @@
 #include "libsauvegarde.h"
 
 /**
- * Allocate a new hashs_t structure with a GTree
- * @returns a newly allocated hashs_t structure with a GTree initialized
- *          with compare_two_hashs function to sort the hashs.
- */
-hashs_t *new_hash_struct(void)
-{
-    hashs_t *hashs = NULL;
-
-    hashs = (hashs_t *) g_malloc0(sizeof(hashs_t));
-
-    hashs->tree_hash = g_tree_new(compare_two_hashs);
-    hashs->total_bytes = 0;
-    hashs->in_bytes = 0;
-
-    return hashs;
-}
-
-
-/**
- * Prints statistics from the binary tree hash
- * @param hashs : the structure that contains all hashs and some values
- *        that may give some stats about the datas
- * @todo refactor to also have a json string ?
- */
-void print_tree_hashs_stats(hashs_t *hashs)
-{
-    if (hashs != NULL)
-        {
-            /* printing some stats of the GTree */
-            fprintf(stdout, _("Number of unique hash : %d\n"), g_tree_nnodes(hashs->tree_hash));
-            fprintf(stdout, _("Tree height           : %d\n"), g_tree_height(hashs->tree_hash));
-            fprintf(stdout, _("Total size in bytes   : %" G_GUINT64_FORMAT "\n"), hashs->total_bytes);
-            fprintf(stdout, _("Dedup size in bytes   : %" G_GUINT64_FORMAT "\n"), hashs->total_bytes - hashs->in_bytes);
-
-            if (hashs->total_bytes != 0)
-                {
-                    fprintf(stdout, _("Deduplication %%       : %.2f\n"), 100*(hashs->total_bytes - hashs->in_bytes)/ (float) hashs->total_bytes);
-                }
-            else
-                {
-                    fprintf(stdout, _("Deduplication in bytes : %.2" G_GUINT64_FORMAT "\n"), hashs->in_bytes);
-                }
-        }
-}
-
-
-/**
  * Comparison function used with the GTree structure to sort hashs
  * properly.
  * @param a is a hash in a binary form (a guint8 *)
@@ -134,48 +87,6 @@ gint compare_two_hashs(gconstpointer a, gconstpointer b)
                 }
         }
 }
-
-
-/**
- * A function to insert a binary hash into the GTree structure
- * @param hashs : the hash structure that contains the binary tree in which
- *        we want to insert the second parameter
- * @param a_hash is a hash in a binary form
- * @param buffer is the data whom checksum is a_hash
- * @param read is the number of bytes in guchar *buffer
- * @param meta : meta_data_t * structure that contains all meta data for
- *        the corresponding file.
- */
-void insert_into_tree(hashs_t *hashs, guint8 *a_hash, guchar *buffer, gssize read, meta_data_t *meta)
-{
-    guint8 *a_hash_dup = NULL;  /** A a_hash to be duplicated   */
-    guchar *buffer_dup = NULL;  /** A duplicated buffer         */
-    data_t *a_data = NULL;      /** Struture to store buffers   */
-
-
-    if (hashs != NULL && a_hash != NULL)
-        {
-            a_hash_dup = g_memdup(a_hash, HASH_LEN);
-            buffer_dup = g_memdup(buffer, read);
-
-            /* meta->hash_list = g_slist_prepend(meta->hash_list, a_hash_dup); */
-
-            hashs->total_bytes = hashs->total_bytes + read;
-
-            if (g_tree_lookup(hashs->tree_hash, a_hash_dup) == NULL)
-                {
-                    hashs->in_bytes = hashs->in_bytes + read;
-                    a_data = new_data_t_structure(buffer_dup, read, FALSE);
-                    g_tree_insert(hashs->tree_hash, a_hash_dup, a_data); /* the checksum itself is the key to get buffer's data */
-                }
-            else
-                {
-                    free_variable(buffer_dup);
-                    free_variable(a_hash_dup);
-                }
-        }
-}
-
 
 /**
  * Transforms a binary hashs into a printable string (gchar *)
