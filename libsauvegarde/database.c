@@ -171,21 +171,18 @@ gboolean is_file_in_cache(db_t *database, meta_data_t *meta)
 
             row = get_file_id(database, meta);
 
-            if (row != NULL && row->nb_row == 0) /* No row has been returned. It means that the file isn't in the cache */
+            if (row != NULL)
                 {
-                    free_file_row_t(row);
-                    return FALSE;
-                }
-            else if (row != NULL)
-                {   /* at least one row has been returned */
-                    /**
-                     * @todo Add a test to avoid inserting metas data into
-                     * the cache if their modification is less than N minutes
-                     * with N an option.
-                     */
-                    free_file_row_t(row);
-
-                    return TRUE;
+                    if (row->nb_row == 0) /* No row has been returned. It means that the file isn't in the cache */
+                        {
+                            free_file_row_t(row);
+                            return FALSE;
+                        }
+                    else
+                        { /* At least one row has been returned */
+                            free_file_row_t(row);
+                            return TRUE;
+                        }
                 }
             else
                 {

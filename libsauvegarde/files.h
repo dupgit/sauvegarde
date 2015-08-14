@@ -52,6 +52,7 @@ typedef struct
     gchar *name;            /**< name for the file or the directory                                               */
     gchar *link;            /**< link name where points the LINK if file_type is a link                           */
     GSList *hash_data_list; /**< List of hash_data_t structures of the file (hash and datas are in a binary form) */
+    gboolean in_cache;      /**< in_cache is a boolean that may be TRUE if the file is in the local cache (client)*/
 } meta_data_t;
 
 

@@ -56,6 +56,7 @@ meta_data_t *new_meta_data_t(void)
             meta->name = NULL;
             meta->link = NULL;
             meta->hash_data_list = NULL;
+            meta->in_cache = FALSE; /* a newly meta data is not in the local cache ! */
         }
 
     return meta;

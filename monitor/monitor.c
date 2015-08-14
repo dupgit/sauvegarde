@@ -35,7 +35,7 @@
 static main_struct_t *init_main_structure(options_t *opt);
 
 static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize);
-static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, gint64 blocksize);
+static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, gint64 blocksize, db_t *database);
 static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta);
 static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash);
 static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
@@ -191,14 +191,17 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
  * @param fileinfo is a glib structure that contains all meta datas and
  *        more for a file.
  * @param blocksize is the blocksize to be used to calculate hashs upon.
+ * @param database is the db_t * structure to access thhe local database
+ *        cache in order to know if we already know this file (and thus
+ *        not process it).
  * @returns a newly allocated and filled meta_data_t * structure.
  */
-static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, gint64 blocksize)
+static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, gint64 blocksize, db_t *database)
 {
     meta_data_t *meta = NULL;
     GFile *a_file = NULL;
 
-    if (directory != NULL && fileinfo != NULL)
+    if (directory != NULL && fileinfo != NULL && database != NULL)
         {
             /* filling meta data for the file represented by fileinfo */
             meta = new_meta_data_t();
@@ -222,7 +225,12 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
                     meta->link = (gchar *) g_file_info_get_attribute_byte_string(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET);
                 }
 
-            if (meta->file_type == G_FILE_TYPE_REGULAR)
+
+            /* We need to determine if the file has already been saved by looking into the local database */
+            meta->in_cache = is_file_in_cache(database, meta);
+
+
+            if (meta->in_cache == FALSE && meta->file_type == G_FILE_TYPE_REGULAR)
                 {
                     /* Calculates hashs and takes care of data */
                     a_file = g_file_new_for_path(meta->name);
@@ -382,7 +390,6 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
  */
 static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum)
 {
-    /* GFile *a_file = NULL; */
     GError *error = NULL;
     GFileInfo *fileinfo = NULL;
     meta_data_t *meta = NULL;
@@ -401,23 +408,25 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
 
             while (error == NULL && fileinfo != NULL)
                 {
-                    /* We need to determine if the file has already been saved by looking into the database */
 
                     /* Get datas and meta_datas for a file. */
-                    meta = get_meta_data_from_fileinfo(directory, fileinfo, blocksize);
+                    meta = get_meta_data_from_fileinfo(directory, fileinfo, blocksize, main_struct->database);
 
-                    /* Send datas and meta datas */
-                    answer = send_meta_data_to_serveur(main_struct, meta);
-                    success = send_datas_to_serveur(main_struct, meta, answer);
-                    free_variable(answer);
+                    if (meta->in_cache == FALSE)
+                        {
+                            /* Send datas and meta datas only if the file isn't already in our local database */
+                            answer = send_meta_data_to_serveur(main_struct, meta);
+                            success = send_datas_to_serveur(main_struct, meta, answer);
+                            free_variable(answer);
 
-                    /* Save them to the db cache */
-                    db_save_meta_data(main_struct->database, meta, TRUE);
-                    /* Need to save datas only if an error when transmitting answer and success may tell this */
+                            /* Save them to the db cache */
+                            db_save_meta_data(main_struct->database, meta, TRUE);
+
+                            /* Need to save datas only if an error when transmitting answer and success may tell this */
+                        }
 
                     if (meta->file_type == G_FILE_TYPE_DIRECTORY)
                         {
-                            /* recursive call */
                             carve_one_directory(meta->name, main_struct);
                         }
 
