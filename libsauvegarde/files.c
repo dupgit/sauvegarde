@@ -345,7 +345,7 @@ guint64 get_file_size(GFile *file)
         {
             fileinfo = g_file_query_info(file, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
             size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
-            g_object_unref(fileinfo);
+            free_object(fileinfo);
         }
 
     return size;

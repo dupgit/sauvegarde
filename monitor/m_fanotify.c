@@ -33,7 +33,7 @@
 
 static gchar *get_file_path_from_fd(gint fd);
 static char *get_program_name_from_pid(int pid);
-static void event_process(struct fanotify_event_metadata *event, GSList *dir_list);
+static void event_process(main_struct_t *main_struct, struct fanotify_event_metadata *event, GSList *dir_list);
 
 
 /**
@@ -128,41 +128,29 @@ gint start_fanotify(options_t *opt)
  */
 static gchar *get_file_path_from_fd(gint fd)
 {
-    ssize_t len = 0;
-    off_t linklen = 0;
     gchar *path = NULL;
     gchar *proc = NULL;
-    struct stat st;
 
     if (fd <= 0)
         {
-            return g_strdup_printf("fd unknown");
+            print_error(__FILE__, __LINE__, _("Invalid file descriptor: %d\n"), fd);
+            return NULL;
         }
 
     proc = g_strdup_printf("/proc/self/fd/%d", fd);
 
-    if (lstat(proc, &st) == -1)
+    path = (gchar *) g_malloc0((PATH_MAX) * sizeof(gchar));
+
+    if (readlink(proc, path, PATH_MAX - 1) < 0)
         {
-            print_error(__FILE__, __LINE__, _("lstat is wrong: %s\n"), strerror(errno));
+            print_error(__FILE__, __LINE__, _("'readlink' error: %s\n"), strerror(errno));
             free_variable(proc);
-            return  g_strdup_printf("lstat unknown");
+            free_variable(path);
+            return NULL;
         }
-    else
-        {
-            linklen = st.st_size;
-        }
-
-    path = (gchar *) g_malloc0((linklen + 1) * sizeof(gchar));
-
-    if ((len = readlink(proc, path, linklen)) < 0)
-        {
-            free_variable(proc);
-            return g_strdup_printf("readlink unknown");
-        }
-
-    path[len] = '\0';
 
     free_variable(proc);
+
     return path;
 }
 
@@ -189,13 +177,14 @@ static char *get_program_name_from_pid(int pid)
     if ((len = read(fd, buffer, PATH_MAX - 1)) <= 0)
         {
             close (fd);
-            return g_strdup("unknown");
+            free_variable(buffer);
+            return NULL;
         }
     else
         {
             close (fd);
 
-            buffer[len] = '\0';
+            /* buffer[len] = '\0'; */
             aux = strstr(buffer, "^@");
 
             if (aux)
@@ -209,11 +198,47 @@ static char *get_program_name_from_pid(int pid)
 
 
 /**
+ * Prepares everything in order to call save_one_file function that does
+ * everything to save one file !
+ * @param main_struct : main structure of the program
+ * @param path is the entire path and name of the considered file.
+ */
+static void prepare_before_saving(main_struct_t *main_struct, gchar *path)
+{
+    gchar *directory = NULL;
+    GFileInfo *fileinfo = NULL;
+    GFile *file = NULL;
+    GError *error = NULL;
+
+    if (main_struct != NULL && path != NULL)
+        {
+            directory = g_path_get_dirname(path);
+            file = g_file_new_for_path(path);
+            fileinfo = g_file_query_info(file, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
+
+            if (error == NULL && fileinfo != NULL)
+                {
+                    save_one_file(main_struct, directory, fileinfo);
+
+                    fileinfo = free_object(fileinfo);
+                    file = free_object(file);
+                    free_variable(directory);
+                }
+            else
+                {
+                    print_error(__FILE__, __LINE__, _("Unable to get meta datas for file %s: %s\n"), path, error->message);
+                    error = free_error(error);
+                }
+        }
+}
+
+
+/**
  * An example of processing events
  * @param dir_list MUST be a list of gchar * g_utf8_casefold()
  *        transformed.
  */
-static void event_process(struct fanotify_event_metadata *event, GSList *dir_list)
+static void event_process(main_struct_t *main_struct, struct fanotify_event_metadata *event, GSList *dir_list)
 {
     gchar *path = NULL;
     gchar *progname = NULL;
@@ -224,46 +249,54 @@ static void event_process(struct fanotify_event_metadata *event, GSList *dir_lis
 
     path = get_file_path_from_fd(event->fd);
 
-    pathutf8 = g_utf8_casefold(path, -1);
-
-    while (head != NULL && found == FALSE)
+    if (path != NULL)
         {
-            dirutf8 = head->data;
+            /* Does the event concern a monitored directory ? */
+            pathutf8 = g_utf8_casefold(path, -1);
 
-            if (g_str_has_prefix(pathutf8, dirutf8) == TRUE)
+            while (head != NULL && found == FALSE)
                 {
-                    found = TRUE;
+                    dirutf8 = head->data;
+
+                    if (g_str_has_prefix(pathutf8, dirutf8) == TRUE)
+                        {
+                            found = TRUE;
+                        }
+                    else
+                        {
+                            head = g_slist_next(head);
+                        }
                 }
-            else
+
+            pathutf8 = free_variable(pathutf8);
+
+            if (found == TRUE)
                 {
-                    head = g_slist_next(head);
+                    progname = get_program_name_from_pid(event->pid);
+
+                    if (g_strcmp0(PROGRAM_NAME, progname) != 0)
+                        {
+                            /* Don't try to save files that comes from our activity */
+                            print_debug(_("Received event file/directory: %s\n"), path);
+                            print_debug(_(" matching directory is       : %s\n"), head->data);
+                            print_debug(_(" pid=%d (%s): \n"), event->pid, progname);
+
+                            if (event->mask & FAN_CLOSE_WRITE)
+                                {
+                                    print_debug(_("\tFAN_CLOSE_WRITE\n"));
+                                }
+
+                            /* Saving the file effectively */
+                            prepare_before_saving(main_struct, path);
+
+                            fflush (stdout);
+                        }
+                    free_variable(progname);
                 }
+
+            close(event->fd);
+            free_variable(path);
         }
-
-    pathutf8 = free_variable(pathutf8);
-
-    if (found == TRUE)
-        {
-            progname = get_program_name_from_pid(event->pid);
-            print_debug(_("Received event file/directory: %s\n"), path);
-            print_debug(_(" matching directory is       : %s\n"), head->data);
-            print_debug(_(" pid=%d (%s): \n"), event->pid, progname);
-
-            if (event->mask & FAN_CLOSE_WRITE)
-                {
-                    print_debug(_("\tFAN_CLOSE_WRITE\n"));
-                }
-
-            /* g_async_queue_push(queue, g_strdup(path)); */
-            /* Do something with the file */
-
-            fflush (stdout);
-
-            free_variable(progname);
-        }
-
-    close(event->fd);
-    free_variable(path);
 }
 
 
@@ -399,7 +432,7 @@ void fanotify_loop(main_struct_t *main_struct)
 
                                     while (FAN_EVENT_OK(fe_mdata, length))
                                         {
-                                            event_process(fe_mdata, dir_list_utf8);
+                                            event_process(main_struct, fe_mdata, dir_list_utf8);
 
                                             if (fe_mdata->fd > 0)
                                                 {

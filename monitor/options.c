@@ -23,6 +23,8 @@
  * @file monitor/options.c
  *
  *  This file contains all the functions to manage command line options.
+ * @todo review file configuration sections to make it more consistant
+ *       with actual program.
  */
 
 #include "monitor.h"

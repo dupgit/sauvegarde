@@ -30,10 +30,7 @@
 
 #include "monitor.h"
 
-
-
 static main_struct_t *init_main_structure(options_t *opt);
-
 static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize);
 static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, gint64 blocksize, db_t *database);
 static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta);
@@ -42,8 +39,6 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
 static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum);
 static void carve_one_directory(gpointer data, gpointer user_data);
 static void carve_all_directories(main_struct_t *main_struct);
-
-
 
 
 /**
@@ -379,6 +374,50 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
 
 
 /**
+ * This function gets meta datas and datas from a file and sends them
+ * to the serveur in order to save the file located in the directory
+ * 'directory' and represented by 'fileinfo' variable.
+ * @param main_struct : main structure of the program
+ * @param directory is the directory we are iterating over
+ * @param fileinfo is a glib structure that contains all meta datas and
+ *        more for a file.
+ */
+void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *fileinfo)
+{
+    meta_data_t *meta = NULL;
+    gchar *answer = NULL;
+    gint success = 0;
+
+    if (main_struct != NULL && main_struct->opt != NULL && directory != NULL && fileinfo != NULL)
+        {
+            /* Get datas and meta_datas for a file. */
+            meta = get_meta_data_from_fileinfo(directory, fileinfo, main_struct->opt->blocksize, main_struct->database);
+
+            if (meta->in_cache == FALSE)
+                {
+                    /* Send datas and meta datas only if the file isn't already in our local database */
+                    answer = send_meta_data_to_serveur(main_struct, meta);
+                    success = send_datas_to_serveur(main_struct, meta, answer);
+                    free_variable(answer);
+
+                    /* Save them to the db cache */
+                    db_save_meta_data(main_struct->database, meta, TRUE);
+
+                    /* Need to save datas only if an error occured when transmitting. 'success' may tell this */
+                }
+
+            if (meta->file_type == G_FILE_TYPE_DIRECTORY)
+                {
+                    /* This is a recursive call */
+                    carve_one_directory(meta->name, main_struct);
+                }
+
+            meta = free_meta_data_t(meta);
+        }
+}
+
+
+/**
  * Iterates over an enumerator obtained from a directory.
  * @param main_struct : main structure of the program
  * @param directory is the directory we are iterating over
@@ -389,46 +428,16 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
 {
     GError *error = NULL;
     GFileInfo *fileinfo = NULL;
-    meta_data_t *meta = NULL;
-    gint64 blocksize = CLIENT_BLOCK_SIZE;
-    gchar *answer = NULL;
-    gint success = 0;
 
     if (main_struct != NULL && file_enum != NULL)
         {
-            if (main_struct->opt != NULL)
-                {
-                    blocksize = main_struct->opt->blocksize;
-                }
-
             fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
 
             while (error == NULL && fileinfo != NULL)
                 {
-
-                    /* Get datas and meta_datas for a file. */
-                    meta = get_meta_data_from_fileinfo(directory, fileinfo, blocksize, main_struct->database);
-
-                    if (meta->in_cache == FALSE)
-                        {
-                            /* Send datas and meta datas only if the file isn't already in our local database */
-                            answer = send_meta_data_to_serveur(main_struct, meta);
-                            success = send_datas_to_serveur(main_struct, meta, answer);
-                            free_variable(answer);
-
-                            /* Save them to the db cache */
-                            db_save_meta_data(main_struct->database, meta, TRUE);
-
-                            /* Need to save datas only if an error occured when transmitting. 'success' may tell this */
-                        }
-
-                    if (meta->file_type == G_FILE_TYPE_DIRECTORY)
-                        {
-                            carve_one_directory(meta->name, main_struct);
-                        }
+                    save_one_file(main_struct, directory, fileinfo);
 
                     fileinfo = free_object(fileinfo);
-                    meta = free_meta_data_t(meta);
 
                     fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
                 }
@@ -522,7 +531,7 @@ int main(int argc, char **argv)
              * changed. Enabling this feature even if we know that files
              * will never get deleted in our database.
              */
-            /* fanotify_loop(main_struct); */
+            fanotify_loop(main_struct);
 
             free_options_t_structure(main_struct->opt);
         }

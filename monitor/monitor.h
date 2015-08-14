@@ -108,15 +108,16 @@ typedef struct
 
 
 /**
- * @struct thread_data_t
- * @brief Structure to be passed to a thread that will traverse the
- *        directory list.
+ * This function gets meta datas and datas from a file and sends them
+ * to the serveur in order to save the file located in the directory
+ * 'directory' and represented by 'fileinfo' variable.
+ * @param main_struct : main structure of the program
+ * @param directory is the directory we are iterating over
+ * @param fileinfo is a glib structure that contains all meta datas and
+ *        more for a file.
  */
-typedef struct
-{
-    main_struct_t *main_struct; /**< main structure for the program      */
-    GSList *dir_list;           /**< List of directories to be monitored */
-} thread_data_t;
+extern void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *fileinfo);
+
 
 #include "m_fanotify.h"
 
