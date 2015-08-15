@@ -79,13 +79,6 @@
 
 
 /**
- * @def MONITOR_TIME
- * Defines monitor default rate limit in minutes.
- */
-#define MONITOR_TIME (5)
-
-
-/**
  * @def CLIENT_BLOCK_SIZE
  * default block size in bytes
  */
