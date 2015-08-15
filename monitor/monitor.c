@@ -320,6 +320,7 @@ static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash)
  *        contains the datas.
  * @param answer is the request sent back by serveur when we had send
  *        meta datas.
+ * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
 static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
 {
@@ -338,7 +339,7 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
             if (root != NULL)
                 {
 
-
+                    /* This hash_list is the needed hashs from serveur */
                     hash_list = extract_gslist_from_array(root, "hash_list");
                     json_decref(root);
                     head = hash_list;
@@ -346,6 +347,7 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
                     while (hash_list != NULL && all_ok == CURLE_OK)
                         {
                             hash_data = hash_list->data;
+                            /* hash_data_list contains all hashs and their associated datas */
                             found = find_hash_in_list(meta->hash_data_list, hash_data->hash);
 
                             /* main_struct->comm->buffer is the buffer sent to serveur */
@@ -389,9 +391,14 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
     meta_data_t *meta = NULL;
     gchar *answer = NULL;
     gint success = 0;
+    a_clock_t *my_clock = NULL;
+    gchar *message = NULL;
 
     if (main_struct != NULL && main_struct->opt != NULL && directory != NULL && fileinfo != NULL)
         {
+
+            my_clock = new_clock_t();
+
             /* Get datas and meta_datas for a file. */
             meta = get_meta_data_from_fileinfo(directory, fileinfo, main_struct->opt->blocksize, main_struct->database);
 
@@ -408,6 +415,10 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
                     /* Need to save datas only if an error occured when transmitting. 'success' may tell this */
                 }
 
+            message = g_strdup_printf(_("processing file %s"), meta->name);
+            end_clock(my_clock, message);
+            free_variable(message);
+
             if (meta->file_type == G_FILE_TYPE_DIRECTORY)
                 {
                     /* This is a recursive call */
@@ -416,6 +427,8 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
 
             meta = free_meta_data_t(meta);
         }
+
+
 }
 
 

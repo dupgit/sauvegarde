@@ -56,6 +56,7 @@
 #include "database.h"
 #include "packing.h"
 #include "query.h"
+#include "clock.h"
 
 /**
  * Sets debug_mode on or off if mode is TRUE or FALSE.
