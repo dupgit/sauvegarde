@@ -134,7 +134,19 @@ options are:
 
 ## Roadmap
 
-As I'm coding on spare hours I have no roadmap for now.
+I am coding on spare hours so I may not tell any release dates and you
+should consider that "It ships when its ready".
+
+* 0.0.2 client redesigned
+* 0.0.3 saves and restores links
+* 0.0.4 new serveur url to post a bunch of hashs and associated datas
+* 0.0.5 fanotify's code reviewed
+* 0.0.6 restore to some specific place
+* 0.0.7 restore the latest version of a file before a specific date
+* 0.0.8 restore all the versions of a file
+* 0.0.9 restore a directory and it's subfiles and directories at a
+        specific date.
+* 0.1.0 nettoie program to clean serveur's datas and metas datas
 
 
 ## Infrastucture
