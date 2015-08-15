@@ -1,3 +1,26 @@
+[15-08-2015] v0.0.2
+'sauvegarde' is a set of tools ('serveur', 'client' and 'restaure' - as of now) that saves your files in a live continuous way that is to say while they are written to disks. In this version 'client' program has been reworked and may be 75 % of it's code has changed.
+
+New features in version v0.0.2:
+
+    * client has been reworked and there is no more threads. As a result, the functions newly written are not threadable as is.
+    * file and time requests are base64 encoded into the URL so that it can manage space without errors
+    * client save written files in a live an continuous way
+    * time measurement is now possible (for instance, on my computer client uses 1.5ms to know if a file is in it's cache or not)
+    * restore can restore a file at a specific date (you'll have to have the right date or it'll restore the latest one in the retrieved list)
+
+There is still a lot of work to do and one might want to look at the list of my first post at http://blog.delhomme.org/index.php?post/2015/07/08/Sauvegarde-project-first-usable-version or see the TODO file or the Roadmap section of README file or even look into the code (or doxygen documentation) for @todo tags. Any help, contributions, remarks, articles or encouragements are very welcomed.
+
+The whole project is known to compile on x86_64 and arm7l architecture and on Debian Jessie, Ubuntu 12.04 and Centos 7 (sometimes at the expense of compiling and installing more recent dependencies - which is pretty straight (look for .travis.yml in the source code)).
+
+Links:
+
+    * Sauvegarde's project: https://github.com/dupgit/sauvegarde
+    * Sauvegarde release v0.0.2: http://src.delhomme.org/download/sauvegarde/releases/sauvegarde-0.0.2.tar.xz
+    * travis continuous integration status: https://travis-ci.org/dupgit/sauvegarde
+
+
+
 [09-07-2015] v0.0.1
 Since February 2014 I'm programming, when I have some time, something that may save my files live. The primary goal is to save files while they are being created or modified. It is still a goal to reach even if the first usable version is out today ! When I say usable I mean that one can backup files and restore them. It needs a lot of improvements and a lot of fine code review to track down the numerous memory leakages and bugs that are in this early code (Yes contributions are welcome :).
 
@@ -7,7 +30,7 @@ The whole project is known to compile on x86_64 and arm7l architecture and on De
 
 With this version first you have to setup a server and have serveur running on it. Then you have to run client each time you need to backup things (live backup will come very soon - even if linux kernel FAN notification's interface lacks some notifiers). When you want to restore a file you have to use "restaure" program (server needs to be up and accessible). At the moment you can only restore the latest version of a file.
 
-The server has an interface to connect different backends. The first one is the flat file backend. One may program some database backend (postgresql, sqlite, mariadb...), or a different storage backend like Ceph for instance. All the data is saved in a deduplicated way and the network traffic is minimized. "client", "serveur" and "restore" talks in json language to each others.
+The server has an interface to connect different backends. The first one is the flat file backend. One may program some database backend (postgresql, sqlite, mariadb...), or a different storage backend like Ceph for instance. All the data is saved in a deduplicated way and the network traffic is minimised. "client", "serveur" and "restore" talks in json language to each others.
 
 There is still a lot of things to do such as (in no specific order):
 
@@ -21,7 +44,7 @@ There is still a lot of things to do such as (in no specific order):
     * Adding server backends
     * Internationalization
 
-If you test this program, if you compile it under a new architecture/system, if you have any question or want to report a bug please feel free to useeither github's interface or your favorite emailer to email me (my email address is in the source code or in AUTHORS file).
+If you test this program, if you compile it under a new architecture/system, if you have any question or want to report a bug please feel free to use either github's interface or your favourite email program to email me (my email address is in the source code or in AUTHORS file).
 
 Links:
 
