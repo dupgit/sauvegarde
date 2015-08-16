@@ -326,6 +326,7 @@ GSList *extract_smeta_gslist_from_file_list(json_t *root)
                     meta->gid = get_guint32_from_json_root(value, "gid");
 
                     meta->name = get_string_from_json_root(value, "name");
+                    meta->link = get_string_from_json_root(value, "link");
 
                     meta->hash_data_list = extract_gslist_from_array(value, "hash_list");
 

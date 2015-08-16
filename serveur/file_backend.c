@@ -92,12 +92,12 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
 
                             if (hash_list != NULL)
                                 {
-                                    buffer = g_strdup_printf("%d, %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", \"%s\", \"%s\", %d, %d, \"%s\", %s\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name, hash_list);
+                                    buffer = g_strdup_printf("%d, %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", \"%s\", \"%s\", %d, %d, \"%s\", \"%s\", %s\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name, meta->link, hash_list);
                                     free_variable(hash_list);
                                 }
                             else
                                 {
-                                    buffer = g_strdup_printf("%d, %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", \"%s\", \"%s\", %d, %d, \"%s\"\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name);
+                                    buffer = g_strdup_printf("%d, %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", \"%s\", \"%s\", %d, %d, \"%s\", \"%s\"\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name, meta->link);
                                 }
 
                             count = strlen(buffer);
@@ -609,7 +609,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
              * "IBUAdPN/AADgCQB0838AACuk6dHfqsfcXvECD/HXSbU=", "4AwAdPN/AAAQFgB0838AAPJ18vuZ+mHsaFOztwu6IWw="
              */
 
-            params = g_strsplit(line, ",", 13);
+            params = g_strsplit(line, ",", 14);
             /* we have a leading space before " and a trailing space after " so begins at + 2 and length is - 3 less */
             filename = g_strndup(params[11]+2, strlen(params[11])-3);
 
@@ -635,6 +635,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
                             meta->owner = g_strndup(params[7]+2, strlen(params[7])-3);
                             meta->group = g_strndup(params[8]+2, strlen(params[8])-3);
+                            meta->link = g_strndup(params[12]+2, strlen(params[12])-3);
 
                             meta->uid = get_uint_from_string(params[9]);
                             meta->gid = get_uint_from_string(params[10]);
@@ -643,9 +644,9 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
                             if (strcmp(meta->owner, query->owner) == 0 && strcmp(meta->group, query->group) == 0 && (meta->uid == q_uid) && (meta->gid == q_gid))
                                 {
-                                    meta->hash_data_list = make_hash_data_list_from_string(params[12]);
+                                    meta->hash_data_list = make_hash_data_list_from_string(params[13]);
 
-                                    print_debug(_("file_backend: Found: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
+                                    print_debug(_("file_backend: Found: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d, link: %s\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid, meta->link);
                                  }
                             else
                                 {

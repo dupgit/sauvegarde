@@ -157,9 +157,10 @@ documentation as well for the [API](docs/API.md) part.
 
 ## Coding into this project
 
-Any help on the project will be very welcomed and appreciated. have a
-look at @todo notes in the code if you do not know where to begin or
-what to do. Translations are encouraged !
+Any help on the project will be very welcomed and appreciated. Have a
+look at the TODO file, the Roadmap in this file or the @todo notes in
+the code if you do not know where to begin or what to do. Translations
+are welcomed !
 
 
 ### irc
