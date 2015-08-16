@@ -340,6 +340,7 @@ json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
             insert_guint32_into_json_root(root, "gid", meta->uid);
 
             insert_string_into_json_root(root, "name", meta->name);
+            insert_string_into_json_root(root, "link", meta->link);
             insert_string_into_json_root(root, "hostname", (gchar *) hostname);
 
             array = convert_hash_list_to_json(meta->hash_data_list);

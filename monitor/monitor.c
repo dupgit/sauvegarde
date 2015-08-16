@@ -216,6 +216,10 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
                 {
                     meta->link = (gchar *) g_file_info_get_attribute_byte_string(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET);
                 }
+            else
+                {
+                    meta->link = g_strdup("");
+                }
 
 
             /* We need to determine if the file has already been saved by looking into the local database */
