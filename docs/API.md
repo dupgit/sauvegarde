@@ -53,9 +53,9 @@ least all theses parameters:
     http://192.168.0.152:5468/File/List.json?hostname=julia&uid=530&gid=530&owner=dup&group=admin"
 
 'filename' may be used to filter results for a specific filename (or
-directory name).
+directory name).It must be base 64 encoded.
 
-'date' may be used to filter results for a specific date. it must be
+'date' may be used to filter results for a specific date. It must be
 base 64 encoded and the string must be formatted "YYYY-MM-DD HH:MM:SS".
 
 The answer contains a json array named "file_list" that contains a
