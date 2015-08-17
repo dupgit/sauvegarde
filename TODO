@@ -7,9 +7,15 @@
 
 # ideas
 
-* use some cryptography to cypher exchanges (gpg ?)
+## Not in the roadmap
+
+* use some cryptography to cipher exchanges (gpg ?)
+* UI integration to desktop managers like Xfce, Gnome, MATE, QT ?
+* file_backend: compress blocks on disk + ciphering ?
+
+## In the roadmap already.
+
 * add a fourth program to clean older datas and metas datas (nettoie ?)
 * add to serveur a specific url to send more than one buffer of data
   associated to their hashs. This may speed up data transfert.
-* UI integration to desktop managers like Xfce, Gnome, MATE, QT ?
 * Filters to exclude files by path or by extension
