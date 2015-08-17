@@ -372,7 +372,6 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
     gchar *json_str = NULL;     /** gchar *json_str is the string to be returned at the end                 */
     GSList *needed = NULL;
 
-    /* received_data is freed : do not reuse after this ! */
     smeta = convert_json_to_smeta_data(received_data);
 
     if (smeta != NULL && smeta->meta != NULL)
@@ -545,6 +544,7 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
 
             /* Do something with received_data */
             success = process_received_data(serveur_struct, connection, url, received_data);
+            free_variable(received_data);
         }
 
     return success;

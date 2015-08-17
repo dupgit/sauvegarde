@@ -416,8 +416,7 @@ hash_data_t *convert_json_to_hash_data(gchar *json_str)
 /**
  * This function should return a newly allocated serveur_meta_data_t *
  * structure with all informations included from the json string.
- * @param json_str is a gchar * containing the JSON formated string. This
- *        variable is FREED in this function. DO NOT use it again after.
+ * @param json_str is a gchar * containing the JSON formated string.
  * @returns a newly_allocated serveur_meta_data_t * structure that can be
  *          freed when no longer needed with free_smeta_data_t() function.
  *          This function can return NULL if json_str is NULL itself.
@@ -443,10 +442,7 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
 
                     json_decref(root);
                 }
-
-            free_variable(json_str);
         }
-
 
     return smeta;
 }
