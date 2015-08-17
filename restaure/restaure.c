@@ -30,7 +30,6 @@
 static res_struct_t *init_res_struct(int argc, char **argv);
 static gchar *encode_to_base64(gchar *string);
 static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date);
-static void print_smeta_to_screen(serveur_meta_data_t *smeta);
 static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query);
 static void print_all_files(res_struct_t *res_struct, query_t *query);
 static void create_file(res_struct_t *res_struct, meta_data_t *meta);
@@ -132,48 +131,6 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
         }
 
     return query;
-}
-
-
-/**
- * Prints a file ands its meta data to the screen
- * @param smeta is the serveur meta data of the file to be printed on the
- *        screen
- */
-static void print_smeta_to_screen(serveur_meta_data_t *smeta)
-{
-    meta_data_t *meta = NULL;   /**< helper to access smeta->meta structure do not free ! */
-    GDateTime *la_date = NULL;
-    gchar *the_date = NULL;
-
-    if (smeta !=  NULL && smeta->meta != NULL)
-        {
-            meta = smeta->meta;
-
-            switch (meta->file_type)
-                {
-                    case 1:
-                        fprintf(stdout, "[FILE] ");
-                    break;
-                    case 2:
-                        fprintf(stdout, "[DIR ] ");
-                    break;
-                    default:
-                        fprintf(stdout, "[    ] ");
-                    break;
-                }
-
-            la_date = g_date_time_new_from_unix_local(meta->mtime);
-            the_date = g_date_time_format(la_date, "%F %T %z");
-
-            fprintf(stdout, "%s ", the_date);
-
-            fprintf(stdout, "%s\n", meta->name);
-
-            free_variable(the_date);
-            g_date_time_unref(la_date);
-        }
-
 }
 
 

@@ -221,4 +221,12 @@ extern gboolean file_exists(gchar *filename);
  */
 extern gint compare_filenames(gconstpointer a, gconstpointer b);
 
+
+/**
+ * Prints a file ands its meta data to the screen
+ * @param smeta is the serveur meta data of the file to be printed on the
+ *        screen
+ */
+extern void print_smeta_to_screen(serveur_meta_data_t *smeta);
+
 #endif /* #ifndef _FILES_H_ */

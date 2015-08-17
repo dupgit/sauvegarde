@@ -421,3 +421,46 @@ gint compare_filenames(gconstpointer a, gconstpointer b)
 }
 
 
+/**
+ * Prints a file ands its meta data to the screen
+ * @param smeta is the serveur meta data of the file to be printed on the
+ *        screen
+ */
+void print_smeta_to_screen(serveur_meta_data_t *smeta)
+{
+    meta_data_t *meta = NULL;   /**< helper to access smeta->meta structure do not free ! */
+    GDateTime *la_date = NULL;
+    gchar *the_date = NULL;
+
+    if (smeta !=  NULL && smeta->meta != NULL)
+        {
+            meta = smeta->meta;
+
+            switch (meta->file_type)
+                {
+                    case 1:
+                        fprintf(stdout, "[FILE] ");
+                    break;
+                    case 2:
+                        fprintf(stdout, "[DIR ] ");
+                    break;
+                    case 3:
+                        fprintf(stdout, "[LINK] ");
+                    break;
+                    default:
+                        fprintf(stdout, "[    ] ");
+                    break;
+                }
+
+            la_date = g_date_time_new_from_unix_local(meta->mtime);
+            the_date = g_date_time_format(la_date, "%F %T %z");
+
+            fprintf(stdout, "%s ", the_date);
+
+            fprintf(stdout, "%s\n", meta->name);
+
+            free_variable(the_date);
+            g_date_time_unref(la_date);
+        }
+
+}
