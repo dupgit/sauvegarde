@@ -278,6 +278,50 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
 }
 
 
+/**
+ * Fills a serveur_meta_data_t from datas that are in json_t *root
+ * @param root is the JSON string that should contain all datas needed
+ *        to fill the serveur_meta_data_t * structure.
+ * @returns a newly allocated serveur_meta_data_t * structure filled
+ *          accordingly.
+ */
+static serveur_meta_data_t *fills_serveur_meta_data_t_from_json_t(json_t *root)
+{
+    meta_data_t *meta = NULL;          /** meta_data_t *meta will be returned in smeta and contain file's metadata     */
+    serveur_meta_data_t *smeta = NULL; /** serveur_meta_data_t *smeta will be returned at the end                      */
+
+    if (root != NULL)
+        {
+            smeta = new_smeta_data_t();
+            meta = new_meta_data_t();
+
+            meta->file_type = get_guint8_from_json_root(root, "filetype");
+            meta->mode = get_guint32_from_json_root(root, "mode");
+
+            meta->atime = get_guint64_from_json_root(root, "atime");
+            meta->ctime = get_guint64_from_json_root(root, "ctime");
+            meta->mtime = get_guint64_from_json_root(root, "mtime");
+            meta->size  = get_guint64_from_json_root(root, "fsize");
+            meta->inode = get_guint64_from_json_root(root, "inode");
+
+            meta->owner = get_string_from_json_root(root, "owner");
+            meta->group = get_string_from_json_root(root, "group");
+
+            meta->uid = get_guint32_from_json_root(root, "uid");
+            meta->gid = get_guint32_from_json_root(root, "gid");
+
+            meta->name = get_string_from_json_root(root, "name");
+            meta->link = get_string_from_json_root(root, "link");
+
+            meta->hash_data_list = extract_gslist_from_array(root, "hash_list");
+
+            smeta->meta = meta;
+            smeta->hostname =  get_string_from_json_root(root, "hostname");
+        }
+
+    return smeta;
+}
+
 
 /**
  * This function returns a list from an json array.
@@ -292,8 +336,7 @@ GSList *extract_smeta_gslist_from_file_list(json_t *root)
     size_t index = 0;        /** size_t index is the iterator to iter over the array                         */
     json_t *value = NULL;    /** json_t *value : value = array[index] when iterating with json_array_foreach */
     GSList *head = NULL;     /** GSList *head the list to build and iclude into meta_data_t *meta            */
-    meta_data_t *meta = NULL;            /** meta_data_t *meta will be returned in smeta and contain file's metadata     */
-    serveur_meta_data_t *smeta = NULL;   /** serveur_meta_data_t *smeta will be returned at the end                      */
+    serveur_meta_data_t *smeta = NULL; /** serveur_meta_data_t *smeta will be returned at the end                      */
 
     if (root != NULL)
         {
@@ -307,34 +350,8 @@ GSList *extract_smeta_gslist_from_file_list(json_t *root)
              */
             json_array_foreach(array, index, value)
                 {
-                    smeta = new_smeta_data_t();
-                    meta = new_meta_data_t();
-
-                    meta->file_type = get_guint8_from_json_root(value, "filetype");
-                    meta->mode = get_guint32_from_json_root(value, "mode");
-
-                    meta->atime = get_guint64_from_json_root(value, "atime");
-                    meta->ctime = get_guint64_from_json_root(value, "ctime");
-                    meta->mtime = get_guint64_from_json_root(value, "mtime");
-                    meta->size  = get_guint64_from_json_root(value, "fsize");
-                    meta->inode = get_guint64_from_json_root(value, "inode");
-
-                    meta->owner = get_string_from_json_root(value, "owner");
-                    meta->group = get_string_from_json_root(value, "group");
-
-                    meta->uid = get_guint32_from_json_root(value, "uid");
-                    meta->gid = get_guint32_from_json_root(value, "gid");
-
-                    meta->name = get_string_from_json_root(value, "name");
-                    meta->link = get_string_from_json_root(value, "link");
-
-                    meta->hash_data_list = extract_gslist_from_array(value, "hash_list");
-
-                    smeta->meta = meta;
-                    smeta->hostname =  get_string_from_json_root(value, "hostname");
-
+                    smeta = fills_serveur_meta_data_t_from_json_t(value);
                     head = g_slist_prepend(head, smeta);
-
                 }
         }
 
@@ -408,7 +425,6 @@ hash_data_t *convert_json_to_hash_data(gchar *json_str)
 serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
 {
     json_t *root = NULL;                 /** json_t *root is the json tree from which we will extract everything         */
-    meta_data_t *meta = NULL;            /** meta_data_t *meta will be returned in smeta and contain file's metadata     */
     serveur_meta_data_t *smeta = NULL;   /** serveur_meta_data_t *smeta will be returned at the end                      */
 
     /**
@@ -423,30 +439,7 @@ serveur_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
 
             if (root != NULL)
                 {
-                    smeta = new_smeta_data_t();
-                    meta = new_meta_data_t();
-
-                    meta->file_type = get_guint8_from_json_root(root, "filetype");
-                    meta->mode = get_guint32_from_json_root(root, "mode");
-
-                    meta->atime = get_guint64_from_json_root(root, "atime");
-                    meta->ctime = get_guint64_from_json_root(root, "ctime");
-                    meta->mtime = get_guint64_from_json_root(root, "mtime");
-                    meta->size  = get_guint64_from_json_root(root, "fsize");
-                    meta->inode = get_guint64_from_json_root(root, "inode");
-
-                    meta->owner = get_string_from_json_root(root, "owner");
-                    meta->group = get_string_from_json_root(root, "group");
-
-                    meta->uid = get_guint32_from_json_root(root, "uid");
-                    meta->gid = get_guint32_from_json_root(root, "gid");
-
-                    meta->name = get_string_from_json_root(root, "name");
-
-                    meta->hash_data_list = extract_gslist_from_array(root, "hash_list");
-
-                    smeta->meta = meta;
-                    smeta->hostname =  get_string_from_json_root(root, "hostname");
+                    smeta = fills_serveur_meta_data_t_from_json_t(root);
 
                     json_decref(root);
                 }
