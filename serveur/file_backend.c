@@ -53,7 +53,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
  * @param serveur_struct is the serveur main structure where all
  *        informations needed by the program are stored.
  * @param smeta the serveur structure for file meta data. It contains the
- *        hostname that sent it. This structure MUST be freed by this
+ *        hostname that sent it. This structure IS FREED by this
  *        function.
  * @todo prefix should be set as a configuration's option.
  */

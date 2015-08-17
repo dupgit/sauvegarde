@@ -94,6 +94,7 @@ gpointer free_meta_data_t(meta_data_t *meta)
             free_variable(meta->owner);
             free_variable(meta->group);
             free_variable(meta->name);
+            /* meta->link should not be freed when in client */
             g_slist_free_full(meta->hash_data_list, free_hdt_struct);
             free_variable(meta);
         }

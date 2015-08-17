@@ -384,7 +384,6 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
              * the selected backend does not have a build_needed_hash_list
              * function we are returning the whole hash_list !
              */
-            root = json_object();
 
             if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->build_needed_hash_list != NULL)
                 {
@@ -397,6 +396,7 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
                     array = convert_hash_list_to_json(smeta->meta->hash_data_list);
                 }
 
+            root = json_object();
             insert_json_value_into_json_root(root, "hash_list", array);
             json_str = json_dumps(root, 0);
             json_decref(root);
@@ -447,14 +447,12 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
 
     if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
         {
-            /* received_data is freed there (do not reuse after this call) */
             success = answer_meta_json_post_request(serveur_struct, connection, received_data);
         }
     else if (g_strcmp0(url, "/Data.json") == 0 && received_data != NULL)
         {
 
             hash_data = convert_json_to_hash_data(received_data);
-            received_data = free_variable(received_data);
 
             encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
             print_debug(_("Received data for hash: \"%s\" (%ld bytes)\n"), encoded_hash, hash_data->read);
@@ -479,7 +477,6 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
     else
         {
             /* The url is unknown to the server and we can not process the request ! */
-            received_data = free_variable(received_data);
             print_error(__FILE__, __LINE__, "Error: invalid url: %s\n", url);
             answer = g_strdup_printf(_("Error: invalid url!\n"));
             response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
@@ -544,6 +541,7 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
 
             /* Do something with received_data */
             success = process_received_data(serveur_struct, connection, url, received_data);
+
             free_variable(received_data);
         }
 
