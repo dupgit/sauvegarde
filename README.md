@@ -139,7 +139,9 @@ should consider that "It ships when its ready".
 
 * 0.0.2  client redesigned
 * 0.0.3  saves and restores links
-* 0.0.4  new serveur url to post a bunch of hashs and associated datas
+* 0.0.4  new serveur url to post a bunch of hashs and associated datas.
+         Clean the answer list of needed hashs to avoid having duplicated
+         hashs into it.
 * 0.0.5  fanotify's code reviewed
 * 0.0.6  restore to some specific place
 * 0.0.7  hability to exclude some files by extension or path
