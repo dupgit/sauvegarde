@@ -229,4 +229,13 @@ extern gint compare_filenames(gconstpointer a, gconstpointer b);
  */
 extern void print_smeta_to_screen(serveur_meta_data_t *smeta);
 
+
+/**
+ * Sets file attributes
+ * @param file is a GFile pointer and must not be null
+ * @param meta is the structure that contains all meta datas for the
+ *        file that we want to set.
+ */
+extern void set_file_attributes(GFile *file, meta_data_t *meta);
+
 #endif /* #ifndef _FILES_H_ */

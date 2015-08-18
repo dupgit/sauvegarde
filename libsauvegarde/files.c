@@ -464,3 +464,45 @@ void print_smeta_to_screen(serveur_meta_data_t *smeta)
         }
 
 }
+
+
+/**
+ * Sets file attributes
+ * @param file is a GFile pointer and must not be null
+ * @param meta is the structure that contains all meta datas for the
+ *        file that we want to set.
+ */
+void set_file_attributes(GFile *file, meta_data_t *meta)
+{
+    GError *error = NULL;
+    GFileInfo *fileinfo = NULL;
+
+    if (file != NULL && meta != NULL)
+        {
+            fileinfo = g_file_query_info(file, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
+
+            if (fileinfo == NULL || error != NULL)
+                {
+                    print_error(__FILE__, __LINE__, _("Error while getting file information: %s\n"), error->message);
+                    error = free_error(error);
+                }
+            else
+                {
+                    set_file_mode_to_gfile(fileinfo, meta);
+                    set_dates_to_gfile(fileinfo, meta);
+
+                    if (g_file_set_attributes_from_info(file, fileinfo, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error) == FALSE)
+                        {
+                            print_error(__FILE__, __LINE__, _("Error or warning: %s\n"), error->message);
+                            error = free_error(error);
+                        }
+
+                    free_object(fileinfo);
+                }
+        }
+    else
+        {
+            /* To translators : do not translate this ! */
+            print_error(__FILE__, __LINE__, "set_file_attribute(file = %p, meta = %p)\n", file, meta);
+        }
+}
