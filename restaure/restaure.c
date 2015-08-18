@@ -226,6 +226,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
     gchar *basename = NULL;    /** basename for the file to be restored     */
     gchar *cwd = NULL;         /** current working directory                */
     gchar *filename = NULL;    /** filename of the restored file            */
+    gchar *points_to = NULL;   /** points_to is the file pointed to         */
     GSList *hash_list = NULL;  /** list of hashs of the file to be restored */
     gchar *hash = NULL;
     gchar *request = NULL;
@@ -247,62 +248,77 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
             print_debug("filename = %s\n", filename);
             file = g_file_new_for_path(filename);
 
-            stream = g_file_replace(file, NULL, TRUE, G_FILE_CREATE_NONE, NULL, &error);
-
-            if (stream != NULL)
+            if (g_strcmp0("", meta->link) == 0)
                 {
-                    hash_list = meta->hash_data_list;
+                    stream = g_file_replace(file, NULL, TRUE, G_FILE_CREATE_NONE, NULL, &error);
 
-                    while (hash_list != NULL)
+                    if (stream != NULL)
                         {
-                            hash_data = hash_list->data;
-                            hash = hash_to_string(hash_data->hash);
-                            request = g_strdup_printf("/Data/%s.json", hash);
+                            hash_list = meta->hash_data_list;
 
-                            print_debug(_("Query is: %s\n"), request);
-                            res = get_url(res_struct->comm, request);
-
-                            if (res == CURLE_OK)
+                            while (hash_list != NULL)
                                 {
-                                    /** We need to save the retrieved buffer */
-                                    if (res_struct->comm->buffer != NULL)
-                                        {
-                                            hash_data = convert_json_to_hash_data(res_struct->comm->buffer);
-                                            res_struct->comm->buffer = free_variable(res_struct->comm->buffer);
+                                    hash_data = hash_list->data;
+                                    hash = hash_to_string(hash_data->hash);
+                                    request = g_strdup_printf("/Data/%s.json", hash);
 
-                                            if (hash_data != NULL)
+                                    print_debug(_("Query is: %s\n"), request);
+                                    res = get_url(res_struct->comm, request);
+
+                                    if (res == CURLE_OK)
+                                        {
+                                            /** We need to save the retrieved buffer */
+                                            if (res_struct->comm->buffer != NULL)
                                                 {
-                                                    g_output_stream_write((GOutputStream *) stream, hash_data->data, hash_data->read, NULL, &error);
-                                                    free_hash_data_t_structure(hash_data);
-                                                }
-                                            else
-                                                {
-                                                    print_error(__FILE__, __LINE__, _("Error while trying to restore %s hash\n"), hash);
+                                                    hash_data = convert_json_to_hash_data(res_struct->comm->buffer);
+                                                    res_struct->comm->buffer = free_variable(res_struct->comm->buffer);
+
+                                                    if (hash_data != NULL)
+                                                        {
+                                                            g_output_stream_write((GOutputStream *) stream, hash_data->data, hash_data->read, NULL, &error);
+                                                            free_hash_data_t_structure(hash_data);
+                                                        }
+                                                    else
+                                                        {
+                                                            print_error(__FILE__, __LINE__, _("Error while trying to restore %s hash\n"), hash);
+                                                        }
                                                 }
                                         }
-                                }
-                            else
-                                {
-                                    print_error(__FILE__, __LINE__, _("Error while getting hash %s"), hash);
+                                    else
+                                        {
+                                            print_error(__FILE__, __LINE__, _("Error while getting hash %s"), hash);
+                                        }
+
+                                    hash_list = g_slist_next(hash_list);
+                                    free_variable(request);
+                                    free_variable(hash);
                                 }
 
-                            hash_list = g_slist_next(hash_list);
-                            free_variable(request);
-                            free_variable(hash);
+                            g_output_stream_close((GOutputStream *) stream, NULL, &error);
+                        }
+                    else if (error != NULL)
+                        {
+                            print_error(__FILE__, __LINE__, _("Error: unable to open file %s to write datas in it (%s).\n"), filename, error->message);
+                            free_variable(error);
                         }
 
-                    g_output_stream_close((GOutputStream *) stream, NULL, &error);
+                    /* Setting before closing the file does not alter acces and modification time */
+                    set_file_attributes(file, meta);
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, _("Error: unable to open file %s to write datas in it (%s).\n"), filename, error->message);
+                    points_to = g_build_filename(meta->link, NULL);
+
+                    if (g_file_make_symbolic_link(file, points_to, NULL, &error) == FALSE && error != NULL)
+                        {
+                            print_error(__FILE__, __LINE__, _("Error: unable to create symbolic link %s to %s: %s.\n"), filename, points_to, error->message);
+                        }
+
+                    free_variable(points_to);
                 }
 
-            /* Setting before closing the file does not alter acces and modification time */
-            set_file_attributes(file, meta);
-
             free_object(file);
-            free(cwd);
+            free_variable(cwd);
             free_variable(basename);
             free_variable(filename);
         }

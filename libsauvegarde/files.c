@@ -491,10 +491,10 @@ void set_file_attributes(GFile *file, meta_data_t *meta)
                     set_file_mode_to_gfile(fileinfo, meta);
                     set_dates_to_gfile(fileinfo, meta);
 
-                    if (g_file_set_attributes_from_info(file, fileinfo, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error) == FALSE)
+                    if (g_file_set_attributes_from_info(file, fileinfo, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error) == FALSE && error != NULL)
                         {
-                            print_error(__FILE__, __LINE__, _("Error or warning: %s\n"), error->message);
-                            error = free_error(error);
+                            print_error(__FILE__, __LINE__, _("Error or warning for file (%s): %s\n"), meta->name, error->message);
+                            free_error(error);
                         }
 
                     free_object(fileinfo);
