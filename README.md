@@ -15,7 +15,7 @@ files to save them. Use `restaure` to restore a file.
 
 This is free software an real open source as GPLv3 is used for this
 collection of programs. Feel free to contibute and/or give help to the
-projects used here (see dependencies section).
+projects used here (see dependencies section below).
 
 
 ## Dependencies
@@ -137,7 +137,6 @@ options are:
 I am coding on spare hours so I may not tell any release dates and you
 should consider that "It ships when its ready".
 
-* 0.0.2  client redesigned
 * 0.0.3  saves and restores links
 * 0.0.4  new serveur url to post a bunch of hashs and associated datas.
          Clean the answer list of needed hashs to avoid having duplicated
@@ -150,6 +149,12 @@ should consider that "It ships when its ready".
 * 0.0.10 restore a directory and it's subfiles and directories at a
          specific date.
 * 0.1.0 nettoie program to clean serveur's datas and metas datas
+
+
+### Releases
+
+* 0.0.1  [08 07 2015] First usable version
+* 0.0.2  [15.08.2015] client redesigned
 
 
 ## Infrastucture
