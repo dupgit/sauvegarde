@@ -506,3 +506,26 @@ void set_file_attributes(GFile *file, meta_data_t *meta)
             print_error(__FILE__, __LINE__, "set_file_attribute(file = %p, meta = %p)\n", file, meta);
         }
 }
+
+
+/**
+ * Makes a symbolic link named  with 'file' filename that points to the
+ * target 'points_to'
+ * @param file is the file to create as a symbolic link
+ * @param points_to is the target of the link
+ */
+void make_symbolic_link(GFile *file, gchar *points_to)
+{
+    gchar *filename = NULL;
+    GError *error = NULL;
+
+    if (file != NULL && points_to != NULL)
+        {
+            if (g_file_make_symbolic_link(file, points_to, NULL, &error) == FALSE && error != NULL)
+                {
+                    filename = g_file_get_path(file);
+                    print_error(__FILE__, __LINE__, _("Error: unable to create symbolic link %s to %s: %s.\n"), filename, points_to, error->message);
+                    free_variable(filename);
+                }
+        }
+}

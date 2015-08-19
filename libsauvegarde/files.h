@@ -238,4 +238,12 @@ extern void print_smeta_to_screen(serveur_meta_data_t *smeta);
  */
 extern void set_file_attributes(GFile *file, meta_data_t *meta);
 
+
+/**
+ * Makes a symbolic link named  with 'file' filename that points to the
+ * target 'points_to'
+ * @param file is the file to create as a symbolic link
+ * @param points_to is the target of the link
+ */
+extern void make_symbolic_link(GFile *file, gchar *points_to);
 #endif /* #ifndef _FILES_H_ */

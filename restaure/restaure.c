@@ -226,7 +226,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
     gchar *basename = NULL;    /** basename for the file to be restored     */
     gchar *cwd = NULL;         /** current working directory                */
     gchar *filename = NULL;    /** filename of the restored file            */
-    gchar *points_to = NULL;   /** points_to is the file pointed to         */
+
     GSList *hash_list = NULL;  /** list of hashs of the file to be restored */
     gchar *hash = NULL;
     gchar *request = NULL;
@@ -305,14 +305,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                 }
             else
                 {
-                    points_to = g_build_filename(meta->link, NULL);
-
-                    if (g_file_make_symbolic_link(file, points_to, NULL, &error) == FALSE && error != NULL)
-                        {
-                            print_error(__FILE__, __LINE__, _("Error: unable to create symbolic link %s to %s: %s.\n"), filename, points_to, error->message);
-                        }
-
-                    free_variable(points_to);
+                    make_symbolic_link(file, meta->link);
                 }
 
             free_object(file);
