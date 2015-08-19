@@ -32,6 +32,7 @@ static gchar *encode_to_base64(gchar *string);
 static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date);
 static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query);
 static void print_all_files(res_struct_t *res_struct, query_t *query);
+static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GSList *hash_list);
 static void create_file(res_struct_t *res_struct, meta_data_t *meta);
 static void restore_last_file(res_struct_t *res_struct, query_t *query);
 static void free_res_struct_t(res_struct_t *res_struct);
@@ -212,13 +213,74 @@ static void print_all_files(res_struct_t *res_struct, query_t *query)
 
 
 /**
+ * Writes data obtained from the serveur with the hash_list hashs
+ * to the stream.
+ * @param stream is the stream where we are writing data (MUST be opened
+ *        and not NULL)
+ * @param hash_list list of hashs of the file to be restored
+ * @todo error management.
+ */
+static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GSList *hash_list)
+{
+    gchar *hash = NULL;
+    hash_data_t *hash_data = NULL;
+    GError *error = NULL;
+    gchar *request = NULL;
+    gint res = CURLE_FAILED_INIT;
+
+    if (stream != NULL)
+        {
+            while (hash_list != NULL)
+                {
+                    hash_data = hash_list->data;
+                    hash = hash_to_string(hash_data->hash);
+                    request = g_strdup_printf("/Data/%s.json", hash);
+
+                    print_debug(_("Query is: %s\n"), request);
+
+                    /* This call fills res_struct->comm->buffer */
+                    res = get_url(res_struct->comm, request);
+
+                    if (res == CURLE_OK)
+                        {
+                            /** We need to save the retrieved buffer */
+                            if (res_struct->comm->buffer != NULL)
+                                {
+                                    hash_data = convert_json_to_hash_data(res_struct->comm->buffer);
+                                    res_struct->comm->buffer = free_variable(res_struct->comm->buffer);
+
+                                    if (hash_data != NULL)
+                                        {
+                                            g_output_stream_write((GOutputStream *) stream, hash_data->data, hash_data->read, NULL, &error);
+
+                                            free_hash_data_t_structure(hash_data);
+                                        }
+                                    else
+                                        {
+                                            print_error(__FILE__, __LINE__, _("Error while trying to restore %s hash\n"), hash);
+                                        }
+                                }
+                        }
+                    else
+                        {
+                            print_error(__FILE__, __LINE__, _("Error while getting hash %s"), hash);
+                        }
+
+                    hash_list = g_slist_next(hash_list);
+                    free_variable(request);
+                    free_variable(hash);
+                }
+        }
+
+}
+
+
+/**
  * Creates the file to be restored.
  * @param res_struct is the main structure for restaure program (used here
  *        to communicate with serveur's server).
  * @param meta is the whole meta_data file describing the file to be
  *        restored
- * @todo simplify this function.
- * @todo error management.
  */
 static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 {
@@ -226,14 +288,9 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
     gchar *basename = NULL;    /** basename for the file to be restored     */
     gchar *cwd = NULL;         /** current working directory                */
     gchar *filename = NULL;    /** filename of the restored file            */
-
-    GSList *hash_list = NULL;  /** list of hashs of the file to be restored */
-    gchar *hash = NULL;
-    gchar *request = NULL;
-    gint res = CURLE_FAILED_INIT;
     GFileOutputStream *stream =  NULL;
     GError *error = NULL;
-    hash_data_t *hash_data = NULL;
+
 
     if (meta != NULL)
         {
@@ -243,7 +300,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
             /* gets the current directory to make the file to be restored in it */
             cwd = g_get_current_dir();
             filename = g_build_filename(cwd, basename, NULL);
-            print_debug("filename = %s\n", filename);
+            print_debug(_("filename to restore: %s\n"), filename);
             file = g_file_new_for_path(filename);
 
             if (g_strcmp0("", meta->link) == 0)
@@ -252,47 +309,10 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 
                     if (stream != NULL)
                         {
-                            hash_list = meta->hash_data_list;
-
-                            while (hash_list != NULL)
-                                {
-                                    hash_data = hash_list->data;
-                                    hash = hash_to_string(hash_data->hash);
-                                    request = g_strdup_printf("/Data/%s.json", hash);
-
-                                    print_debug(_("Query is: %s\n"), request);
-                                    res = get_url(res_struct->comm, request);
-
-                                    if (res == CURLE_OK)
-                                        {
-                                            /** We need to save the retrieved buffer */
-                                            if (res_struct->comm->buffer != NULL)
-                                                {
-                                                    hash_data = convert_json_to_hash_data(res_struct->comm->buffer);
-                                                    res_struct->comm->buffer = free_variable(res_struct->comm->buffer);
-
-                                                    if (hash_data != NULL)
-                                                        {
-                                                            g_output_stream_write((GOutputStream *) stream, hash_data->data, hash_data->read, NULL, &error);
-                                                            free_hash_data_t_structure(hash_data);
-                                                        }
-                                                    else
-                                                        {
-                                                            print_error(__FILE__, __LINE__, _("Error while trying to restore %s hash\n"), hash);
-                                                        }
-                                                }
-                                        }
-                                    else
-                                        {
-                                            print_error(__FILE__, __LINE__, _("Error while getting hash %s"), hash);
-                                        }
-
-                                    hash_list = g_slist_next(hash_list);
-                                    free_variable(request);
-                                    free_variable(hash);
-                                }
+                            restore_data_to_stream(res_struct, stream, meta->hash_data_list);
 
                             g_output_stream_close((GOutputStream *) stream, NULL, &error);
+                            free_object(stream);
                         }
                     else if (error != NULL)
                         {
@@ -300,7 +320,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                             free_variable(error);
                         }
 
-                    /* Setting before closing the file does not alter acces and modification time */
+                    /* Setting before closing the file does not alter access and modification time */
                     set_file_attributes(file, meta);
                 }
             else
