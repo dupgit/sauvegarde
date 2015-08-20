@@ -59,14 +59,7 @@ static void print_selected_options(options_t *opt)
  */
 static void read_from_group_all(GKeyFile *keyfile, gchar *filename)
 {
-    gboolean debug = FALSE;
-
-    if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_ALL) == TRUE)
-        {
-            debug = read_boolean_from_file(keyfile, filename, GN_ALL, KN_DEBUG_MODE, _("Could not load debug mode configuration from file."));
-
-            set_debug_mode(debug);
-        }
+    read_debug_mode_from_file(keyfile, filename);
 }
 
 

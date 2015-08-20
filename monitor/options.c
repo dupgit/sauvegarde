@@ -30,9 +30,7 @@
 #include "monitor.h"
 
 static void print_selected_options(options_t *opt);
-static void read_from_group_monitor(options_t *opt, GKeyFile *keyfile, gchar *filename);
-static void read_from_group_ciseaux(options_t *opt, GKeyFile *keyfile, gchar *filename);
-static void read_from_group_antememoire(options_t *opt, GKeyFile *keyfile, gchar *filename);
+static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static void read_from_configuration_file(options_t *opt, gchar *filename);
 
@@ -73,7 +71,7 @@ static void print_selected_options(options_t *opt)
 
 
 /**
- * Reads keys in keyfile if group GN_MONITOR is in that keyfile and fills
+ * Reads keys in keyfile if group GN_CLIENT is in that keyfile and fills
  * options_t *opt structure accordingly.
  * @param[in,out] opt : options_t * structure to store options read from the
  *                configuration file "filename".
@@ -81,62 +79,23 @@ static void print_selected_options(options_t *opt)
  *        groups and keys from.
  * @param filename : the filename of the configuration file to read from
  */
-static void read_from_group_monitor(options_t *opt, GKeyFile *keyfile, gchar *filename)
+static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
-    gboolean debug = FALSE;
-
-    if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_MONITOR) == TRUE)
+    if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_CLIENT) == TRUE)
         {
             /* Reading the directory list */
-            opt->dirname_list = read_list_from_file(keyfile, filename, GN_MONITOR, KN_DIR_LIST, _("Could not load directory list from file"));
+            opt->dirname_list = read_list_from_file(keyfile, filename, GN_CLIENT, KN_DIR_LIST, _("Could not load directory list from file"));
+            opt->blocksize = read_int64_from_file(keyfile, filename, GN_CLIENT, KN_BLOCK_SIZE, _("Could not load blocksize from file"));
 
-            debug = read_boolean_from_file(keyfile, filename, GN_ALL, KN_DEBUG_MODE, _("Could not load debug mode configuration from file."));
-
-            set_debug_mode(debug);
-        }
-}
-
-
-/**
- * Reads keys in keyfile if group GN_CISEAUX is in that keyfile and fills
- * options_t *opt structure accordingly.
- * @param[in,out] opt : options_t * structure to store options read from the
- *                configuration file "filename".
- * @param keyfile is the GKeyFile structure that is used by glib to read
- *        groups and keys from.
- * @param filename : the filename of the configuration file to read from
- */
-static void read_from_group_ciseaux(options_t *opt, GKeyFile *keyfile, gchar *filename)
-{
-    if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_CISEAUX) == TRUE)
-        {
-            /* Reading the blocksize if any */
-            opt->blocksize = read_int64_from_file(keyfile, filename, GN_CISEAUX, KN_BLOCK_SIZE, _("Could not load blocksize from file"));
-        }
-}
-
-
-/**
- * Reads keys in keyfile if group GN_ANTEMEMOIRE is in that keyfile and fills
- * options_t *opt structure accordingly.
- * @param[in,out] opt : options_t * structure to store options read from the
- *                configuration file "filename".
- * @param keyfile is the GKeyFile structure that is used by glib to read
- *        groups and keys from.
- * @param filename : the filename of the configuration file to read from
- */
-static void read_from_group_antememoire(options_t *opt, GKeyFile *keyfile, gchar *filename)
-{
-    if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_ANTEMEMOIRE) == TRUE)
-        {
             /* Reading the cache directory if any */
-            opt->dircache = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_CACHE_DIR, _("Could not load directory name"));
+            opt->dircache = read_string_from_file(keyfile, filename, GN_CLIENT, KN_CACHE_DIR, _("Could not load directory name"));
 
             /* Reading filename of the database if any */
-            opt->dbname = read_string_from_file(keyfile, filename, GN_ANTEMEMOIRE, KN_DB_NAME, _("Could not load cache database name"));
+            opt->dbname = read_string_from_file(keyfile, filename, GN_CLIENT, KN_DB_NAME, _("Could not load cache database name"));
         }
-}
 
+   read_debug_mode_from_file(keyfile, filename);
+}
 
 /**
  * Reads keys in keyfile if groupname is in that keyfile and fills
@@ -194,9 +153,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
-                    read_from_group_monitor(opt, keyfile, filename);
-                    read_from_group_ciseaux(opt, keyfile, filename);
-                    read_from_group_antememoire(opt, keyfile, filename);
+                    read_from_group_client(opt, keyfile, filename);
                     read_from_group_serveur(opt, keyfile, filename);
                 }
             else if (error != NULL)

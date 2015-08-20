@@ -113,17 +113,13 @@ gchar *buffer_selected_option(options_t *opt)
  */
 static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
-    gboolean debug = FALSE;
-
     if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
         {
             /* Reading the port number if any */
             opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, _("Could not load serveur port number from file."));
-
-            debug = read_boolean_from_file(keyfile, filename, GN_ALL, KN_DEBUG_MODE, _("Could not load debug mode configuration from file."));
-
-            set_debug_mode(debug);
         }
+
+    read_debug_mode_from_file(keyfile, filename);
 }
 
 

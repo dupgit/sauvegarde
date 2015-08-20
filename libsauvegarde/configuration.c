@@ -282,5 +282,25 @@ GSList *read_list_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
 }
 
 
+/**
+ * Reads debug mode in keyfile
+ * @param keyfile is the GKeyFile structure that is used by glib to read
+ *        groups and keys from.
+ * @param filename : the filename of the configuration file to read from
+ */
+void read_debug_mode_from_file(GKeyFile *keyfile, gchar *filename)
+{
+    gboolean debug = FALSE;
+
+    if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_ALL) == TRUE)
+        {
+             /* Reading in section [All] the debug mode */
+            debug = read_boolean_from_file(keyfile, filename, GN_ALL, KN_DEBUG_MODE, _("Could not load debug mode configuration from file."));
+
+            set_debug_mode(debug);
+        }
+}
+
+
 
 

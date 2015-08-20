@@ -40,16 +40,8 @@
  */
 
  /**
-  * @def GN_MONITOR
-  * Defines the group name for all preferences related to "monitor"
-  * program.
-  *
-  * @def GN_CISEAUX
-  * Defines the group name for all preferences related to "ciseaux"
-  * program.
-  *
-  * @def GN_ANTEMEMOIRE
-  * Defines the group name for all preferences related to "antememoire"
+  * @def GN_CLIENT
+  * Defines the group name for all preferences related to "client"
   * program.
   *
   * @def GN_SERVEUR
@@ -60,14 +52,12 @@
   * Defines the group name for all preferences related to all programs
   *
   */
-#define GN_MONITOR ("Monitor")
-#define GN_CISEAUX ("Ciseaux")
-#define GN_ANTEMEMOIRE ("AnteMemoire")
+#define GN_CLIENT ("Client")
 #define GN_SERVEUR ("Serveur")
 #define GN_ALL ("All")
 
 
-/** Below you'll find some definitions for all the programs */
+/** Below you'll find some definitions for [All] section of configuration files */
 /**
  * @def KN_DEBUG_MODE
  * Defines the key name for debug mode that may be used by any program
@@ -76,7 +66,7 @@
 #define KN_DEBUG_MODE ("debug-mode")
 
 
-/** Below you'll find some definitions for the ciseaux program */
+/** Below you'll find some definitions for [client] section of configuration files */
 /**
  * @def KN_BLOCK_SIZE
  * Defines the key name for the blocksize option. Expected value is of
@@ -85,7 +75,6 @@
 #define KN_BLOCK_SIZE ("blocksize")
 
 
-/** Below you'll find some definitions for the monitor program */
 /**
  * @def KN_DIR_LIST
  * Defines a list of directories that we want to watch.
@@ -93,7 +82,6 @@
 #define KN_DIR_LIST ("directory-list")
 
 
-/** Below you'll find some definitions for the antememoire program */
 /**
  * @def KN_CACHE_DIR
  * Defines a directory where we will put some cache files and stuff
@@ -221,6 +209,15 @@ extern gboolean read_boolean_from_file(GKeyFile *keyfile, gchar *filename, gchar
  *          keyfile file or NULL;
  */
 extern GSList *read_list_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
+
+
+/**
+ * Reads debug mode in keyfile
+ * @param keyfile is the GKeyFile structure that is used by glib to read
+ *        groups and keys from.
+ * @param filename : the filename of the configuration file to read from
+ */
+extern void read_debug_mode_from_file(GKeyFile *keyfile, gchar *filename);
 
 
 #endif /* #ifndef _CONFIGURATION_H_ */
