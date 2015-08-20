@@ -22,8 +22,11 @@
 
 /**
  * @file communique.c
- * This file contains every call to the zmq library in order to make a
- * wrapper to this library
+ * This file contains every call to the libcurl library in order to make a
+ * wrapper to this library.
+ *  * Defined errors are: http://curl.haxx.se/libcurl/c/libcurl-errors.html
+ *  * How to use a buffer to get a message is at:
+ *    http://curl.haxx.se/libcurl/c/CURLOPT_ERRORBUFFER.html
  */
 
 #include "libsauvegarde.h"

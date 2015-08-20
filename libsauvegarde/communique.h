@@ -22,7 +22,7 @@
 
 /**
  * @file communique.h
- * This file contains all definitions and functions calls to the zmq
+ * This file contains all definitions and functions calls to the libcurl
  * library
  */
 
