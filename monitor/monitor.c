@@ -270,7 +270,7 @@ static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t 
                 }
             else
                 {
-                    /* Need to manage HTTP errors */
+                    /* Need to manage HTTP errors ? */
                 }
         }
 
@@ -410,13 +410,30 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
                 {
                     /* Send datas and meta datas only if the file isn't already in our local database */
                     answer = send_meta_data_to_serveur(main_struct, meta);
-                    success = send_datas_to_serveur(main_struct, meta, answer);
-                    free_variable(answer);
 
-                    /* Save them to the db cache */
-                    db_save_meta_data(main_struct->database, meta, TRUE);
+                    if (answer != NULL)
+                        {
+                            success = send_datas_to_serveur(main_struct, meta, answer);
+                            free_variable(answer);
 
-                    /* Need to save datas only if an error occured when transmitting. 'success' may tell this */
+                            if (success == TRUE)
+                                {
+                                    /* Everything has been transmitted so we can save meta datas into the local db cache */
+                                    db_save_meta_data(main_struct->database, meta, TRUE);
+                                }
+                            else
+                                {
+                                    /* Something went wrong when sending datas */
+                                    /* Need to save datas and metas datas because an error occured. */
+                                }
+                        }
+                    else
+                        {
+                            /* Something went wrong when sending metadatas */
+                            /* Need to save datas and metas datas because an error occured when transmitting. */
+                        }
+
+
                 }
 
             message = g_strdup_printf(_("processing file %s"), meta->name);

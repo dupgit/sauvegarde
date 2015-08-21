@@ -130,15 +130,18 @@ gint get_url(comm_t *comm, gchar *url)
 {
     gint success = CURLE_FAILED_INIT;
     gchar *real_url = NULL;
+    gchar *error_buf = NULL;
 
     if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL)
         {
+            error_buf = (gchar *) g_malloc0(CURL_ERROR_SIZE + 1);
             comm->seq = 0;
             real_url = g_strdup_printf("%s%s", comm->conn, url);
 
             curl_easy_setopt(comm->curl_handle, CURLOPT_URL, real_url);
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEFUNCTION, write_data);
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
+            curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
 
             success = curl_easy_perform(comm->curl_handle);
 
@@ -150,8 +153,10 @@ gint get_url(comm_t *comm, gchar *url)
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, _("Error while sending GET command and receiving datas\n"));
+                    print_error(__FILE__, __LINE__, _("Error while sending GET command and receiving datas: %s\n"), error_buf);
                 }
+
+            free_variable(error_buf);
         }
 
     return success;
@@ -170,19 +175,19 @@ gint get_url(comm_t *comm, gchar *url)
  *          CURLE_OK upon success, any other error code in any other
  *          situation. When CURLE_OK is returned, the datas that the server
  *          sent is in the comm->buffer gchar * string.
- * @todo . free some memory where needed
- *       . manage errors codes
+ * @todo manage errors codes
  */
 gint post_url(comm_t *comm, gchar *url)
 {
     gint success = CURLE_FAILED_INIT;
     gchar *real_url = NULL;
     gchar *buffer = NULL;
+    gchar *error_buf = NULL;
 
     if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL && comm->buffer != NULL)
         {
+            error_buf = (gchar *) g_malloc0(CURL_ERROR_SIZE + 1);
             comm->seq = 0;
-
             real_url = g_strdup_printf("%s%s", comm->conn, url);
             buffer = g_strdup(comm->buffer);
 
@@ -190,12 +195,14 @@ gint post_url(comm_t *comm, gchar *url)
             curl_easy_setopt(comm->curl_handle, CURLOPT_URL, real_url);
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEFUNCTION, write_data);
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
+            curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
+
 
             success = curl_easy_perform(comm->curl_handle);
 
             if (success != CURLE_OK)
                 {
-                    print_error(__FILE__, __LINE__, _("Error while sending POST command (to \"%s\") with datas\n"), real_url);
+                    print_error(__FILE__, __LINE__, _("Error while sending POST command (to \"%s\"): %s\n"), real_url, error_buf);
                 }
             else if (comm->buffer != NULL)
                 {
@@ -204,6 +211,7 @@ gint post_url(comm_t *comm, gchar *url)
 
             free_variable(real_url);
             free_variable(buffer);
+            free_variable(error_buf);
         }
 
     return success;
