@@ -1,3 +1,22 @@
+[21-08-2015] v0.0.3
+'sauvegarde' is a set of tools ('serveur', 'client' and 'restaure' - as of now) that saves your files in a live continuous way that is to say while they are written to disks.
+
+New features in version v0.0.3:
+
+    * links are now saved and can be restored
+    * A new test directory comes with the project where we might put some files, directories or links to test, improve and avoid regression on the project.
+
+There is a lot of things to do and sauvegarde's project is seeking help in all range of the project (including testing, promoting, coding, translating, creating documentations...).
+
+Links:
+
+    * Sauvegarde's project: https://github.com/dupgit/sauvegarde
+    * Sauvegarde's openhub: https://openhub.net/p/sauvegarde
+    * Sauvegarde release v0.0.3: http://src.delhomme.org/download/sauvegarde/releases/sauvegarde-0.0.3.tar.xz
+    * travis continuous integration status: https://travis-ci.org/dupgit/sauvegarde
+
+
+
 [15-08-2015] v0.0.2
 'sauvegarde' is a set of tools ('serveur', 'client' and 'restaure' - as of now) that saves your files in a live continuous way that is to say while they are written to disks. In this version 'client' program has been reworked and may be 75 % of it's code has changed.
 
