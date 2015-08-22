@@ -6,9 +6,10 @@ This page is sauvegarde doxygen's @mainpage.
 
 [![Build Status](https://travis-ci.org/dupgit/sauvegarde.png?branch=master)](https://travis-ci.org/dupgit/sauvegarde)
 
-With this code you can backup and restore files. Compile the code put
-the `serveur` where you want to save your files. Let `client` crawl your
-files to save them. Use `restaure` to restore a file.
+With this code you can backup and restore files in a live and continuous
+way. Compile the code put the `serveur` on the machine where you want to
+save your files. Let `client` crawl your files to save them. If needed
+use `restaure` to restore a file.
 
 
 ## License
