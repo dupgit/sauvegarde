@@ -14,7 +14,7 @@ use `restaure` to restore a file.
 
 ## License
 
-This is free software an real open source as GPLv3 is used for this
+This is free software and real open source as GPLv3 is used for this
 collection of programs. Feel free to contibute and/or give help to the
 projects used here (see dependencies section below).
 
