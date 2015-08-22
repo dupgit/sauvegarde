@@ -29,8 +29,8 @@
 #include "libsauvegarde.h"
 
 /**
- * Comparison function used with the GTree structure to sort hashs
- * properly.
+ * Comparison function used to compare two hashs (binary form) mainly
+ * used to sort hashs properly.
  * @param a is a hash in a binary form (a guint8 *)
  * @param b is a hash in a binary form to be compared with a. Comparison is
  *        done comparing byte 1 of a an b, if there equal compares byte 2

@@ -63,8 +63,8 @@ typedef struct
 
 
 /**
- * Comparison function used with the GTree structure to sort hashs
- * properly.
+ * Comparison function used to compare two hashs (binary form) mainly
+ * used to sort hashs properly.
  * @returns a negative value if a < b, zero if a = b and a positive value
  * if a > b.
  */
