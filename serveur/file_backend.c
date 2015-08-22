@@ -239,9 +239,11 @@ GSList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *ha
                     filename = g_build_filename(path, hex_hash, NULL);
                     data_file = g_file_new_for_path(filename);
 
-                    if (g_file_query_exists(data_file, NULL) == FALSE)
+                    if (g_file_query_exists(data_file, NULL) == FALSE && hash_data_is_in_list(hash_data, needed) == FALSE)
                         {
-                            /* file does not exists and is needed thus putting it it the needed list */
+                            /* file does not exists and is not in the needed list so we need it!
+                             * thus putting it it the needed list
+                             */
                             a_hash = (guint8 *) g_malloc0(sizeof(guint8) * HASH_LEN);
                             memcpy(a_hash, hash_data->hash, HASH_LEN);
                             needed_hash_data = new_hash_data_t(NULL, 0, a_hash);

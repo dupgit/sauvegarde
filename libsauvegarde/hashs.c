@@ -428,3 +428,37 @@ GSList *make_hash_data_list_from_string(gchar *hash_string)
 
     return hash_list;
 }
+
+
+/**
+ * Tells wheter a hash (picking it in a hash_data_t structure is in the
+ * needed list of hash_data_t structures.
+ * @param hash_data contains the hash that we are looking for into the
+ *        needed list.
+ * @param needed is a GSList of hash_data_t structures that may already
+ *        contain one with the same hash than the one in hash_data
+ * @returns TRUE if the hash is found, FALSE otherwise
+ */
+gboolean hash_data_is_in_list(hash_data_t *hash_data, GSList *needed)
+{
+    gboolean found = FALSE;
+    hash_data_t *needed_hash_data = NULL;
+
+    if (hash_data != NULL)
+        {
+            while (needed != NULL && found == FALSE)
+                {
+                    needed_hash_data = needed->data;
+                    if (compare_two_hashs(hash_data->hash, needed_hash_data->hash) == 0)
+                        {
+                            found = TRUE;
+                        }
+                    else
+                        {
+                            needed = g_slist_next(needed);
+                        }
+                }
+        }
+
+    return found;
+}

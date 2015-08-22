@@ -171,4 +171,17 @@ extern gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level);
 extern GSList *make_hash_data_list_from_string(gchar *hash_string);
 
 
+/**
+ * Tells wheter a hash (picking it in a hash_data_t structure is in the
+ * needed list of hash_data_t structures.
+ * @param hash_data contains the hash that we are looking for into the
+ *        needed list.
+ * @param needed is a GSList of hash_data_t structures that may already
+ *        contain one with the same hash than the one in hash_data
+ * @returns TRUE if the hash is found, FALSE otherwise
+ */
+gboolean hash_data_is_in_list(hash_data_t *hash_data, GSList *needed);
+
+
+
 #endif /* #ifndef _HASHS_H_ */
