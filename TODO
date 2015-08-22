@@ -12,6 +12,9 @@
 * use some cryptography to cipher exchanges (gpg ?)
 * UI integration to desktop managers like Xfce, Gnome, MATE, QT ?
 * file_backend: compress blocks on disk + ciphering ?
+* serveur: add a backend for Ceph.
+* client: adaptative block size that will depend on the file size ? Option
+          to choose adaptative or fixed ?
 
 ## In the roadmap already.
 
