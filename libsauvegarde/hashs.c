@@ -211,48 +211,6 @@ guint8 *string_to_hash(gchar *str_hash)
 
 
 /**
- * Creates a new data_t * structure populated with the buffer and its size.
- * @param buffer : the data to be stored
- * @param read : the size of that buffer
- * @param into_cache : says wether it is already into the cache (TRUE) or
- *        not (FALSE)
- * @returns a newly allocated data_t * structure that can be freed when no
- *         longer needed.
- */
-data_t *new_data_t_structure(guchar *buffer, gssize read, gboolean into_cache)
-{
-    data_t *a_data;
-
-    a_data = (data_t *) g_malloc0(sizeof(data_t));
-
-    a_data->buffer = buffer;
-    a_data->read = read;
-    a_data->into_cache = into_cache;
-
-    return a_data;
-}
-
-
-/**
- * Frees data buffer and returns NULL.
- * @param a_data : the stucture that contains buffer data and its size to
- * be freed
- * @returns always NULL.
- */
-gpointer free_data_t_structure(data_t *a_data)
-{
-
-    if (a_data != NULL)
-        {
-            a_data->buffer = free_variable(a_data->buffer);
-            free_variable(a_data);
-        }
-
-    return NULL;
-}
-
-
-/**
  * Frees hash_data_t *buffer and returns NULL.
  * @param hash_data : the stucture that contains buffer data, hash data
  *        and its size to be freed.

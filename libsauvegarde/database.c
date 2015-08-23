@@ -36,8 +36,7 @@ static file_row_t *new_file_row_t(void);
 static void free_file_row_t(file_row_t *row);
 static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col);
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
-static int get_data_callback(void *a_data, int nb_col, char **data, char **name_col);
-static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash);
+
 
 /**
  * @returns a string containing the version of the database used.
@@ -277,64 +276,6 @@ static void free_file_row_t(file_row_t *row)
             free_variable(row);
         }
 }
-
-
-/**
- * Gets file_ids from returned rows.
- * @param a_data is a data_t * structure
- * @param nb_col gives the number of columns in this row.
- * @param data contains the data of each column.
- * @param name_col contains the name of each column.
- * @returns always 0.
- */
-static int get_data_callback(void *a_data, int nb_col, char **data, char **name_col)
-{
-    data_t *my_data = (data_t *) a_data;
-
-    if (data != NULL)
-        {
-            my_data->read = g_ascii_strtoull(data[0], NULL, 10);
-            my_data->buffer = (guchar *) g_strdup(data[1]);
-        }
-
-    return 0;
-}
-
-
-/**
- * Gets data from a checksum
- * @param database is the structure that contains everything that is
- *        related to the database (it's connexion for instance).
- * @param encoded_hash is the checksum base64 encoded.
- * @returns a newly allocated data_t structure which may contain the data
- *          for the specified base64 encoded hash (checksum).
- */
-static data_t *get_data_from_checksum(db_t *database, gchar *encoded_hash)
-{
-    data_t *a_data = NULL;
-    char *error_message = NULL;
-    gchar *sql_command = NULL;
-    int db_result = 0;
-
-    a_data = new_data_t_structure(NULL, 0, TRUE); /* TRUE as we are retreiving from the cache */
-
-    sql_command = g_strdup_printf("SELECT size, data FROM data WHERE checksum='%s' ;", encoded_hash);
-
-    db_result = sqlite3_exec(database->db, sql_command, get_data_callback, a_data, &error_message);
-
-    free_variable(sql_command);
-
-    if (db_result == SQLITE_OK)
-        {
-           return a_data;
-        }
-    else
-        {
-            print_db_error(database->db, _("(%d) Error while searching into the table 'data': %s\n"), db_result, error_message);
-            return NULL; /* to avoid a compilation warning as we exited with failure in print_db_error */
-        }
-}
-
 
 
 /**

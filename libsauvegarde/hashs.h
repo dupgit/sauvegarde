@@ -34,22 +34,6 @@
  */
 #define HASH_LEN (32)
 
-
-/**
- * @struct data_t
- * @brief Structure that stores buffer data (buffer) and its size (read).
- *
- * It will be associated with the checksum into the GTree balanced binary
- * tree of the hashs_t structure.
- */
-typedef struct
-{
-    guchar *buffer;      /**< buffer data read from the file              */
-    gssize read;         /**< size of that buffer                         */
-    gboolean into_cache; /**< TRUE if it has been inserted into the cache */
-} data_t;
-
-
 /**
  * @struct hash_data_t
  * @brief Structure to store a hash and the corresponding datas
@@ -87,26 +71,6 @@ extern gchar *hash_to_string(guint8 *a_hash);
  * @returns a hash in a binary form (guint8 *).
  */
 extern guint8 *string_to_hash(gchar *str_hash);
-
-
-/**
- * Creates a new data_t * structure populated with the buffer and its size.
- * @param buffer : the data to be stored
- * @param read : the size of that buffer
- * @param into_cache : says wether it is already into the cache (TRUE) or
- *        not (FALSE)
- * @returns a newly allocated data_t * structure that can be freed when no
- *         longer needed.
- */
-extern data_t *new_data_t_structure(guchar *buffer, gssize read, gboolean into_cache);
-
-
-/**
- * Frees data buffer
- * @param a_data : the stucture that contains buffer data and its size to
- * be freed
- */
-extern gpointer free_data_t_structure(data_t *a_data);
 
 
 /**
