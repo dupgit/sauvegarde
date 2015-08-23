@@ -66,7 +66,7 @@ in the classic way :
 
 ## Usage
 
-First you need to run the program serveur on a machine that will act as
+First you need to run the program `serveur` on a machine that will act as
 a server. You can configure options in `serveur.conf` (located by default
 in `{prefix}/etc/sauvegarde/`) or use the command's line options:
 
@@ -85,7 +85,8 @@ in `{prefix}/etc/sauvegarde/`) or use the command's line options:
       -c, --configuration=FILENAME     Specify an alternative configuration file.
       -p, --port=NUMBER                Port NUMBER on which to listen.
 
-Then you may use client program to report modified files to the serveur
+
+Then you may use `client` program to report modified files to the serveur
 and save them accordingly. Configuration file is named `client.conf` and
 command line options are:
 
@@ -109,7 +110,8 @@ command line options are:
       -i, --ip=IP                      IP address where serveur program is.
       -p, --port=NUMBER                Port NUMBER on which to listen.
 
-At a time you may need to restaure a file then you'll have to use restaure
+
+At a time you may need to restore a file then you'll have to use `restaure`
 program. Configuration file is named `restaure.conf` and command line
 options are:
 
