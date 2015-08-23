@@ -30,7 +30,6 @@
 
 #include "libsauvegarde.h"
 
-static void insert_string_into_json_root(json_t *root, gchar *keyname, gchar *a_string);
 static void insert_guint8_into_json_root(json_t *root, gchar *keyname, guint8 number);
 static void insert_guint32_into_json_root(json_t *root, gchar *keyname, guint32 number);
 static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 number);
@@ -86,7 +85,7 @@ void append_string_to_array(json_t *array, gchar *to_append)
  * @param keyname is the key for which we will insert a new value
  * @param a_string is the value to be inserted with key keyname.
  */
-static void insert_string_into_json_root(json_t *root, gchar *keyname, gchar *a_string)
+void insert_string_into_json_root(json_t *root, gchar *keyname, gchar *a_string)
 {
     json_t *str = NULL;
 

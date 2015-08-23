@@ -111,6 +111,15 @@ extern void append_string_to_array(json_t *array, gchar *to_append);
 
 
 /**
+ * Inserts the string a_string into the json tree root with key keyname.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we will insert a new value
+ * @param a_string is the value to be inserted with key keyname.
+ */
+extern void insert_string_into_json_root(json_t *root, gchar *keyname, gchar *a_string);
+
+
+/**
  * gets a json_t *value into the json_t *root array.
  * @param[in,out] root is the root that contains all meta data values
  * @param keyname is the keyname associated with the value that we want to

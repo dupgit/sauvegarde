@@ -318,6 +318,101 @@ static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash)
 
 
 /**
+ * Sends datas as requested by the server 'serveur' in a buffered way.
+ * @param main_struct : main structure of the program.
+ * @param meta : the meta_data_t * structure to be saved and that
+ *        contains the datas.
+ * @param answer is the request sent back by serveur when we had send
+ *        meta datas.
+ * @note using directly main_struct->comm->buffer -> not threadable as is.
+ */
+static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
+{
+    json_t *root = NULL;
+    GSList *hash_list = NULL;         /** hash_list is local to this function */
+    GSList *head = NULL;
+    gint success = CURLE_FAILED_INIT;
+    hash_data_t *found = NULL;
+    hash_data_t *hash_data = NULL;
+    gint all_ok = CURLE_OK;
+    gint i = 0;
+    gchar *encoded_hash = NULL;
+    gchar *encoded_data = NULL;
+    gint limit = 0;
+
+    if (answer != NULL && meta != NULL && main_struct != NULL && main_struct->opt != NULL)
+        {
+            root = load_json(answer);
+
+            limit = (1048576) / main_struct->opt->blocksize;
+
+            if (root != NULL)
+                {
+                    /* This hash_list is the needed hashs from serveur */
+                    hash_list = extract_gslist_from_array(root, "hash_list");
+                    json_decref(root);
+
+                    head = hash_list;
+
+                    while (hash_list != NULL && all_ok == CURLE_OK)
+                        {
+                            hash_data = hash_list->data;
+                            /* hash_data_list contains all hashs and their associated datas */
+                            found = find_hash_in_list(meta->hash_data_list, hash_data->hash);
+
+                            encoded_hash = g_base64_encode(found->hash, HASH_LEN);
+                            encoded_data = g_base64_encode(found->data, found->read);
+
+                            /** @todo delete the element of the list to gain speed at the next loop */
+
+                            insert_string_into_json_root(root, encoded_hash, encoded_data);
+
+                            free_variable(encoded_hash);
+                            free_variable(encoded_data);
+                            i = i + 1;
+
+                            if (i >= limit)
+                                {
+                                    /* when we've got 1M bytes of datas send them ! */
+                                    /* main_struct->comm->buffer is the buffer sent to serveur */
+                                    main_struct->comm->buffer = json_dumps(root, 0);
+                                    success = post_url(main_struct->comm, "/Datas.json");
+                                    json_decref(root);
+                                    all_ok = success;
+                                    main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
+                                    i = 0;
+                                }
+
+                            hash_list = g_slist_next(hash_list);
+                        }
+
+                    if (i > 0)
+                        {
+                            /* Send the rest of the datas (less than 1M) */
+                            /* main_struct->comm->buffer is the buffer sent to serveur */
+                            main_struct->comm->buffer = json_dumps(root, 0);
+                            success = post_url(main_struct->comm, "/Datas.json");
+                            json_decref(root);
+                            all_ok = success;
+                            main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
+                        }
+
+                    if (head != NULL)
+                        {
+                            g_slist_free_full(head, free_hdt_struct);
+                        }
+                }
+            else
+                {
+                    print_error(__FILE__, __LINE__, _("Error while loading JSON answer from serveur\n"));
+                }
+        }
+
+   return all_ok;
+}
+
+
+/**
  * Sends datas as requested by the server 'serveur'.
  * @param main_struct : main structure of the program.
  * @param meta : the meta_data_t * structure to be saved and that
@@ -342,7 +437,6 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
 
             if (root != NULL)
                 {
-
                     /* This hash_list is the needed hashs from serveur */
                     hash_list = extract_gslist_from_array(root, "hash_list");
                     json_decref(root);
@@ -432,8 +526,6 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
                             /* Something went wrong when sending metadatas */
                             /* Need to save datas and metas datas because an error occured when transmitting. */
                         }
-
-
                 }
 
             message = g_strdup_printf(_("processing file %s"), meta->name);
