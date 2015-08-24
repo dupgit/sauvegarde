@@ -1,5 +1,6 @@
 # Travis CI script
 language: c
+sudo: false
 
 # Compilers to test.
 compiler:
@@ -7,30 +8,34 @@ compiler:
     - clang
 
 # Dependencies
-before_install:
-    # update packages definitions
-    - sudo apt-get update -qq
+addons:
+  apt:
+    packages:
+    - build-essential
+    - intltool
+    - gettext
+    - pkg-config
+    - libsqlite3-dev
+    - libglib2.0-dev
+    - libcurl4-openssl-dev
+    - jansson
+    - libmicrohttpd-dev
+    - libmicrohttpd5
 
 install:
-    # Those handled by apt-get
-    - sudo apt-get install -qq build-essential intltool gettext pkg-config libsqlite3-dev libglib2.0-dev libcurl4-openssl-dev
-
     # jansson
-    - git clone git://github.com/akheron/jansson.git
-    - (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure; make; sudo make install; sudo ldconfig)
-
-    # libcurl
-    #- git clone https://github.com/bagder/curl.git
-    #- (cd curl; ./buildconf; ./configure; make; sudo make install; sudo ldconfig)
+    #- git clone git://github.com/akheron/jansson.git
+    #- (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure --prefix=$PWD/local; make; make install)
 
     # libmicrohttpd
-    - wget --quiet -c http://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-0.9.42.tar.gz
-    - (tar zxf libmicrohttpd-0.9.42.tar.gz; cd libmicrohttpd-0.9.42; ./configure; make; sudo make install; sudo ldconfig)
+    #- wget --quiet -c http://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-0.9.42.tar.gz
+    #- (tar zxf libmicrohttpd-0.9.42.tar.gz; cd libmicrohttpd-0.9.42; ./configure --prefix=$PWD/local; make; make install)
 
 # Building sauvegarde
 script:
 
-    - ./autoclean.sh && ./autogen.sh && ./configure --prefix=/home/dup/local --enable-debug --disable-silent && make && sudo make install && /home/dup/local/bin/client --version && /home/dup/local/bin/serveur --version && /home/dup/local/bin/restaure --version
+    - export PATH=$PATH:$PWD/local/bin
+    - ./autoclean.sh && ./autogen.sh && ./configure --prefix=$PWD/local --enable-debug --disable-silent && make && make install && $PWD/local/bin/client --version && $PWD/local/bin/serveur --version && $PWD/local/bin/restaure --version
 
 # irc bot notification
 notifications:
