@@ -18,14 +18,13 @@ addons:
     - libsqlite3-dev
     - libglib2.0-dev
     - libcurl4-openssl-dev
-    - jansson
     - libmicrohttpd-dev
     - libmicrohttpd5
 
 install:
     # jansson
-    #- git clone git://github.com/akheron/jansson.git
-    #- (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure --prefix=$PWD/local; make; make install)
+    - git clone git://github.com/akheron/jansson.git
+    - (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure --prefix=$PWD/local; make; make install)
 
     # libmicrohttpd
     #- wget --quiet -c http://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-0.9.42.tar.gz
@@ -35,6 +34,7 @@ install:
 script:
 
     - export PATH=$PATH:$PWD/local/bin
+    - export PKG_CONFIG=$PKG_CONFIG:$PWD/local/lib
     - ./autoclean.sh && ./autogen.sh && ./configure --prefix=$PWD/local --enable-debug --disable-silent && make && make install && $PWD/local/bin/client --version && $PWD/local/bin/serveur --version && $PWD/local/bin/restaure --version
 
 # irc bot notification
