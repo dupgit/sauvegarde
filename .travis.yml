@@ -22,18 +22,18 @@ addons:
 install:
     # jansson
     - git clone git://github.com/akheron/jansson.git
-    - (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure --prefix=$PWD/local; make; make install)
+    - (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure --prefix=$HOME/local; make; make install)
 
     # libmicrohttpd
     - wget --quiet -c http://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-0.9.42.tar.gz
-    - (tar zxf libmicrohttpd-0.9.42.tar.gz; cd libmicrohttpd-0.9.42; ./configure --prefix=$PWD/local; make; make install)
+    - (tar zxf libmicrohttpd-0.9.42.tar.gz; cd libmicrohttpd-0.9.42; ./configure --prefix=$HOME/local; make; make install)
 
 # Building sauvegarde
 script:
-    - export PATH=$PATH:$PWD/local/bin
-    - export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$PWD/local/lib/pkgconfig/
+    - export PATH=$PATH:$HOME/local/bin
+    - export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/local/lib/pkgconfig/
     - pkg-config --cflags glib-2.0
-    - ./autoclean.sh && ./autogen.sh && ./configure --prefix=$PWD/local --enable-debug --disable-silent && make && make install && $PWD/local/bin/client --version && $PWD/local/bin/serveur --version && $PWD/local/bin/restaure --version
+    - ./autoclean.sh && ./autogen.sh && ./configure --prefix=$HOME/local --enable-debug --disable-silent && make && make install && $$HOME/local/bin/client --version && $HOME/local/bin/serveur --version && $HOME/local/bin/restaure --version
 
 # irc bot notification
 notifications:
