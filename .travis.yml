@@ -31,8 +31,8 @@ install:
 # Building sauvegarde
 script:
     - export PATH=$PATH:$HOME/local/bin
-    - export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/local/lib/pkgconfig/
-    - pkg-config --cflags glib-2.0
+    - export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/local/lib/pkgconfig
+    - pkg-config --libs jansson
     - ./autoclean.sh && ./autogen.sh && ./configure --prefix=$HOME/local --enable-debug --disable-silent && make && make install && $$HOME/local/bin/client --version && $HOME/local/bin/serveur --version && $HOME/local/bin/restaure --version
 
 # irc bot notification
