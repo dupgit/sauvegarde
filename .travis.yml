@@ -30,9 +30,9 @@ install:
 
 # Building sauvegarde
 script:
-    - pkg-config --version
     - export PATH=$PATH:$PWD/local/bin
     - export PKG_CONFIG=$PKG_CONFIG:$PWD/local/lib/pkgconfig/
+    - pkg-config --list-all
     - ./autoclean.sh && ./autogen.sh && ./configure --prefix=$PWD/local --enable-debug --disable-silent && make && make install && $PWD/local/bin/client --version && $PWD/local/bin/serveur --version && $PWD/local/bin/restaure --version
 
 # irc bot notification
