@@ -19,7 +19,7 @@ AC_CONFIG_SRCDIR([monitor/monitor.c])
 dnl ***********************************************************************
 dnl * Libraries requirements                                              *
 dnl ***********************************************************************
-PKG_PROG_PKG_CONFIG([0.10])
+PKG_PROG_PKG_CONFIG([0.23])
 GLIB_VERSION=2.26.0
 GIO_VERSION=2.26.0
 SQLITE_VERSION=3.6.20
