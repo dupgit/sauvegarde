@@ -529,3 +529,27 @@ void make_symbolic_link(GFile *file, gchar *points_to)
                 }
         }
 }
+
+
+/**
+ * Replaces ~ (if found at the first place) by the home directory
+ * of the user.
+ * @param path is a gchar * string that should contain a path
+ * @returns always returns a newly allocated gchar * string that contains
+ *          the normalized path or the path itself;
+ */
+gchar *normalize_directory(gchar *path)
+{
+    gchar *dircache = NULL;
+
+    if (path != NULL && path[0] == '~')
+        {
+            dircache = g_strconcat(g_get_home_dir(), path+1, NULL);
+        }
+    else
+        {
+            dircache = g_strdup(path);
+        }
+
+    return dircache;
+}

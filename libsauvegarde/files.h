@@ -246,4 +246,15 @@ extern void set_file_attributes(GFile *file, meta_data_t *meta);
  * @param points_to is the target of the link
  */
 extern void make_symbolic_link(GFile *file, gchar *points_to);
+
+
+
+/**
+ * Replaces ~ (if found at the first place) by the home directory
+ * of the user.
+ * @param path is a gchar * string that should contain a path
+ * @returns always returns a newly allocated gchar * string that contains
+ *          the normalized path or the path itself;
+ */
+extern gchar *normalize_directory(gchar *path);
 #endif /* #ifndef _FILES_H_ */

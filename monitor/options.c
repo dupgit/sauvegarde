@@ -70,6 +70,8 @@ static void print_selected_options(options_t *opt)
 }
 
 
+
+
 /**
  * Reads keys in keyfile if group GN_CLIENT is in that keyfile and fills
  * options_t *opt structure accordingly.
@@ -81,6 +83,8 @@ static void print_selected_options(options_t *opt)
  */
 static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
+    gchar *dircache = NULL;
+
     if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_CLIENT) == TRUE)
         {
             /* Reading the directory list */
@@ -88,7 +92,9 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
             opt->blocksize = read_int64_from_file(keyfile, filename, GN_CLIENT, KN_BLOCK_SIZE, _("Could not load blocksize from file"));
 
             /* Reading the cache directory if any */
-            opt->dircache = read_string_from_file(keyfile, filename, GN_CLIENT, KN_CACHE_DIR, _("Could not load directory name"));
+            dircache = read_string_from_file(keyfile, filename, GN_CLIENT, KN_CACHE_DIR, _("Could not load directory name"));
+            opt->dircache = normalize_directory(dircache);
+            free_variable(dircache);
 
             /* Reading filename of the database if any */
             opt->dbname = read_string_from_file(keyfile, filename, GN_CLIENT, KN_DB_NAME, _("Could not load cache database name"));

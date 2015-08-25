@@ -128,7 +128,8 @@ extern gchar *get_probable_etc_path(gchar *progname, const gchar *configfile);
 
 
 /**
- * This functions converts a gchar ** array to a GSList of gchar *.
+ * This functions converts a gchar ** array of directories to a GSList of
+ * gchar * paths.
  * The function appends to the list first_list (if it exists - it may be
  * NULL) each entry of the array so elements are in the same order in the
  * array and in the list.

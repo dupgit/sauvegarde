@@ -204,7 +204,8 @@ gboolean read_boolean_from_file(GKeyFile *keyfile, gchar *filename, gchar *group
 
 
 /**
- * This functions converts a gchar ** array to a GSList of gchar *.
+ * This functions converts a gchar ** array of directories to a GSList of
+ * gchar * paths.
  * The function appends to the list first_list (if it exists - it may be
  * NULL) each entry of the array so elements are in the same order in the
  * array and in the list.
@@ -227,7 +228,8 @@ GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list)
 
             for (i = 0; i < num; i++)
                 {
-                    a_string = g_strdup(array[i]);
+                    /* */
+                    a_string = normalize_directory(array[i]);
                     list = g_slist_append(list, a_string);
 
                     print_debug("%s\n", a_string);
