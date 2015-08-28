@@ -22,3 +22,8 @@
 * add to serveur a specific url to send more than one buffer of data
   associated to their hashs. This may speed up data transfert.
 * Filters to exclude files by path or by extension
+
+
+# Manual
+
+Edit sauvegarde's manual: http://write.flossmanuals.net/sauvegarde-manual/_info/
