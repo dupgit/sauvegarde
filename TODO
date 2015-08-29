@@ -1,11 +1,4 @@
-# client
-
-* integrates fanotify in a cleaner way and try to see wether a directory
-  creation can be detected.
-* Review entire design to fit into "small memory" systems.
-
-
-# ideas
+# ideas that may be done (or not)
 
 ## Not in the roadmap
 
@@ -13,8 +6,11 @@
 * UI integration to desktop managers like Xfce, Gnome, MATE, QT ?
 * file_backend: compress blocks on disk + ciphering ?
 * serveur: add a backend for Ceph.
-* client: adaptative block size that will depend on the file size ? Option
-          to choose adaptative or fixed ?
+* client: adaptative block size that will depend on the file size. Option
+          to choose adaptative or fixed.
+* client: fit into "small memory" systems.
+* serveur: file_backend needs a path prefix to know where to save files.
+           Add an option in configuration file to indicate this prefix.
 
 ## In the roadmap already.
 
@@ -22,7 +18,8 @@
 * add to serveur a specific url to send more than one buffer of data
   associated to their hashs. This may speed up data transfert.
 * Filters to exclude files by path or by extension
-
+* client: integrates fanotify in a cleaner way and try to see wether a
+        directory creation can be detected.
 
 # Manual
 
