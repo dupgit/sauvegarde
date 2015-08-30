@@ -349,7 +349,7 @@ static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *m
             if (root != NULL)
                 {
                     /* This hash_list is the needed hashs from serveur */
-                    hash_list = extract_gslist_from_array(root, "hash_list");
+                    hash_list = extract_gslist_from_array(root, "hash_list", TRUE);
                     json_decref(root);
 
                     array = json_array();
@@ -442,7 +442,7 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
             if (root != NULL)
                 {
                     /* This hash_list is the needed hashs from serveur */
-                    hash_list = extract_gslist_from_array(root, "hash_list");
+                    hash_list = extract_gslist_from_array(root, "hash_list", TRUE);
                     json_decref(root);
                     head = hash_list;
 

@@ -240,10 +240,13 @@ gchar *get_json_version(gchar *json_str)
  * This function returns a list of hash_data_t * from an json array
  * @param root is the root json string that may contain an array named "name"
  * @param name is the name of the array to look for into
+ * @param only_hash is a boolean saying that we only have a hash list in
+ *        root if set to TRUE and that we have a complete hash_data_t list
+ *        if set to FALSE.
  * @returns a GSList that me be composed of 0 element (ie NULL). Elements
  *          are of type hash_data_t *.
  */
-GSList *extract_gslist_from_array(json_t *root, gchar *name)
+GSList *extract_gslist_from_array(json_t *root, gchar *name, gboolean only_hash)
 {
     json_t *array =  NULL;   /** json_t *array is the retrieved array used to iter over to fill the list     */
     size_t index = 0;        /** size_t index is the iterator to iter over the array                         */
@@ -265,8 +268,11 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
              */
             json_array_foreach(array, index, value)
                 {
-                    a_hash = g_base64_decode(json_string_value(value), &hash_len);
-                    hash_data = new_hash_data_t(NULL, 0, a_hash);
+                    if (only_hash == TRUE)
+                        {
+                            a_hash = g_base64_decode(json_string_value(value), &hash_len);
+                            hash_data = new_hash_data_t(NULL, 0, a_hash);
+                        }
 
                     head = g_slist_prepend(head, hash_data);
                 }
@@ -313,7 +319,7 @@ static serveur_meta_data_t *fills_serveur_meta_data_t_from_json_t(json_t *root)
             meta->name = get_string_from_json_root(root, "name");
             meta->link = get_string_from_json_root(root, "link");
 
-            meta->hash_data_list = extract_gslist_from_array(root, "hash_list");
+            meta->hash_data_list = extract_gslist_from_array(root, "hash_list", TRUE);
 
             smeta->meta = meta;
             smeta->hostname =  get_string_from_json_root(root, "hostname");

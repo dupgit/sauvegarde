@@ -167,13 +167,16 @@ extern gchar *convert_file_list_to_json_string(GSList *file_list);
 
 
 /**
- * This function returns a list from an json array
+ * This function returns a list of hash_data_t * from an json array
  * @param root is the root json string that may contain an array named "name"
  * @param name is the name of the array to look for into
+ * @param only_hash is a boolean saying that we only have a hash list in
+ *        root if set to TRUE and that we have a complete hash_data_t list
+ *        if set to FALSE.
  * @returns a GSList that me be composed of 0 element (ie NULL). Elements
- *          are of type gchar *.
+ *          are of type hash_data_t *.
  */
-extern GSList *extract_gslist_from_array(json_t *root, gchar *name);
+GSList *extract_gslist_from_array(json_t *root, gchar *name, gboolean only_hash);
 
 
 /**
