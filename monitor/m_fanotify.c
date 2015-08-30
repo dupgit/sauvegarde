@@ -228,7 +228,7 @@ static void prepare_before_saving(main_struct_t *main_struct, gchar *path)
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, _("Unable to get meta datas for file %s: %s\n"), path, error->message);
+                    print_error(__FILE__, __LINE__, _("Unable to get meta data for file %s: %s\n"), path, error->message);
                     error = free_error(error);
                 }
         }

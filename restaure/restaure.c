@@ -316,7 +316,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                         }
                     else if (error != NULL)
                         {
-                            print_error(__FILE__, __LINE__, _("Error: unable to open file %s to write datas in it (%s).\n"), filename, error->message);
+                            print_error(__FILE__, __LINE__, _("Error: unable to open file %s to write data in it (%s).\n"), filename, error->message);
                             free_variable(error);
                         }
 

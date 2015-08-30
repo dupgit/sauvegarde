@@ -140,7 +140,7 @@ options are:
 I am coding on spare hours so I may not tell any release dates and you
 should consider that "It ships when its ready".
 
-* 0.0.4  new serveur url to post a bunch of hashs and associated datas.
+* 0.0.4  new serveur url to post a bunch of hashs and associated data.
          Clean the answer list of needed hashs to avoid having duplicated
          hashs into it.
 * 0.0.5  fanotify's code reviewed. Avoid having one entire file in memory
@@ -150,7 +150,7 @@ should consider that "It ships when its ready".
 * 0.0.9  restore all the versions of a file
 * 0.0.10 restore a directory and it's subfiles and directories at a
          specific date.
-* 0.1.0 nettoie program to clean serveur's datas and metas datas
+* 0.1.0 nettoie program to clean serveur's datas and meta data
 
 
 ### Releases

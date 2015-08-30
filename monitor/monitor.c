@@ -180,7 +180,7 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
  * structure.
  * @param directory is the directory we are iterating over it is used
  *        here to build the filename name.
- * @param fileinfo is a glib structure that contains all meta datas and
+ * @param fileinfo is a glib structure that contains all meta data and
  *        more for a file.
  * @param blocksize is the blocksize to be used to calculate hashs upon.
  * @param database is the db_t * structure to access thhe local database
@@ -240,7 +240,7 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
 
 
 /**
- * Sends meta datas to the serveur and returns it's answer or NULL in
+ * Sends meta data to the serveur and returns it's answer or NULL in
  * case of an error.
  * @param main_struct : main structure of the program (contains pointers
  *        to the communication socket.
@@ -257,7 +257,7 @@ static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t 
             json_str = convert_meta_data_to_json_string(meta, main_struct->hostname);
 
             /* Sends meta data here */
-            print_debug(_("Sending meta datas: %s\n"), json_str);
+            print_debug(_("Sending meta data: %s\n"), json_str);
             main_struct->comm->buffer = json_str;
             success = post_url(main_struct->comm, "/Meta.json");
 
@@ -318,12 +318,12 @@ static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash)
 
 
 /**
- * Sends datas as requested by the server 'serveur' in a buffered way.
+ * Sends data as requested by the server 'serveur' in a buffered way.
  * @param main_struct : main structure of the program.
  * @param meta : the meta_data_t * structure to be saved and that
- *        contains the datas.
+ *        contains the data.
  * @param answer is the request sent back by serveur when we had send
- *        meta datas.
+ *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
 static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
@@ -357,7 +357,7 @@ static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *m
                     while (hash_list != NULL && all_ok == CURLE_OK)
                         {
                             hash_data = hash_list->data;
-                            /* hash_data_list contains all hashs and their associated datas */
+                            /* hash_data_list contains all hashs and their associated data */
                             found = find_hash_in_list(meta->hash_data_list, hash_data->hash);
 
                             encoded_hash = g_base64_encode(found->hash, HASH_LEN);
@@ -373,10 +373,10 @@ static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *m
 
                             if (i >= limit)
                                 {
-                                    /* when we've got 1M bytes of datas send them ! */
+                                    /* when we've got 1M bytes of data send them ! */
                                     /* main_struct->comm->buffer is the buffer sent to serveur */
                                     main_struct->comm->buffer = json_dumps(root, 0);
-                                    success = post_url(main_struct->comm, "/Datas.json");
+                                    success = post_url(main_struct->comm, "/Data_Array.json");
                                     json_decref(root);
                                     all_ok = success;
                                     main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
@@ -388,10 +388,10 @@ static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *m
 
                     if (i > 0)
                         {
-                            /* Send the rest of the datas (less than 1M) */
+                            /* Send the rest of the data (less than 1M) */
                             /* main_struct->comm->buffer is the buffer sent to serveur */
                             main_struct->comm->buffer = json_dumps(root, 0);
-                            success = post_url(main_struct->comm, "/Datas.json");
+                            success = post_url(main_struct->comm, "/Data_Array.json");
                             json_decref(root);
                             all_ok = success;
                             main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
@@ -413,12 +413,12 @@ static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *m
 
 
 /**
- * Sends datas as requested by the server 'serveur'.
+ * Sends data as requested by the server 'serveur'.
  * @param main_struct : main structure of the program.
  * @param meta : the meta_data_t * structure to be saved and that
- *        contains the datas.
+ *        contains the data.
  * @param answer is the request sent back by serveur when we had send
- *        meta datas.
+ *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
 static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
@@ -445,7 +445,7 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
                     while (hash_list != NULL && all_ok == CURLE_OK)
                         {
                             hash_data = hash_list->data;
-                            /* hash_data_list contains all hashs and their associated datas */
+                            /* hash_data_list contains all hashs and their associated data */
                             found = find_hash_in_list(meta->hash_data_list, hash_data->hash);
 
                             /* main_struct->comm->buffer is the buffer sent to serveur */
@@ -474,12 +474,12 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
 
 
 /**
- * This function gets meta datas and datas from a file and sends them
+ * This function gets meta data and data from a file and sends them
  * to the serveur in order to save the file located in the directory
  * 'directory' and represented by 'fileinfo' variable.
  * @param main_struct : main structure of the program
  * @param directory is the directory we are iterating over
- * @param fileinfo is a glib structure that contains all meta datas and
+ * @param fileinfo is a glib structure that contains all meta data and
  *        more for a file.
  * @note This function is not threadable as is. One may have problems
  *       when writing to the database for instance.
@@ -497,12 +497,12 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
 
             my_clock = new_clock_t();
 
-            /* Get datas and meta_datas for a file. */
+            /* Get data and meta_data for a file. */
             meta = get_meta_data_from_fileinfo(directory, fileinfo, main_struct->opt->blocksize, main_struct->database);
 
             if (meta->in_cache == FALSE)
                 {
-                    /* Send datas and meta datas only if the file isn't already in our local database */
+                    /* Send data and meta data only if the file isn't already in our local database */
                     answer = send_meta_data_to_serveur(main_struct, meta);
 
                     if (answer != NULL)
@@ -512,19 +512,19 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
 
                             if (success == TRUE)
                                 {
-                                    /* Everything has been transmitted so we can save meta datas into the local db cache */
+                                    /* Everything has been transmitted so we can save meta data into the local db cache */
                                     db_save_meta_data(main_struct->database, meta, TRUE);
                                 }
                             else
                                 {
-                                    /* Something went wrong when sending datas */
-                                    /* Need to save datas and metas datas because an error occured. */
+                                    /* Something went wrong when sending data */
+                                    /* Need to save data and meta data because an error occured. */
                                 }
                         }
                     else
                         {
                             /* Something went wrong when sending metadatas */
-                            /* Need to save datas and metas datas because an error occured when transmitting. */
+                            /* Need to save data and meta data because an error occured when transmitting. */
                         }
                 }
 

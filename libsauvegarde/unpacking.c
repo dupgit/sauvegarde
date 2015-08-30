@@ -279,8 +279,8 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name)
 
 
 /**
- * Fills a serveur_meta_data_t from datas that are in json_t *root
- * @param root is the JSON string that should contain all datas needed
+ * Fills a serveur_meta_data_t from data that are in json_t *root
+ * @param root is the JSON string that should contain all data needed
  *        to fill the serveur_meta_data_t * structure.
  * @returns a newly allocated serveur_meta_data_t * structure filled
  *          accordingly.
@@ -365,7 +365,7 @@ GSList *extract_smeta_gslist_from_file_list(json_t *root)
  * @param json_str is a json string containing the keys "hash", "data"
  *        and read
  * @returns a newly allocated hash_data_t structure with the
- *          corresponding datas in it.
+ *          corresponding data in it.
  */
 hash_data_t *convert_json_to_hash_data(gchar *json_str)
  {

@@ -469,7 +469,7 @@ void print_smeta_to_screen(serveur_meta_data_t *smeta)
 /**
  * Sets file attributes
  * @param file is a GFile pointer and must not be null
- * @param meta is the structure that contains all meta datas for the
+ * @param meta is the structure that contains all meta data for the
  *        file that we want to set.
  */
 void set_file_attributes(GFile *file, meta_data_t *meta)

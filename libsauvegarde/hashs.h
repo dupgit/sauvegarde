@@ -36,7 +36,7 @@
 
 /**
  * @struct hash_data_t
- * @brief Structure to store a hash and the corresponding datas
+ * @brief Structure to store a hash and the corresponding data
  */
 typedef struct
 {

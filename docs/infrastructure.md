@@ -17,7 +17,7 @@ evolve in the future.
 
 * "client" carve and monitors a filesystem, cuts files into pieces of
   16384 bytes (by default) and transmits every pieces along side with
-  meta datas of each files to serveur, the server that saves everything.
+  meta data of each files to serveur, the server that saves everything.
 
 * "serveur" is the main sauvegarde server. Each client communicates with it
   and it keeps every chunks of every files with their attributes.
@@ -150,7 +150,7 @@ The API is described in [API.md](docs/API.md)
 
 ### File backend
 
-Stores metas datas into flat files and datas directly in directories and
+Stores meta data into flat files and data directly in directories and
 subdirectories named by their hash. Default level of indirection is 2. This
 means that each hash is stored in 2 subdirectories : beef0345... is stored
 in /be/ef/beef0345... with level 2 and in /be/ef/03/beef0345.... with level
@@ -158,7 +158,7 @@ in /be/ef/beef0345... with level 2 and in /be/ef/03/beef0345.... with level
 
 Considering that we do not want more than 256 files in (level + 1) and
 considering that each hash saved has the default size of 16 Kb then
-with level 2 one may store up to 512 Gb of deduplicated datas. Level 3 can
+with level 2 one may store up to 512 Gb of deduplicated data. Level 3 can
 store up to 256 Tb of datas and level 4 up to 65536 Tb ! Keep in mind also
 that creating such amount of directories takes space : 256 Mb for level 2,
 64 Gb for level 3 and 16 Tb for level 4 ! Also it may take a long time to

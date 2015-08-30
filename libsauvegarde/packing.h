@@ -216,7 +216,7 @@ extern gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *h
  * @param json_str is a json string containing the keys "hash", "data"
  *        and read
  * @returns a newly allocated hash_data_t structure with the
- *          corresponding datas in it.
+ *          corresponding data in it.
  */
 extern hash_data_t *convert_json_to_hash_data(gchar *json_str);
 
