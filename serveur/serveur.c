@@ -90,7 +90,7 @@ static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gc
             if (backend->retrieve_data != NULL)
                 {
                     hash_data = backend->retrieve_data(serveur_struct, hash);
-                    answer = convert_hash_data_t_to_json(hash_data);
+                    answer = convert_hash_data_t_to_string(hash_data);
                     free_hash_data_t_structure(hash_data);
 
                     if (answer == NULL)
@@ -469,6 +469,15 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
             /**
              * creating an answer for the client to say that everything went Ok!
              */
+            answer = g_strdup_printf(_("Ok!"));
+            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
+            MHD_destroy_response(response);
+        }
+    else if (g_strcmp0(url, "/Data_Array.json") == 0 && received_data != NULL)
+        {
+            print_debug("/Data_Array.json: %s", received_data);
+
             answer = g_strdup_printf(_("Ok!"));
             response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
             success = MHD_queue_response(connection, MHD_HTTP_OK, response);

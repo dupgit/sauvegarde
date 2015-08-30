@@ -220,13 +220,23 @@ extern gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *h
  */
 extern hash_data_t *convert_json_to_hash_data(gchar *json_str);
 
+
+/**
+ * Converts hash_data_t structure to a json_t * structure
+ * @param hash_data the hash_data_t structure that contains the data to
+ *        be converted.
+ * @returns a json_t * structure with informations of hash_data in it
+ */
+extern json_t *convert_hash_data_t_to_json(hash_data_t *hash_data);
+
+
 /**
  * Converts hash_data_t structure  to a json formatted string.
  * @param hash_data the hash_data_t structure that contains the data to
  *        be converted.
  * @returns a json formatted string with those informations
  */
-extern gchar *convert_hash_data_t_to_json(hash_data_t *hash_data);
+extern gchar *convert_hash_data_t_to_string(hash_data_t *hash_data);
 
 /**
  * This function should return a newly allocated meta_data_t * structure

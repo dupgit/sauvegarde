@@ -329,6 +329,7 @@ static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash)
 static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
 {
     json_t *root = NULL;
+    json_t *array = NULL;
     GSList *hash_list = NULL;         /** hash_list is local to this function */
     GSList *head = NULL;
     gint success = CURLE_FAILED_INIT;
@@ -336,8 +337,7 @@ static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *m
     hash_data_t *hash_data = NULL;
     gint all_ok = CURLE_OK;
     gint i = 0;
-    gchar *encoded_hash = NULL;
-    gchar *encoded_data = NULL;
+    json_t *to_insert = NULL;
     gint limit = 0;
 
     if (answer != NULL && meta != NULL && main_struct != NULL && main_struct->opt != NULL)
@@ -352,6 +352,10 @@ static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *m
                     hash_list = extract_gslist_from_array(root, "hash_list");
                     json_decref(root);
 
+                    array = json_array();
+                    root = json_object();
+
+
                     head = hash_list;
 
                     while (hash_list != NULL && all_ok == CURLE_OK)
@@ -360,24 +364,22 @@ static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *m
                             /* hash_data_list contains all hashs and their associated data */
                             found = find_hash_in_list(meta->hash_data_list, hash_data->hash);
 
-                            encoded_hash = g_base64_encode(found->hash, HASH_LEN);
-                            encoded_data = g_base64_encode(found->data, found->read);
+                            to_insert = convert_hash_data_t_to_json(found);
+                            json_array_append_new(array, to_insert);
 
-                            /** @todo delete the element of the list to gain speed at the next loop */
-
-                            insert_string_into_json_root(root, encoded_hash, encoded_data);
-
-                            free_variable(encoded_hash);
-                            free_variable(encoded_data);
                             i = i + 1;
 
                             if (i >= limit)
                                 {
                                     /* when we've got 1M bytes of data send them ! */
                                     /* main_struct->comm->buffer is the buffer sent to serveur */
+                                    insert_json_value_into_json_root(root, "data_array", array);
                                     main_struct->comm->buffer = json_dumps(root, 0);
                                     success = post_url(main_struct->comm, "/Data_Array.json");
+                                    json_decref(array);
                                     json_decref(root);
+                                    array = json_array();
+                                    root = json_object();
                                     all_ok = success;
                                     main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
                                     i = 0;
@@ -390,8 +392,10 @@ static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *m
                         {
                             /* Send the rest of the data (less than 1M) */
                             /* main_struct->comm->buffer is the buffer sent to serveur */
+                            insert_json_value_into_json_root(root, "data_array", array);
                             main_struct->comm->buffer = json_dumps(root, 0);
                             success = post_url(main_struct->comm, "/Data_Array.json");
+                            json_decref(array);
                             json_decref(root);
                             all_ok = success;
                             main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
@@ -449,7 +453,7 @@ static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta,
                             found = find_hash_in_list(meta->hash_data_list, hash_data->hash);
 
                             /* main_struct->comm->buffer is the buffer sent to serveur */
-                            main_struct->comm->buffer = convert_hash_data_t_to_json(found);
+                            main_struct->comm->buffer = convert_hash_data_t_to_string(found);
                             success = post_url(main_struct->comm, "/Data.json");
 
                             all_ok = success;
@@ -507,7 +511,8 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
 
                     if (answer != NULL)
                         {
-                            success = send_datas_to_serveur(main_struct, meta, answer);
+                            /* success = send_datas_to_serveur(main_struct, meta, answer); */
+                            success = send_all_datas_to_serveur(main_struct, meta, answer);
                             free_variable(answer);
 
                             if (success == TRUE)
