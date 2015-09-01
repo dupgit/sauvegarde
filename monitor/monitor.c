@@ -361,7 +361,8 @@ static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *m
                     while (hash_list != NULL && all_ok == CURLE_OK)
                         {
                             hash_data = hash_list->data;
-                            /* hash_data_list contains all hashs and their associated data */
+                            /* hash_data_list contains all hashs and their associated data for the file
+                             * being processed */
                             found = find_hash_in_list(meta->hash_data_list, hash_data->hash);
 
                             to_insert = convert_hash_data_t_to_json(found);

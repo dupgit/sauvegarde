@@ -246,7 +246,7 @@ static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *
                             /** We need to save the retrieved buffer */
                             if (res_struct->comm->buffer != NULL)
                                 {
-                                    hash_data = convert_json_to_hash_data(res_struct->comm->buffer);
+                                    hash_data = convert_string_to_hash_data(res_struct->comm->buffer);
                                     res_struct->comm->buffer = free_variable(res_struct->comm->buffer);
 
                                     if (hash_data != NULL)

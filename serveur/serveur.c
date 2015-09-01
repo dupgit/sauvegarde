@@ -444,6 +444,9 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
     int success = MHD_NO;
     gchar *encoded_hash = NULL;
     hash_data_t *hash_data = NULL;
+    json_t *root = NULL;
+    GSList *hash_data_list = NULL;
+    GSList *head = NULL;
 
     if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
         {
@@ -452,7 +455,7 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
     else if (g_strcmp0(url, "/Data.json") == 0 && received_data != NULL)
         {
 
-            hash_data = convert_json_to_hash_data(received_data);
+            hash_data = convert_string_to_hash_data(received_data);
 
             encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
             print_debug(_("Received data for hash: \"%s\" (%ld bytes)\n"), encoded_hash, hash_data->read);
@@ -476,12 +479,31 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
         }
     else if (g_strcmp0(url, "/Data_Array.json") == 0 && received_data != NULL)
         {
-            print_debug("/Data_Array.json: %s", received_data);
+            /* print_debug("/Data_Array.json: %s\n", received_data); */
 
+            root = load_json(received_data);
+            hash_data_list = extract_gslist_from_array(root, "data_array", FALSE);
+            head = hash_data_list;
 
+            while (hash_data_list != NULL)
+                {
+                    hash_data = hash_data_list->data;
 
+                    /* Only for debbugging ! */
+                    encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
+                    print_debug(_("Received data for hash: \"%s\" (%ld bytes)\n"), encoded_hash, hash_data->read);
+                    free_variable(encoded_hash);
 
+                    /** Sending hash_data into the queue. */
+                    g_async_queue_push(serveur_struct->data_queue, hash_data);
+                    hash_data_list = g_slist_next(hash_data_list);
+                }
 
+            g_slist_free(head);
+
+            /**
+             * creating an answer for the client to say that everything went Ok!
+             */
             answer = g_strdup_printf(_("Ok!"));
             response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
             success = MHD_queue_response(connection, MHD_HTTP_OK, response);

@@ -273,6 +273,10 @@ GSList *extract_gslist_from_array(json_t *root, gchar *name, gboolean only_hash)
                             a_hash = g_base64_decode(json_string_value(value), &hash_len);
                             hash_data = new_hash_data_t(NULL, 0, a_hash);
                         }
+                    else
+                        {
+                            hash_data = convert_json_t_to_hash_data(value);
+                        }
 
                     head = g_slist_prepend(head, hash_data);
                 }
@@ -366,16 +370,15 @@ GSList *extract_smeta_gslist_from_file_list(json_t *root)
 
 
 /**
- * Function that converts json_str containing the keys "hash", "data"
+ * Function that converts json_t * root containing the keys "hash", "data"
  * and "read" into hash_data_t structure.
- * @param json_str is a json string containing the keys "hash", "data"
+ * @param root is a json_t * variable containing the keys "hash", "data"
  *        and read
  * @returns a newly allocated hash_data_t structure with the
  *          corresponding data in it.
  */
-hash_data_t *convert_json_to_hash_data(gchar *json_str)
+hash_data_t *convert_json_t_to_hash_data(json_t *root)
  {
-    json_t *root = NULL;
     guchar *data = NULL;
     guint8 *hash = NULL;
     gchar *string = NULL;
@@ -384,39 +387,60 @@ hash_data_t *convert_json_to_hash_data(gchar *json_str)
     gssize read = 0;
     hash_data_t *hash_data = NULL;
 
+    if (root != NULL)
+        {
+            string = get_string_from_json_root(root, "data");
+            data = (guchar *) g_base64_decode(string, &data_len);
+            free_variable(string);
+
+            string = get_string_from_json_root(root, "hash");
+            hash = (guint8 *) g_base64_decode(string, &hash_len);
+            free_variable(string);
+
+            read = get_guint64_from_json_root(root, "size");
+
+            /* Some basic verifications */
+            if (data_len == read && hash_len == HASH_LEN)
+                {
+                    hash_data = new_hash_data_t(data, read, hash);
+                }
+            else
+                {
+                    print_error(__FILE__, __LINE__, _("Something is wrong with lengths: data_len = %ld, read = %ld, hash_len = %ld, HASH_LEN = %ld\n"), data_len, read, hash_len, HASH_LEN);
+                }
+        }
+
+    return hash_data;
+}
+
+
+/**
+ * Function that converts json_str containing the keys "hash", "data"
+ * and "read" into hash_data_t structure.
+ * @param json_str is a json string containing the keys "hash", "data"
+ *        and read
+ * @returns a newly allocated hash_data_t structure with the
+ *          corresponding data in it.
+ */
+hash_data_t *convert_string_to_hash_data(gchar *json_str)
+ {
+    json_t *root = NULL;
+
+    hash_data_t *hash_data = NULL;
+
     if (json_str != NULL)
         {
             root = load_json(json_str);
 
             if (root != NULL)
                 {
-                    string = get_string_from_json_root(root, "data");
-                    data = (guchar *) g_base64_decode(string, &data_len);
-                    free_variable(string);
-
-                    string = get_string_from_json_root(root, "hash");
-                    hash = (guint8 *) g_base64_decode(string, &hash_len);
-                    free_variable(string);
-
-                    read = get_guint64_from_json_root(root, "size");
-
-                    /* Some basic verifications */
-                    if (data_len == read && hash_len == HASH_LEN)
-                        {
-                            hash_data = new_hash_data_t(data, read, hash);
-                        }
-                    else
-                        {
-                            print_error(__FILE__, __LINE__, _("Something is wrong with lengths: data_len = %ld, read = %ld, hash_len = %ld, HASH_LEN = %ld\n"), data_len, read, hash_len, HASH_LEN);
-                        }
-
-                    json_decref(root);
+                   hash_data = convert_json_t_to_hash_data(root);
+                   json_decref(root);
                 }
         }
 
     return hash_data;
- }
-
+}
 
 
 /**

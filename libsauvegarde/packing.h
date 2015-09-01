@@ -221,8 +221,18 @@ extern gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *h
  * @returns a newly allocated hash_data_t structure with the
  *          corresponding data in it.
  */
-extern hash_data_t *convert_json_to_hash_data(gchar *json_str);
+extern hash_data_t *convert_string_to_hash_data(gchar *json_str);
 
+
+/**
+ * Function that converts json_t * root containing the keys "hash", "data"
+ * and "read" into hash_data_t structure.
+ * @param root is a json_t * variable containing the keys "hash", "data"
+ *        and read
+ * @returns a newly allocated hash_data_t structure with the
+ *          corresponding data in it.
+ */
+extern hash_data_t *convert_json_t_to_hash_data(json_t *root);
 
 /**
  * Converts hash_data_t structure to a json_t * structure
