@@ -345,6 +345,52 @@ static void make_all_subdirectories(file_backend_t *file_backend)
         }
 }
 
+/**
+ * Reads keys in keyfile if groupname is in that keyfile and fills
+ * file_backend structure accordingly.
+ * @param[in,out] file_backend: file_backend_t * structure to store
+ *                options read from the configuration file "filename".
+ * @param filename : the filename of the configuration file to read from
+ */
+static void read_from_group_file_backend(file_backend_t *file_backend, gchar *filename)
+{
+    GKeyFile *keyfile = NULL;      /** Configuration file parser */
+    GError *error = NULL;          /** Glib error handling       */
+    gchar *prefix = NULL;
+    guint level = 0;
+
+    keyfile = g_key_file_new();
+
+    if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
+        {
+            if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_FILE_BACKEND) == TRUE)
+                {
+                    prefix = read_string_from_file(keyfile, filename, GN_FILE_BACKEND, KN_FILE_DIRECTORY, _("Could not load [file_backend] file-directory from file."));
+                    level = read_int_from_file(keyfile, filename, GN_FILE_BACKEND, KN_DIR_LEVEL, _("Could not load [file_backend] dir-level from file."));
+                }
+        }
+    else if (error != NULL)
+        {
+            print_error(__FILE__, __LINE__,  _("Failed to open %s configuration file : %s\n"), filename, error->message);
+            error = free_error(error);
+        }
+
+    if (prefix != NULL && file_backend != NULL)
+        {
+            file_backend->prefix = free_variable(file_backend->prefix);
+            file_backend->prefix = normalize_directory(prefix);
+            free_variable(prefix);
+        }
+
+    if (level > 0 && level < 6)
+        { /* Will anyone need more than 1 099 511 627 776 directories to
+           * store datas ? with 16k blocs and 256 block files per leafs
+           * it represents 4 exabytes !
+           */
+            file_backend->level = level;
+        }
+}
+
 
 /**
  * Inits the backend : takes care of the directories we want to write to.
@@ -363,8 +409,15 @@ void file_init_backend(serveur_struct_t *serveur_struct)
         {
             file_backend = (file_backend_t *) g_malloc0(sizeof(file_backend_t));
 
+            /* default values */
             file_backend->prefix = g_strdup("/var/tmp/sauvegarde/serveur");
-            file_backend->level = 2;  /* default level */
+            file_backend->level = 2;
+
+            if (serveur_struct->opt != NULL && serveur_struct->opt->configfile != NULL)
+                {
+                    /* Values from the config file */
+                    read_from_group_file_backend(file_backend, serveur_struct->opt->configfile);
+                }
 
             serveur_struct->backend->user_data = file_backend;
 

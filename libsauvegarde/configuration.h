@@ -59,7 +59,7 @@
 #define GN_CLIENT ("Client")
 #define GN_SERVEUR ("Serveur")
 #define GN_ALL ("All")
-#define GN_FILE_BACEKND ("File_Backend")
+#define GN_FILE_BACKEND ("File_Backend")
 
 
 /** Below you'll find some definitions for [All] section of configuration files */
