@@ -51,10 +51,15 @@
   * @def GN_ALL
   * Defines the group name for all preferences related to all programs
   *
+  * @def GN_FILE_BACKEND
+  * Defines the group name for all preferences related to serveur's
+  * backend named file_backend that stores everything into flat files.
+  *
   */
 #define GN_CLIENT ("Client")
 #define GN_SERVEUR ("Serveur")
 #define GN_ALL ("All")
+#define GN_FILE_BACEKND ("File_Backend")
 
 
 /** Below you'll find some definitions for [All] section of configuration files */
@@ -112,6 +117,23 @@
  * connexions
  */
 #define KN_SERVEUR_PORT ("serveur-port")
+
+
+/** Below you'll find some definitions for the serveur's backends */
+/**
+ * @def KN_FILE_DIRECTORY
+ * Defines where file_backend might store its datas
+ */
+#define KN_FILE_DIRECTORY ("file-directory")
+
+
+/**
+ * @def KN_DIR_LEVEL
+ * Defines at which level the directories must be created. See "File backend"
+ * section in infrastructure.md file to know what it means in term of
+ * filesystem space and creation time.
+ */
+#define KN_DIR_LEVEL ("dir-level")
 
 
 /**
