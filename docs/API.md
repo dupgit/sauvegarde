@@ -97,3 +97,10 @@ and data fields must be base 64 encoded.
      "data": "8oBc08li ... WW9mr20u4=",
      "size": 12140
     }
+
+
+### /Data_Array.json
+
+Waits for a json string containing an array named "data_array". This array
+contains a suite of json strings (at least one) each of them containing
+"hash", "data" and "size" fields.

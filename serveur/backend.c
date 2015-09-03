@@ -33,7 +33,7 @@
  * Inits the backend with the correct functions
  * @todo write some backends !
  * @param store_smeta a function to store serveur meta data structure
- * @param store_data a function to store datas
+ * @param store_data a function to store data
  * @param init_backend a function to init the backend
  * @param build_needed_hash_list a function that must build a GSList * needed hash list
  * @param get_list_of_files gets the list of saved files

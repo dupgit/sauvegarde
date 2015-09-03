@@ -284,7 +284,7 @@ static void free_file_row_t(file_row_t *row)
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
  * @returns a hashs_t * structure that contains all hashs that are in the
- *          'data' table of the database but without it's datas (the buffer
+ *          'data' table of the database but without it's data (the buffer
  *          field is set to NULL but into_cache is set to TRUE).
  */
  /*

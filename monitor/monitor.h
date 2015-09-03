@@ -101,12 +101,12 @@ typedef struct
 
 
 /**
- * This function gets meta datas and datas from a file and sends them
+ * This function gets meta data and data from a file and sends them
  * to the serveur in order to save the file located in the directory
  * 'directory' and represented by 'fileinfo' variable.
  * @param main_struct : main structure of the program
  * @param directory is the directory we are iterating over
- * @param fileinfo is a glib structure that contains all meta datas and
+ * @param fileinfo is a glib structure that contains all meta data and
  *        more for a file.
  */
 extern void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *fileinfo);

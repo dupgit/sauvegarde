@@ -123,7 +123,7 @@ static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
  *        ie to get 'http://127.0.0.1:5468/Version' url must be '/Version'.
  * @returns a CURLcode (http://curl.haxx.se/libcurl/c/libcurl-errors.html)
  *          CURLE_OK upon success, any other error code in any other
- *          situation. When CURLE_OK is returned, the datas that the server
+ *          situation. When CURLE_OK is returned, the data that the server
  *          sent is in the comm->buffer gchar * string.
  */
 gint get_url(comm_t *comm, gchar *url)
@@ -153,7 +153,7 @@ gint get_url(comm_t *comm, gchar *url)
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, _("Error while sending GET command and receiving datas: %s\n"), error_buf);
+                    print_error(__FILE__, __LINE__, _("Error while sending GET command and receiving data: %s\n"), error_buf);
                 }
 
             free_variable(error_buf);
@@ -173,7 +173,7 @@ gint get_url(comm_t *comm, gchar *url)
  *        ie to get 'http://127.0.0.1:5468/Version' url must be '/Version'.
  * @returns a CURLcode (http://curl.haxx.se/libcurl/c/libcurl-errors.html)
  *          CURLE_OK upon success, any other error code in any other
- *          situation. When CURLE_OK is returned, the datas that the server
+ *          situation. When CURLE_OK is returned, the data that the server
  *          sent is in the comm->buffer gchar * string.
  * @todo manage errors codes
  */

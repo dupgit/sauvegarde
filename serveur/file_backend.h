@@ -42,7 +42,7 @@
  * @struct file_backend_t
  * @brief Structure that contains everything needed by file backend.
  *
- * This structure contains the prefix for the path where datas are located.
+ * This structure contains the prefix for the path where data are located.
  * and a level that indicates the number of level of directories
  * indirections. Default value is 2 but 3 or 4 may be used.
  * A level of 2 with a block size of 16384 bytes should be sufficient
@@ -75,7 +75,7 @@ typedef struct
 
 /**
  * Stores meta data into a flat file. A file is created for each host that
- * sends meta datas. This code is not thread safe (it means that this is
+ * sends meta data. This code is not thread safe (it means that this is
  * not safe to call it from different threads unless some mechanism
  * garantees that a write will never occur in the same file at the same
  * time.
@@ -91,7 +91,7 @@ extern void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data
 /**
  * Inits the backend : takes care of the directories we want to write to.
  * user_data of the backend structure is a gchar * that represents the
- * prefix path where to store datas.
+ * prefix path where to store data.
  * @param serveur_struct is the serveur main structure where all
  *        informations needed by the program are stored.
  */
@@ -122,7 +122,7 @@ extern GSList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GSL
 
 /**
  * Gets the list of all saved files
- * @param serveur_struct is the structure that contains all datas for the
+ * @param serveur_struct is the structure that contains all data for the
  *        server.
  * @param query is the structure that contains everything about the
  *        requested query.

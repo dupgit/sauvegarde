@@ -167,13 +167,16 @@ extern gchar *convert_file_list_to_json_string(GSList *file_list);
 
 
 /**
- * This function returns a list from an json array
+ * This function returns a list of hash_data_t * from an json array
  * @param root is the root json string that may contain an array named "name"
  * @param name is the name of the array to look for into
+ * @param only_hash is a boolean saying that we only have a hash list in
+ *        root if set to TRUE and that we have a complete hash_data_t list
+ *        if set to FALSE.
  * @returns a GSList that me be composed of 0 element (ie NULL). Elements
- *          are of type gchar *.
+ *          are of type hash_data_t *.
  */
-extern GSList *extract_gslist_from_array(json_t *root, gchar *name);
+GSList *extract_gslist_from_array(json_t *root, gchar *name, gboolean only_hash);
 
 
 /**
@@ -216,9 +219,29 @@ extern gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *h
  * @param json_str is a json string containing the keys "hash", "data"
  *        and read
  * @returns a newly allocated hash_data_t structure with the
- *          corresponding datas in it.
+ *          corresponding data in it.
  */
-extern hash_data_t *convert_json_to_hash_data(gchar *json_str);
+extern hash_data_t *convert_string_to_hash_data(gchar *json_str);
+
+
+/**
+ * Function that converts json_t * root containing the keys "hash", "data"
+ * and "read" into hash_data_t structure.
+ * @param root is a json_t * variable containing the keys "hash", "data"
+ *        and read
+ * @returns a newly allocated hash_data_t structure with the
+ *          corresponding data in it.
+ */
+extern hash_data_t *convert_json_t_to_hash_data(json_t *root);
+
+/**
+ * Converts hash_data_t structure to a json_t * structure
+ * @param hash_data the hash_data_t structure that contains the data to
+ *        be converted.
+ * @returns a json_t * structure with informations of hash_data in it
+ */
+extern json_t *convert_hash_data_t_to_json(hash_data_t *hash_data);
+
 
 /**
  * Converts hash_data_t structure  to a json formatted string.
@@ -226,7 +249,7 @@ extern hash_data_t *convert_json_to_hash_data(gchar *json_str);
  *        be converted.
  * @returns a json formatted string with those informations
  */
-extern gchar *convert_hash_data_t_to_json(hash_data_t *hash_data);
+extern gchar *convert_hash_data_t_to_string(hash_data_t *hash_data);
 
 /**
  * This function should return a newly allocated meta_data_t * structure

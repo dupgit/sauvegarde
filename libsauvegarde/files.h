@@ -30,7 +30,7 @@
 
 /**
  * @struct meta_data_t
- * @brief Stores file's meta datas.
+ * @brief Stores file's meta data.
  *
  * Structure to store all meta data associated with a file or a directory
  * command line. We want to limit memory consumption and thus we use the
@@ -51,7 +51,7 @@ typedef struct
     guint32 gid;            /**< gid (group owner)                                                                */
     gchar *name;            /**< name for the file or the directory                                               */
     gchar *link;            /**< link name where points the LINK if file_type is a link                           */
-    GSList *hash_data_list; /**< List of hash_data_t structures of the file (hash and datas are in a binary form) */
+    GSList *hash_data_list; /**< List of hash_data_t structures of the file (hash and data are in a binary form)  */
     gboolean in_cache;      /**< in_cache is a boolean that may be TRUE if the file is in the local cache (client)*/
 } meta_data_t;
 
@@ -233,7 +233,7 @@ extern void print_smeta_to_screen(serveur_meta_data_t *smeta);
 /**
  * Sets file attributes
  * @param file is a GFile pointer and must not be null
- * @param meta is the structure that contains all meta datas for the
+ * @param meta is the structure that contains all meta data for the
  *        file that we want to set.
  */
 extern void set_file_attributes(GFile *file, meta_data_t *meta);

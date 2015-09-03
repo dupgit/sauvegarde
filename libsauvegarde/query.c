@@ -31,7 +31,7 @@
 
 
 /**
- * Creates a query_t * structure filled with the corresponding datas
+ * Creates a query_t * structure filled with the corresponding data
  * @param hostname hostname (where to look for)
  * @param uid uid for the file(s)
  * @param gid gid for the file(s)
@@ -40,7 +40,7 @@
  * @param filename is the filename that we are looking for.
  * @param date is the date at which we want the file's version back.
  * @returns a newly allocated query_t * structure filled  with the
- *          corresponding datas that may be freed when no longer needed.
+ *          corresponding data that may be freed when no longer needed.
  */
 query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group, gchar *filename, gchar *date)
 {

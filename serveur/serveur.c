@@ -104,7 +104,7 @@ static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gc
             if (backend->retrieve_data != NULL)
                 {
                     hash_data = backend->retrieve_data(serveur_struct, hash);
-                    answer = convert_hash_data_t_to_json(hash_data);
+                    answer = convert_hash_data_t_to_string(hash_data);
                     free_hash_data_t_structure(hash_data);
 
                     if (answer == NULL)
@@ -458,6 +458,9 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
     int success = MHD_NO;
     gchar *encoded_hash = NULL;
     hash_data_t *hash_data = NULL;
+    json_t *root = NULL;
+    GSList *hash_data_list = NULL;
+    GSList *head = NULL;
 
     if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
         {
@@ -466,7 +469,7 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
     else if (g_strcmp0(url, "/Data.json") == 0 && received_data != NULL)
         {
 
-            hash_data = convert_json_to_hash_data(received_data);
+            hash_data = convert_string_to_hash_data(received_data);
 
             encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
             print_debug(_("Received data for hash: \"%s\" (%ld bytes)\n"), encoded_hash, hash_data->read);
@@ -479,6 +482,38 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
              */
             g_async_queue_push(serveur_struct->data_queue, hash_data);
 
+
+            /**
+             * creating an answer for the client to say that everything went Ok!
+             */
+            answer = g_strdup_printf(_("Ok!"));
+            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
+            MHD_destroy_response(response);
+        }
+    else if (g_strcmp0(url, "/Data_Array.json") == 0 && received_data != NULL)
+        {
+            /* print_debug("/Data_Array.json: %s\n", received_data); */
+
+            root = load_json(received_data);
+            hash_data_list = extract_gslist_from_array(root, "data_array", FALSE);
+            head = hash_data_list;
+
+            while (hash_data_list != NULL)
+                {
+                    hash_data = hash_data_list->data;
+
+                    /* Only for debbugging ! */
+                    encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
+                    print_debug(_("Received data for hash: \"%s\" (%ld bytes)\n"), encoded_hash, hash_data->read);
+                    free_variable(encoded_hash);
+
+                    /** Sending hash_data into the queue. */
+                    g_async_queue_push(serveur_struct->data_queue, hash_data);
+                    hash_data_list = g_slist_next(hash_data_list);
+                }
+
+            g_slist_free(head);
 
             /**
              * creating an answer for the client to say that everything went Ok!
@@ -716,11 +751,13 @@ static gpointer data_thread(gpointer user_data)
  */
 int main(int argc, char **argv)
 {
+    serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program.           */
+
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
     #endif
 
-	signal(SIGINT, int_signal_handler);
+    signal(SIGINT, int_signal_handler);
 
     ignore_sigpipe(); /** into order to get libmicrohttpd portable */
 

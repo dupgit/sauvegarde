@@ -46,7 +46,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
 /**
  * Stores meta data into a flat file. A file is created for each host that
- * sends meta datas. This code is not thread safe (it means that this is
+ * sends meta data. This code is not thread safe (it means that this is
  * not safe to call it from different threads unless some mechanism
  * garantees that a write will never occur in the same file at the same
  * time.
@@ -76,7 +76,7 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
         {
             meta = smeta->meta;
             file_backend = serveur_struct->backend->user_data;
-            prefix = g_build_filename((gchar *) file_backend->prefix, "metas", NULL);
+            prefix = g_build_filename((gchar *) file_backend->prefix, "meta", NULL);
 
             if (smeta->hostname != NULL && meta != NULL)
                 {
@@ -113,7 +113,7 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
                         }
                     else
                         {
-                            print_error(__FILE__, __LINE__, _("Error: unable to open file %s to append meta-datas in it.\n"), filename);
+                            print_error(__FILE__, __LINE__, _("Error: unable to open file %s to append meta-data in it.\n"), filename);
                         }
 
                     free_object(meta_file);
@@ -155,7 +155,7 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
     if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL)
         {
             file_backend = serveur_struct->backend->user_data;
-            prefix = g_build_filename((gchar *) file_backend->prefix, "datas", NULL);
+            prefix = g_build_filename((gchar *) file_backend->prefix, "data", NULL);
 
             if (hash_data != NULL && hash_data->hash != NULL && hash_data->data != NULL)
                 {
@@ -183,7 +183,7 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
                         }
                     else
                         {
-                            print_error(__FILE__, __LINE__, _("Error: unable to open file %s to write datas in it.\n"), filename);
+                            print_error(__FILE__, __LINE__, _("Error: unable to open file %s to write data in it.\n"), filename);
                         }
 
                     free_object(data_file);
@@ -207,7 +207,7 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
  *        informations needed by the program are stored.
  * @param hash_list is the list of hashs that we have to check for.
  * @returns to the client a list of hashs in no specific order for which
- *          the server needs the datas.
+ *          the server needs the data.
  */
 GSList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_data_list)
 {
@@ -228,7 +228,7 @@ GSList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *ha
         {
             file_backend = serveur_struct->backend->user_data;
 
-            prefix = g_build_filename((gchar *) file_backend->prefix, "datas", NULL);
+            prefix = g_build_filename((gchar *) file_backend->prefix, "data", NULL);
 
             while (head != NULL)
                 {
@@ -281,7 +281,7 @@ static void file_create_directory(gchar *save_dir, gchar *sub_dir)
 
 
 /**
- * Makes all subdirectories into the "datas" directory.
+ * Makes all subdirectories into the "data" directory.
  * @note creating subdirectories for a level of 2 will take some time and
  *       the empty directories will consume at least 256 Mb of space (ext4
  *       filesystem). A level of 3 will take a long time and will consume
@@ -327,7 +327,7 @@ static void make_all_subdirectories(file_backend_t *file_backend)
                         }
 
                     path[strlen(path)-1] = '\0';
-                    path2 = g_build_filename(file_backend->prefix, "datas", path, NULL);
+                    path2 = g_build_filename(file_backend->prefix, "data", path, NULL);
 
                     create_directory(path2);
 
@@ -336,12 +336,58 @@ static void make_all_subdirectories(file_backend_t *file_backend)
 
                 }
 
-            /* Creates a directory named .done in prefix/datas in order
+            /* Creates a directory named .done in prefix/data in order
              * to tell that we already have created all direcrories an subdirectories
              */
-            path =  g_build_filename(file_backend->prefix, "datas", ".done", NULL);
+            path =  g_build_filename(file_backend->prefix, "data", ".done", NULL);
             create_directory(path);
             free_variable(path);
+        }
+}
+
+/**
+ * Reads keys in keyfile if groupname is in that keyfile and fills
+ * file_backend structure accordingly.
+ * @param[in,out] file_backend: file_backend_t * structure to store
+ *                options read from the configuration file "filename".
+ * @param filename : the filename of the configuration file to read from
+ */
+static void read_from_group_file_backend(file_backend_t *file_backend, gchar *filename)
+{
+    GKeyFile *keyfile = NULL;      /** Configuration file parser */
+    GError *error = NULL;          /** Glib error handling       */
+    gchar *prefix = NULL;
+    guint level = 0;
+
+    keyfile = g_key_file_new();
+
+    if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
+        {
+            if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_FILE_BACKEND) == TRUE)
+                {
+                    prefix = read_string_from_file(keyfile, filename, GN_FILE_BACKEND, KN_FILE_DIRECTORY, _("Could not load [file_backend] file-directory from file."));
+                    level = read_int_from_file(keyfile, filename, GN_FILE_BACKEND, KN_DIR_LEVEL, _("Could not load [file_backend] dir-level from file."));
+                }
+        }
+    else if (error != NULL)
+        {
+            print_error(__FILE__, __LINE__,  _("Failed to open %s configuration file : %s\n"), filename, error->message);
+            error = free_error(error);
+        }
+
+    if (prefix != NULL && file_backend != NULL)
+        {
+            file_backend->prefix = free_variable(file_backend->prefix);
+            file_backend->prefix = normalize_directory(prefix);
+            free_variable(prefix);
+        }
+
+    if (level > 0 && level < 6)
+        { /* Will anyone need more than 1 099 511 627 776 directories to
+           * store datas ? with 16k blocs and 256 block files per leafs
+           * it represents 4 exabytes !
+           */
+            file_backend->level = level;
         }
 }
 
@@ -349,7 +395,7 @@ static void make_all_subdirectories(file_backend_t *file_backend)
 /**
  * Inits the backend : takes care of the directories we want to write to.
  * user_data of the backend structure is a file_backend_t structure that
- * contains the prefix path where to store datas and the level of
+ * contains the prefix path where to store data and the level of
  * indirections
  * @param serveur_struct is the serveur main structure where all
  *        informations needed by the program are stored.
@@ -363,15 +409,22 @@ void file_init_backend(serveur_struct_t *serveur_struct)
         {
             file_backend = (file_backend_t *) g_malloc0(sizeof(file_backend_t));
 
+            /* default values */
             file_backend->prefix = g_strdup("/var/tmp/sauvegarde/serveur");
-            file_backend->level = 2;  /* default level */
+            file_backend->level = 2;
+
+            if (serveur_struct->opt != NULL && serveur_struct->opt->configfile != NULL)
+                {
+                    /* Values from the config file */
+                    read_from_group_file_backend(file_backend, serveur_struct->opt->configfile);
+                }
 
             serveur_struct->backend->user_data = file_backend;
 
-            file_create_directory(file_backend->prefix, "metas");
-            file_create_directory(file_backend->prefix, "datas");
+            file_create_directory(file_backend->prefix, "meta");
+            file_create_directory(file_backend->prefix, "data");
 
-            path =  g_build_filename(file_backend->prefix, "datas", ".done", NULL);
+            path =  g_build_filename(file_backend->prefix, "data", ".done", NULL);
             if (file_exists(path) == FALSE)
                 {
                     fprintf(stdout, _("Please wait while creating directories\n"));
@@ -587,7 +640,7 @@ static gboolean compare_mtime_to_date(guint64 mtime, gchar *date)
 
 
 /**
- * Extracts all meta datas from one line.
+ * Extracts all meta data from one line.
  * @param line the line that has been read.
  * @param a_regex is the regular expression to filter upon the filename
  * @param query is the structure that contains everything about the
@@ -675,7 +728,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
 /**
  * Gets the list of all saved files.
- * @param serveur_struct is the structure that contains all datas for the
+ * @param serveur_struct is the structure that contains all data for the
  *        server.
  * @param query is the structure that contains everything about the
  *        requested query.
@@ -710,7 +763,7 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
             a_regex = g_regex_new(query->filename, G_REGEX_CASELESS, 0, &error);
 
             file_backend = serveur_struct->backend->user_data;
-            filename =  g_build_filename(file_backend->prefix, "metas", query->hostname, NULL);
+            filename =  g_build_filename(file_backend->prefix, "meta", query->hostname, NULL);
             the_file = g_file_new_for_path(filename);
 
             stream = g_file_read(the_file, NULL, &error);
@@ -747,7 +800,7 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
                 }
             else
                 {
-                     print_error(__FILE__, __LINE__, _("Error: unable to open file %s to read datas from it.\n"), filename);
+                     print_error(__FILE__, __LINE__, _("Error: unable to open file %s to read data from it.\n"), filename);
                 }
 
             free_variable(filename);
@@ -797,7 +850,7 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
     if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL)
         {
             file_backend = serveur_struct->backend->user_data;
-            prefix = g_build_filename((gchar *) file_backend->prefix, "datas", NULL);
+            prefix = g_build_filename((gchar *) file_backend->prefix, "data", NULL);
             hash = string_to_hash(hex_hash);
             path = make_path_from_hash(prefix, hash, file_backend->level);
             filename = g_build_filename(path, hex_hash, NULL);
@@ -829,7 +882,7 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
                 }
             else
                 {
-                     print_error(__FILE__, __LINE__, _("Error: unable to open file %s to read datas from it.\n"), filename);
+                     print_error(__FILE__, __LINE__, _("Error: unable to open file %s to read data from it.\n"), filename);
                 }
 
             free_object(data_file);
