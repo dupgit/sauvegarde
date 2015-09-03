@@ -29,6 +29,11 @@
 
 #include "serveur.h"
 
+#include <signal.h>
+
+
+serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program.            */
+
 static serveur_struct_t *init_serveur_main_structure(int argc, char **argv);
 static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gchar *hash);
 static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key, gboolean encoded);
@@ -42,9 +47,16 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
 static int print_out_key(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
 static void print_headers(struct MHD_Connection *connection);
 static int ahc(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **con_cls);
-static gpointer meta_datas_thread(gpointer user_data);
-static gpointer datas_thread(gpointer user_data);
+static gpointer meta_data_thread(gpointer user_data);
+static gpointer data_thread(gpointer user_data);
 
+static void int_signal_handler(int signum)
+{
+	g_free(serveur_struct->backend);
+	g_free(serveur_struct);
+	printf("Catching ctrl-c\n");
+	exit(0);
+}
 
 /**
  * Inits main serveur's structure
@@ -59,6 +71,8 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 
     serveur_struct = (serveur_struct_t *) g_malloc0(sizeof(serveur_struct_t));
 
+	serveur_struct->data_thread = NULL;
+	serveur_struct->meta_thread = NULL;
     serveur_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
     serveur_struct->d = NULL;            /* libmicrohttpd daemon pointer */
     serveur_struct->meta_queue = g_async_queue_new();
@@ -354,7 +368,7 @@ static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Conn
 
 
 /**
- * Answers /Meta.json POST request by storing datas and answering to the
+ * Answers /Meta.json POST request by storing data and answering to the
  * client.
  * @param serveur_struct is the main structure for the server.
  * @param connection is the connection in MHD
@@ -375,9 +389,9 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
     smeta = convert_json_to_smeta_data(received_data);
 
     if (smeta != NULL && smeta->meta != NULL)
-        {   /* The convertion went well and smeta contains the meta datas */
+        {   /* The convertion went well and smeta contains the meta data */
 
-            print_debug(_("Received meta datas for file %s\n"), smeta->meta->name);
+            print_debug(_("Received meta data for file %s\n"), smeta->meta->name);
 
             /**
              * Creating an answer and sending the hashs that are needed. If
@@ -402,7 +416,7 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
             json_decref(root);
 
             /**
-             * Sending smeta datas into the queue in order to be treated by
+             * Sending smeta data into the queue in order to be treated by
              * the corresponding thread. smeta is freed there and should not
              * be used after this "call" here.
              */
@@ -460,7 +474,7 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
 
             /**
              * Sending received_data into the queue in order to be treated by
-             * the corresponding thread. hash_data is freed by datas_thread
+             * the corresponding thread. hash_data is freed by data_thread
              * and should not be used after this "call" here.
              */
             g_async_queue_push(serveur_struct->data_queue, hash_data);
@@ -519,7 +533,7 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
         }
     else if (*upload_data_size != 0)
         {
-            /* Getting datas whatever they are */
+            /* Getting data whatever they are */
             buf1 = g_strndup(upload_data, *upload_data_size);
             newpp = g_strconcat(pp, buf1, NULL);
             buf1 = free_variable(buf1);
@@ -585,18 +599,18 @@ static void print_headers(struct MHD_Connection *connection)
  */
 static int ahc(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **con_cls)
 {
-    serveur_struct_t *serveur_struct = (serveur_struct_t *) cls;
+    serveur_struct_t *ahc_serveur_struct = (serveur_struct_t *) cls;
     int success = MHD_NO;
 
 
     if (g_strcmp0(method, "GET") == 0)
         {
             /* We have a GET method that needs to be processed */
-            success = process_get_request(serveur_struct, connection, url, con_cls);
+            success = process_get_request(ahc_serveur_struct, connection, url, con_cls);
         }
     else if (g_strcmp0(method, "POST") == 0)
         {  /* We have a POST method that needs to be processed */
-            success = process_post_request(serveur_struct, connection, url, con_cls, upload_data, upload_data_size);
+            success = process_post_request(ahc_serveur_struct, connection, url, con_cls, upload_data, upload_data_size);
         }
     else
         { /* not a GET nor a POST -> we do not know what to do ! */
@@ -612,25 +626,25 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
  * @param data : serveur_struct_t * structure.
  * @returns NULL to fullfill the template needed to create a GThread
  */
-static gpointer meta_datas_thread(gpointer user_data)
+static gpointer meta_data_thread(gpointer user_data)
 {
-    serveur_struct_t *serveur_struct = user_data;
+    serveur_struct_t *mdt_serveur_struct = user_data;
     serveur_meta_data_t *smeta = NULL;
 
-    if (serveur_struct != NULL && serveur_struct->meta_queue != NULL)
+    if (mdt_serveur_struct != NULL && mdt_serveur_struct->meta_queue != NULL)
         {
 
-            if (serveur_struct->backend != NULL && serveur_struct->backend->store_smeta != NULL)
+            if (mdt_serveur_struct->backend != NULL && mdt_serveur_struct->backend->store_smeta != NULL)
                 {
 
                     while (TRUE)
                         {
-                            smeta = g_async_queue_pop(serveur_struct->meta_queue);
+                            smeta = g_async_queue_pop(mdt_serveur_struct->meta_queue);
 
                             if (smeta != NULL)
                                 {
                                     print_debug("meta_data_thread: received from %s meta for file %s\n", smeta->hostname, smeta->meta->name);
-                                    serveur_struct->backend->store_smeta(serveur_struct, smeta);
+                                    mdt_serveur_struct->backend->store_smeta(serveur_struct, smeta);
                                     free_smeta_data_t(smeta);
                                 }
                             else
@@ -641,7 +655,7 @@ static gpointer meta_datas_thread(gpointer user_data)
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, _("Error: no meta data store backend defined, meta-datas's thread terminating...\n"));
+                    print_error(__FILE__, __LINE__, _("Error: no meta data store backend defined, meta-data's thread terminating...\n"));
                 }
         }
     else
@@ -654,34 +668,34 @@ static gpointer meta_datas_thread(gpointer user_data)
 
 
 /**
- * Thread whose aim is to store datas according to the selected backend
+ * Thread whose aim is to store data according to the selected backend
  * @param data : serveur_struct_t * structure.
  * @returns NULL to fullfill the template needed to create a GThread
  */
-static gpointer datas_thread(gpointer user_data)
+static gpointer data_thread(gpointer user_data)
 {
-    serveur_struct_t *serveur_struct = user_data;
+    serveur_struct_t *dt_serveur_struct = user_data;
     hash_data_t *hash_data = NULL;
 
-    if (serveur_struct != NULL && serveur_struct->meta_queue != NULL)
+    if (dt_serveur_struct != NULL && dt_serveur_struct->meta_queue != NULL)
         {
 
-            if (serveur_struct->backend != NULL && serveur_struct->backend->store_data != NULL)
+            if (dt_serveur_struct->backend != NULL && dt_serveur_struct->backend->store_data != NULL)
                 {
 
                     while (TRUE)
                         {
-                            hash_data = g_async_queue_pop(serveur_struct->data_queue);
+                            hash_data = g_async_queue_pop(dt_serveur_struct->data_queue);
 
                             if (hash_data != NULL)
                                 {
-                                    serveur_struct->backend->store_data(serveur_struct, hash_data);
+                                    dt_serveur_struct->backend->store_data(dt_serveur_struct, hash_data);
                                 }
                         }
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, _("Error: no data store backend defined, datas's thread terminating...\n"));
+                    print_error(__FILE__, __LINE__, _("Error: no data store backend defined, data's thread terminating...\n"));
                 }
 
         }
@@ -702,14 +716,11 @@ static gpointer datas_thread(gpointer user_data)
  */
 int main(int argc, char **argv)
 {
-    serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program.            */
-    GThread *data_thread = NULL;              /** Thread that will take care of storing meta datas */
-    GThread *meta_thread = NULL;              /** Thread that will take care of storing datas      */
-
-
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
     #endif
+
+	signal(SIGINT, int_signal_handler);
 
     ignore_sigpipe(); /** into order to get libmicrohttpd portable */
 
@@ -727,8 +738,8 @@ int main(int argc, char **argv)
                 }
 
             /* Before starting anything else, start the threads */
-            meta_thread = g_thread_new("meta-datas", meta_datas_thread, serveur_struct);
-            data_thread = g_thread_new("datas", datas_thread, serveur_struct);
+            serveur_struct->meta_thread = g_thread_new("meta-data", meta_data_thread, serveur_struct);
+            serveur_struct->data_thread = g_thread_new("data", data_thread, serveur_struct);
 
             /* Starting the libmicrohttpd daemon */
             serveur_struct->d = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION | MHD_USE_DEBUG, serveur_struct->opt->port, NULL, NULL, &ahc, serveur_struct, MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
@@ -742,8 +753,8 @@ int main(int argc, char **argv)
             /* Unless on error we will never join the threads as they
              * contain a while (TRUE) loop !
              */
-            g_thread_join(meta_thread);
-            g_thread_join(data_thread);
+            g_thread_join(serveur_struct->meta_thread);
+            g_thread_join(serveur_struct->data_thread);
             MHD_stop_daemon(serveur_struct->d);
         }
     else

@@ -95,6 +95,9 @@ typedef struct
                                *   be transmitted as it arrives                 */
     GAsyncQueue *data_queue;  /**< An asynchronous queue where data will be
                                *   transmitted as it arrives                    */
+	GThread *data_thread; /**< Thread that will take care of storing data */
+	GThread *meta_thread; /**< Thread that will take care of storing meta data */
+
 } serveur_struct_t;
 
 
