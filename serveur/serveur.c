@@ -30,10 +30,6 @@
 #include "serveur.h"
 
 
-
-
-serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program.            */
-
 static serveur_struct_t *init_serveur_main_structure(int argc, char **argv);
 static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gchar *hash);
 static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key, gboolean encoded);
@@ -50,13 +46,29 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
 static gpointer meta_data_thread(gpointer user_data);
 static gpointer data_thread(gpointer user_data);
 
-static void int_signal_handler(int signum)
+
+/**
+ * SIGINT signal handler function
+ * @param user_data is a gpointer that MUST be a pointer to the
+ *        serveur_struct_t *
+ * @returns FALSE if user_data is NULL and frees memory and exits if TRUE.
+ */
+static gboolean int_signal_handler(gpointer user_data)
 {
-    g_free(serveur_struct->backend);
-    g_free(serveur_struct);
-    printf("Catching ctrl-c\n");
-    exit(0);
+    serveur_struct_t *serveur_struct = (serveur_struct_t *) user_data;
+
+    print_debug(_("Catching ctrl-c\n"));
+
+    if (serveur_struct != NULL)
+        {
+            free_variable(serveur_struct->backend);
+            free_variable(serveur_struct);
+            exit(0);
+        }
+
+    return TRUE;
 }
+
 
 /**
  * Inits main serveur's structure
@@ -663,23 +675,23 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
  */
 static gpointer meta_data_thread(gpointer user_data)
 {
-    serveur_struct_t *mdt_serveur_struct = user_data;
+    serveur_struct_t *serveur_struct = user_data;
     serveur_meta_data_t *smeta = NULL;
 
-    if (mdt_serveur_struct != NULL && mdt_serveur_struct->meta_queue != NULL)
+    if (serveur_struct != NULL && serveur_struct->meta_queue != NULL)
         {
 
-            if (mdt_serveur_struct->backend != NULL && mdt_serveur_struct->backend->store_smeta != NULL)
+            if (serveur_struct->backend != NULL && serveur_struct->backend->store_smeta != NULL)
                 {
 
                     while (TRUE)
                         {
-                            smeta = g_async_queue_pop(mdt_serveur_struct->meta_queue);
+                            smeta = g_async_queue_pop(serveur_struct->meta_queue);
 
                             if (smeta != NULL)
                                 {
                                     print_debug("meta_data_thread: received from %s meta for file %s\n", smeta->hostname, smeta->meta->name);
-                                    mdt_serveur_struct->backend->store_smeta(serveur_struct, smeta);
+                                    serveur_struct->backend->store_smeta(serveur_struct, smeta);
                                     free_smeta_data_t(smeta);
                                 }
                             else
@@ -752,12 +764,11 @@ static gpointer data_thread(gpointer user_data)
 int main(int argc, char **argv)
 {
     serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program.           */
+    guint id = 0;
 
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
     #endif
-
-    signal(SIGINT, int_signal_handler);
 
     ignore_sigpipe(); /** into order to get libmicrohttpd portable */
 
@@ -765,9 +776,15 @@ int main(int argc, char **argv)
 
     serveur_struct = init_serveur_main_structure(argc, argv);
 
-
     if (serveur_struct != NULL && serveur_struct->opt != NULL && serveur_struct->backend != NULL)
         {
+            id = g_unix_signal_add(SIGINT, int_signal_handler, serveur_struct);
+
+            if (id <= 0)
+                {
+                    print_error(__FILE__, __LINE__, _("Unable to add signal handler\n"));
+                }
+
             /* Initializing the choosen backend by calling it's function */
             if (serveur_struct->backend->init_backend != NULL)
                 {

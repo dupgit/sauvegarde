@@ -493,7 +493,7 @@ void ignore_sigpipe(void)
 
     if (sigaction(SIGPIPE, &sig, &oldsig) != 0)
         {
-            fprintf (stderr, "Failed to install SIGPIPE handler: %s\n", strerror (errno));
+            print_error(__FILE__, __LINE__, _("Failed to install SIGPIPE handler: %s\n"), strerror(errno));
         }
 }
 

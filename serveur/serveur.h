@@ -45,10 +45,11 @@
 #include <glib.h>
 #include <gio/gio.h>
 #include <glib/gi18n-lib.h>
+#include <glib-unix.h>
 #include <sys/inotify.h>
 #include <errno.h>
 #include <math.h>
-#include <signal.h>
+
 
 #include <libsauvegarde.h>
 
@@ -79,7 +80,6 @@
 #include "backend.h"
 
 
-
 /**
  * @struct serveur_struct_t
  * @brief Structure that contains everything needed by the program.
@@ -90,15 +90,15 @@
  */
 typedef struct
 {
-    options_t *opt;           /**< Options of the program from the command line */
-    struct MHD_Daemon *d;     /**< libmicrohttpd daemon structure               */
+    options_t *opt;           /**< Options of the program from the command line    */
+    struct MHD_Daemon *d;     /**< libmicrohttpd daemon structure                  */
     backend_t *backend;
     GAsyncQueue *meta_queue;  /**< An asynchronous queue where smeta data will
-                               *   be transmitted as it arrives                 */
+                               *   be transmitted as it arrives                    */
     GAsyncQueue *data_queue;  /**< An asynchronous queue where data will be
-                               *   transmitted as it arrives                    */
-    GThread *data_thread; /**< Thread that will take care of storing data */
-    GThread *meta_thread; /**< Thread that will take care of storing meta data */
+                               *   transmitted as it arrives                       */
+    GThread *data_thread;     /**< Thread that will take care of storing data      */
+    GThread *meta_thread;     /**< Thread that will take care of storing meta data */
 
 } serveur_struct_t;
 
