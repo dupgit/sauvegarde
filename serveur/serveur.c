@@ -29,7 +29,7 @@
 
 #include "serveur.h"
 
-#include <signal.h>
+
 
 
 serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program.            */
@@ -52,10 +52,10 @@ static gpointer data_thread(gpointer user_data);
 
 static void int_signal_handler(int signum)
 {
-	g_free(serveur_struct->backend);
-	g_free(serveur_struct);
-	printf("Catching ctrl-c\n");
-	exit(0);
+    g_free(serveur_struct->backend);
+    g_free(serveur_struct);
+    printf("Catching ctrl-c\n");
+    exit(0);
 }
 
 /**
@@ -71,8 +71,8 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 
     serveur_struct = (serveur_struct_t *) g_malloc0(sizeof(serveur_struct_t));
 
-	serveur_struct->data_thread = NULL;
-	serveur_struct->meta_thread = NULL;
+    serveur_struct->data_thread = NULL;
+    serveur_struct->meta_thread = NULL;
     serveur_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
     serveur_struct->d = NULL;            /* libmicrohttpd daemon pointer */
     serveur_struct->meta_queue = g_async_queue_new();

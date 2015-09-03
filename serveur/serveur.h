@@ -48,6 +48,7 @@
 #include <sys/inotify.h>
 #include <errno.h>
 #include <math.h>
+#include <signal.h>
 
 #include <libsauvegarde.h>
 
@@ -78,6 +79,7 @@
 #include "backend.h"
 
 
+
 /**
  * @struct serveur_struct_t
  * @brief Structure that contains everything needed by the program.
@@ -95,8 +97,8 @@ typedef struct
                                *   be transmitted as it arrives                 */
     GAsyncQueue *data_queue;  /**< An asynchronous queue where data will be
                                *   transmitted as it arrives                    */
-	GThread *data_thread; /**< Thread that will take care of storing data */
-	GThread *meta_thread; /**< Thread that will take care of storing meta data */
+    GThread *data_thread; /**< Thread that will take care of storing data */
+    GThread *meta_thread; /**< Thread that will take care of storing meta data */
 
 } serveur_struct_t;
 
