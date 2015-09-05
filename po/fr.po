@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sauvegarde 0.0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-05 18:47+0200\n"
-"PO-Revision-Date: 2015-09-05 20:44+0100\n"
+"POT-Creation-Date: 2015-09-05 23:14+0200\n"
+"PO-Revision-Date: 2015-09-05 22:59+0100\n"
 "Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
 "Language: fr\n"
@@ -17,119 +17,407 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: ../monitor/monitor.h:59
-msgid "15 02 2014"
-msgstr "15 02 2014"
+#: ../libsauvegarde/clock.c:66
+#, c-format
+msgid "Elapsed time (%s): %d\n"
+msgstr ""
 
-#: ../monitor/monitor.h:60 ../ciseaux/ciseaux.h:53
-msgid "GPL v3 or later"
-msgstr "GPL v3 ou plus récente."
+#: ../libsauvegarde/communique.c:48
+#, fuzzy, c-format
+msgid "\t. LIBCURL version: %s\n"
+msgstr "\t. LIBCURL version : %s\n"
 
-#: ../ciseaux/options.c:51 ../monitor/options.c:205
-msgid "Prints program version"
-msgstr "Affiche la version du programme."
+#: ../libsauvegarde/communique.c:152
+#, c-format
+msgid "Answer is: \"%s\"\n"
+msgstr ""
 
-#: ../ciseaux/options.c:52
-msgid "Block size used to compute hashs"
-msgstr "Taille des blocs pour le calcul des sommes de contrôle (hashs)."
+#: ../libsauvegarde/communique.c:156
+#, c-format
+msgid "Error while sending GET command and receiving data: %s\n"
+msgstr ""
 
-#: ../ciseaux/options.c:53
-msgid "Maximum threads we can use at once"
-msgstr "Nombre maximal de threads utilisables à la fois."
+#: ../libsauvegarde/communique.c:205
+#, fuzzy, c-format
+msgid "Error while sending POST command (to \"%s\"): %s\n"
+msgstr "Erreur en lisant le fichier %s : %s\n"
 
-#: ../ciseaux/ciseaux.h:52
-msgid "24 02 2014"
-msgstr "24 02 2014"
+#: ../libsauvegarde/configuration.c:90 ../libsauvegarde/configuration.c:126
+#: ../libsauvegarde/configuration.c:162 ../libsauvegarde/configuration.c:198
+#: ../libsauvegarde/configuration.c:279
+#, fuzzy, c-format
+msgid "Error while looking for %s key in configuration file: %s\n"
+msgstr "Erreur lors de l'ouverture du fichier %s : %s\n"
 
-#: ../monitor/monitor.c:306
-msgid "Error while adding a new watch descriptor"
-msgstr "Erreur lors de l'ajout d'un nouveau descripteur de surveillance"
+#: ../libsauvegarde/configuration.c:273
+#, fuzzy, c-format
+msgid "%s %s: %s\n"
+msgstr "%s version : %s (%s)\n"
 
-#: ../monitor/monitor.c:382
+#. Reading in section [All] the debug mode
+#: ../libsauvegarde/configuration.c:300
+msgid "Could not load debug mode configuration from file."
+msgstr ""
+
+#: ../libsauvegarde/database.c:127
+msgid "Creating tables into the database\n"
+msgstr ""
+
+#. The database does not contain any tables. So we have to create them.
+#. Creation of checksum table that contains checksums and their associated data
+#: ../libsauvegarde/database.c:131
+#, fuzzy, c-format
+msgid "(%d) Error while creating database table 'data': %s\n"
+msgstr "Erreur en lisant le fichier %s : %s\n"
+
+#. Creation of buffers table that contains checksums and their associated data
+#: ../libsauvegarde/database.c:134
+#, fuzzy, c-format
+msgid "(%d) Error while creating database table 'buffers': %s\n"
+msgstr "Erreur en lisant le fichier %s : %s\n"
+
+#. Creation of files table that contains everything about a file
+#: ../libsauvegarde/database.c:137
+#, fuzzy, c-format
+msgid "(%d) Error while creating database table 'files': %s\n"
+msgstr "Erreur en lisant le fichier %s : %s\n"
+
+#: ../libsauvegarde/database.c:244
+#, fuzzy, c-format
+msgid "(%d) Error while searching into the table 'files': %s\n"
+msgstr "Erreur en lisant le fichier %s : %s\n"
+
+#. beginning a transaction
+#: ../libsauvegarde/database.c:342
+#, c-format
+msgid "(%d) Error openning the transaction: %s\n"
+msgstr ""
+
+#: ../libsauvegarde/database.c:347
+#, fuzzy, c-format
+msgid "(%d) Error while inserting into the table 'files': %s\n"
+msgstr "Erreur en lisant le fichier %s : %s\n"
+
+#. ending the transaction here
+#: ../libsauvegarde/database.c:352
+#, c-format
+msgid "(%d) Error commiting to the database: %s\n"
+msgstr ""
+
+#: ../libsauvegarde/database.c:376
+#, fuzzy, c-format
+msgid "(%d) Error while trying to open %s database: %s\n"
+msgstr "Erreur lors de l'ouverture du fichier %s : %s\n"
+
+#: ../libsauvegarde/files.c:300
+#, c-format
+msgid "Setting mode: %d\n"
+msgstr ""
+
+#: ../libsauvegarde/files.c:486
+#, fuzzy, c-format
+msgid "Error while getting file information: %s\n"
+msgstr "Erreur en lisant le fichier %s : %s\n"
+
+#: ../libsauvegarde/files.c:496
+#, fuzzy, c-format
+msgid "Error or warning for file (%s): %s\n"
+msgstr "Erreur lors de l'ouverture du fichier %s : %s\n"
+
+#: ../libsauvegarde/files.c:527
+#, c-format
+msgid "Error: unable to create symbolic link %s to %s: %s.\n"
+msgstr ""
+
+#: ../libsauvegarde/libsauvegarde.c:51
+msgid "Debug mode is disabled.\n"
+msgstr ""
+
+#: ../libsauvegarde/libsauvegarde.c:55 ../libsauvegarde/libsauvegarde.c:259
+msgid "Debug mode is activated.\n"
+msgstr ""
+
+#: ../libsauvegarde/libsauvegarde.c:141
+#, fuzzy, c-format
+msgid ""
+"%s was compiled with the following libraries:\n"
+"\t. GLIB version: %d.%d.%d\n"
+msgstr "%s a été compilé avec les librairies suivantes :\n"
+
+#: ../libsauvegarde/libsauvegarde.c:168
+#, c-format
+msgid ""
+"%s\t. %s version: %s\n"
+"\t. JANSSON version: %d.%d.%d\n"
+msgstr ""
+
+#: ../libsauvegarde/libsauvegarde.c:220
+#, c-format
+msgid ""
+"%s version: %s-%s (%s)\n"
+"Author(s): %s\n"
+"License: %s\n"
+"\n"
+msgstr ""
+
+#: ../libsauvegarde/libsauvegarde.c:260
+#, c-format
+msgid "Gettext package: %s\n"
+msgstr ""
+
+#: ../libsauvegarde/libsauvegarde.c:264
+#, c-format
+msgid "Bindtextdomain: %s\n"
+msgstr ""
+
+#: ../libsauvegarde/libsauvegarde.c:269
+#, fuzzy, c-format
+msgid "Code set: %s\n"
+msgstr "Licence : %s\n"
+
+#: ../libsauvegarde/libsauvegarde.c:274
+#, c-format
+msgid "Text domain: %s\n"
+msgstr ""
+
+#: ../libsauvegarde/libsauvegarde.c:429
+msgid "g_thread_create failed !"
+msgstr ""
+
+#: ../libsauvegarde/libsauvegarde.c:496
+#, c-format
+msgid "Failed to install SIGPIPE handler: %s\n"
+msgstr ""
+
+#: ../libsauvegarde/packing.c:53
+#, fuzzy
+msgid "Error while converting to JSON\n"
+msgstr "Erreur lors de l'ouverture du fichier %s : %s\n"
+
+#: ../libsauvegarde/unpacking.c:52
+#, fuzzy, c-format
+msgid "Error while converting to JSON from keyname %s\n"
+msgstr "Erreur lors de l'ouverture du fichier %s : %s\n"
+
+#: ../libsauvegarde/unpacking.c:175
+#, c-format
+msgid ""
+"Error while trying to load JSON: %s\n"
+"line: %d, column: %d, position: %d, string: %s\n"
+msgstr ""
+
+#: ../libsauvegarde/unpacking.c:409
+#, c-format
+msgid ""
+"Something is wrong with lengths: data_len = %ld, read = %ld, hash_len = %ld, "
+"HASH_LEN = %ld\n"
+msgstr ""
+
+#: ../monitor/m_fanotify.c:63
+#, c-format
+msgid "Couldn't block signals: %s\n"
+msgstr ""
+
+#: ../monitor/m_fanotify.c:69
+#, c-format
+msgid "Couldn't setup signal FD: %s\n"
+msgstr ""
+
+#: ../monitor/m_fanotify.c:100
+#, c-format
+msgid "Couldn't setup new fanotify device: %s\n"
+msgstr ""
+
+#: ../monitor/m_fanotify.c:110
+#, fuzzy, c-format
+msgid "Couldn't add monitor in directory %s: %s\n"
+msgstr "Impossible d'énumérer le dossier %s : %s\n"
+
+#: ../monitor/m_fanotify.c:114
+#, c-format
+msgid "Started monitoring directory %s\n"
+msgstr ""
+
+#: ../monitor/m_fanotify.c:138
+#, c-format
+msgid "Invalid file descriptor: %d\n"
+msgstr ""
+
+#: ../monitor/m_fanotify.c:148
+#, c-format
+msgid "'readlink' error: %s\n"
+msgstr ""
+
+#: ../monitor/m_fanotify.c:231
+#, fuzzy, c-format
+msgid "Unable to get meta data for file %s: %s\n"
+msgstr "Impossible d'énumérer le dossier %s : %s\n"
+
+#. Don't try to save files that comes from our activity
+#: ../monitor/m_fanotify.c:282
+#, c-format
+msgid "Received event file/directory: %s\n"
+msgstr ""
+
+#: ../monitor/m_fanotify.c:283
+#, fuzzy, c-format
+msgid " matching directory is: %s\n"
+msgstr "Impossible d'énumérer le dossier %s : %s\n"
+
+#: ../monitor/m_fanotify.c:284
+#, c-format
+msgid " pid=%d (%s): "
+msgstr ""
+
+#: ../monitor/m_fanotify.c:288
+msgid "\tFAN_CLOSE_WRITE\n"
+msgstr ""
+
+#: ../monitor/m_fanotify.c:403
+#, c-format
+msgid "Couldn't poll(): '%s'\n"
+msgstr ""
+
+#: ../monitor/m_fanotify.c:411
+msgid "Couldn't read signal, wrong size read\n"
+msgstr ""
+
+#: ../monitor/m_fanotify.c:422
+msgid "Received unexpected signal\n"
+msgstr ""
+
+#: ../monitor/monitor.c:60
+msgid "Please wait while initializing main structure...\n"
+msgstr ""
+
+#: ../monitor/monitor.c:86
+msgid "Main structure initialized !\n"
+msgstr ""
+
+#: ../monitor/monitor.c:152
+#, fuzzy, c-format
+msgid "Error while reading file: %s\n"
+msgstr "Erreur en lisant le fichier %s : %s\n"
+
+#: ../monitor/monitor.c:169
+#, fuzzy, c-format
+msgid "Unable to open file for reading: %s\n"
+msgstr "Impossible de créer un ensemble de threads : %s\n"
+
+#. Sends meta data here
+#: ../monitor/monitor.c:260
+#, c-format
+msgid "Sending meta data: %s\n"
+msgstr ""
+
+#: ../monitor/monitor.c:412 ../monitor/monitor.c:473
+#, fuzzy
+msgid "Error while loading JSON answer from serveur\n"
+msgstr "Erreur en lisant le fichier %s : %s\n"
+
+#: ../monitor/monitor.c:537
+#, fuzzy, c-format
+msgid "processing file %s"
+msgstr "Analyse des options échouée : %s\n"
+
+#: ../monitor/monitor.c:611
 #, c-format
 msgid "Unable to enumerate directory %s: %s\n"
 msgstr "Impossible d'énumérer le dossier %s : %s\n"
 
-#: ../monitor/monitor.c:454
-#, c-format
-msgid "Maximum number of opened files: %ld\n"
-msgstr "Nombre maximal de fichiers ouverts : %ld\n"
+#: ../monitor/monitor.h:75 ../restaure/restaure.h:81 ../serveur/serveur.h:74
+msgid "21 08 2015"
+msgstr "21 08 2014"
 
-#: ../monitor/monitor.c:477
-#, c-format
-msgid "File monitored: %s\n"
-msgstr "Fichier surveillé : %s\n"
+#: ../monitor/monitor.h:76 ../restaure/restaure.h:82 ../serveur/serveur.h:75
+msgid "GPL v3 or later"
+msgstr "GPL v3 ou plus récente."
 
-#: ../ciseaux/ciseaux.c:56
-#, c-format
-msgid "Error while reading %s file: %s\n"
-msgstr "Erreur en lisant le fichier %s : %s\n"
+#: ../monitor/monitor.h:77 ../restaure/restaure.h:83 ../serveur/serveur.h:76
+msgid "0.0.3"
+msgstr ""
 
-#: ../ciseaux/ciseaux.c:100
+#: ../monitor/options.c:49 ../restaure/options.c:46 ../serveur/options.c:59
+#: ../serveur/options.c:90
 #, c-format
-msgid "Can't get informations on %s file: %s\n"
+msgid ""
+"\n"
+"%s options are:\n"
+msgstr ""
+
+#: ../monitor/options.c:53
+#, c-format
+msgid "Directory list:\n"
+msgstr ""
+
+#: ../monitor/options.c:62
+msgid "Blocksize: %"
+msgstr ""
+
+#: ../monitor/options.c:64 ../restaure/options.c:47 ../serveur/options.c:61
+#, fuzzy, c-format
+msgid "Configuration file: %s\n"
 msgstr "Impossible d'obtenir les informations du fichier %s : %s\n"
 
-#: ../ciseaux/ciseaux.c:112
+#: ../monitor/options.c:65
 #, c-format
-msgid "Error while opening %s file: %s\n"
-msgstr "Erreur lors de l'ouverture du fichier %s : %s\n"
-
-#: ../ciseaux/ciseaux.c:122
-#, c-format
-msgid "%s is not a regular file\n"
-msgstr "%s n'est pas un fichier ordinaire\n"
-
-#: ../ciseaux/ciseaux.c:154
-#, c-format
-msgid "Unable to create a thread pool: %s\n"
-msgstr "Impossible de créer un ensemble de threads : %s\n"
-
-#: ../ciseaux/ciseaux.c:159
-#, c-format
-msgid "Thread pool not created but no error generated!\n"
+msgid "Cache directory: %s\n"
 msgstr ""
-"L'ensemble de threads n'a pas été créé mais aucune erreur n'a été générée !\n"
 
-#: ../ciseaux/options.c:70
-msgid "Please report bugs to: "
-msgstr "Indiquez les bugs à : "
-
-#: ../ciseaux/options.c:71
-msgid "This program is hashing files with SHA256 algorithms from Glib."
+#: ../monitor/options.c:66
+#, c-format
+msgid "Cache database name: %s\n"
 msgstr ""
-"Ce programme calcule les sommes de contrôle (hashs) avec l'algorithme SHA256 "
-"de la librairie Glib."
 
-#: ../ciseaux/options.c:81
+#: ../monitor/options.c:67 ../restaure/options.c:48
 #, c-format
-msgid "Option parsing failed: %s\n"
-msgstr "Analyse des options échouée : %s\n"
+msgid "serveur's IP address: %s\n"
+msgstr ""
 
-#: ../ciseaux/options.c:164
+#: ../monitor/options.c:68 ../restaure/options.c:49
 #, c-format
-msgid "%s was compiled with the following libraries:\n"
-msgstr "%s a été compilé avec les librairies suivantes :\n"
+msgid "serveur's port number: %d\n"
+msgstr ""
 
-#: ../ciseaux/options.c:165
-#, c-format
-msgid "\t. GLIB version : %d.%d.%d\n"
-msgstr "\t. GLIB version : %d.%d.%d\n"
+#. Reading the directory list
+#: ../monitor/options.c:91
+msgid "Could not load directory list from file"
+msgstr ""
 
-#: ../ciseaux/options.c:176
-#, c-format
-msgid "%s version : %s (%s)\n"
-msgstr "%s version : %s (%s)\n"
+#: ../monitor/options.c:92
+msgid "Could not load blocksize from file"
+msgstr ""
 
-#: ../ciseaux/options.c:177
-#, c-format
-msgid "Author(s) : %s\n"
-msgstr "Auteur(s) : %s\n"
+#. Reading the cache directory if any
+#: ../monitor/options.c:95
+msgid "Could not load directory name"
+msgstr ""
 
-#: ../ciseaux/options.c:178
-#, c-format
-msgid "License : %s\n"
-msgstr "Licence : %s\n"
+#. Reading filename of the database if any
+#. Reading IP address of serveur's host if any
+#: ../monitor/options.c:100 ../monitor/options.c:130 ../restaure/options.c:90
+msgid "Could not load cache database name"
+msgstr ""
+
+#. Reading the port number if any
+#: ../monitor/options.c:122 ../restaure/options.c:82 ../serveur/options.c:119
+msgid "Could not load serveur port number from file."
+msgstr ""
+
+#: ../monitor/options.c:156 ../restaure/options.c:116 ../serveur/options.c:146
+#, fuzzy, c-format
+msgid "Reading configuration from file %s\n"
+msgstr "Impossible d'obtenir les informations du fichier %s : %s\n"
+
+#: ../monitor/options.c:167 ../restaure/options.c:127
+#: ../serveur/file_backend.c:374 ../serveur/options.c:156
+#, fuzzy, c-format
+msgid "Failed to open %s configuration file: %s\n"
+msgstr "Impossible d'obtenir les informations du fichier %s : %s\n"
+
+#: ../monitor/options.c:205
+msgid "Prints program version"
+msgstr "Affiche la version du programme."
 
 #: ../monitor/options.c:206 ../restaure/options.c:167 ../serveur/options.c:189
 msgid "Activates (1) or desactivates (0) debug mode."
@@ -184,6 +472,24 @@ msgstr "NUMÉRO du port à écouter."
 msgid "NUMBER"
 msgstr "NUMÉRO"
 
+#: ../monitor/options.c:225 ../restaure/options.c:181 ../serveur/options.c:202
+msgid "Please report bugs to: "
+msgstr "Indiquez les bugs à : "
+
+#: ../monitor/options.c:226 ../serveur/options.c:203
+#, fuzzy
+msgid ""
+"This program is monitoring file changes in the filesystem and is hashing\n"
+"files with SHA256 algorithms from Glib."
+msgstr ""
+"Ce programme calcule les sommes de contrôle (hashs) avec l'algorithme SHA256 "
+"de la librairie Glib."
+
+#: ../monitor/options.c:235 ../restaure/options.c:191
+#, c-format
+msgid "Option parsing failed: %s\n"
+msgstr "Analyse des options échouée : %s\n"
+
 #: ../restaure/options.c:163 ../serveur/options.c:188
 msgid "Prints program version."
 msgstr "Affiche la version du programme."
@@ -207,3 +513,290 @@ msgstr "Restaure le fichier sélectionné à une DATE spécifique."
 #: ../restaure/options.c:170
 msgid "Port NUMBER on which serveur program is listening."
 msgstr "NUMÉRO du port sur lequel le programme serveur est à l'écoute."
+
+#: ../restaure/options.c:182
+msgid "This program is restoring files from serveur's server.\n"
+msgstr ""
+
+#: ../restaure/restaure.c:131
+#, c-format
+msgid "hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n"
+msgstr ""
+
+#: ../restaure/restaure.c:163 ../restaure/restaure.c:239
+#, c-format
+msgid "Query is: %s\n"
+msgstr ""
+
+#: ../restaure/restaure.c:260
+#, fuzzy, c-format
+msgid "Error while trying to restore %s hash\n"
+msgstr "Erreur en lisant le fichier %s : %s\n"
+
+#: ../restaure/restaure.c:266
+#, fuzzy, c-format
+msgid "Error while getting hash %s"
+msgstr "Erreur en lisant le fichier %s : %s\n"
+
+#: ../restaure/restaure.c:303
+#, fuzzy, c-format
+msgid "filename to restore: %s\n"
+msgstr "Fichier surveillé : %s\n"
+
+#: ../restaure/restaure.c:319
+#, c-format
+msgid "Error: unable to open file %s to write data in it (%s).\n"
+msgstr ""
+
+#: ../restaure/restaure.c:362
+#, c-format
+msgid ""
+"File to be restored: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, "
+"mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:108 ../serveur/file_backend.c:175
+#, c-format
+msgid "Error: unable to write to file %s (%ld bytes written).\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:116
+#, c-format
+msgid "Error: unable to open file %s to append meta-data in it.\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:124
+msgid ""
+"Error: no serveur_meta_data_t structure or missing hostname or missing "
+"meta_data_t * structure.\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:186
+#, c-format
+msgid "Error: unable to open file %s to write data in it.\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:196
+msgid "Error: no hash_data_t structure or hash in it or missing data in it.\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:368
+msgid "Could not load [file_backend] file-directory from file."
+msgstr ""
+
+#: ../serveur/file_backend.c:369
+msgid "Could not load [file_backend] dir-level from file."
+msgstr ""
+
+#: ../serveur/file_backend.c:430
+#, c-format
+msgid "Please wait while creating directories\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:432
+#, c-format
+msgid "Finished !\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:439
+msgid "Error: no serveur structure or no backend structure.\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:499
+#, fuzzy, c-format
+msgid "Error while reading the file: %s\n"
+msgstr "Erreur en lisant le fichier %s : %s\n"
+
+#: ../serveur/file_backend.c:704
+#, c-format
+msgid ""
+"file_backend: Found: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, "
+"mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d, "
+"link: %s\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:761
+#, c-format
+msgid "file_backend: filter is: %s && %s\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:803 ../serveur/file_backend.c:885
+#, c-format
+msgid "Error: unable to open file %s to read data from it.\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:811
+msgid "file_backend: Something is wrong with backend initialization!\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:860
+#, c-format
+msgid "file_backend: path: %s, filename: %s\n"
+msgstr ""
+
+#: ../serveur/file_backend.c:872
+#, c-format
+msgid "Error: unable to read from file %s (%ld bytes read): %s.\n"
+msgstr ""
+
+#: ../serveur/options.c:65
+#, c-format
+msgid "Port number: %d\n"
+msgstr ""
+
+#: ../serveur/options.c:86
+#, fuzzy, c-format
+msgid ""
+"\n"
+"%s options are:\n"
+"Configuration file: %s\n"
+msgstr "Impossible d'obtenir les informations du fichier %s : %s\n"
+
+#: ../serveur/options.c:95
+#, c-format
+msgid "%sPort number: %d\n"
+msgstr ""
+
+#: ../serveur/options.c:212
+#, c-format
+msgid "[%s, %d] Option parsing failed: %s\n"
+msgstr "[%s, %d] Analyse des options échouée : %s\n"
+
+#: ../serveur/serveur.c:82
+msgid ""
+"\n"
+"Ending the program.\n"
+msgstr ""
+
+#: ../serveur/serveur.c:149
+msgid "This backend's missing a retrieve_data function!"
+msgstr ""
+
+#: ../serveur/serveur.c:154
+msgid "Something's wrong with server's initialisation!"
+msgstr ""
+
+#: ../serveur/serveur.c:231
+#, c-format
+msgid ""
+"hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s && %s\n"
+msgstr ""
+
+#: ../serveur/serveur.c:241
+#, c-format
+msgid "Malformed request. hostname: %s, uid: %s, gid: %s, owner: %s, group: %s"
+msgstr ""
+
+#: ../serveur/serveur.c:290
+#, c-format
+msgid "Trying to get data for hash %s\n"
+msgstr ""
+
+#. Some sort of echo to the invalid request
+#: ../serveur/serveur.c:339
+#, c-format
+msgid "Error: invalid url: %s\n"
+msgstr ""
+
+#: ../serveur/serveur.c:373
+#, c-format
+msgid "Requested get url: %s\n"
+msgstr ""
+
+#. The convertion went well and smeta contains the meta data
+#: ../serveur/serveur.c:426
+#, c-format
+msgid "Received meta data for file %s\n"
+msgstr ""
+
+#: ../serveur/serveur.c:462
+msgid "Error: could not convert json to metadata\n"
+msgstr ""
+
+#: ../serveur/serveur.c:507 ../serveur/serveur.c:540
+#, c-format
+msgid "Received data for hash: \"%s\" (%ld bytes)\n"
+msgstr ""
+
+#. *
+#. * creating an answer for the client to say that everything went Ok!
+#.
+#: ../serveur/serveur.c:521 ../serveur/serveur.c:553
+msgid "Ok!"
+msgstr ""
+
+#: ../serveur/serveur.c:562
+msgid "Error: invalid url!\n"
+msgstr ""
+
+#: ../serveur/serveur.c:655
+#, c-format
+msgid "Headers for this connection are:\n"
+msgstr ""
+
+#: ../serveur/serveur.c:719
+msgid "Error: received a NULL pointer.\n"
+msgstr ""
+
+#: ../serveur/serveur.c:725
+msgid ""
+"Error: no meta data store backend defined, meta-data's thread "
+"terminating...\n"
+msgstr ""
+
+#: ../serveur/serveur.c:730
+msgid "Error: unable to launch meta-data thread.\n"
+msgstr ""
+
+#: ../serveur/serveur.c:765
+msgid "Error: no data store backend defined, data's thread terminating...\n"
+msgstr ""
+
+#: ../serveur/serveur.c:771
+msgid "Error while trying to launch data thread"
+msgstr ""
+
+#: ../serveur/serveur.c:808
+msgid "Unable to add signal handler\n"
+msgstr ""
+
+#: ../serveur/serveur.c:826
+msgid "Error while spawning libmicrohttpd daemon\n"
+msgstr ""
+
+#: ../serveur/serveur.c:842
+msgid "Error: initialization failed.\n"
+msgstr ""
+
+#~ msgid "Configuration file : %s\n"
+#~ msgstr "Fichier de configuration : %s\n"
+
+#, fuzzy
+#~ msgid "Failed to create directory %s : %s\n"
+#~ msgstr "Impossible d'énumérer le dossier %s : %s\n"
+
+#~ msgid "Block size used to compute hashs"
+#~ msgstr "Taille des blocs pour le calcul des sommes de contrôle (hashs)."
+
+#~ msgid "Maximum threads we can use at once"
+#~ msgstr "Nombre maximal de threads utilisables à la fois."
+
+#~ msgid "24 02 2014"
+#~ msgstr "24 02 2014"
+
+#~ msgid "Error while adding a new watch descriptor"
+#~ msgstr "Erreur lors de l'ajout d'un nouveau descripteur de surveillance"
+
+#~ msgid "Maximum number of opened files: %ld\n"
+#~ msgstr "Nombre maximal de fichiers ouverts : %ld\n"
+
+#~ msgid "%s is not a regular file\n"
+#~ msgstr "%s n'est pas un fichier ordinaire\n"
+
+#~ msgid "Thread pool not created but no error generated!\n"
+#~ msgstr ""
+#~ "L'ensemble de threads n'a pas été créé mais aucune erreur n'a été "
+#~ "générée !\n"
+
+#~ msgid "Author(s) : %s\n"
+#~ msgstr "Auteur(s) : %s\n"

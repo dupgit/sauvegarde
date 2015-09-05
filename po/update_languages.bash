@@ -25,7 +25,9 @@
 ./find_files.sh >./POTFILES.in
 
 # Updating sauvegarde.po
-xgettext -j --default-domain=sauvegarde --add-comments --keyword=Q_:1g --keyword=N_:1g --from-code=UTF-8 --flag=g_strdup_printf:1:c-format --flag=g_string_printf:2:c-format  --flag=g_string_append_printf:2:c-format --flag=g_error_new:3:c-format --flag=g_set_error:4:c-format --flag=g_markup_printf_escaped:1:c-format --flag=g_log:3:c-format --flag=g_print:1:c-format --flag=g_printerr:1:c-format --flag=g_printf:1:c-format --flag=g_fprintf:2:c-format --flag=g_sprintf:2:c-format --flag=g_snprintf:3:c-format --flag=g_scanner_error:2:c-format --flag=g_scanner_warn:2:c-format --files-from=./POTFILES.in
+xgettext -j --language=C --default-domain=sauvegarde --add-comments --from-code=UTF-8 --keyword=N_:1 --keyword=_:1 --files-from=./POTFILES.in
+
+sed -i -e "s/CHARSET/us-ascii/" sauvegarde.po
 
 # updating translations
 for l in fr; do
