@@ -21,6 +21,8 @@ libsauvegarde/.libs/
 libtool
 ltmain.sh
 m4/
+po/*.mo
+po/*~
 missing
 mkinstalldirs
 monitor/.deps/
