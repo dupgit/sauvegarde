@@ -5,16 +5,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Sauvegarde 0.0.1\n"
+"Project-Id-Version: Sauvegarde 0.0.4\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-09-05 18:47+0200\n"
-"PO-Revision-Date: 2014-02-25 20:16+0100\n"
-"Last-Translator: Olivier DELHOMME <olivier.delhomme@free.fr>\n"
+"PO-Revision-Date: 2015-09-05 20:44+0100\n"
+"Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.10\n"
 
 #: ../monitor/monitor.h:59
 msgid "15 02 2014"
@@ -38,7 +39,7 @@ msgstr "Nombre maximal de threads utilisables à la fois."
 
 #: ../ciseaux/ciseaux.h:52
 msgid "24 02 2014"
-msgstr ""
+msgstr "24 02 2014"
 
 #: ../monitor/monitor.c:306
 msgid "Error while adding a new watch descriptor"
@@ -132,75 +133,77 @@ msgstr "Licence : %s\n"
 
 #: ../monitor/options.c:206 ../restaure/options.c:167 ../serveur/options.c:189
 msgid "Activates (1) or desactivates (0) debug mode."
-msgstr ""
+msgstr "Active (1) ou désactive (0) le mode de débogage."
 
 #: ../monitor/options.c:206 ../restaure/options.c:167 ../serveur/options.c:189
 msgid "BOOLEAN"
-msgstr ""
+msgstr "BOOLÉEN"
 
 #: ../monitor/options.c:207 ../restaure/options.c:168 ../serveur/options.c:190
 msgid "Specify an alternative configuration file."
-msgstr ""
+msgstr "Spécifie un fichier de configuration alternatif."
 
 #: ../monitor/options.c:207 ../monitor/options.c:211 ../restaure/options.c:168
 #: ../serveur/options.c:190
 msgid "FILENAME"
-msgstr ""
+msgstr "NOM DU FICHIER"
 
 #: ../monitor/options.c:208
-#, fuzzy
 msgid "Block SIZE used to compute hashs."
-msgstr "Taille des blocs pour le calcul des sommes de contrôle (hashs)."
+msgstr "Taille des blocs pour le calcul des sommes de contrôle."
 
 #: ../monitor/options.c:208
 msgid "SIZE"
-msgstr ""
+msgstr "TAILLE"
 
 #: ../monitor/options.c:209
 msgid "Quiets the program while calculating checksum."
-msgstr ""
+msgstr "Rend le programme silencieux lors du calcul des sommes de contrôle."
 
 #: ../monitor/options.c:210
 msgid "Directory DIRNAME where to cache files."
-msgstr ""
+msgstr "Répertoire NOM DU RÉPERTOIRE du cache des fichiers."
 
 #: ../monitor/options.c:210
 msgid "DIRNAME"
-msgstr ""
+msgstr "NOM DU RÉPERTOIRE"
 
 #: ../monitor/options.c:211
 msgid "Database FILENAME."
-msgstr ""
+msgstr "NOM DU FICHIER de la base de données."
 
 #: ../monitor/options.c:212 ../restaure/options.c:169
 msgid "IP address where serveur program is."
-msgstr ""
+msgstr "Adresse IP du programme serveur."
 
 #: ../monitor/options.c:213 ../serveur/options.c:191
 msgid "Port NUMBER on which to listen."
-msgstr ""
+msgstr "NUMÉRO du port à écouter."
 
 #: ../monitor/options.c:213 ../restaure/options.c:170 ../serveur/options.c:191
 msgid "NUMBER"
-msgstr ""
+msgstr "NUMÉRO"
 
 #: ../restaure/options.c:163 ../serveur/options.c:188
-#, fuzzy
 msgid "Prints program version."
 msgstr "Affiche la version du programme."
 
 #: ../restaure/options.c:164
 msgid "Gives a list of saved files that correspond to the given REGEX."
 msgstr ""
+"Donne la liste des fichiers sauvegardés correspondants à l'EXPRESSION "
+"RATIONNELLE."
 
 #: ../restaure/options.c:165
 msgid "Restore requested filename (REGEX) (by default latest version)."
 msgstr ""
+"Restaure le fichier demandé (EXPRESSION RATIONNELLE) (par défaut la dernière "
+"version)."
 
 #: ../restaure/options.c:166
 msgid "restores the selected file at that specific DATE."
-msgstr ""
+msgstr "Restaure le fichier sélectionné à une DATE spécifique."
 
 #: ../restaure/options.c:170
 msgid "Port NUMBER on which serveur program is listening."
-msgstr ""
+msgstr "NUMÉRO du port sur lequel le programme serveur est à l'écoute."
