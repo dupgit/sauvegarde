@@ -99,7 +99,7 @@ typedef struct
                                *   transmitted as it arrives                       */
     GThread *data_thread;     /**< Thread that will take care of storing data      */
     GThread *meta_thread;     /**< Thread that will take care of storing meta data */
-
+    GMainLoop* loop;          /**< Main loop in glib                               */
 } serveur_struct_t;
 
 

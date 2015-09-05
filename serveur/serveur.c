@@ -29,7 +29,8 @@
 
 #include "serveur.h"
 
-
+static void free_serveur_struct_t(serveur_struct_t *serveur_struct);
+static gboolean int_signal_handler(gpointer user_data);
 static serveur_struct_t *init_serveur_main_structure(int argc, char **argv);
 static gchar *get_data_from_a_specific_hash(serveur_struct_t *serveur_struct, gchar *hash);
 static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key, gboolean encoded);
@@ -48,6 +49,25 @@ static gpointer data_thread(gpointer user_data);
 
 
 /**
+ * Frees the serveur structure
+ * @param serveur_struct is the structure to be freed
+ */
+void free_serveur_struct_t(serveur_struct_t *serveur_struct)
+{
+
+    if (serveur_struct != NULL)
+        {
+            MHD_stop_daemon(serveur_struct->d);
+            free_variable(serveur_struct->backend); /** we need a backend function to be called to free th backend structure */
+            g_thread_unref(serveur_struct->data_thread);
+            g_thread_unref(serveur_struct->meta_thread);
+            free_options_t_structure(serveur_struct->opt);
+            free_variable(serveur_struct);
+        }
+}
+
+
+/**
  * SIGINT signal handler function
  * @param user_data is a gpointer that MUST be a pointer to the
  *        serveur_struct_t *
@@ -57,16 +77,15 @@ static gboolean int_signal_handler(gpointer user_data)
 {
     serveur_struct_t *serveur_struct = (serveur_struct_t *) user_data;
 
-    print_debug(_("Catching ctrl-c\n"));
-
     if (serveur_struct != NULL)
         {
-            free_variable(serveur_struct->backend);
-            free_variable(serveur_struct);
-            exit(0);
+            print_debug(_("\nCatched CTRL-C\n"));
+            g_main_loop_quit(serveur_struct->loop);
+            free_serveur_struct_t(serveur_struct);
         }
 
-    return TRUE;
+    /** we can remove the handler as we are exiting the program anyway */
+    return FALSE;
 }
 
 
@@ -89,6 +108,7 @@ static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
     serveur_struct->d = NULL;            /* libmicrohttpd daemon pointer */
     serveur_struct->meta_queue = g_async_queue_new();
     serveur_struct->data_queue = g_async_queue_new();
+    serveur_struct->loop = NULL;
 
     /* default backend (file_backend) */
     serveur_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend, file_build_needed_hash_list, file_get_list_of_files, file_retrieve_data);
@@ -778,6 +798,7 @@ int main(int argc, char **argv)
 
     if (serveur_struct != NULL && serveur_struct->opt != NULL && serveur_struct->backend != NULL)
         {
+            serveur_struct->loop = g_main_loop_new(g_main_context_default(), FALSE);
             id = g_unix_signal_add(SIGINT, int_signal_handler, serveur_struct);
 
             if (id <= 0)
@@ -807,9 +828,12 @@ int main(int argc, char **argv)
             /* Unless on error we will never join the threads as they
              * contain a while (TRUE) loop !
              */
-            g_thread_join(serveur_struct->meta_thread);
-            g_thread_join(serveur_struct->data_thread);
-            MHD_stop_daemon(serveur_struct->d);
+            g_main_loop_run(serveur_struct->loop);
+
+            /* g_thread_join(serveur_struct->meta_thread); */
+            /* g_thread_join(serveur_struct->data_thread); */
+
+
         }
     else
         {
