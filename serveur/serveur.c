@@ -79,7 +79,7 @@ static gboolean int_signal_handler(gpointer user_data)
 
     if (serveur_struct != NULL)
         {
-            print_debug(_("\nCatched CTRL-C\n"));
+            print_debug(_("\nEnding the program.\n"));
             g_main_loop_quit(serveur_struct->loop);
             free_serveur_struct_t(serveur_struct);
         }
@@ -784,7 +784,8 @@ static gpointer data_thread(gpointer user_data)
 int main(int argc, char **argv)
 {
     serveur_struct_t *serveur_struct = NULL;  /** main structure for 'serveur' program.           */
-    guint id = 0;
+    guint id_int = 0;
+    guint id_term = 0;
 
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
@@ -799,9 +800,10 @@ int main(int argc, char **argv)
     if (serveur_struct != NULL && serveur_struct->opt != NULL && serveur_struct->backend != NULL)
         {
             serveur_struct->loop = g_main_loop_new(g_main_context_default(), FALSE);
-            id = g_unix_signal_add(SIGINT, int_signal_handler, serveur_struct);
+            id_int = g_unix_signal_add(SIGINT, int_signal_handler, serveur_struct);
+            id_term = g_unix_signal_add(SIGTERM, int_signal_handler, serveur_struct);
 
-            if (id <= 0)
+            if (id_int <= 0 || id_term <= 0)
                 {
                     print_error(__FILE__, __LINE__, _("Unable to add signal handler\n"));
                 }
