@@ -7,10 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sauvegarde 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-25 14:43+0100\n"
+"POT-Creation-Date: 2015-09-05 18:47+0200\n"
 "PO-Revision-Date: 2014-02-25 20:16+0100\n"
 "Last-Translator: Olivier DELHOMME <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -23,7 +24,7 @@ msgstr "15 02 2014"
 msgid "GPL v3 or later"
 msgstr "GPL v3 ou plus récente."
 
-#: ../ciseaux/options.c:51
+#: ../ciseaux/options.c:51 ../monitor/options.c:205
 msgid "Prints program version"
 msgstr "Affiche la version du programme."
 
@@ -86,7 +87,8 @@ msgstr "Impossible de créer un ensemble de threads : %s\n"
 #: ../ciseaux/ciseaux.c:159
 #, c-format
 msgid "Thread pool not created but no error generated!\n"
-msgstr "L'ensemble de threads n'a pas été créé mais aucune erreur n'a été générée !\n"
+msgstr ""
+"L'ensemble de threads n'a pas été créé mais aucune erreur n'a été générée !\n"
 
 #: ../ciseaux/options.c:70
 msgid "Please report bugs to: "
@@ -94,7 +96,9 @@ msgstr "Indiquez les bugs à : "
 
 #: ../ciseaux/options.c:71
 msgid "This program is hashing files with SHA256 algorithms from Glib."
-msgstr "Ce programme calcule les sommes de contrôle (hashs) avec l'algorithme SHA256 de la librairie Glib."
+msgstr ""
+"Ce programme calcule les sommes de contrôle (hashs) avec l'algorithme SHA256 "
+"de la librairie Glib."
 
 #: ../ciseaux/options.c:81
 #, c-format
@@ -125,3 +129,78 @@ msgstr "Auteur(s) : %s\n"
 #, c-format
 msgid "License : %s\n"
 msgstr "Licence : %s\n"
+
+#: ../monitor/options.c:206 ../restaure/options.c:167 ../serveur/options.c:189
+msgid "Activates (1) or desactivates (0) debug mode."
+msgstr ""
+
+#: ../monitor/options.c:206 ../restaure/options.c:167 ../serveur/options.c:189
+msgid "BOOLEAN"
+msgstr ""
+
+#: ../monitor/options.c:207 ../restaure/options.c:168 ../serveur/options.c:190
+msgid "Specify an alternative configuration file."
+msgstr ""
+
+#: ../monitor/options.c:207 ../monitor/options.c:211 ../restaure/options.c:168
+#: ../serveur/options.c:190
+msgid "FILENAME"
+msgstr ""
+
+#: ../monitor/options.c:208
+#, fuzzy
+msgid "Block SIZE used to compute hashs."
+msgstr "Taille des blocs pour le calcul des sommes de contrôle (hashs)."
+
+#: ../monitor/options.c:208
+msgid "SIZE"
+msgstr ""
+
+#: ../monitor/options.c:209
+msgid "Quiets the program while calculating checksum."
+msgstr ""
+
+#: ../monitor/options.c:210
+msgid "Directory DIRNAME where to cache files."
+msgstr ""
+
+#: ../monitor/options.c:210
+msgid "DIRNAME"
+msgstr ""
+
+#: ../monitor/options.c:211
+msgid "Database FILENAME."
+msgstr ""
+
+#: ../monitor/options.c:212 ../restaure/options.c:169
+msgid "IP address where serveur program is."
+msgstr ""
+
+#: ../monitor/options.c:213 ../serveur/options.c:191
+msgid "Port NUMBER on which to listen."
+msgstr ""
+
+#: ../monitor/options.c:213 ../restaure/options.c:170 ../serveur/options.c:191
+msgid "NUMBER"
+msgstr ""
+
+#: ../restaure/options.c:163 ../serveur/options.c:188
+#, fuzzy
+msgid "Prints program version."
+msgstr "Affiche la version du programme."
+
+#: ../restaure/options.c:164
+msgid "Gives a list of saved files that correspond to the given REGEX."
+msgstr ""
+
+#: ../restaure/options.c:165
+msgid "Restore requested filename (REGEX) (by default latest version)."
+msgstr ""
+
+#: ../restaure/options.c:166
+msgid "restores the selected file at that specific DATE."
+msgstr ""
+
+#: ../restaure/options.c:170
+msgid "Port NUMBER on which serveur program is listening."
+msgstr ""

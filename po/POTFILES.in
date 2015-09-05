@@ -1,6 +1,6 @@
-# List of source files containing translatable strings.
-# Please keep this file sorted in this order.
 ../config.h
+../libsauvegarde/clock.c
+../libsauvegarde/clock.h
 ../libsauvegarde/communique.c
 ../libsauvegarde/communique.h
 ../libsauvegarde/configuration.c
@@ -18,10 +18,6 @@
 ../libsauvegarde/query.c
 ../libsauvegarde/query.h
 ../libsauvegarde/unpacking.c
-../monitor/antememoire.c
-../monitor/antememoire.h
-../monitor/ciseaux.c
-../monitor/ciseaux.h
 ../monitor/m_fanotify.c
 ../monitor/m_fanotify.h
 ../monitor/monitor.c
