@@ -56,13 +56,13 @@ static void print_selected_options(options_t *opt)
 {
     if (opt != NULL)
         {
-            fprintf(stdout, _("\n%s options are :\n"), PROGRAM_NAME);
+            fprintf(stdout, _("\n%s options are:\n"), PROGRAM_NAME);
 
-            print_string_option(_("Configuration file : %s\n"), opt->configfile);
+            print_string_option(_("Configuration file: %s\n"), opt->configfile);
 
             if (opt->port != 0)
                 {
-                    fprintf(stdout, _("Port number : %d\n"), opt->port);
+                    fprintf(stdout, _("Port number: %d\n"), opt->port);
                 }
         }
 }
@@ -83,16 +83,16 @@ gchar *buffer_selected_option(options_t *opt)
         {
             if (opt->configfile != NULL)
                 {
-                    buffer = g_strdup_printf(_("\n%s options are :\nConfiguration file : %s\n"), PROGRAM_NAME, opt->configfile);
+                    buffer = g_strdup_printf(_("\n%s options are:\nConfiguration file: %s\n"), PROGRAM_NAME, opt->configfile);
                 }
             else
                 {
-                    buffer = g_strdup_printf(_("\n%s options are :\n"), PROGRAM_NAME);
+                    buffer = g_strdup_printf(_("\n%s options are:\n"), PROGRAM_NAME);
                 }
 
             if (opt->port != 0)
                 {
-                    buf1 = g_strdup_printf(_("%sPort number : %d\n"), buffer, opt->port);
+                    buf1 = g_strdup_printf(_("%sPort number: %d\n"), buffer, opt->port);
                     free_variable(buffer);
                     buffer = buf1;
                 }
@@ -153,7 +153,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                 }
             else if (error != NULL)
                 {
-                    print_error(__FILE__, __LINE__,  _("Failed to open %s configuration file : %s\n"), filename, error->message);
+                    print_error(__FILE__, __LINE__,  _("Failed to open %s configuration file: %s\n"), filename, error->message);
                     error = free_error(error);
                 }
 

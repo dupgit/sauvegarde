@@ -50,7 +50,7 @@ a serveur_meta_data_t structure.
     dir_mode size
     dirname
 
-As an example a JSON structure for a directory looks like :
+As an example a JSON structure for a directory looks like:
 
     {"msg_id": 1,
      "hash_list": [],
@@ -83,7 +83,7 @@ As an example a JSON structure for a directory looks like :
             checksum
         ]
 
-As an example a JSON structure for a file looks like :
+As an example a JSON structure for a file looks like:
 
     {"hash_list": ["0CVUtILbsnYD3Royz7Yu8sOSxjl9f/b+b6wPa9DCRTY=",
                    "AAXUaflNSSHEbZnjVAiY1b2Fz7YvQHwle/iZUHct09U=",
@@ -107,7 +107,7 @@ As an example a JSON structure for a file looks like :
 
 ## Database (local cache)
 
-For now Information is stored with the following scheme :
+For now Information is stored with the following scheme:
 
     --- files ----          -- buffers ---
     | file_id *  |     /n-> | cache_time |
@@ -152,7 +152,7 @@ The API is described in [API.md](docs/API.md)
 
 Stores meta data into flat files and data directly in directories and
 subdirectories named by their hash. Default level of indirection is 2. This
-means that each hash is stored in 2 subdirectories : beef0345... is stored
+means that each hash is stored in 2 subdirectories: beef0345... is stored
 in /be/ef/beef0345... with level 2 and in /be/ef/03/beef0345.... with level
 3.
 
@@ -160,7 +160,7 @@ Considering that we do not want more than 256 files in (level + 1) and
 considering that each hash saved has the default size of 16 Kb then
 with level 2 one may store up to 512 Gb of deduplicated data. Level 3 can
 store up to 256 Tb of datas and level 4 up to 65536 Tb ! Keep in mind also
-that creating such amount of directories takes space : 256 Mb for level 2,
+that creating such amount of directories takes space: 256 Mb for level 2,
 64 Gb for level 3 and 16 Tb for level 4 ! Also it may take a long time to
 create those directories: level 3 took nearly 1 hour on my system where
 level 2 took only 2 seconds (the hard drive was a SSD at that time)!

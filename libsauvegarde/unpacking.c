@@ -172,7 +172,7 @@ json_t *load_json(gchar *json_str)
 
             if (root == NULL)
                 {
-                     print_error(__FILE__, __LINE__, _("Error while trying to load JSON : %s\nline: %d, column: %d, position: %d, string: %s\n"), error.text, error.line, error.column, error.position, json_str);
+                     print_error(__FILE__, __LINE__, _("Error while trying to load JSON: %s\nline: %d, column: %d, position: %d, string: %s\n"), error.text, error.line, error.column, error.position, json_str);
                 }
         }
 

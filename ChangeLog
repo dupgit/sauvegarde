@@ -18,10 +18,10 @@
 22.02.2014
      - Olivier Delhomme <olivier.delhomme@free.fr>
         * Tests done with GFileMonitor and inotify. They suffers from
-          limits : 1024 directories/files is the limit for GFileMonitor
+          limits: 1024 directories/files is the limit for GFileMonitor
           and 8192 is the limit for inotify (on my system). It seems that
           the only way to do this is to get the notifications directly
-          from the kernel : redirfs or pluginfs ?
+          from the kernel: redirfs or pluginfs ?
 
 15.02.2014
     - Olivier Delhomme <olivier.delhomme@free.fr>

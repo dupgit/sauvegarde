@@ -138,12 +138,12 @@ gchar *buffer_libraries_versions(gchar *name)
 
     if (name != NULL)
         {
-            buffer = g_strdup_printf(_("%s was compiled with the following libraries:\n\t. GLIB version : %d.%d.%d\n"), name, glib_major_version, glib_minor_version, glib_micro_version);
+            buffer = g_strdup_printf(_("%s was compiled with the following libraries:\n\t. GLIB version: %d.%d.%d\n"), name, glib_major_version, glib_minor_version, glib_micro_version);
 
             if (g_strcmp0(name, "serveur") == 0)
                 {
                     comm_version = make_MHD_version();
-                    buf1 = g_strdup_printf("%s\t. LIBMHD : %s\n", buffer, comm_version);
+                    buf1 = g_strdup_printf("%s\t. LIBMHD: %s\n", buffer, comm_version);
                     buffer = free_variable(buffer);
                     comm_version = free_variable(comm_version);
                 }
@@ -165,7 +165,7 @@ gchar *buffer_libraries_versions(gchar *name)
                     buffer = free_variable(buffer);
                 }
 
-            buffer = g_strdup_printf(_("%s\t. %s version : %s\n\t. JANSSON version : %d.%d.%d\n"), buf1, DATABASE_NAME, db_version(), JANSSON_MAJOR_VERSION, JANSSON_MINOR_VERSION, JANSSON_MICRO_VERSION);
+            buffer = g_strdup_printf(_("%s\t. %s version: %s\n\t. JANSSON version: %d.%d.%d\n"), buf1, DATABASE_NAME, db_version(), JANSSON_MAJOR_VERSION, JANSSON_MINOR_VERSION, JANSSON_MICRO_VERSION);
             buf1 = free_variable(buf1);
         }
 
@@ -217,7 +217,7 @@ gchar *buffer_program_version(gchar *name, gchar *date, gchar *version, gchar *a
 
         if (name != NULL && date != NULL && version != NULL && authors != NULL && license != NULL)
         {
-            buffer = g_strdup_printf(_("%s version : %s-%s (%s)\nAuthor(s) : %s\nLicense : %s\n\n"), name, version, REVISION, date, authors, license);
+            buffer = g_strdup_printf(_("%s version: %s-%s (%s)\nAuthor(s): %s\nLicense: %s\n\n"), name, version, REVISION, date, authors, license);
         }
 
     return buffer;
@@ -257,21 +257,21 @@ void init_international_languages(void)
     text_domain = textdomain(GETTEXT_PACKAGE);
 
     print_debug(_("Debug mode is activated.\n"));
-    print_debug(_("Gettext package : %s\n"), GETTEXT_PACKAGE);
+    print_debug(_("Gettext package: %s\n"), GETTEXT_PACKAGE);
 
     if (result != NULL)
         {
-            print_debug(_("Bindtextdomain : %s\n"), result);
+            print_debug(_("Bindtextdomain: %s\n"), result);
         }
 
     if (codeset != NULL)
         {
-            print_debug(_("Code set : %s\n"), codeset);
+            print_debug(_("Code set: %s\n"), codeset);
         }
 
     if (text_domain != NULL)
         {
-            print_debug(_("Text domain : %s\n"), text_domain);
+            print_debug(_("Text domain: %s\n"), text_domain);
         }
 }
 
@@ -454,7 +454,7 @@ void create_directory(gchar *directory)
                 {
                     if (error->code != G_IO_ERROR_EXISTS)
                         {
-                            print_error(__FILE__, __LINE__, ("Failed to create directory %s : %s\n"), directory, error->message);
+                            print_error(__FILE__, __LINE__, ("Failed to create directory %s: %s\n"), directory, error->message);
                         }
                     error = free_error(error);
                 }

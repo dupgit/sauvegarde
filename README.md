@@ -57,7 +57,7 @@ If you had the code from the git repository you may generate the configure
 script by invoking `./autogen.sh` script. It will execute aclocal, libtoolize
 automake, autoconf, glib-gettextize and intltoolize for you. If everything
 went ok you should have an executable configure script that you may use
-in the classic way :
+in the classic way:
 
     ./configure --prefix=/my/local/install --enable-debug
     make
@@ -197,7 +197,7 @@ I discovered 'lizard' a simple but excellent python program that checks the
 complexity of a program (ok, how complex it look like because it does not
 take into account preprocessor macros...). If you plan to hack into this
 project please look at the result of this program (you may find it
-following this link : [https://github.com/terryyin/lizard](https://github.com/terryyin/lizard))
+following this link: [https://github.com/terryyin/lizard](https://github.com/terryyin/lizard))
 
 
 ## Learnt things from experiments
@@ -213,10 +213,10 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
   (http://www.redirfs.org/tiki-index.php) or pluginfs
   (http://www.pluginfs.org/).
 * redirfs, pluginfs and dazuko seems dead (on 02 march 2014). As of
-  28.03.2015 we can notice that :
+  28.03.2015 we can notice that:
  * redirfs has its last commit in Jun 2014
  * pluginfs.org is no more accessible (and all ressources it had). Found
-   plugins on github along with redirfs !! :
+   plugins on github along with redirfs !!:
   * [https://github.com/fhrbata/pluginfs](https://github.com/fhrbata/pluginfs)
   * [https://github.com/fhrbata/redirfs](https://github.com/fhrbata/redirfs)
  * dazuko still seems dead since 06.09.2008
@@ -241,7 +241,7 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
 
 ## May be usefull links
 
-* Filesystem events notifycation :
+* Filesystem events notifycation:
  * redirfs        : [http://www.redirfs.org/tiki-index.php](http://www.redirfs.org/tiki-index.php)
  * pluginfs       : [http://www.pluginfs.org/](http://www.pluginfs.org/)
  * dazuko         : [http://dazuko.dnsalias.org/wiki/index.php/Main_Page](http://dazuko.dnsalias.org/wiki/index.php/Main_Page)
@@ -250,21 +250,21 @@ following this link : [https://github.com/terryyin/lizard](https://github.com/te
  * main site      :[http://www.sqlite.org/cintro.html](http://www.sqlite.org/cintro.html)
  * firefox add on : [https://addons.mozilla.org/fr/firefox/addon/sqlite-manager/](https://addons.mozilla.org/fr/firefox/addon/sqlite-manager/)
 * zmq             : [http://czmq.zeromq.org/](http://czmq.zeromq.org/)
-* data packing over the wire :
+* data packing over the wire:
  * msgpack        : [http://msgpack.org/](http://msgpack.org/)
  * jansson        : [http://www.digip.org/jansson/](http://www.digip.org/jansson/). See also the RFC 7159: [http://tools.ietf.org/html/rfc7159.html](http://tools.ietf.org/html/rfc7159.html)
 * doxygen         : [http://www.stack.nl/~dimitri/doxygen/index.html](http://www.stack.nl/~dimitri/doxygen/index.html)
-* Software quality checkers :
+* Software quality checkers:
  * lizard         : [https://github.com/terryyin/lizard](https://github.com/terryyin/lizard)
-* Third party libraries :
+* Third party libraries:
  * libmicrohttpd   : [https://www.gnu.org/software/libmicrohttpd/](https://www.gnu.org/software/libmicrohttpd/)
  * libevent        : [http://libevent.org/](http://libevent.org/)
-* Similar projects :
+* Similar projects:
  * clsync          : [https://github.com/xaionaro/clsync](https://github.com/xaionaro/clsync)
  * data-14         : [http://www.data-14.org/](http://www.data-14.org/)
-* other dependencies :
+* other dependencies:
  * libcurl         : [http://curl.haxx.se/](http://curl.haxx.se/)
  * glib            : [https://wiki.gnome.org/Projects/GLib](https://wiki.gnome.org/Projects/GLib)
-* Distribution doc :
+* Distribution doc:
  * Debian          : [https://www.debian.org/devel/wnpp/](https://www.debian.org/devel/wnpp/)
  * Gentoo          : [https://wiki.gentoo.org/wiki/Submitting_ebuilds](https://wiki.gentoo.org/wiki/Submitting_ebuilds)

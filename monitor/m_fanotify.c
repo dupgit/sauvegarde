@@ -280,7 +280,7 @@ static void event_process(main_struct_t *main_struct, struct fanotify_event_meta
                         {
                             /* Don't try to save files that comes from our activity */
                             print_debug(_("Received event file/directory: %s\n"), path);
-                            print_debug(_(" matching directory is       : %s\n"), head->data);
+                            print_debug(_(" matching directory is: %s\n"), head->data);
                             print_debug(_(" pid=%d (%s): "), event->pid, progname);
 
                             if (event->mask & FAN_CLOSE_WRITE)

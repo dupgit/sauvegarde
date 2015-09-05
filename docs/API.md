@@ -8,21 +8,21 @@ All urls ending with .json waits (POST) or provide (GET) json strings.
 ### /Version
 
 Gets the version of the serveur in a more human readable than a json string
-producing an output such as :
+producing an output such as:
 
-    serveur version : 0.0.1-cb6c92b (27 04 2014)
-    Author(s) : Olivier DELHOMME <olivier.delhomme@free.fr>
-    License : GPL v3 or later
+    serveur version: 0.0.1-cb6c92b (27 04 2014)
+    Author(s): Olivier DELHOMME <olivier.delhomme@free.fr>
+    License: GPL v3 or later
 
     serveur was compiled with the following libraries:
-        . GLIB version : 2.36.3
-        . LIBMHD : 0.9.39-2
-        . SQLITE version : 3.8.6
-        . JANSSON version : 2.7.0
+        . GLIB version: 2.36.3
+        . LIBMHD: 0.9.39-2
+        . SQLITE version: 3.8.6
+        . JANSSON version: 2.7.0
 
-    serveur options are :
-    Configuration file : /home/dup/local/bin/../etc/sauvegarde/serveur.conf
-    Port number : 5468
+    serveur options are:
+    Configuration file: /home/dup/local/bin/../etc/sauvegarde/serveur.conf
+    Port number: 5468
 
 
 ### /Version.json

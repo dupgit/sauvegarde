@@ -45,7 +45,7 @@ gchar *get_communication_library_version(void)
 
     data = curl_version_info(CURLVERSION_NOW);
 
-    return g_strdup_printf(_("\t. LIBCURL version : %s\n"), data->version);
+    return g_strdup_printf(_("\t. LIBCURL version: %s\n"), data->version);
 }
 
 

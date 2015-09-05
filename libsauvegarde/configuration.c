@@ -81,13 +81,13 @@ gchar *read_string_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupnam
 
             if (error != NULL)
                 {
-                    print_error(__FILE__, __LINE__,  "%s %s : %s", errormsg, filename, error->message);
+                    print_error(__FILE__, __LINE__,  "%s %s: %s", errormsg, filename, error->message);
                     error = free_error(error);
                 }
         }
     else if (error != NULL)
         {
-            print_error(__FILE__, __LINE__, _("Error while looking for %s key in configuration file : %s\n"), keyname, error->message);
+            print_error(__FILE__, __LINE__, _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
             error = free_error(error);
         }
 
@@ -117,13 +117,13 @@ gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
 
             if (error != NULL)
                 {
-                    print_error(__FILE__, __LINE__, "%s %s : %s", errormsg, filename, error->message);
+                    print_error(__FILE__, __LINE__, "%s %s: %s", errormsg, filename, error->message);
                     error = free_error(error);
                 }
         }
     else if (error != NULL)
         {
-            print_error(__FILE__, __LINE__, _("Error while looking for %s key in configuration file : %s\n"), keyname, error->message);
+            print_error(__FILE__, __LINE__, _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
             error = free_error(error);
         }
 
@@ -153,13 +153,13 @@ gint read_int_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gc
 
             if (error != NULL)
                 {
-                    print_error(__FILE__, __LINE__, "%s %s : %s", errormsg, filename, error->message);
+                    print_error(__FILE__, __LINE__, "%s %s: %s", errormsg, filename, error->message);
                     error = free_error(error);
                 }
         }
     else if (error != NULL)
         {
-            print_error(__FILE__, __LINE__,  _("Error while looking for %s key in configuration file : %s\n"), keyname, error->message);
+            print_error(__FILE__, __LINE__,  _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
             error = free_error(error);
         }
 
@@ -189,13 +189,13 @@ gboolean read_boolean_from_file(GKeyFile *keyfile, gchar *filename, gchar *group
 
             if (error != NULL)
                 {
-                    print_error(__FILE__, __LINE__, "%s %s : %s", errormsg, filename, error->message);
+                    print_error(__FILE__, __LINE__, "%s %s: %s", errormsg, filename, error->message);
                     error = free_error(error);
                 }
         }
     else if (error != NULL)
         {
-            print_error(__FILE__, __LINE__,  _("Error while looking for %s key in configuration file : %s\n"), keyname, error->message);
+            print_error(__FILE__, __LINE__,  _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
             error = free_error(error);
         }
 
@@ -270,13 +270,13 @@ GSList *read_list_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
                 }
             else if (error != NULL)
                 {
-                    print_error(__FILE__, __LINE__, _("%s %s : %s\n"), errormsg, filename, error->message);
+                    print_error(__FILE__, __LINE__, _("%s %s: %s\n"), errormsg, filename, error->message);
                     error = free_error(error);
                 }
         }
     else if (error != NULL)
         {
-            print_error(__FILE__, __LINE__, _("Error while looking for %s key in configuration file : %s\n"), keyname, error->message);
+            print_error(__FILE__, __LINE__, _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
             error = free_error(error);
         }
 

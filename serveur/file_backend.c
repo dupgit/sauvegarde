@@ -371,7 +371,7 @@ static void read_from_group_file_backend(file_backend_t *file_backend, gchar *fi
         }
     else if (error != NULL)
         {
-            print_error(__FILE__, __LINE__,  _("Failed to open %s configuration file : %s\n"), filename, error->message);
+            print_error(__FILE__, __LINE__,  _("Failed to open %s configuration file: %s\n"), filename, error->message);
             error = free_error(error);
         }
 
@@ -496,7 +496,7 @@ static void read_one_buffer(buffer_t *a_buffer)
 
             if (a_buffer->size < 0 && error != NULL)
                 {
-                    print_error(__FILE__, __LINE__, _("Error while reading the file : %s\n"), error->message);
+                    print_error(__FILE__, __LINE__, _("Error while reading the file: %s\n"), error->message);
                     error = free_error(error);
                 }
         }
