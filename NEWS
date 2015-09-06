@@ -1,5 +1,32 @@
+[06-09-2015] v0.0.4
+'sauvegarde' is a set of tools ('serveur', 'client' and 'restore' - as of now) that saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server (named 'serveur') is stateless and achieves deduplication (block level). As a result it does not use much memory and may run on small machines (on a virtual machine for instance).
+
+This is the fourth release of this project. Some improvements were made. Let's see what's new in version v0.0.4:
+
+    * There is now a new server url to post a bunch of hashs and associated data (/Data_Array.json). The JSON string expected must contain an array named 'data_array'. Each object of this array must contain the three fields 'hash', 'data' and 'size'. Fields 'hash' and 'size' must be base64 encoded. This has the effect of buffering the communication a bit. My tests on my single computer showed that thye gain of speed is at least 4 times.
+    * When sending the hashs of a file in it's meta data the server answers the hashs that it needs (unknown to him). But if the file has several times the same hash that is unknown the server was answering as many times to send this hash. Now, with v0.0.4 the answer has only unique hashs, avoiding the client to send several times the same block.
+    * file_backend has now a configuration section into the 'serveur.conf' file named '[file_backend]'. Two options can be configured. An option named 'file-directory' that tells the backend where to put it's files and 'dir-level' that tells the backend the number of level we want to store datas. It's default value is 2 (it means that serveur will create 65536 directories). The value is limited to a maximum of 5 (ie 256^5 = 1 099 511 627 776 directories!). Keep in mind that creating the directories may last a long time if you choose a high value (It will only be done once) and also that a directory may take some space (on ext4 a level 2 takes 256 Mb but level 3 takes 64 Gb !).
+    * sauvegarde in now fully translated in French and is ready for other translations (it is based on .po files).
+    * Sebastien Tricaud patch was merge in this version adding the hability to catch SIGINT and clean the memory before exiting avoiding a memory leak.
+    * A manual has been created and is waiting for contributions at http://write.flossmanuals.net/sauvegarde-manual/_info/.
+    * TODO file has been reworked and contains new ideas that I might put in the roadmap.
+
+Contributors to this version:
+    * Olivier Delhomme
+    * Sébastien Tricaud
+
+Links:
+
+    * Sauvegarde's project: https://github.com/dupgit/sauvegarde
+    * Sauvegarde's manual (still to be created): http://write.flossmanuals.net/sauvegarde-manual/_info/
+    * Sauvegarde's openhub: https://openhub.net/p/sauvegarde
+    * Sauvegarde release v0.0.4: http://src.delhomme.org/download/sauvegarde/releases/sauvegarde-0.0.4.tar.xz
+    * travis continuous integration status: https://travis-ci.org/dupgit/sauvegarde
+
+
+
 [21-08-2015] v0.0.3
-'sauvegarde' is a set of tools ('serveur', 'client' and 'restaure' - as of now) that saves your files in a live continuous way that is to say while they are written to disks.
+'sauvegarde' is a set of tools ('serveur', 'client' and 'restore' - as of now) that saves your files in a live continuous way that is to say while they are written to disks.
 
 New features in version v0.0.3:
 
