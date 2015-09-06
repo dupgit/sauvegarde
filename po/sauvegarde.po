@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-05 23:14+0200\n"
+"POT-Creation-Date: 2015-09-06 13:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -393,6 +393,8 @@ msgstr ""
 
 #. Reading filename of the database if any
 #. Reading IP address of serveur's host if any
+#. Reading filename of the database if any
+#. Reading IP address of serveur's host if any
 #: ../monitor/options.c:100 ../monitor/options.c:130 ../restaure/options.c:90
 msgid "Could not load cache database name"
 msgstr ""
@@ -757,4 +759,12 @@ msgstr ""
 
 #: ../serveur/serveur.c:842
 msgid "Error: initialization failed.\n"
+msgstr ""
+
+#: ../monitor/monitor.h:75 ../restaure/restaure.h:81 ../serveur/serveur.h:74
+msgid "06 09 2015"
+msgstr ""
+
+#: ../monitor/monitor.h:77 ../restaure/restaure.h:83 ../serveur/serveur.h:76
+msgid "0.0.4"
 msgstr ""

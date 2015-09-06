@@ -140,9 +140,6 @@ options are:
 I am coding on spare hours so I may not tell any release dates and you
 should consider that "It ships when its ready".
 
-* 0.0.4  new serveur url to post a bunch of hashs and associated data.
-         Clean the answer list of needed hashs to avoid having duplicated
-         hashs into it.
 * 0.0.5  fanotify's code reviewed. Avoid having one entire file in memory
 * 0.0.6  restore to some specific place
 * 0.0.7  hability to exclude some files by extension or path
@@ -158,6 +155,9 @@ should consider that "It ships when its ready".
 * 0.0.1  [08 07 2015] First usable version
 * 0.0.2  [15.08.2015] client redesigned
 * 0.0.3  [21.08.2015] saves and restores links
+* 0.0.4  [06.09.2015] new serveur url to post a bunch of hashs and
+                      associated data. Clean the answer list of needed
+                      hashs to avoid having duplicated hashs into it.
 
 
 ## Infrastucture
