@@ -35,7 +35,7 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
 static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, gint64 blocksize, db_t *database);
 static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta);
 static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash);
-static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
+static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
 static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum);
 static void carve_one_directory(gpointer data, gpointer user_data);
 static void carve_all_directories(main_struct_t *main_struct);
@@ -326,7 +326,7 @@ static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash)
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
+static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
 {
     json_t *root = NULL;
     json_t *array = NULL;
@@ -426,7 +426,7 @@ static gint send_all_datas_to_serveur(main_struct_t *main_struct, meta_data_t *m
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static gint send_datas_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
+static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
 {
     json_t *root = NULL;
     GSList *hash_list = NULL;         /** hash_list is local to this function */
@@ -512,8 +512,8 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
 
                     if (answer != NULL)
                         {
-                            /* success = send_datas_to_serveur(main_struct, meta, answer); */
-                            success = send_all_datas_to_serveur(main_struct, meta, answer);
+                            /* success = send_data_to_serveur(main_struct, meta, answer); */
+                            success = send_all_data_to_serveur(main_struct, meta, answer);
                             free_variable(answer);
 
                             if (success == TRUE)
@@ -529,7 +529,7 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
                         }
                     else
                         {
-                            /* Something went wrong when sending metadatas */
+                            /* Something went wrong when sending meta-data */
                             /* Need to save data and meta data because an error occured when transmitting. */
                         }
                 }

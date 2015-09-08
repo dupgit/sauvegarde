@@ -122,7 +122,7 @@
 /** Below you'll find some definitions for the serveur's backends */
 /**
  * @def KN_FILE_DIRECTORY
- * Defines where file_backend might store its datas
+ * Defines where file_backend might store its data
  */
 #define KN_FILE_DIRECTORY ("file-directory")
 

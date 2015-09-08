@@ -384,7 +384,7 @@ static void read_from_group_file_backend(file_backend_t *file_backend, gchar *fi
 
     if (level > 0 && level < 6)
         { /* Will anyone need more than 1 099 511 627 776 directories to
-           * store datas ? with 16k blocs and 256 block files per leafs
+           * store data? with 16k blocs and 256 block files per leafs
            * it represents 4 exabytes !
            */
             file_backend->level = level;
