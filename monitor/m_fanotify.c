@@ -246,7 +246,7 @@ static void event_process(main_struct_t *main_struct, struct fanotify_event_meta
     gchar *progname = NULL;
     GSList *head = dir_list;
     gboolean found = FALSE;
-    gchar *pathutf8 = NULL;
+    gchar *pathutf8 = NULL;   /* path where the received event occured */
     gchar *dirutf8 = NULL;
 
     path = get_file_path_from_fd(event->fd);
@@ -408,7 +408,7 @@ void fanotify_loop(main_struct_t *main_struct)
                         {
                             if (read(fds[FD_POLL_SIGNAL].fd, &fdsi, sizeof(fdsi)) != sizeof(fdsi))
                                 {
-                                  print_error(__FILE__, __LINE__, _("Couldn't read signal, wrong size read\n"));
+                                    print_error(__FILE__, __LINE__, _("Couldn't read signal, wrong size read\n"));
                                 }
 
                             /* Break loop if we got SIGINT or SIGTERM */
