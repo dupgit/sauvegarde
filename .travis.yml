@@ -33,7 +33,7 @@ script:
     - export PATH=$PATH:$HOME/local/bin
     - export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/local/lib/pkgconfig
     - ./autoclean.sh && ./autogen.sh && ./configure --prefix=$HOME/local --enable-debug --disable-silent && make && make install && $HOME/local/bin/client --version && $HOME/local/bin/serveur --version && $HOME/local/bin/restaure --version
-    - $HOME/sauvegarde/tests/launch_tests.bash
+    - $HOME/build/dupgit/sauvegarde/tests/launch_tests.bash
 
 # irc bot notification
 notifications:
