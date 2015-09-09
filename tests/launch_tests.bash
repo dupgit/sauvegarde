@@ -24,20 +24,20 @@
 # All paths
 
 # Launching the serveur
-$HOME/local/bin/serveur -c $HOME/sauvegarde/tests/serveur.conf &
+$HOME/local/bin/serveur -c $HOME/build/dupgit/sauvegarde/tests/serveur.conf &
 
 # Waiting for the serveur to achieve directories creation
 sleep 40s
 
 # Launching the client
-$HOME/local/bin/client -c $HOME/sauvegarde/tests/client.conf &
+$HOME/local/bin/client -c $HOME/build/dupgit/sauvegarde/tests/client.conf &
 
 # Waiting that the client finishes it's first pass (should be quick here).
 sleep 5s
 
 # Creating files in the monitored directory
-dd if=/dev/zero of=$HOME/sauvegarde/tests/zerofile.dd count=3 bs=16k
-dd if=/dev/urandom of=$HOME/sauvegarde/tests/urandomfile.dd count=3 bs=16k
+dd if=/dev/zero of=$HOME/build/dupgit/sauvegarde/tests/zerofile.dd count=3 bs=16k
+dd if=/dev/urandom of=$HOME/build/dupgit/sauvegarde/tests/urandomfile.dd count=3 bs=16k
 
 # Waiting a bit before killing the programs
 sleep 1s
