@@ -2,7 +2,7 @@
 
 ## Not in the roadmap
 
-* use some cryptography to cipher exchanges (gpg ?)
+* use some cryptography to cipher exchanges (gpg ? - JOSE ?)
 * UI integration to desktop managers like Xfce, Gnome, MATE, QT ?
 * file_backend: compress blocks on disk + ciphering ?
 * serveur: add a backend for Ceph.

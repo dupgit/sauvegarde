@@ -268,3 +268,6 @@ following this link: [https://github.com/terryyin/lizard](https://github.com/ter
 * Distribution doc:
  * Debian          : [https://www.debian.org/devel/wnpp/](https://www.debian.org/devel/wnpp/)
  * Gentoo          : [https://wiki.gentoo.org/wiki/Submitting_ebuilds](https://wiki.gentoo.org/wiki/Submitting_ebuilds)
+* JOSE:
+ * [https://securityblog.redhat.com/2015/04/01/jose-json-object-signing-and-encryption/](https://securityblog.redhat.com/2015/04/01/jose-json-object-signing-and-encryption/)
+ * [https://www.iana.org/assignments/jose/jose.xhtml](https://www.iana.org/assignments/jose/jose.xhtml)
