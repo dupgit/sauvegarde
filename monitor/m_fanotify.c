@@ -33,6 +33,8 @@
 
 static gchar *get_file_path_from_fd(gint fd);
 static char *get_program_name_from_pid(int pid);
+static void prepare_before_saving(main_struct_t *main_struct, gchar *path);
+static GSList *does_event_concerns_monitored_directory(gchar *path, GSList *dir_list);
 static void event_process(main_struct_t *main_struct, struct fanotify_event_metadata *event, GSList *dir_list);
 
 
@@ -236,7 +238,51 @@ static void prepare_before_saving(main_struct_t *main_struct, gchar *path)
 
 
 /**
- * An example of processing events
+ * Returns the pointer to the concerned directory if found NULL otherwise
+ * @param path path where the event occured
+ * @param dir_list monitored directory list
+ * @returns a pointer to the monitired directory where the event occured
+ */
+static GSList *does_event_concerns_monitored_directory(gchar *path, GSList *dir_list)
+{
+    GSList *head = dir_list;
+    gchar *pathutf8 = NULL;   /* path where the received event occured */
+    gchar *dirutf8 = NULL;
+    gboolean found = FALSE;
+
+    pathutf8 = g_utf8_casefold(path, -1);
+
+    while (head != NULL && found == FALSE)
+        {
+            dirutf8 = head->data;
+
+            if (g_str_has_prefix(pathutf8, dirutf8) == TRUE)
+                {
+                    found = TRUE;
+                }
+            else
+                {
+                    head = g_slist_next(head);
+                }
+        }
+
+    pathutf8 = free_variable(pathutf8);
+
+    if (found == TRUE)
+        {
+            return head;
+        }
+    else
+        {
+            return NULL;
+        }
+}
+
+
+/**
+ * Processes events
+ * @param main_struct is the maion structure
+ * @param event is the fanotify's structure event
  * @param dir_list MUST be a list of gchar * g_utf8_casefold()
  *        transformed.
  */
@@ -244,35 +290,16 @@ static void event_process(main_struct_t *main_struct, struct fanotify_event_meta
 {
     gchar *path = NULL;
     gchar *progname = NULL;
-    GSList *head = dir_list;
-    gboolean found = FALSE;
-    gchar *pathutf8 = NULL;   /* path where the received event occured */
-    gchar *dirutf8 = NULL;
+    GSList *head = NULL;
 
     path = get_file_path_from_fd(event->fd);
 
     if (path != NULL)
         {
             /* Does the event concern a monitored directory ? */
-            pathutf8 = g_utf8_casefold(path, -1);
+            head = does_event_concerns_monitored_directory(path, dir_list);
 
-            while (head != NULL && found == FALSE)
-                {
-                    dirutf8 = head->data;
-
-                    if (g_str_has_prefix(pathutf8, dirutf8) == TRUE)
-                        {
-                            found = TRUE;
-                        }
-                    else
-                        {
-                            head = g_slist_next(head);
-                        }
-                }
-
-            pathutf8 = free_variable(pathutf8);
-
-            if (found == TRUE)
+            if (head != NULL)
                 {
                     progname = get_program_name_from_pid(event->pid);
 
