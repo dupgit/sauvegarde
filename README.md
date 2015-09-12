@@ -15,7 +15,12 @@ use `restaure` to restore a file.
 ## License
 
 This is free software and real open source as GPLv3 is used for this
-collection of programs. Feel free to contibute and/or give help to the
+collection of programs and Creative Commons Attribution-ShareAlike 4.0
+is used for the artwork. You'll find on LICENSE file in this directory
+for the programs (GPL v3) and one in the pixmaps file for the artwork
+(CC-BY-SA 4.0).
+
+Feel free to contibute to sauvegarde's project and/or give help to the
 projects used here (see dependencies section below).
 
 
