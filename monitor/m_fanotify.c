@@ -35,6 +35,7 @@ static gchar *get_file_path_from_fd(gint fd);
 static char *get_program_name_from_pid(int pid);
 static void prepare_before_saving(main_struct_t *main_struct, gchar *path);
 static GSList *does_event_concerns_monitored_directory(gchar *path, GSList *dir_list);
+static gboolean filter_out_if_necessary(GSList *head, struct fanotify_event_metadata *event);
 static void event_process(main_struct_t *main_struct, struct fanotify_event_metadata *event, GSList *dir_list);
 
 
@@ -241,7 +242,7 @@ static void prepare_before_saving(main_struct_t *main_struct, gchar *path)
  * Returns the pointer to the concerned directory if found NULL otherwise
  * @param path path where the event occured
  * @param dir_list monitored directory list
- * @returns a pointer to the monitired directory where the event occured
+ * @returns a pointer to the monitored directory where the event occured
  */
 static GSList *does_event_concerns_monitored_directory(gchar *path, GSList *dir_list)
 {
@@ -280,6 +281,34 @@ static GSList *does_event_concerns_monitored_directory(gchar *path, GSList *dir_
 
 
 /**
+ * Filters out and returns TRUE if the event concerns a file that has to
+ * be saved FALSE otherwise
+ * @param head is the matching monitired directory
+ * @param event is the fanotify's structure event
+ */
+static gboolean filter_out_if_necessary(GSList *head, struct fanotify_event_metadata *event)
+{
+    gchar *progname = NULL;
+
+
+    if (head != NULL)
+        {
+            progname = get_program_name_from_pid(event->pid);
+
+            if (g_strcmp0(PROGRAM_NAME, progname) != 0)
+                {
+                    /* Save files that does not come from our activity */
+                    free_variable(progname);
+
+                    return TRUE;
+                }
+        }
+
+    return FALSE;
+}
+
+
+/**
  * Processes events
  * @param main_struct is the maion structure
  * @param event is the fanotify's structure event
@@ -289,7 +318,7 @@ static GSList *does_event_concerns_monitored_directory(gchar *path, GSList *dir_
 static void event_process(main_struct_t *main_struct, struct fanotify_event_metadata *event, GSList *dir_list)
 {
     gchar *path = NULL;
-    gchar *progname = NULL;
+    gboolean to_save = FALSE;
     GSList *head = NULL;
 
     path = get_file_path_from_fd(event->fd);
@@ -299,28 +328,23 @@ static void event_process(main_struct_t *main_struct, struct fanotify_event_meta
             /* Does the event concern a monitored directory ? */
             head = does_event_concerns_monitored_directory(path, dir_list);
 
-            if (head != NULL)
+            /* Do we need to save this file ? Is it excluded somehow ? */
+            to_save = filter_out_if_necessary(head, event);
+
+            if (to_save == TRUE)
                 {
-                    progname = get_program_name_from_pid(event->pid);
+                    print_debug(_("Received event file/directory: %s\n"), path);
+                    print_debug(_(" matching directory is: %s\n"), head->data);
 
-                    if (g_strcmp0(PROGRAM_NAME, progname) != 0)
+                    if (event->mask & FAN_CLOSE_WRITE)
                         {
-                            /* Don't try to save files that comes from our activity */
-                            print_debug(_("Received event file/directory: %s\n"), path);
-                            print_debug(_(" matching directory is: %s\n"), head->data);
-                            print_debug(_(" pid=%d (%s): "), event->pid, progname);
-
-                            if (event->mask & FAN_CLOSE_WRITE)
-                                {
-                                    print_debug(_("\tFAN_CLOSE_WRITE\n"));
-                                }
-
-                            /* Saving the file effectively */
-                            prepare_before_saving(main_struct, path);
-
-                            fflush (stdout);
+                            print_debug(_("\tFAN_CLOSE_WRITE\n"));
                         }
-                    free_variable(progname);
+
+                    /* Saving the file effectively */
+                    prepare_before_saving(main_struct, path);
+
+                    fflush (stdout);
                 }
 
             close(event->fd);
