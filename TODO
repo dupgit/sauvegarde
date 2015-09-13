@@ -23,4 +23,5 @@
 
 # Manual
 
-Edit sauvegarde's manual: http://write.flossmanuals.net/sauvegarde-manual/_info/
+Edit sauvegarde's manual by writing into files in manual/ directory of
+the project (using markdown notation).
