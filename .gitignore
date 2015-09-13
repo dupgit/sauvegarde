@@ -39,3 +39,10 @@ restaure/.deps/
 restaure/.libs/
 restaure/restaure
 compile
+manual/*.tex
+manual/*.pdf
+manual/*.aux
+manual/*.ind
+manual/*.out
+manual/*.toc
+manual/*.log
