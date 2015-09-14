@@ -9,8 +9,7 @@
 * client: adaptative block size that will depend on the file size. Option
           to choose adaptative or fixed.
 * client: fit into "small memory" systems.
-* serveur: file_backend needs a path prefix to know where to save files.
-           Add an option in configuration file to indicate this prefix.
+
 
 ## In the roadmap already.
 
