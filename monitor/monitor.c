@@ -222,7 +222,10 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
                 }
 
 
-            /* We need to determine if the file has already been saved by looking into the local database */
+            /* We need to determine if the file has already been saved by looking into the local database
+             * This is usefull only when carving directories at the begining of the process as when called
+             * by m_fanotify we already know that the file was written and that something changed.
+             */
             meta->in_cache = is_file_in_cache(database, meta);
 
 
@@ -526,6 +529,7 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
                             if (success == CURLE_OK)
                                 {
                                     /* Everything has been transmitted so we can save meta data into the local db cache */
+                                    /* This is usefull for file carving to avoid sending too much things to the server  */
                                     db_save_meta_data(main_struct->database, meta, TRUE);
                                 }
                             else

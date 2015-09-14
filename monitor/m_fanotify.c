@@ -346,7 +346,7 @@ static void event_process(main_struct_t *main_struct, struct fanotify_event_meta
                     /* Saving the file effectively */
                     prepare_before_saving(main_struct, path);
 
-                    fflush (stdout);
+                    fflush(stdout);
                 }
 
             close(event->fd);
