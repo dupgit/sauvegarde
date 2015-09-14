@@ -336,10 +336,12 @@ static void event_process(main_struct_t *main_struct, struct fanotify_event_meta
                     print_debug(_("Received event file/directory: %s\n"), path);
                     print_debug(_(" matching directory is: %s\n"), head->data);
 
-                    if (event->mask & FAN_CLOSE_WRITE)
-                        {
-                            print_debug(_("\tFAN_CLOSE_WRITE\n"));
-                        }
+                    /* we are only watching this event so it is not necessary to print it !
+                     * if (event->mask & FAN_CLOSE_WRITE)
+                     *   {
+                     *       print_debug(_("\tFAN_CLOSE_WRITE\n"));
+                     *   }
+                     */
 
                     /* Saving the file effectively */
                     prepare_before_saving(main_struct, path);
