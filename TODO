@@ -6,6 +6,8 @@
 * UI integration to desktop managers like Xfce, Gnome, MATE, QT ?
 * file_backend: compress blocks on disk + ciphering ?
 * serveur: add a backend for Ceph.
+* serveur: add a /Stats.json URL to give some statistics about the
+           server.
 * client: adaptative block size that will depend on the file size. Option
           to choose adaptative or fixed.
 * client: fit into "small memory" systems.
@@ -19,6 +21,7 @@
 * Filters to exclude files by path or by extension
 * client: integrates fanotify in a cleaner way and try to see wether a
         directory creation can be detected.
+
 
 # Manual
 
