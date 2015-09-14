@@ -512,11 +512,18 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
 
                     if (answer != NULL)
                         {
-                            /* success = send_data_to_serveur(main_struct, meta, answer); */
-                            success = send_all_data_to_serveur(main_struct, meta, answer);
-                            free_variable(answer);
+                            if (meta->size < main_struct->opt->blocksize)
+                                {
+                                    success = send_data_to_serveur(main_struct, meta, answer);
+                                }
+                            else
+                                {
+                                    success = send_all_data_to_serveur(main_struct, meta, answer);
+                                }
 
-                            if (success == TRUE)
+                            free_variable(answer); /* Not used by now */
+
+                            if (success == CURLE_OK)
                                 {
                                     /* Everything has been transmitted so we can save meta data into the local db cache */
                                     db_save_meta_data(main_struct->database, meta, TRUE);

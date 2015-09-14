@@ -443,7 +443,6 @@ void fanotify_loop(main_struct_t *main_struct)
             fds[FD_POLL_FANOTIFY].fd = fanotify_fd;
             fds[FD_POLL_FANOTIFY].events = POLLIN;
 
-
             dir_list_utf8 = transform_to_utf8_casefold(main_struct->opt->dirname_list);
 
             while (1)
@@ -479,7 +478,7 @@ void fanotify_loop(main_struct_t *main_struct)
                         {
                             /* Read from the FD. It will read all events available up to
                              * the given buffer size. */
-                            if ((length = read (fds[FD_POLL_FANOTIFY].fd, buffer, FANOTIFY_BUFFER_SIZE)) > 0)
+                            if ((length = read(fds[FD_POLL_FANOTIFY].fd, buffer, FANOTIFY_BUFFER_SIZE)) > 0)
                                 {
                                     fe_mdata = (struct fanotify_event_metadata *) buffer;
 
