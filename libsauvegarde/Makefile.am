@@ -29,6 +29,9 @@ libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)   \
 AM_LDFLAGS = $(LDFLAGS) $(GLIB_LIBS) $(GIO_LIBS) $(SQLITE_LIBS)    \
              $(JANSSON_LIBS) $(MHD_LIBS) $(CURL_LIBS)
 
+
+includedir=$(prefix)/include/sauvegarde
+
 include_HEADERS = $(headerfiles)
 
 libsauvegardedir =$(libdir)/sauvegarde
