@@ -7,4 +7,5 @@ sauvegardeconf_DATA = client.conf		\
 					  serveur.conf	    \
 					  restaure.conf
 
-EXTRA_DIST = $(sauvegardeconf_DATA)
+EXTRA_DIST = $(sauvegardeconf_DATA)            \
+			 libsauvegarde/libsauvegarde.pc.in

@@ -33,4 +33,11 @@ include_HEADERS = $(headerfiles)
 
 libsauvegardedir =$(libdir)/sauvegarde
 
+pkgconfigdir = $(libdir)/pkgconfig
+
+pkgconfig_DATA = libsauvegarde.pc
+$(pkgconfig_DATA): ../config.status
+
+
+
 

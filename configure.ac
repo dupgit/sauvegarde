@@ -232,6 +232,7 @@ monitor/Makefile
 serveur/Makefile
 restaure/Makefile
 po/Makefile.in
+libsauvegarde/libsauvegarde.pc
 ])
 
 AC_OUTPUT
