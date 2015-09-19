@@ -347,7 +347,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
         {
             root = load_json(answer);
 
-            limit = (1048576) / main_struct->opt->blocksize;
+            limit = (CLIENT_MIN_BUFFER) / main_struct->opt->blocksize;
 
             if (root != NULL)
                 {
@@ -375,7 +375,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
 
                             if (i >= limit)
                                 {
-                                    /* when we've got 1M bytes of data send them ! */
+                                    /* when we've got CLIENT_MIN_BUFFER bytes of data send them ! */
                                     /* main_struct->comm->buffer is the buffer sent to serveur */
                                     insert_json_value_into_json_root(root, "data_array", array);
                                     main_struct->comm->buffer = json_dumps(root, 0);
@@ -496,7 +496,7 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
 {
     meta_data_t *meta = NULL;
     gchar *answer = NULL;
-    gint success = 0;
+    gint success = 0;           /** success returns a CURL Error status such as CURLE_OK for instance */
     a_clock_t *my_clock = NULL;
     gchar *message = NULL;
 
@@ -517,10 +517,12 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
                         {
                             if (meta->size < main_struct->opt->blocksize)
                                 {
+                                    /* Only one block to send (size is less than blocksize's value) */
                                     success = send_data_to_serveur(main_struct, meta, answer);
                                 }
                             else
                                 {
+                                    /* A least 2 blocks to send */
                                     success = send_all_data_to_serveur(main_struct, meta, answer);
                                 }
 

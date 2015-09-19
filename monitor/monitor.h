@@ -84,6 +84,14 @@
  */
 #define CLIENT_BLOCK_SIZE (16384)
 
+/**
+ * @def CLIENT_MIN_BUFFER
+ *
+ * defines the minimum of bytes to have into the buffer before sending
+ * datas to the serveur.
+ */
+#define CLIENT_MIN_BUFFER (1048576)
+
 
 /**
  * @struct main_struct_t
