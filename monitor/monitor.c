@@ -737,6 +737,12 @@ int main(int argc, char **argv)
 
     if (opt != NULL)
         {
+            /**
+             * Inits the main structure and launches a thread that will
+             * save the files with an asynchronous queue called by
+             * the directory carving (that may end quickly) and the
+             * fanotify loop.
+             */
             main_struct = init_main_structure(opt);
 
             carve_all_directories(main_struct);
