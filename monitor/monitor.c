@@ -39,7 +39,8 @@ static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, 
 static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum);
 static void carve_one_directory(gpointer data, gpointer user_data);
 static void carve_all_directories(main_struct_t *main_struct);
-
+static gpointer save_one_file_threaded(gpointer data);
+static gpointer free_file_event_t(file_event_t *file_event);
 
 /**
  * Inits the main structure.
@@ -82,6 +83,12 @@ static main_struct_t *init_main_structure(options_t *opt)
 
             main_struct->signal_fd = start_signals();
             main_struct->fanotify_fd = start_fanotify(opt);
+
+            /* inits the queue that will wait for events on files */
+            main_struct->save_queue = g_async_queue_new();
+
+            /* Thread initialization */
+            main_struct->save_one_file = g_thread_new("save_one_file", save_one_file_threaded, main_struct);
 
             print_debug(_("Main structure initialized !\n"));
 
@@ -482,6 +489,68 @@ static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, 
 
 
 /**
+ * @returns a newly alloacted file_event_t * structure that must be freed
+ * when no longer needed
+ * @param
+ */
+file_event_t *new_file_event_t(gchar *directory, GFileInfo *fileinfo)
+{
+    file_event_t *file_event = NULL;
+
+
+    file_event = (file_event_t *) g_malloc0(sizeof(file_event_t));
+
+    file_event->directory = g_strdup(directory);
+    file_event->fileinfo = g_file_info_dup(fileinfo);
+
+    return file_event;
+}
+
+
+/**
+ * Frees file_event_t's memory
+ * @param file_event is the event to be freed
+ * @returns NULL
+ */
+static gpointer free_file_event_t(file_event_t *file_event)
+{
+    if (file_event != NULL)
+        {
+            free_variable(file_event->directory);
+            free_object(file_event->fileinfo);
+            free_variable(file_event);
+        }
+
+    return NULL;
+}
+
+
+/**
+ * Threaded function that saves one file by getting it's meta-data and
+ * it's data and sends them to the serveur in order to be saved.
+ * @param data must be main_struct_t * pointer.
+ */
+static gpointer save_one_file_threaded(gpointer data)
+{
+    main_struct_t *main_struct = (main_struct_t *) data;
+    file_event_t *file_event = NULL;
+
+    if (main_struct != NULL && main_struct->save_queue != NULL)
+        {
+            while (1)
+                {
+                    file_event = g_async_queue_pop(main_struct->save_queue);
+                    save_one_file(main_struct, file_event->directory, file_event->fileinfo);
+                    free_file_event_t(file_event);
+                }
+        }
+
+    return NULL;
+}
+
+
+
+/**
  * This function gets meta data and data from a file and sends them
  * to the serveur in order to save the file located in the directory
  * 'directory' and represented by 'fileinfo' variable.
@@ -559,8 +628,6 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
 
             meta = free_meta_data_t(meta);
         }
-
-
 }
 
 
@@ -575,6 +642,7 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
 {
     GError *error = NULL;
     GFileInfo *fileinfo = NULL;
+    file_event_t *file_event = NULL;
 
     if (main_struct != NULL && file_enum != NULL)
         {
@@ -582,7 +650,9 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
 
             while (error == NULL && fileinfo != NULL)
                 {
-                    save_one_file(main_struct, directory, fileinfo);
+                    /* save_one_file(main_struct, directory, fileinfo); */
+                    file_event = new_file_event_t(directory, fileinfo);
+                    g_async_queue_push(main_struct->save_queue, file_event);
 
                     fileinfo = free_object(fileinfo);
 

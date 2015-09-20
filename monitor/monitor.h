@@ -94,6 +94,17 @@
 
 
 /**
+ * @struct file_event_t
+ * @brief stores all the necessary things to manage an event on a file.
+ */
+typedef struct
+{
+    gchar *directory;
+    GFileInfo *fileinfo;
+} file_event_t;
+
+
+/**
  * @struct main_struct_t
  * @brief Structure that contains everything needed by the program.
  */
@@ -105,6 +116,8 @@ typedef struct
     comm_t *comm;             /**< This is used to communicate with the 'serveur' program (which is the server)                */
     gint signal_fd;           /**< signal handler   */
     gint fanotify_fd;         /**< fanotify handler */
+    GThread *save_one_file;   /**< thread that is used to save one file at a time (directory carving and live backup runs together) */
+    GAsyncQueue *save_queue;  /**< Queue where is sent all file_event_t structures upon event or while directory carving.           */
 } main_struct_t;
 
 
@@ -119,6 +132,13 @@ typedef struct
  */
 extern void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *fileinfo);
 
+
+/**
+ * @returns a newly alloacted file_event_t * structure that must be freed
+ * when no longer needed
+ * @param
+ */
+extern file_event_t *new_file_event_t(gchar *directory, GFileInfo *fileinfo);
 
 #include "m_fanotify.h"
 

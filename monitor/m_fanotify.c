@@ -214,6 +214,7 @@ static void prepare_before_saving(main_struct_t *main_struct, gchar *path)
     GFileInfo *fileinfo = NULL;
     GFile *file = NULL;
     GError *error = NULL;
+    file_event_t *file_event = NULL;
 
     if (main_struct != NULL && path != NULL)
         {
@@ -223,7 +224,9 @@ static void prepare_before_saving(main_struct_t *main_struct, gchar *path)
 
             if (error == NULL && fileinfo != NULL)
                 {
-                    save_one_file(main_struct, directory, fileinfo);
+                    /* save_one_file(main_struct, directory, fileinfo); */
+                    file_event = new_file_event_t(directory, fileinfo);
+                    g_async_queue_push(main_struct->save_queue, file_event);
 
                     fileinfo = free_object(fileinfo);
                     file = free_object(file);

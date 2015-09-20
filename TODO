@@ -11,6 +11,7 @@
 * client: adaptative block size that will depend on the file size. Option
           to choose adaptative or fixed.
 * client: fit into "small memory" systems.
+* client: free main_struct_t's memory at the end of the program.
 
 
 ## In the roadmap already.
