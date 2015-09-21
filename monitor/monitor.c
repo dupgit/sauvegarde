@@ -650,7 +650,10 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
 
             while (error == NULL && fileinfo != NULL)
                 {
-                    /* save_one_file(main_struct, directory, fileinfo); */
+                    /* file_event is used and freed in the thread
+                     * save_one_file_threaded where the queue save_queue
+                     * is used
+                     */
                     file_event = new_file_event_t(directory, fileinfo);
                     g_async_queue_push(main_struct->save_queue, file_event);
 
