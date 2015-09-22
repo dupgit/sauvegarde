@@ -198,7 +198,6 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
 static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, gint64 blocksize, db_t *database)
 {
     meta_data_t *meta = NULL;
-    GFile *a_file = NULL;
 
     if (directory != NULL && fileinfo != NULL && database != NULL)
         {
@@ -234,15 +233,6 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
              * by m_fanotify we already know that the file was written and that something changed.
              */
             meta->in_cache = is_file_in_cache(database, meta);
-
-
-            if (meta->in_cache == FALSE && meta->file_type == G_FILE_TYPE_REGULAR)
-                {
-                    /* Calculates hashs and takes care of data */
-                    a_file = g_file_new_for_path(meta->name);
-                    meta->hash_data_list = calculate_hash_data_list_for_file(a_file, blocksize);
-                    a_file = free_object(a_file);
-                }
         }
 
     return meta;
@@ -340,7 +330,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
 {
     json_t *root = NULL;
     json_t *array = NULL;
-    GSList *hash_list = NULL;         /** hash_list is local to this function */
+    GSList *hash_list = NULL;         /** hash_list is local to this function and contains the needed hashs as answer by serveur */
     GSList *head = NULL;
     gint success = CURLE_FAILED_INIT;
     hash_data_t *found = NULL;
@@ -401,7 +391,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
 
                     if (i > 0)
                         {
-                            /* Send the rest of the data (less than 1M) */
+                            /* Send the rest of the data (less than CLIENT_MIN_BUFFER bytes) */
                             /* main_struct->comm->buffer is the buffer sent to serveur */
                             insert_json_value_into_json_root(root, "data_array", array);
                             main_struct->comm->buffer = json_dumps(root, 0);
@@ -491,7 +481,8 @@ static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, 
 /**
  * @returns a newly alloacted file_event_t * structure that must be freed
  * when no longer needed
- * @param
+ * @param directory is the directory where the event occured
+ * @param fileinfo is fileinfo of the file on which the event occured
  */
 file_event_t *new_file_event_t(gchar *directory, GFileInfo *fileinfo)
 {
@@ -549,6 +540,68 @@ static gpointer save_one_file_threaded(gpointer data)
 }
 
 
+/**
+ * Process the file that is not already in our local cache
+ * @param main_struct : main structure of the program
+ * @param meta is the meta data of the file to be processed (it does
+ *             not contain any hashs at that point).
+ */
+static void process_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta)
+{
+    GFile *a_file = NULL;
+    gchar *answer = NULL;
+    gint success = 0;      /** success returns a CURL Error status such as CURLE_OK for instance */
+
+
+    if (main_struct != NULL && main_struct->opt != NULL && meta != NULL)
+        {
+
+            if (meta->file_type == G_FILE_TYPE_REGULAR)
+                {
+                    /* Calculates hashs and takes care of data */
+                    a_file = g_file_new_for_path(meta->name);
+                    meta->hash_data_list = calculate_hash_data_list_for_file(a_file, main_struct->opt->blocksize);
+                    a_file = free_object(a_file);
+                }
+
+            /* Send data and meta data only if the file isn't already in our local database */
+            answer = send_meta_data_to_serveur(main_struct, meta);
+
+            if (answer != NULL)
+                {
+                    if (meta->size < main_struct->opt->blocksize)
+                        {
+                            /* Only one block to send (size is less than blocksize's value) */
+                            success = send_data_to_serveur(main_struct, meta, answer);
+                        }
+                    else
+                        {
+                            /* A least 2 blocks to send */
+                            success = send_all_data_to_serveur(main_struct, meta, answer);
+                        }
+
+                    free_variable(answer); /* Not used by now */
+
+                    if (success == CURLE_OK)
+                        {
+                            /* Everything has been transmitted so we can save meta data into the local db cache */
+                            /* This is usefull for file carving to avoid sending too much things to the server  */
+                            db_save_meta_data(main_struct->database, meta, TRUE);
+                        }
+                    else
+                        {
+                            /* Something went wrong when sending data */
+                            /* Need to save data and meta data because an error occured. */
+                        }
+                }
+            else
+                {
+                    /* Something went wrong when sending meta-data */
+                    /* Need to save data and meta data because an error occured when transmitting. */
+                }
+        }
+}
+
 
 /**
  * This function gets meta data and data from a file and sends them
@@ -564,10 +617,9 @@ static gpointer save_one_file_threaded(gpointer data)
 void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *fileinfo)
 {
     meta_data_t *meta = NULL;
-    gchar *answer = NULL;
-    gint success = 0;           /** success returns a CURL Error status such as CURLE_OK for instance */
     a_clock_t *my_clock = NULL;
     gchar *message = NULL;
+
 
     if (main_struct != NULL && main_struct->opt != NULL && directory != NULL && fileinfo != NULL)
         {
@@ -579,41 +631,7 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
 
             if (meta->in_cache == FALSE)
                 {
-                    /* Send data and meta data only if the file isn't already in our local database */
-                    answer = send_meta_data_to_serveur(main_struct, meta);
-
-                    if (answer != NULL)
-                        {
-                            if (meta->size < main_struct->opt->blocksize)
-                                {
-                                    /* Only one block to send (size is less than blocksize's value) */
-                                    success = send_data_to_serveur(main_struct, meta, answer);
-                                }
-                            else
-                                {
-                                    /* A least 2 blocks to send */
-                                    success = send_all_data_to_serveur(main_struct, meta, answer);
-                                }
-
-                            free_variable(answer); /* Not used by now */
-
-                            if (success == CURLE_OK)
-                                {
-                                    /* Everything has been transmitted so we can save meta data into the local db cache */
-                                    /* This is usefull for file carving to avoid sending too much things to the server  */
-                                    db_save_meta_data(main_struct->database, meta, TRUE);
-                                }
-                            else
-                                {
-                                    /* Something went wrong when sending data */
-                                    /* Need to save data and meta data because an error occured. */
-                                }
-                        }
-                    else
-                        {
-                            /* Something went wrong when sending meta-data */
-                            /* Need to save data and meta data because an error occured when transmitting. */
-                        }
+                    process_file_not_in_cache(main_struct, meta);
                 }
 
             message = g_strdup_printf(_("processing file %s"), meta->name);
