@@ -1,3 +1,7 @@
+22.09.2015
+     - Olivier Delhomme <olivier.delhomme@free.fr>
+       * ChangeLog can be obtained using 'git log' command.
+
 02.03.2014
      - Olivier Delhomme <olivier.delhomme@free.fr>
         * Merging monitor and ciseaux (next I'll add antememoire to the
