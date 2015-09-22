@@ -17,11 +17,7 @@
 ## In the roadmap already.
 
 * add a fourth program to clean older data and meta data (nettoie ?)
-* add to serveur a specific url to send more than one buffer of data
-  associated to their hashs. This may speed up data transfert.
 * Filters to exclude files by path or by extension
-* client: integrates fanotify in a cleaner way and try to see wether a
-        directory creation can be detected.
 
 
 # Manual
