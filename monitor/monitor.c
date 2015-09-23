@@ -576,7 +576,6 @@ static void process_file_not_in_cache(main_struct_t *main_struct, meta_data_t *m
                     a_file = free_object(a_file);
                 }
 
-            /* Send data and meta data only if the file isn't already in our local database */
             answer = send_meta_data_to_serveur(main_struct, meta);
 
             if (answer != NULL)
