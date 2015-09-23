@@ -41,6 +41,7 @@ static void carve_one_directory(gpointer data, gpointer user_data);
 static void carve_all_directories(main_struct_t *main_struct);
 static gpointer save_one_file_threaded(gpointer data);
 static gpointer free_file_event_t(file_event_t *file_event);
+static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *array);
 
 /**
  * Inits the main structure.
@@ -318,6 +319,33 @@ static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash)
 
 
 /**
+ * Inserts the array into a root json_t * structure and dumps it into a
+ * buffer that is send to the serveur and then freed.
+ * @param main_struct : main structure of the program.
+ * @param array is the json_t * array to be sent to the serveur
+ */
+static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *array)
+{
+    json_t *root = NULL;
+    gint success = CURLE_FAILED_INIT;
+
+
+    root = json_object();
+    insert_json_value_into_json_root(root, "data_array", array);
+
+    /* main_struct->comm->buffer is the buffer sent to serveur */
+    main_struct->comm->buffer = json_dumps(root, 0);
+
+    success = post_url(main_struct->comm, "/Data_Array.json");
+
+    json_decref(root);
+    main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
+
+    return success;
+}
+
+
+/**
  * Sends data as requested by the server 'serveur' in a buffered way.
  * @param main_struct : main structure of the program.
  * @param meta : the meta_data_t * structure to be saved and that
@@ -332,7 +360,6 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
     json_t *array = NULL;
     GSList *hash_list = NULL;         /** hash_list is local to this function and contains the needed hashs as answer by serveur */
     GSList *head = NULL;
-    gint success = CURLE_FAILED_INIT;
     hash_data_t *found = NULL;
     hash_data_t *hash_data = NULL;
     gint all_ok = CURLE_OK;
@@ -353,8 +380,6 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
                     json_decref(root);
 
                     array = json_array();
-                    root = json_object();
-
 
                     head = hash_list;
 
@@ -373,16 +398,9 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
                             if (i >= limit)
                                 {
                                     /* when we've got CLIENT_MIN_BUFFER bytes of data send them ! */
-                                    /* main_struct->comm->buffer is the buffer sent to serveur */
-                                    insert_json_value_into_json_root(root, "data_array", array);
-                                    main_struct->comm->buffer = json_dumps(root, 0);
-                                    success = post_url(main_struct->comm, "/Data_Array.json");
+                                    all_ok = insert_array_in_root_and_send(main_struct, array);
                                     json_decref(array);
-                                    json_decref(root);
                                     array = json_array();
-                                    root = json_object();
-                                    all_ok = success;
-                                    main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
                                     i = 0;
                                 }
 
@@ -392,14 +410,8 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
                     if (i > 0)
                         {
                             /* Send the rest of the data (less than CLIENT_MIN_BUFFER bytes) */
-                            /* main_struct->comm->buffer is the buffer sent to serveur */
-                            insert_json_value_into_json_root(root, "data_array", array);
-                            main_struct->comm->buffer = json_dumps(root, 0);
-                            success = post_url(main_struct->comm, "/Data_Array.json");
+                            all_ok = insert_array_in_root_and_send(main_struct, array);
                             json_decref(array);
-                            json_decref(root);
-                            all_ok = success;
-                            main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
                         }
 
                     if (head != NULL)
