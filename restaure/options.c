@@ -211,8 +211,6 @@ static options_t *manage_command_line_options(int argc, char **argv)
     read_from_configuration_file(opt,  defaultconfigfilename);
     defaultconfigfilename = free_variable(defaultconfigfilename);
 
-    set_debug_mode_upon_cmdl(debug);
-
 
     /* 2) Reading the configuration from the configuration file specified
      *    on the command line (if any).
@@ -226,6 +224,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
 
     /* 3) retrieving other options from the command line.
      */
+    set_debug_mode_upon_cmdl(debug);
     opt->version = version; /* only TRUE if -v or --version was invoked */
 
     if (date != NULL)

@@ -256,8 +256,6 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     opt->version = version; /* only TRUE if -v or --version was invoked */
 
-    set_debug_mode_upon_cmdl(debug);
-
 
     /* 2) Reading the configuration from the configuration file specified
      *    on the command line (if any).
@@ -272,6 +270,8 @@ options_t *manage_command_line_options(int argc, char **argv)
      *    added to the existing directory list and then the array is freed
      *    as every string has been copied with g_strdup().
      */
+    set_debug_mode_upon_cmdl(debug);
+
     opt->dirname_list = convert_gchar_array_to_GSList(dirname_array, opt->dirname_list);
     g_strfreev(dirname_array);
 

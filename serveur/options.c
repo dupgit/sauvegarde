@@ -228,14 +228,6 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     opt->version = version; /* only TRUE if -v or --version was invoked */
 
-    if (cmdl_debug == 0)
-        {
-            set_debug_mode(FALSE);
-        }
-    else if (cmdl_debug == 1)
-        {
-            set_debug_mode(TRUE);
-        }
 
     /* 2) Reading the configuration from the configuration file specified
      *    on the command line
@@ -245,9 +237,10 @@ options_t *manage_command_line_options(int argc, char **argv)
             read_from_configuration_file(opt, configfile);
         }
 
-
     /* 3) retrieving other options from the command line.
      */
+
+    set_debug_mode_upon_cmdl(cmdl_debug);
 
     if (port > 1024 && port < 65535)
         {
