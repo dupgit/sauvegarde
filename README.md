@@ -109,7 +109,6 @@ command line options are:
       -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
       -c, --configuration=FILENAME     Specify an alternative configuration file.
       -b, --blocksize=SIZE             Block SIZE used to compute hashs.
-      -n, --noprint                    Quiets the program while calculating checksum.
       -r, --dircache=DIRNAME           Directory DIRNAME where to cache files.
       -f, --dbname=FILENAME            Database FILENAME.
       -i, --ip=IP                      IP address where serveur program is.

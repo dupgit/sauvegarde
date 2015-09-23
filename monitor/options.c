@@ -194,7 +194,6 @@ options_t *manage_command_line_options(int argc, char **argv)
     gchar **dirname_array = NULL;  /** array of dirnames left on the command line            */
     gchar *configfile = NULL;      /** filename for the configuration file if any            */
     gint64 blocksize = 0;          /** computed block size in bytes                          */
-    gboolean noprint = FALSE;      /** True if we do not want to print will checksuming      */
     gchar *dircache = NULL;        /** Directory used to store cache files                   */
     gchar *dbname = NULL;          /** Database filename where data and meta data are cached */
     gchar *ip =  NULL;             /** IP address where is located serveur's program         */
@@ -206,7 +205,6 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode."), N_("BOOLEAN")},
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
         { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Block SIZE used to compute hashs."), N_("SIZE")},
-        { "noprint", 'n', 0, G_OPTION_ARG_NONE, &noprint, N_("Quiets the program while calculating checksum."), NULL},
         { "dircache", 'r', 0, G_OPTION_ARG_STRING, &dircache, N_("Directory DIRNAME where to cache files."), N_("DIRNAME")},
         { "dbname", 'f', 0, G_OPTION_ARG_STRING, &dbname, N_("Database FILENAME."), N_("FILENAME")},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), "IP"},
@@ -242,7 +240,6 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     opt->dirname_list = NULL;
     opt->blocksize = CLIENT_BLOCK_SIZE;
-    opt->noprint = FALSE;
     opt->configfile = NULL;
     opt->dircache = g_strdup("/var/tmp/sauvegarde");
     opt->dbname = g_strdup("filecache.db");
@@ -278,11 +275,6 @@ options_t *manage_command_line_options(int argc, char **argv)
     if (blocksize > 0)
         {
             opt->blocksize = blocksize;
-        }
-
-    if (noprint == TRUE)
-        {
-            opt->noprint = TRUE;
         }
 
     if (dircache != NULL)
