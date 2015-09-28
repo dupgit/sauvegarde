@@ -630,7 +630,7 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
     meta_data_t *meta = NULL;
     a_clock_t *my_clock = NULL;
     gchar *message = NULL;
-
+    gchar *another_dir = NULL;
 
     if (main_struct != NULL && main_struct->opt != NULL && directory != NULL && fileinfo != NULL)
         {
@@ -652,10 +652,15 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
             if (meta->file_type == G_FILE_TYPE_DIRECTORY)
                 {
                     /* This is a recursive call */
-                    carve_one_directory(meta->name, main_struct);
+                    another_dir = g_strdup(meta->name);
+                    free_meta_data_t(meta);
+                    carve_one_directory(another_dir, main_struct);
+                    free_variable(another_dir);
                 }
-
-            meta = free_meta_data_t(meta);
+            else
+                {
+                    free_meta_data_t(meta);
+                }
         }
 }
 
