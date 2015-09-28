@@ -738,6 +738,8 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                             /* This is usefull for file carving to avoid sending too much things to the server  */
                             db_save_meta_data(main_struct->database, meta, TRUE);
                         }
+
+                    a_file = free_object(a_file);
                 }
         }
 }
