@@ -147,7 +147,8 @@ should consider that "It ships when its ready".
 * 0.0.5  fanotify's code reviewed. Avoid having one entire file in memory
 * 0.0.6  restore to some specific place. client adaptative blocksize with
          option to choose fixed or adaptative.
-* 0.0.7  hability to exclude some files by extension or path
+* 0.0.7  hability to exclude some files by extension or path. Caching
+         mecanism in client in case the serveur is unreachable.
 * 0.0.8  restore the latest version of a file before a specific date
 * 0.0.9  restore all the versions of a file
 * 0.0.10 restore a directory and it's subfiles and directories at a

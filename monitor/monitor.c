@@ -35,13 +35,15 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
 static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, gint64 blocksize, db_t *database);
 static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta);
 static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash);
-static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
+static gint send_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_list, gchar *answer);
+static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_list, gchar *answer);
 static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum);
 static void carve_one_directory(gpointer data, gpointer user_data);
 static void carve_all_directories(main_struct_t *main_struct);
 static gpointer save_one_file_threaded(gpointer data);
 static gpointer free_file_event_t(file_event_t *file_event);
 static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *array);
+static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta);
 
 /**
  * Inits the main structure.
@@ -348,17 +350,17 @@ static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *ar
 /**
  * Sends data as requested by the server 'serveur' in a buffered way.
  * @param main_struct : main structure of the program.
- * @param meta : the meta_data_t * structure to be saved and that
- *        contains the data.
+ * @param hash_data_list : list of hash_data_t * pointers containing all
+ *                          all the data to be saved.
  * @param answer is the request sent back by serveur when we had send
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
+static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_list, gchar *answer)
 {
     json_t *root = NULL;
     json_t *array = NULL;
-    GSList *hash_list = NULL;         /** hash_list is local to this function and contains the needed hashs as answer by serveur */
+    GSList *hash_list = NULL;      /** hash_list is local to this function and contains the needed hashs as answer by serveur */
     GSList *head = NULL;
     hash_data_t *found = NULL;
     hash_data_t *hash_data = NULL;
@@ -367,7 +369,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
     json_t *to_insert = NULL;
     gint limit = 0;
 
-    if (answer != NULL && meta != NULL && main_struct != NULL && main_struct->opt != NULL)
+    if (answer != NULL && hash_data_list != NULL && main_struct != NULL && main_struct->opt != NULL)
         {
             root = load_json(answer);
 
@@ -388,7 +390,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
                             hash_data = hash_list->data;
                             /* hash_data_list contains all hashs and their associated data for the file
                              * being processed */
-                            found = find_hash_in_list(meta->hash_data_list, hash_data->hash);
+                            found = find_hash_in_list(hash_data_list, hash_data->hash);
 
                             to_insert = convert_hash_data_t_to_json(found);
                             json_array_append_new(array, to_insert);
@@ -432,13 +434,13 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
 /**
  * Sends data as requested by the server 'serveur'.
  * @param main_struct : main structure of the program.
- * @param meta : the meta_data_t * structure to be saved and that
- *        contains the data.
+ * @param hash_data_list : list of hash_data_t * pointers containing all
+ *                          all the data to be saved.
  * @param answer is the request sent back by serveur when we had send
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
+static gint send_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_list, gchar *answer)
 {
     json_t *root = NULL;
     GSList *hash_list = NULL;         /** hash_list is local to this function */
@@ -448,7 +450,7 @@ static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, 
     hash_data_t *hash_data = NULL;
     gint all_ok = CURLE_OK;
 
-    if (answer != NULL && meta != NULL)
+    if (main_struct != NULL && answer != NULL &&  hash_data_list!= NULL)
         {
             root = load_json(answer);
 
@@ -463,7 +465,7 @@ static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, 
                         {
                             hash_data = hash_list->data;
                             /* hash_data_list contains all hashs and their associated data */
-                            found = find_hash_in_list(meta->hash_data_list, hash_data->hash);
+                            found = find_hash_in_list(hash_data_list, hash_data->hash);
 
                             /* main_struct->comm->buffer is the buffer sent to serveur */
                             main_struct->comm->buffer = convert_hash_data_t_to_string(found);
@@ -558,7 +560,7 @@ static gpointer save_one_file_threaded(gpointer data)
  * @param meta is the meta data of the file to be processed (it does
  *             not contain any hashs at that point).
  */
-static void process_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta)
+static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta)
 {
     GFile *a_file = NULL;
     gchar *answer = NULL;
@@ -583,12 +585,12 @@ static void process_file_not_in_cache(main_struct_t *main_struct, meta_data_t *m
                     if (meta->size < main_struct->opt->blocksize)
                         {
                             /* Only one block to send (size is less than blocksize's value) */
-                            success = send_data_to_serveur(main_struct, meta, answer);
+                            success = send_data_to_serveur(main_struct, meta->hash_data_list, answer);
                         }
                     else
                         {
                             /* A least 2 blocks to send */
-                            success = send_all_data_to_serveur(main_struct, meta, answer);
+                            success = send_all_data_to_serveur(main_struct, meta->hash_data_list, answer);
                         }
 
                     free_variable(answer); /* Not used by now */
@@ -609,6 +611,133 @@ static void process_file_not_in_cache(main_struct_t *main_struct, meta_data_t *m
                 {
                     /* Something went wrong when sending meta-data */
                     /* Need to save data and meta data because an error occured when transmitting. */
+                }
+        }
+}
+
+
+/**
+ * Process the file that is not already in our local cache
+ * @param main_struct : main structure of the program
+ * @param meta is the meta data of the file to be processed (it does
+ *             not contain any hashs at that point).
+ */
+static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta)
+{
+    GFile *a_file = NULL;
+    gchar *answer = NULL;
+    gint success = 0;      /** success returns a CURL Error status such as CURLE_OK for instance */
+    GFileInputStream *stream = NULL;
+    GError *error = NULL;
+    GSList *hash_data_list = NULL;
+    hash_data_t *hash_data = NULL;
+    gssize read = 0;
+    guchar *buffer = NULL;
+    GChecksum *checksum = NULL;
+    guint8 *a_hash = NULL;
+    gsize digest_len = HASH_LEN;
+    gsize read_bytes = 0;
+    json_t *array = NULL;
+    json_t *to_insert = NULL;
+
+    if (main_struct != NULL && main_struct->opt != NULL && meta != NULL)
+        {
+            a_file = g_file_new_for_path(meta->name);
+
+            if (a_file != NULL)
+                {
+                    stream = g_file_read(a_file, NULL, &error);
+
+                    if (stream != NULL && error == NULL)
+                        {
+
+                            checksum = g_checksum_new(G_CHECKSUM_SHA256);
+                            buffer = (guchar *) g_malloc0(main_struct->opt->blocksize);
+                            a_hash = (guint8 *) g_malloc0(digest_len);
+
+                            read = g_input_stream_read((GInputStream *) stream, buffer, main_struct->opt->blocksize, NULL, &error);
+                            read_bytes = read_bytes + read;
+                            array = json_array();
+
+                            while (read != 0 && error == NULL)
+                                {
+                                    g_checksum_update(checksum, buffer, read);
+                                    g_checksum_get_digest(checksum, a_hash, &digest_len);
+
+                                    /* Need to save data and read in hash_data_t structure */
+                                    hash_data = new_hash_data_t(buffer, read, a_hash);
+
+                                    to_insert = convert_hash_data_t_to_json(hash_data);
+                                    json_array_append_new(array, to_insert);
+
+                                    /* Only keeping hashs in the list */
+                                    hash_data->data = free_variable(hash_data->data);
+                                    hash_data_list = g_slist_prepend(hash_data_list, hash_data);
+
+                                    g_checksum_reset(checksum);
+                                    digest_len = HASH_LEN;
+
+                                    if (read_bytes >= CLIENT_SMALL_FILE_SIZE)
+                                        {
+                                            /* sending datas naïvely */
+                                            success = insert_array_in_root_and_send(main_struct, array);
+
+                                            json_decref(array);
+                                            array = json_array();
+                                            read_bytes = 0;
+
+                                            if (success != CURLE_OK)
+                                                {
+                                                    /* Something went wrong when sending data */
+                                                    /* Need to save data in local cache because an error occured. */
+                                                }
+                                        }
+
+                                    buffer = (guchar *) g_malloc0(main_struct->opt->blocksize);
+                                    a_hash = (guint8 *) g_malloc0(digest_len);
+                                    read = g_input_stream_read((GInputStream *) stream, buffer, main_struct->opt->blocksize, NULL, &error);
+                                    read_bytes = read_bytes + read;
+                                }
+
+                            if (error != NULL)
+                                {
+                                    print_error(__FILE__, __LINE__, _("Error while reading file: %s\n"), error->message);
+                                    error = free_error(error);
+                                    g_slist_free_full(hash_data_list, free_hdt_struct);
+                                    hash_data_list =  NULL;
+                                }
+                            else
+                                {
+                                    /* get the list in correct order (because we prepended the hashs to get speed when inserting hashs in the list) */
+                                    /* sending datas naïvely */
+                                    if (read_bytes > 0)
+                                        {
+                                            success = insert_array_in_root_and_send(main_struct, array);
+                                            json_decref(array);
+                                        }
+
+                                    hash_data_list = g_slist_reverse(hash_data_list);
+                                }
+
+                            g_checksum_free(checksum);
+                            g_input_stream_close((GInputStream *) stream, NULL, NULL);
+                            free_object(stream);
+                        }
+                    else
+                        {
+                            print_error(__FILE__, __LINE__, _("Unable to open file for reading: %s\n"), error->message);
+                            error = free_error(error);
+                        }
+
+                    meta->hash_data_list = hash_data_list;
+                    send_meta_data_to_serveur(main_struct, meta);
+
+                    if (answer != NULL)
+                        {
+                            /* Everything has been transmitted so we can save meta data into the local db cache */
+                            /* This is usefull for file carving to avoid sending too much things to the server  */
+                            db_save_meta_data(main_struct->database, meta, TRUE);
+                        }
                 }
         }
 }
@@ -642,7 +771,14 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
 
             if (meta->in_cache == FALSE)
                 {
-                    process_file_not_in_cache(main_struct, meta);
+                    if (meta->size < CLIENT_SMALL_FILE_SIZE)
+                        {
+                            process_small_file_not_in_cache(main_struct, meta);
+                        }
+                    else
+                        {
+                            process_big_file_not_in_cache(main_struct, meta);
+                        }
                 }
 
             message = g_strdup_printf(_("processing file %s"), meta->name);

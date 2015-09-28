@@ -84,6 +84,7 @@
  */
 #define CLIENT_BLOCK_SIZE (16384)
 
+
 /**
  * @def CLIENT_MIN_BUFFER
  *
@@ -91,6 +92,18 @@
  * datas to the serveur.
  */
 #define CLIENT_MIN_BUFFER (1048576)
+
+
+/**
+ * @def CLIENT_SMALL_FILE_SIZE
+ *
+ * defines the size under which a file is considered as small (ie that
+ * may be totaly in memory).
+ * 134217728 == 128 MB.
+ * 134217 == 134 KB (only for tests since there is still no command line
+ * or configuration file option to set this).
+ */
+#define CLIENT_SMALL_FILE_SIZE (134217728)
 
 
 /**
