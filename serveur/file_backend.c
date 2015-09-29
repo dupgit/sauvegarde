@@ -782,7 +782,7 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
                                     if (meta != NULL && meta->name != NULL)
                                         {
-                                            meta_json = convert_meta_data_to_json(meta, query->hostname);
+                                            meta_json = convert_meta_data_to_json(meta, query->hostname, FALSE);
                                             json_array_append_new(array, meta_json);
                                         }
 

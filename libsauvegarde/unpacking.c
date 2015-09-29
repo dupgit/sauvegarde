@@ -59,6 +59,39 @@ json_t *get_json_value_from_json_root(json_t *root, gchar *keyname)
 
 
 /**
+ * returns the boolean with key keyname from the json tree root. It is used
+ * by serveur to get the hostname from the json received message.
+ * @note Freeing json_t *str here is a bad idea as it will free it into
+ *       json_t *root variable that is freed afterwards.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we seek the string value.
+ * @returns a newlly allocated gchar * string that is the value associated
+ *          with key keyname. It can be freed with free_variable() when no longer
+ *          needed.
+ */
+gboolean get_boolean_from_json_root(json_t *root, gchar *keyname)
+{
+    json_t *bool = NULL;
+
+    if (root != NULL && keyname != NULL)
+        {
+            bool = get_json_value_from_json_root(root, keyname);
+
+            if (bool == json_true())
+                {
+                    return TRUE;
+                }
+            else
+                {
+                    return FALSE;
+                }
+        }
+
+    return FALSE;
+}
+
+
+/**
  * returns the string with key keyname from the json tree root. It is used
  * by serveur to get the hostname from the json received message.
  * @note Freeing json_t *str here is a bad idea as it will free it into
@@ -326,7 +359,8 @@ static serveur_meta_data_t *fills_serveur_meta_data_t_from_json_t(json_t *root)
             meta->hash_data_list = extract_gslist_from_array(root, "hash_list", TRUE);
 
             smeta->meta = meta;
-            smeta->hostname =  get_string_from_json_root(root, "hostname");
+            smeta->hostname = get_string_from_json_root(root, "hostname");
+            smeta->data_sent = get_boolean_from_json_root(root, "data_sent");
         }
 
     return smeta;

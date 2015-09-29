@@ -425,27 +425,35 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
 
             print_debug(_("Received meta data for file %s\n"), smeta->meta->name);
 
-            /**
-             * Creating an answer and sending the hashs that are needed. If
-             * the selected backend does not have a build_needed_hash_list
-             * function we are returning the whole hash_list !
-             */
-
-            if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->build_needed_hash_list != NULL)
+            if (smeta->data_sent == FALSE)
                 {
-                    needed = serveur_struct->backend->build_needed_hash_list(serveur_struct, smeta->meta->hash_data_list);
-                    array = convert_hash_list_to_json(needed);
-                    needed = free_list(needed);
+                    /**
+                     * Creating an answer and sending the hashs that are needed. If
+                     * the selected backend does not have a build_needed_hash_list
+                     * function we are returning the whole hash_list !
+                     */
+
+                    if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->build_needed_hash_list != NULL)
+                        {
+                            needed = serveur_struct->backend->build_needed_hash_list(serveur_struct, smeta->meta->hash_data_list);
+                            array = convert_hash_list_to_json(needed);
+                            needed = free_list(needed);
+                        }
+                    else
+                        {
+                            array = convert_hash_list_to_json(smeta->meta->hash_data_list);
+                        }
                 }
             else
                 {
-                    array = convert_hash_list_to_json(smeta->meta->hash_data_list);
+                    array = json_array();
                 }
 
             root = json_object();
             insert_json_value_into_json_root(root, "hash_list", array);
             json_str = json_dumps(root, 0);
             json_decref(root);
+
 
             /**
              * Sending smeta data into the queue in order to be treated by

@@ -206,7 +206,7 @@ gint post_url(comm_t *comm, gchar *url)
                 }
             else if (comm->buffer != NULL)
                 {
-                    print_debug("Answer is: \"%s\"\n", comm->buffer); /** @todo  Not sure that we will need this debug information later */
+                    print_debug(_("Answer is: \"%s\"\n"), comm->buffer); /** @todo  Not sure that we will need this debug information later */
                 }
 
             free_variable(real_url);

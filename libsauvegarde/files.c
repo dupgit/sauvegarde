@@ -75,6 +75,7 @@ serveur_meta_data_t *new_smeta_data_t(void)
     if (smeta != NULL)
         {
             smeta->hostname = NULL;
+            smeta->data_sent = FALSE;
             smeta->meta = NULL;
         }
 

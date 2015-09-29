@@ -65,6 +65,7 @@ typedef struct
 typedef struct
 {
     gchar *hostname;    /**< machine's hostname from which comes the metadata below */
+    gboolean data_sent; /**< Tells wether data has already been sent to us or not   */
     meta_data_t *meta;  /**< metadata of a file of the 'hostname' machine           */
 } serveur_meta_data_t;
 

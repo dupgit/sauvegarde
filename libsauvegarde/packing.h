@@ -111,6 +111,15 @@ extern void append_string_to_array(json_t *array, gchar *to_append);
 
 
 /**
+ * Inserts the boolean data_sent into the json tree root with key keyname.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we will insert a new value
+ * @param data_sent is the boolean value to be inserted with key keyname.
+ */
+extern void insert_boolean_into_json_root(json_t *root, gchar *keyname, gboolean data_sent);
+
+
+/**
  * Inserts the string a_string into the json tree root with key keyname.
  * @param[in,out] root is the main json tree
  * @param keyname is the key for which we will insert a new value
@@ -196,9 +205,11 @@ extern GSList *extract_smeta_gslist_from_file_list(json_t *root);
  *        a directory.
  * @param hostname is the name of the host onw hich we are running and that
  *        we want to include into the json string.
+ * @param data_sent is a boolean that is TRUE when data has already been
+ *        sent to serveur, FALSE otherwise.
  * @returns a json_t structure or NULL
  */
-extern json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname);
+json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname, gboolean data_sent);
 
 
 /**
@@ -206,11 +217,13 @@ extern json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostnam
  * the meta_data_t structure.
  * @param meta is the structure that contains all meta data for a file or
  *        a directory.
- * @param hostname is the name of the host on which we are running and that
+ * @param hostname is the name of the host onw hich we are running and that
  *        we want to include into the json string.
+ * @param data_sent is a boolean that is TRUE when data has already been
+ *        sent to serveur, FALSE otherwise.
  * @returns a JSON formated string or NULL
  */
-extern gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *hostname);
+gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *hostname, gboolean data_sent);
 
 
 /**
@@ -291,6 +304,20 @@ extern capsule_t *encapsulate_end(void);
  *          communication between threads in client
  */
 extern gint get_json_message_id(gchar *json_str);
+
+
+/**
+ * returns the boolean with key keyname from the json tree root. It is used
+ * by serveur to get the hostname from the json received message.
+ * @note Freeing json_t *str here is a bad idea as it will free it into
+ *       json_t *root variable that is freed afterwards.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we seek the string value.
+ * @returns a newlly allocated gchar * string that is the value associated
+ *          with key keyname. It can be freed with free_variable() when no longer
+ *          needed.
+ */
+extern gboolean get_boolean_from_json_root(json_t *root, gchar *keyname);
 
 
 /**

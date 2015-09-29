@@ -103,7 +103,7 @@
  * 134217 == 134 KB (only for tests since there is still no command line
  * or configuration file option to set this).
  */
-#define CLIENT_SMALL_FILE_SIZE (134217728)
+#define CLIENT_SMALL_FILE_SIZE (134217)
 
 
 /**

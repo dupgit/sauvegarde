@@ -33,7 +33,7 @@
 static main_struct_t *init_main_structure(options_t *opt);
 static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize);
 static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, gint64 blocksize, db_t *database);
-static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta);
+static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent);
 static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash);
 static gint send_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_list, gchar *answer);
 static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_list, gchar *answer);
@@ -249,7 +249,7 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
  *        to the communication socket.
  * @param meta : the meta_data_t * structure to be saved.
  */
-static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta)
+static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent)
 {
     gchar *json_str = NULL;
     gchar *answer = NULL;
@@ -257,7 +257,7 @@ static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t 
 
     if (main_struct != NULL && meta != NULL && main_struct->hostname != NULL)
         {
-            json_str = convert_meta_data_to_json_string(meta, main_struct->hostname);
+            json_str = convert_meta_data_to_json_string(meta, main_struct->hostname, data_sent);
 
             /* Sends meta data here */
             print_debug(_("Sending meta data: %s\n"), json_str);
@@ -578,7 +578,7 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
                     a_file = free_object(a_file);
                 }
 
-            answer = send_meta_data_to_serveur(main_struct, meta);
+            answer = send_meta_data_to_serveur(main_struct, meta, FALSE);
 
             if (answer != NULL)
                 {
@@ -643,6 +643,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
     if (main_struct != NULL && main_struct->opt != NULL && meta != NULL)
         {
             a_file = g_file_new_for_path(meta->name);
+            print_debug(_("Processing file: %s\n"), meta->name);
 
             if (a_file != NULL)
                 {
@@ -680,6 +681,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                     if (read_bytes >= CLIENT_MIN_BUFFER)
                                         {
                                             /* sending datas naïvely */
+                                            print_debug(_("Sending data: %d bytes\n"), read_bytes);
                                             success = insert_array_in_root_and_send(main_struct, array);
 
                                             json_decref(array);
@@ -708,14 +710,16 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                 }
                             else
                                 {
-                                    /* get the list in correct order (because we prepended the hashs to get speed when inserting hashs in the list) */
+
                                     /* sending datas naïvely */
                                     if (read_bytes > 0)
                                         {
+                                            print_debug(_("Sending data: %d bytes\n"), read_bytes);
                                             success = insert_array_in_root_and_send(main_struct, array);
                                             json_decref(array);
                                         }
 
+                                    /* get the list in correct order (because we prepended the hashs to get speed when inserting hashs in the list) */
                                     hash_data_list = g_slist_reverse(hash_data_list);
                                 }
 
@@ -730,7 +734,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                         }
 
                     meta->hash_data_list = hash_data_list;
-                    send_meta_data_to_serveur(main_struct, meta);
+                    send_meta_data_to_serveur(main_struct, meta, TRUE);
 
                     if (answer != NULL)
                         {

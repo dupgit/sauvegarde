@@ -78,6 +78,34 @@ void append_string_to_array(json_t *array, gchar *to_append)
 
 
 /**
+ * Inserts the boolean data_sent into the json tree root with key keyname.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we will insert a new value
+ * @param data_sent is the boolean value to be inserted with key keyname.
+ */
+void insert_boolean_into_json_root(json_t *root, gchar *keyname, gboolean data_sent)
+{
+    json_t *bool = NULL;
+
+    if (root != NULL && keyname != NULL)
+        {
+            if (data_sent == TRUE)
+                {
+                    bool = json_true();
+                }
+            else
+                {
+                    bool = json_false();
+                }
+
+            insert_json_value_into_json_root(root, keyname, bool);
+        }
+}
+
+
+
+
+/**
  * Inserts the string a_string into the json tree root with key keyname.
  * @param[in,out] root is the main json tree
  * @param keyname is the key for which we will insert a new value
@@ -296,9 +324,11 @@ gchar *convert_hash_data_t_to_string(hash_data_t *hash_data)
  *        a directory.
  * @param hostname is the name of the host onw hich we are running and that
  *        we want to include into the json string.
+ * @param data_sent is a boolean that is TRUE when data has already been
+ *        sent to serveur, FALSE otherwise.
  * @returns a json_t structure or NULL
  */
-json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
+json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname, gboolean data_sent)
 {
     json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json       */
     json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs   */
@@ -326,6 +356,7 @@ json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
             insert_string_into_json_root(root, "name", meta->name);
             insert_string_into_json_root(root, "link", meta->link);
             insert_string_into_json_root(root, "hostname", (gchar *) hostname);
+            insert_boolean_into_json_root(root, "data_sent", data_sent);
 
             array = convert_hash_list_to_json(meta->hash_data_list);
 
@@ -343,9 +374,11 @@ json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname)
  *        a directory.
  * @param hostname is the name of the host onw hich we are running and that
  *        we want to include into the json string.
+ * @param data_sent is a boolean that is TRUE when data has already been
+ *        sent to serveur, FALSE otherwise.
  * @returns a JSON formated string or NULL
  */
-gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *hostname)
+gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *hostname, gboolean data_sent)
 {
     json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json       */
     gchar *json_str = NULL;     /** gchar *json_str is the string to be returned at the end             */
@@ -353,7 +386,7 @@ gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *hostname
 
     if (meta != NULL)
         {
-            root = convert_meta_data_to_json(meta, hostname);
+            root = convert_meta_data_to_json(meta, hostname, data_sent);
             json_str = json_dumps(root, 0);
             json_decref(root);
         }
