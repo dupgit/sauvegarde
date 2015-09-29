@@ -677,7 +677,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                     g_checksum_reset(checksum);
                                     digest_len = HASH_LEN;
 
-                                    if (read_bytes >= CLIENT_SMALL_FILE_SIZE)
+                                    if (read_bytes >= CLIENT_MIN_BUFFER)
                                         {
                                             /* sending datas naïvely */
                                             success = insert_array_in_root_and_send(main_struct, array);
