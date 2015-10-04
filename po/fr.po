@@ -1,14 +1,14 @@
 # French translation file for the sauvegarde project
-# Copyright (C) 2014
+# Copyright (C) 2014 - 2015
 # This file is distributed under the same license as the Sauvegarde package.
-# Olivier DELHOMME <olivier.delhomme@free.fr>, 2014.
+# Olivier DELHOMME <olivier.delhomme@free.fr>, 2014 - 2015.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Sauvegarde 0.0.4\n"
+"Project-Id-Version: Sauvegarde 0.0.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-09-06 13:27+0200\n"
-"PO-Revision-Date: 2015-09-06 14:42+0100\n"
+"POT-Creation-Date: 2015-10-04 20:30+0200\n"
+"PO-Revision-Date: 2015-10-04 20:33+0100\n"
 "Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
 "Language: fr\n"
@@ -27,7 +27,7 @@ msgstr "Temps écoulé (%s) : %d\n"
 msgid "\t. LIBCURL version: %s\n"
 msgstr "\t. LIBCURL version : %s\n"
 
-#: ../libsauvegarde/communique.c:152
+#: ../libsauvegarde/communique.c:152 ../libsauvegarde/communique.c:209
 #, c-format
 msgid "Answer is: \"%s\"\n"
 msgstr "La réponse est : \"%s\"\n"
@@ -120,22 +120,22 @@ msgstr "(%d) Erreur lors du \"commit\" dans la base de donnée : %s\n"
 msgid "(%d) Error while trying to open %s database: %s\n"
 msgstr "(%d) Erreur lors de l'ouverture de la base de données %s : %s\n"
 
-#: ../libsauvegarde/files.c:300
+#: ../libsauvegarde/files.c:301
 #, c-format
 msgid "Setting mode: %d\n"
 msgstr "Fixe le mode : %d\n"
 
-#: ../libsauvegarde/files.c:486
+#: ../libsauvegarde/files.c:487
 #, c-format
 msgid "Error while getting file information: %s\n"
 msgstr "Erreur lors de la récupération des informations du fichier : %s\n"
 
-#: ../libsauvegarde/files.c:496
+#: ../libsauvegarde/files.c:497
 #, c-format
 msgid "Error or warning for file (%s): %s\n"
 msgstr "Erreur ou avertissement pour le fichier (%s) : %s\n"
 
-#: ../libsauvegarde/files.c:527
+#: ../libsauvegarde/files.c:528
 #, c-format
 msgid "Error: unable to create symbolic link %s to %s: %s.\n"
 msgstr "Erreur : Impossible de créé un lien symbolique de %s vers %s : %s.\n"
@@ -155,7 +155,7 @@ msgid ""
 "\t. GLIB version: %d.%d.%d\n"
 msgstr ""
 "%s a été compilé avec les librairies suivantes :\n"
-"\t. GLIB version: %d.%d.%d\n"
+"\t. GLIB version : %d.%d.%d\n"
 
 #: ../libsauvegarde/libsauvegarde.c:168
 #, c-format
@@ -174,9 +174,9 @@ msgid ""
 "License: %s\n"
 "\n"
 msgstr ""
-"%s version: %s-%s (%s)\n"
-"Auteur(s): %s\n"
-"Licence: %s\n"
+"%s version : %s-%s (%s)\n"
+"Auteur(s) : %s\n"
+"Licence : %s\n"
 "\n"
 
 #: ../libsauvegarde/libsauvegarde.c:260
@@ -218,7 +218,7 @@ msgstr "Erreur lors de la conversion à JSON\n"
 msgid "Error while converting to JSON from keyname %s\n"
 msgstr "Erreur lors de la conversion de la clef %s à JSON\n"
 
-#: ../libsauvegarde/unpacking.c:175
+#: ../libsauvegarde/unpacking.c:208
 #, c-format
 msgid ""
 "Error while trying to load JSON: %s\n"
@@ -227,7 +227,7 @@ msgstr ""
 "Erreur lors de la tentative de chargement JSON : %s\n"
 "ligne : %d, colonne : %d, position : %d, chaîne : %s\n"
 
-#: ../libsauvegarde/unpacking.c:409
+#: ../libsauvegarde/unpacking.c:443
 #, c-format
 msgid ""
 "Something is wrong with lengths: data_len = %ld, read = %ld, hash_len = %ld, "
@@ -236,129 +236,130 @@ msgstr ""
 "Quelque chose est erroné dans les longueurs : data_len = %ld, read = %ld, "
 "hash_len = %ld, HASH_LEN = %ld\n"
 
-#: ../monitor/m_fanotify.c:63
+#: ../monitor/m_fanotify.c:66
 #, c-format
 msgid "Couldn't block signals: %s\n"
 msgstr "Impossible de bloquer les signaux : %s\n"
 
-#: ../monitor/m_fanotify.c:69
+#: ../monitor/m_fanotify.c:72
 #, c-format
 msgid "Couldn't setup signal FD: %s\n"
 msgstr "Impossible de configurer le signal FD : %s\n"
 
-#: ../monitor/m_fanotify.c:100
+#: ../monitor/m_fanotify.c:103
 #, c-format
 msgid "Couldn't setup new fanotify device: %s\n"
 msgstr "Impossible de configurer un nouveau périphérique fanotify : %s\n"
 
-#: ../monitor/m_fanotify.c:110
+#: ../monitor/m_fanotify.c:113
 #, c-format
 msgid "Couldn't add monitor in directory %s: %s\n"
 msgstr "Impossible d'ajouter un surveillant au dossier %s : %s\n"
 
-#: ../monitor/m_fanotify.c:114
+#: ../monitor/m_fanotify.c:117
 #, c-format
 msgid "Started monitoring directory %s\n"
 msgstr "Démarrage de la surveillance du dossier %s\n"
 
-#: ../monitor/m_fanotify.c:138
+#: ../monitor/m_fanotify.c:141
 #, c-format
 msgid "Invalid file descriptor: %d\n"
 msgstr "Descripteur de fichier invalide : %d\n"
 
-#: ../monitor/m_fanotify.c:148
+#: ../monitor/m_fanotify.c:151
 #, c-format
 msgid "'readlink' error: %s\n"
 msgstr "Erreur 'readlink' : %s\n"
 
-#: ../monitor/m_fanotify.c:231
+#: ../monitor/m_fanotify.c:240
 #, c-format
 msgid "Unable to get meta data for file %s: %s\n"
 msgstr "Impossible de récupérer les méta-données pour le fichier %s : %s\n"
 
-#. Don't try to save files that comes from our activity
-#: ../monitor/m_fanotify.c:282
+#: ../monitor/m_fanotify.c:342
 #, c-format
 msgid "Received event file/directory: %s\n"
 msgstr "Réception d'un événement fichier/dossier : %s\n"
 
-#: ../monitor/m_fanotify.c:283
+#: ../monitor/m_fanotify.c:343
 #, c-format
 msgid " matching directory is: %s\n"
 msgstr " le dossier correspondant est : %s\n"
 
-#: ../monitor/m_fanotify.c:284
-#, c-format
-msgid " pid=%d (%s): "
-msgstr " pid=%d (%s): "
-
-#: ../monitor/m_fanotify.c:288
-msgid "\tFAN_CLOSE_WRITE\n"
-msgstr "\tFAN_CLOSE_WRITE\n"
-
-#: ../monitor/m_fanotify.c:403
+#: ../monitor/m_fanotify.c:461
 #, c-format
 msgid "Couldn't poll(): '%s'\n"
 msgstr "Impossible d'exécuter poll() : '%s'\n"
 
-#: ../monitor/m_fanotify.c:411
+#: ../monitor/m_fanotify.c:469
 msgid "Couldn't read signal, wrong size read\n"
 msgstr "Impossible de lire le signal, mauvaise taille lue\n"
 
-#: ../monitor/m_fanotify.c:422
+#: ../monitor/m_fanotify.c:480
 msgid "Received unexpected signal\n"
 msgstr "Réception d'un signal inattendu\n"
 
-#: ../monitor/monitor.c:60
+#: ../monitor/monitor.c:64
 msgid "Please wait while initializing main structure...\n"
 msgstr ""
 "Merci de patienter pendant l'initialisation de la structure principale...\n"
 
-#: ../monitor/monitor.c:86
+#: ../monitor/monitor.c:96
 msgid "Main structure initialized !\n"
 msgstr "Structure principale initialisée !\n"
 
-#: ../monitor/monitor.c:152
+#: ../monitor/monitor.c:162 ../monitor/monitor.c:706
 #, c-format
 msgid "Error while reading file: %s\n"
 msgstr "Erreur en lisant le fichier : %s\n"
 
-#: ../monitor/monitor.c:169
+#: ../monitor/monitor.c:179 ../monitor/monitor.c:732
 #, c-format
 msgid "Unable to open file for reading: %s\n"
 msgstr "Impossible d'ouvrir le fichier pour y lire : %s\n"
 
 #. Sends meta data here
-#: ../monitor/monitor.c:260
+#: ../monitor/monitor.c:263
 #, c-format
 msgid "Sending meta data: %s\n"
 msgstr "Envoi des méta données : %s\n"
 
-#: ../monitor/monitor.c:412 ../monitor/monitor.c:473
+#: ../monitor/monitor.c:426 ../monitor/monitor.c:487
 msgid "Error while loading JSON answer from serveur\n"
 msgstr "Erreur en chargant le JSON de la réponse du serveur\n"
 
-#: ../monitor/monitor.c:537
+#: ../monitor/monitor.c:646
+#, c-format
+msgid "Processing file: %s\n"
+msgstr "Traitement du fichier %s\n"
+
+#. sending datas naïvely
+#: ../monitor/monitor.c:684 ../monitor/monitor.c:717
+#, c-format
+msgid "Sending data: %d bytes\n"
+msgstr "Envoi des données : %d octets\n"
+
+#: ../monitor/monitor.c:791
 #, c-format
 msgid "processing file %s"
 msgstr "Traitement du fichier %s"
 
-#: ../monitor/monitor.c:611
+#: ../monitor/monitor.c:874
 #, c-format
 msgid "Unable to enumerate directory %s: %s\n"
 msgstr "Impossible d'énumérer le dossier %s : %s\n"
 
 #: ../monitor/monitor.h:75 ../restaure/restaure.h:81 ../serveur/serveur.h:74
-msgid "21 08 2015"
-msgstr "21 08 2014"
+msgid "04 10 2015"
+msgstr "04 10 2015"
 
 #: ../monitor/monitor.h:76 ../restaure/restaure.h:82 ../serveur/serveur.h:75
 msgid "GPL v3 or later"
 msgstr "GPL v3 ou plus récente."
 
 #: ../monitor/monitor.h:77 ../restaure/restaure.h:83 ../serveur/serveur.h:76
-msgid "0.0.3"
-msgstr "0.0.3"
+msgid "0.0.5"
+msgstr "0.0.5"
 
 #: ../monitor/options.c:49 ../restaure/options.c:46 ../serveur/options.c:59
 #: ../serveur/options.c:90
@@ -397,7 +398,7 @@ msgstr "Nom de la base de données dans le cache : %s\n"
 #: ../monitor/options.c:67 ../restaure/options.c:48
 #, c-format
 msgid "serveur's IP address: %s\n"
-msgstr "Adresse IP du serveur %s\n"
+msgstr "Adresse IP du serveur : %s\n"
 
 #: ../monitor/options.c:68 ../restaure/options.c:49
 #, c-format
@@ -420,8 +421,6 @@ msgstr "Impossible de charger le nom du dossier"
 
 #. Reading filename of the database if any
 #. Reading IP address of serveur's host if any
-#. Reading filename of the database if any
-#. Reading IP address of serveur's host if any
 #: ../monitor/options.c:100 ../monitor/options.c:130 ../restaure/options.c:90
 msgid "Could not load cache database name"
 msgstr "Impossible de charger le nom de la base de données dans le cache"
@@ -442,68 +441,64 @@ msgstr "Lecture de la configuration depuis le fichier %s\n"
 msgid "Failed to open %s configuration file: %s\n"
 msgstr "Impossible d'ouvrir le fichier de configuration %s : %s\n"
 
-#: ../monitor/options.c:205
+#: ../monitor/options.c:204
 msgid "Prints program version"
 msgstr "Affiche la version du programme."
 
-#: ../monitor/options.c:206 ../restaure/options.c:167 ../serveur/options.c:189
+#: ../monitor/options.c:205 ../restaure/options.c:167 ../serveur/options.c:189
 msgid "Activates (1) or desactivates (0) debug mode."
 msgstr "Active (1) ou désactive (0) le mode de débogage."
 
-#: ../monitor/options.c:206 ../restaure/options.c:167 ../serveur/options.c:189
+#: ../monitor/options.c:205 ../restaure/options.c:167 ../serveur/options.c:189
 msgid "BOOLEAN"
 msgstr "BOOLÉEN"
 
-#: ../monitor/options.c:207 ../restaure/options.c:168 ../serveur/options.c:190
+#: ../monitor/options.c:206 ../restaure/options.c:168 ../serveur/options.c:190
 msgid "Specify an alternative configuration file."
 msgstr "Spécifie un fichier de configuration alternatif."
 
-#: ../monitor/options.c:207 ../monitor/options.c:211 ../restaure/options.c:168
+#: ../monitor/options.c:206 ../monitor/options.c:209 ../restaure/options.c:168
 #: ../serveur/options.c:190
 msgid "FILENAME"
 msgstr "NOM DU FICHIER"
 
-#: ../monitor/options.c:208
+#: ../monitor/options.c:207
 msgid "Block SIZE used to compute hashs."
 msgstr "Taille des blocs pour le calcul des sommes de contrôle."
 
-#: ../monitor/options.c:208
+#: ../monitor/options.c:207
 msgid "SIZE"
 msgstr "TAILLE"
 
-#: ../monitor/options.c:209
-msgid "Quiets the program while calculating checksum."
-msgstr "Rend le programme silencieux lors du calcul des sommes de contrôle."
-
-#: ../monitor/options.c:210
+#: ../monitor/options.c:208
 msgid "Directory DIRNAME where to cache files."
 msgstr "Répertoire NOM DU RÉPERTOIRE du cache des fichiers."
 
-#: ../monitor/options.c:210
+#: ../monitor/options.c:208
 msgid "DIRNAME"
 msgstr "NOM DU RÉPERTOIRE"
 
-#: ../monitor/options.c:211
+#: ../monitor/options.c:209
 msgid "Database FILENAME."
 msgstr "NOM DU FICHIER de la base de données."
 
-#: ../monitor/options.c:212 ../restaure/options.c:169
+#: ../monitor/options.c:210 ../restaure/options.c:169
 msgid "IP address where serveur program is."
 msgstr "Adresse IP du programme serveur."
 
-#: ../monitor/options.c:213 ../serveur/options.c:191
+#: ../monitor/options.c:211 ../serveur/options.c:191
 msgid "Port NUMBER on which to listen."
 msgstr "NUMÉRO du port à écouter."
 
-#: ../monitor/options.c:213 ../restaure/options.c:170 ../serveur/options.c:191
+#: ../monitor/options.c:211 ../restaure/options.c:170 ../serveur/options.c:191
 msgid "NUMBER"
 msgstr "NUMÉRO"
 
-#: ../monitor/options.c:225 ../restaure/options.c:181 ../serveur/options.c:202
+#: ../monitor/options.c:223 ../restaure/options.c:181 ../serveur/options.c:202
 msgid "Please report bugs to: "
 msgstr "Indiquez les bugs à : "
 
-#: ../monitor/options.c:226 ../serveur/options.c:203
+#: ../monitor/options.c:224 ../serveur/options.c:203
 msgid ""
 "This program is monitoring file changes in the filesystem and is hashing\n"
 "files with SHA256 algorithms from Glib."
@@ -512,7 +507,7 @@ msgstr ""
 "et fait ses sommes de contrôle (hashs)\n"
 "avec l'algorithme SHA256 de la librairie Glib."
 
-#: ../monitor/options.c:235 ../restaure/options.c:191
+#: ../monitor/options.c:233 ../restaure/options.c:191
 #, c-format
 msgid "Option parsing failed: %s\n"
 msgstr "Analyse des options échouée : %s\n"
@@ -763,11 +758,11 @@ msgstr "URL requise (get) : %s\n"
 msgid "Received meta data for file %s\n"
 msgstr "Méta données reçues pour le fichier %s\n"
 
-#: ../serveur/serveur.c:462
+#: ../serveur/serveur.c:470
 msgid "Error: could not convert json to metadata\n"
 msgstr "Erreur : impossible de convertir json en méta-données\n"
 
-#: ../serveur/serveur.c:507 ../serveur/serveur.c:540
+#: ../serveur/serveur.c:515 ../serveur/serveur.c:548
 #, c-format
 msgid "Received data for hash: \"%s\" (%ld bytes)\n"
 msgstr "Réception des données pour le hash :  \"%s\" (%ld octets)\n"
@@ -775,24 +770,24 @@ msgstr "Réception des données pour le hash :  \"%s\" (%ld octets)\n"
 #. *
 #. * creating an answer for the client to say that everything went Ok!
 #.
-#: ../serveur/serveur.c:521 ../serveur/serveur.c:553
+#: ../serveur/serveur.c:529 ../serveur/serveur.c:561
 msgid "Ok!"
 msgstr "Ok !"
 
-#: ../serveur/serveur.c:562
+#: ../serveur/serveur.c:570
 msgid "Error: invalid url!\n"
 msgstr "Erreur : URL invalide !\n"
 
-#: ../serveur/serveur.c:655
+#: ../serveur/serveur.c:663
 #, c-format
 msgid "Headers for this connection are:\n"
 msgstr "Les en-têtes de cette connexion sont :\n"
 
-#: ../serveur/serveur.c:719
+#: ../serveur/serveur.c:727
 msgid "Error: received a NULL pointer.\n"
 msgstr "Erreur : réception d'un pointeur NULL.\n"
 
-#: ../serveur/serveur.c:725
+#: ../serveur/serveur.c:733
 msgid ""
 "Error: no meta data store backend defined, meta-data's thread "
 "terminating...\n"
@@ -800,39 +795,46 @@ msgstr ""
 "Erreur : pas de backend défini pour stocker les méta-données, le thread des "
 "méta-données se termine...\n"
 
-#: ../serveur/serveur.c:730
+#: ../serveur/serveur.c:738
 msgid "Error: unable to launch meta-data thread.\n"
 msgstr "Erreur : impossible de démarrer le thread des méta-données.\n"
 
-#: ../serveur/serveur.c:765
+#: ../serveur/serveur.c:773
 msgid "Error: no data store backend defined, data's thread terminating...\n"
 msgstr ""
 "Erreur : pas de backend pour stocker les données, le thread des données se "
 "termine...\n"
 
-#: ../serveur/serveur.c:771
+#: ../serveur/serveur.c:779
 msgid "Error while trying to launch data thread"
 msgstr "Erreur lors du lancement du thread des données."
 
-#: ../serveur/serveur.c:808
+#: ../serveur/serveur.c:816
 msgid "Unable to add signal handler\n"
 msgstr "Impossible d'ajouter une fonction pour traiter les signaux\n"
 
-#: ../serveur/serveur.c:826
+#: ../serveur/serveur.c:834
 msgid "Error while spawning libmicrohttpd daemon\n"
 msgstr "Erreur lors de l'exécution du daemon libmicrohttpd\n"
 
-#: ../serveur/serveur.c:842
+#: ../serveur/serveur.c:850
 msgid "Error: initialization failed.\n"
 msgstr "Erreur : initialisation échouée.\n"
 
-#: ../monitor/monitor.h:75 ../restaure/restaure.h:81 ../serveur/serveur.h:74
-msgid "06 09 2015"
-msgstr "06 09 2015"
+#~ msgid " pid=%d (%s): "
+#~ msgstr " pid=%d (%s): "
 
-#: ../monitor/monitor.h:77 ../restaure/restaure.h:83 ../serveur/serveur.h:76
-msgid "0.0.4"
-msgstr "0.0.4"
+#~ msgid "\tFAN_CLOSE_WRITE\n"
+#~ msgstr "\tFAN_CLOSE_WRITE\n"
+
+#~ msgid "21 08 2015"
+#~ msgstr "21 08 2014"
+
+#~ msgid "Quiets the program while calculating checksum."
+#~ msgstr "Rend le programme silencieux lors du calcul des sommes de contrôle."
+
+#~ msgid "0.0.4"
+#~ msgstr "0.0.4"
 
 #~ msgid "Configuration file : %s\n"
 #~ msgstr "Fichier de configuration : %s\n"

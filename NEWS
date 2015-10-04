@@ -1,3 +1,12 @@
+[04-10-2015] v0.0.5
+'sauvegarde' is a set of tools ('serveur', 'client' and 'restore' - as of now) that saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server (named 'serveur') is stateless and achieves deduplication (at the block level). As a result it does not use much memory and may run on small machines (on a virtual machine for instance).
+
+This is v0.0.5 release of this project. Some improvements were made and all what was expected in the roadmap has been coded:
+
+    *
+
+
+
 [06-09-2015] v0.0.4
 'sauvegarde' is a set of tools ('serveur', 'client' and 'restore' - as of now) that saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server (named 'serveur') is stateless and achieves deduplication (block level). As a result it does not use much memory and may run on small machines (on a virtual machine for instance).
 

@@ -144,7 +144,6 @@ options are:
 I am coding on spare hours so I may not tell any release dates and you
 should consider that "It ships when its ready".
 
-* 0.0.5  fanotify's code reviewed. Avoid having one entire file in memory
 * 0.0.6  restore to some specific place. client adaptative blocksize with
          option to choose fixed or adaptative. Add options to choose
          CLIENT_MIN_BUFFER and CLIENT_SMALL_FILE_SIZE.
@@ -167,6 +166,8 @@ should consider that "It ships when its ready".
 * 0.0.4  [06.09.2015] new serveur url to post a bunch of hashs and
                       associated data. Clean the answer list of needed
                       hashs to avoid having duplicated hashs into it.
+* 0.0.5  [04.10.2015] fanotify's code reviewed. Avoid having one entire
+                      file in memory.
 
 
 ## Manual

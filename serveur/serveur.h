@@ -71,9 +71,9 @@
  * Defines the main program name (serveur - server in french)
  */
 #define SERVEUR_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
-#define SERVEUR_DATE _("06 09 2015")
+#define SERVEUR_DATE _("04 10 2015")
 #define SERVEUR_LICENSE _("GPL v3 or later")
-#define SERVEUR_VERSION _("0.0.4")
+#define SERVEUR_VERSION _("0.0.5")
 #define PROGRAM_NAME ("serveur")
 
 #include "options.h"
