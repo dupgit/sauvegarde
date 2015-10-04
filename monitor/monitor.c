@@ -777,6 +777,7 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
 
             if (meta->in_cache == FALSE)
                 {
+
                     if (meta->size < CLIENT_SMALL_FILE_SIZE)
                         {
                             process_small_file_not_in_cache(main_struct, meta);
