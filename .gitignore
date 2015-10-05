@@ -4,6 +4,7 @@ autom4te.cache/
 *.lo
 *.o
 *.so
+*.old
 Makefile
 Makefile.in
 Makefile.in.in
