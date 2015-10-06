@@ -4,11 +4,11 @@
 This is v0.0.5 release of this project. Some improvements were made as all what was expected in the roadmap (and more) has been coded:
 
     * fanotify's code has been reviewed a bit and a thread has been created to process (if possible) files. It allows to begin file change notification very early, before the end of the directory carving.
-    * Files that are 128 MB or more are processed differently to avoid having them completely in memory. The problem for now is that it does a naive transfert with the blocs: it sends everything thus it may waste network bandwidth and serveur and client CPU and IO. There is a simple solution to this that I will code in a future release (planned for v0.0.8).
+    * Files that are 128 MB or more are processed differently to avoid having them completely in memory. The problem for now is that it does a naive transfer with the blocs: it sends everything thus it may waste network bandwidth and serveur and client CPU and IO. There is a simple solution to this that I will code in a future release (planned for v0.0.8).
     * New test script used in travis-ci to tests things a bit and may be avoid basic problems.
     * New Icon in pixmap directory available from 16x16 to 512x512 in CC-BY-SA license. The image is used in publications (there is no GUI as of now).
     * Begun a user manual for sauvegarde's project in directory 'manual'. One may found development documentation in 'docs' directory.
-    * Added libsauvegarde.pc to alloow one to use this library in an other project.
+    * Added libsauvegarde.pc to allow one to use this library in an other project.
     * Corrected 2 major mistakes that prevented client to be efficient when processing files (to avoid processing them when already processed). As a result client in v0.0.5 is slower than in v0.0.4 but saves a lot of IO and CPU on its running machine.
 
 Contributors to this version:
