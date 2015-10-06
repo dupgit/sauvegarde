@@ -21,7 +21,7 @@ Use the following command to clone sauvegarde's git repository:
     Resolving deltas: 100% (3347/3347), done.
     Checking connectivity... done.
 
-When git is done you have to generate the configure script that we will use to install  the project. First make sure that you have installed autotools, automake, autoconf, libtool and intltool.
+When git is done you have to generate the configure script that we will use to install the project. First make sure that you have installed autotools, automake, autoconf, libtool and intltool.
 
     $ ./autogen.sh
     libtoolize: putting auxiliary files in `.'.
