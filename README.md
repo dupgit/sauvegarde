@@ -139,6 +139,12 @@ options are:
       -p, --port=NUMBER                Port NUMBER on which serveur program is listening.
 
 
+## Manual
+
+If you need more than the above hints, please have a look at the user
+[manual](manual/installation.md).
+
+
 ## Roadmap
 
 I am coding on spare hours so I may not tell any release dates and you
@@ -168,12 +174,6 @@ should consider that "It ships when its ready".
                       hashs to avoid having duplicated hashs into it.
 * 0.0.5  [04.10.2015] fanotify's code reviewed. Avoid having one entire
                       file in memory.
-
-
-## Manual
-
-If you need more than the above hints, please have a look at the user
-[manual](manual/installation.md).
 
 
 ## Code documentation
