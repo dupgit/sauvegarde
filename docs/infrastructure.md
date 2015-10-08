@@ -64,9 +64,11 @@ As an example a JSON structure for a directory looks like:
      "ctime": 1401024479,
      "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/monitor/.deps",
      "link": "",
+     "hostname": "d630",
      "mtime": 1401024479,
      "gid": 530,
-     "fsize": 0
+     "fsize": 0,
+     "data_sent": 0
     }
 
 
@@ -99,9 +101,11 @@ As an example a JSON structure for a file looks like:
      "ctime": 1401023685,
      "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/config.log",
      "link": "",
+     "hostname": "d630",
      "mtime": 1401023685,
      "gid": 530,
-     "fsize": 37803
+     "fsize": 37803,
+     "data_sent": 1
     }
 
 

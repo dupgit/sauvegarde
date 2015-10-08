@@ -74,9 +74,10 @@ hexadecimal format.
 ### /Meta.json
 
 Waits for a json string with "hash_list", "filetype", "group", "mode",
-"owner", "atime", "uid", "ctime", "name", "mtime", "gid", "fsize" meta-data
-fields and a "msg_id" field in no specific order. "hash_list" field should
-contains hashs of data in an ordered way and base64 encoded.
+"owner", "atime", "uid", "ctime", "name", "mtime", "gid", "fsize", "hostname",
+"data_sent" meta-data fields and a "msg_id" field in no specific order.
+"hash_list" field should contains hashs of data in an ordered way and
+base64 encoded.
 
 The serveur answers a hash_list that may be empty. This hash list is the
 hashs that the server needs. The server should not ask for hash that it
@@ -86,6 +87,12 @@ already has. Example:
                    ...,
                    "nZjIbSp6tJHAQJ71rzVt/KGoTeX4BXDLYvXx/PQM5j8="]
     }
+
+"data_sent" is true when data has already been sent before sending
+metadata and false otherwise. If "data_sent" is true then serveur does
+not tries to know which hashs are needed because it assumes that every
+block of needed data has already been received (thus no block is needed
+anymore).
 
 
 ### /Data.json
@@ -102,5 +109,5 @@ and data fields must be base 64 encoded.
 ### /Data_Array.json
 
 Waits for a json string containing an array named "data_array". This array
-contains a suite of json strings (at least one) each of them containing
-"hash", "data" and "size" fields.
+contains a suite of json strings (at least two) each of them containing
+"hash", "data" and "size" fields as for /Data.json.
