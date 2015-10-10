@@ -36,6 +36,9 @@
  *
  * Structure Options gives a way to store program options passed from the
  * command line or read from a configuration file for 'serveur' program.
+ *
+ * list, restore, date and where are pure command line options that will
+ * not (unless requested by some user) be in the configuration file.
  */
 typedef struct
 {
@@ -46,6 +49,7 @@ typedef struct
     gchar *configfile;  /**< Filename for the configuration file specified on the command line                      */
     gchar *ip;          /**< A string representing the IP address where serveur is located (may be a hotsname)      */
     gint port;          /**< Port number on which to send things to serveur's server (on which it must listen)      */
+    gchar *where;       /**< where is a string that should contain a directory where to restore a file / dirtectory */
 } options_t;
 
 

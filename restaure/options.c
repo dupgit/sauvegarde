@@ -156,7 +156,8 @@ static options_t *manage_command_line_options(int argc, char **argv)
     gint port = 0;                 /** Port number on which to send things to the server          */
     gchar *list = NULL;            /** Should contain a filename or a directory to filter out     */
     gchar *restore = NULL;         /** Must contain a filename or a directory name to be restored */
-    gchar *date = NULL;
+    gchar *date = NULL;            /** date at which we want to restore a file or directory       */
+    gchar *where = NULL;           /** Contains the directory where to restore a file / directory */
 
     GOptionEntry entries[] =
     {
@@ -166,6 +167,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
         { "date", 't', 0, G_OPTION_ARG_STRING, &date, N_("restores the selected file at that specific DATE."), "DATE"},
         { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode."), N_("BOOLEAN")},
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
+        { "where", 'w', 0, G_OPTION_ARG_STRING, &where, N_("Specify a DIRECTORY where to restore a file."), N_("DIRECTORY")},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), "IP"},
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which serveur program is listening."), N_("NUMBER")},
         { NULL }
@@ -201,6 +203,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     opt->restore = NULL;
     opt->ip = g_strdup("localhost");
     opt->port = 5468;
+    opt->where = NULL;
 
 
     /* 1) Reading options from default configuration file
@@ -253,6 +256,11 @@ static options_t *manage_command_line_options(int argc, char **argv)
             opt->port = port;
         }
 
+    if (where != NULL)
+        {
+            opt->where = g_strdup(where);
+        }
+
     g_option_context_free(context);
     free_variable(ip);
     free_variable(bugreport);
@@ -260,6 +268,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     free_variable(list);
     free_variable(restore);
     free_variable(date);
+    free_variable(where);
 
     return opt;
 }
