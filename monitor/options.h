@@ -45,6 +45,7 @@ typedef struct
     gchar *dbname;        /**< File name of the database that is used to cache files and buffers localy          */
     gchar *ip;            /**< A string representing the IP address where serveur is located (may be a hotsname) */
     gint port;            /**< Port number on which to send things to serveur's server (on which it must listen) */
+    gboolean adaptative;  /**< adaptative will make client compute hashs with an adaptative blocksize if TRUE    */
 } options_t;
 
 

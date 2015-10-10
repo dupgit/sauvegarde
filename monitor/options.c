@@ -191,6 +191,7 @@ options_t *manage_command_line_options(int argc, char **argv)
 {
     gboolean version = FALSE;      /** True if -v was selected on the command line           */
     gint debug = -4;               /** 0 == FALSE and other values == TRUE                   */
+    gint adaptative = -1;          /** 0 == FALSE and other positive values == TRUE          */
     gchar **dirname_array = NULL;  /** array of dirnames left on the command line            */
     gchar *configfile = NULL;      /** filename for the configuration file if any            */
     gint64 blocksize = 0;          /** computed block size in bytes                          */
@@ -204,7 +205,8 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
         { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode."), N_("BOOLEAN")},
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
-        { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Block SIZE used to compute hashs."), N_("SIZE")},
+        { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Fixed block SIZE used to compute hashs."), N_("SIZE")},
+        { "adaptative", 'a', 0, G_OPTION_ARG_INT , &adaptative, N_("Adapative block size used to compute hashs."), N_("BOOLEAN")},
         { "dircache", 'r', 0, G_OPTION_ARG_STRING, &dircache, N_("Directory DIRNAME where to cache files."), N_("DIRNAME")},
         { "dbname", 'f', 0, G_OPTION_ARG_STRING, &dbname, N_("Database FILENAME."), N_("FILENAME")},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), "IP"},
@@ -298,6 +300,15 @@ options_t *manage_command_line_options(int argc, char **argv)
     if (port > 1024 && port < 65535)
         {
             opt->port = port;
+        }
+
+    if (adaptative > 0)
+        {
+            opt->adaptative = TRUE;
+        }
+    else
+        {
+            opt->adaptative = FALSE;
         }
 
     g_option_context_free(context);
