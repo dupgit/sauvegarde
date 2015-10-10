@@ -286,20 +286,31 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 {
     GFile *file = NULL;
     gchar *basename = NULL;    /** basename for the file to be restored     */
-    gchar *cwd = NULL;         /** current working directory                */
+    gchar *where = NULL;       /** directory where to restore the file      */
     gchar *filename = NULL;    /** filename of the restored file            */
     GFileOutputStream *stream =  NULL;
     GError *error = NULL;
+    options_t *opt = NULL;
 
-
-    if (meta != NULL)
+    if (res_struct != NULL && meta != NULL)
         {
             /* get the basename of the file to be restored */
             basename = g_path_get_basename(meta->name);
 
-            /* gets the current directory to make the file to be restored in it */
-            cwd = g_get_current_dir();
-            filename = g_build_filename(cwd, basename, NULL);
+            opt = res_struct->opt;
+
+            if (opt != NULL && opt->where != NULL && g_file_test(opt->where, G_FILE_TEST_IS_DIR))
+                {
+                    where = g_strdup(opt->where);
+                }
+
+            if (where == NULL)
+                {
+                    /* Fall back to get the current directory to make the file to be restored in it */
+                    where = g_get_current_dir();
+                }
+
+            filename = g_build_filename(where, basename, NULL);
             print_debug(_("filename to restore: %s\n"), filename);
             file = g_file_new_for_path(filename);
 
@@ -329,7 +340,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                 }
 
             free_object(file);
-            free_variable(cwd);
+            free_variable(where);
             free_variable(basename);
             free_variable(filename);
         }
