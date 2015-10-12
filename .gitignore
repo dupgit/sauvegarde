@@ -48,3 +48,4 @@ manual/*.ind
 manual/*.out
 manual/*.toc
 manual/*.log
+manual/graphs/*.png
