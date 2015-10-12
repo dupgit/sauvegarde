@@ -8,4 +8,4 @@ set log xy
 set title "blocksize upon filesize"
 set output "courbe-down-up.png"
 set terminal png size 1024,768 enhanced font "Verdana,10"
-plot "adaptative.txt" using 1:2 title "Blocksize" with histeps
+plot "adaptative.txt" using 1:2 title "Blocksize" with steps

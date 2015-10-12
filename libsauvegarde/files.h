@@ -53,6 +53,7 @@ typedef struct
     gchar *link;            /**< link name where points the LINK if file_type is a link                           */
     GSList *hash_data_list; /**< List of hash_data_t structures of the file (hash and data are in a binary form)  */
     gboolean in_cache;      /**< in_cache is a boolean that may be TRUE if the file is in the local cache (client)*/
+    gint64 blocksize;       /**< blocksize is the blocksize to be applied on the file                             */
 } meta_data_t;
 
 

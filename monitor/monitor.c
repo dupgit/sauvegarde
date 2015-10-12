@@ -32,7 +32,7 @@
 
 static main_struct_t *init_main_structure(options_t *opt);
 static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize);
-static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, gint64 blocksize, db_t *database);
+static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, main_struct_t *main_struct);
 static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent);
 static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash);
 static gint send_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_list, gchar *answer);
@@ -44,6 +44,8 @@ static gpointer save_one_file_threaded(gpointer data);
 static gpointer free_file_event_t(file_event_t *file_event);
 static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *array);
 static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta);
+static gint64 calculate_file_blocksize(main_struct_t *main_struct, gint64 size);
+
 
 /**
  * Inits the main structure.
@@ -192,17 +194,16 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
  *        here to build the filename name.
  * @param fileinfo is a glib structure that contains all meta data and
  *        more for a file.
- * @param blocksize is the blocksize to be used to calculate hashs upon.
  * @param database is the db_t * structure to access thhe local database
  *        cache in order to know if we already know this file (and thus
  *        not process it).
  * @returns a newly allocated and filled meta_data_t * structure.
  */
-static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, gint64 blocksize, db_t *database)
+static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, main_struct_t *main_struct)
 {
     meta_data_t *meta = NULL;
 
-    if (directory != NULL && fileinfo != NULL && database != NULL)
+    if (directory != NULL && fileinfo != NULL &&  main_struct != NULL && main_struct->database != NULL)
         {
             /* filling meta data for the file represented by fileinfo */
             meta = new_meta_data_t();
@@ -219,6 +220,7 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
             meta->mtime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_MODIFIED);
             meta->mode = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_MODE);
             meta->size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+            meta->blocksize = calculate_file_blocksize(main_struct, meta->size);
 
              /* Do the right things with specific cases */
             if (meta->file_type == G_FILE_TYPE_SYMBOLIC_LINK)
@@ -235,7 +237,7 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
              * This is usefull only when carving directories at the begining of the process as when called
              * by m_fanotify we already know that the file was written and that something changed.
              */
-            meta->in_cache = is_file_in_cache(database, meta);
+            meta->in_cache = is_file_in_cache(main_struct->database, meta);
         }
 
     return meta;
@@ -365,15 +367,15 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
     hash_data_t *found = NULL;
     hash_data_t *hash_data = NULL;
     gint all_ok = CURLE_OK;
-    gint i = 0;
+    gint bytes = 0;
     json_t *to_insert = NULL;
-    gint limit = 0;
+    gint64 limit = 0;
 
     if (answer != NULL && hash_data_list != NULL && main_struct != NULL && main_struct->opt != NULL)
         {
             root = load_json(answer);
 
-            limit = (CLIENT_MIN_BUFFER) / main_struct->opt->blocksize;
+            limit = (CLIENT_MIN_BUFFER);
 
             if (root != NULL)
                 {
@@ -395,21 +397,21 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
                             to_insert = convert_hash_data_t_to_json(found);
                             json_array_append_new(array, to_insert);
 
-                            i = i + 1;
+                            bytes = bytes + found->read;
 
-                            if (i >= limit)
+                            if (bytes >= limit)
                                 {
                                     /* when we've got CLIENT_MIN_BUFFER bytes of data send them ! */
                                     all_ok = insert_array_in_root_and_send(main_struct, array);
                                     json_decref(array);
                                     array = json_array();
-                                    i = 0;
+                                    bytes = 0;
                                 }
 
                             hash_list = g_slist_next(hash_list);
                         }
 
-                    if (i > 0)
+                    if (bytes > 0)
                         {
                             /* Send the rest of the data (less than CLIENT_MIN_BUFFER bytes) */
                             all_ok = insert_array_in_root_and_send(main_struct, array);
@@ -555,6 +557,54 @@ static gpointer save_one_file_threaded(gpointer data)
 
 
 /**
+ * Calculates the block size to be used upon a file
+ * @param main_struct : main structure of the program
+ * @param size is the size of the considered file.
+ */
+static gint64 calculate_file_blocksize(main_struct_t *main_struct, gint64 size)
+{
+
+    if (main_struct != NULL && main_struct->opt != NULL)
+        {
+            if (main_struct->opt->adaptative == TRUE)
+                {
+                    if (size < 32768)
+                        {
+                            return 512;
+                        }
+                    else if (size < 262144)
+                        {
+                            return 2048;
+                        }
+                    else if (size < 1048576)
+                        {
+                            return 8192;
+                        }
+                    else if (size < 8388608)
+                        {
+                            return 16384;
+                        }
+                    else if (size < 67108864)
+                        {
+                            return 65536;
+                        }
+                    else if (size < 134217728)
+                        {
+                            return 131072;
+                        }
+                    else
+                        {
+                            return 262144;
+                        }
+                }
+        }
+
+    /* default case */
+    return main_struct->opt->blocksize;
+}
+
+
+/**
  * Process the file that is not already in our local cache
  * @param main_struct : main structure of the program
  * @param meta is the meta data of the file to be processed (it does
@@ -574,7 +624,7 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
                 {
                     /* Calculates hashs and takes care of data */
                     a_file = g_file_new_for_path(meta->name);
-                    meta->hash_data_list = calculate_hash_data_list_for_file(a_file, main_struct->opt->blocksize);
+                    meta->hash_data_list = calculate_hash_data_list_for_file(a_file, meta->blocksize);
                     a_file = free_object(a_file);
                 }
 
@@ -582,7 +632,7 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
 
             if (answer != NULL)
                 {
-                    if (meta->size < main_struct->opt->blocksize)
+                    if (meta->size < meta->blocksize)
                         {
                             /* Only one block to send (size is less than blocksize's value) */
                             success = send_data_to_serveur(main_struct, meta->hash_data_list, answer);
@@ -653,10 +703,10 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                         {
 
                             checksum = g_checksum_new(G_CHECKSUM_SHA256);
-                            buffer = (guchar *) g_malloc0(main_struct->opt->blocksize);
+                            buffer = (guchar *) g_malloc0(meta->blocksize);
                             a_hash = (guint8 *) g_malloc0(digest_len);
 
-                            read = g_input_stream_read((GInputStream *) stream, buffer, main_struct->opt->blocksize, NULL, &error);
+                            read = g_input_stream_read((GInputStream *) stream, buffer, meta->blocksize, NULL, &error);
                             read_bytes = read_bytes + read;
                             array = json_array();
 
@@ -695,9 +745,9 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                                 }
                                         }
 
-                                    buffer = (guchar *) g_malloc0(main_struct->opt->blocksize);
+                                    buffer = (guchar *) g_malloc0(meta->blocksize);
                                     a_hash = (guint8 *) g_malloc0(digest_len);
-                                    read = g_input_stream_read((GInputStream *) stream, buffer, main_struct->opt->blocksize, NULL, &error);
+                                    read = g_input_stream_read((GInputStream *) stream, buffer, meta->blocksize, NULL, &error);
                                     read_bytes = read_bytes + read;
                                 }
 
@@ -773,7 +823,7 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
             my_clock = new_clock_t();
 
             /* Get data and meta_data for a file. */
-            meta = get_meta_data_from_fileinfo(directory, fileinfo, main_struct->opt->blocksize, main_struct->database);
+            meta = get_meta_data_from_fileinfo(directory, fileinfo, main_struct);
 
             if (meta->in_cache == FALSE)
                 {
