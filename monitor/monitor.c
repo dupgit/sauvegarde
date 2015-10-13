@@ -375,7 +375,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
         {
             root = load_json(answer);
 
-            limit = (CLIENT_MIN_BUFFER);
+            limit = main_struct->opt->buffersize;
 
             if (root != NULL)
                 {
@@ -401,7 +401,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
 
                             if (bytes >= limit)
                                 {
-                                    /* when we've got CLIENT_MIN_BUFFER bytes of data send them ! */
+                                    /* when we've got opt->buffersize bytes of data send them ! */
                                     all_ok = insert_array_in_root_and_send(main_struct, array);
                                     json_decref(array);
                                     array = json_array();
@@ -413,7 +413,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
 
                     if (bytes > 0)
                         {
-                            /* Send the rest of the data (less than CLIENT_MIN_BUFFER bytes) */
+                            /* Send the rest of the data (less than opt->buffersize bytes) */
                             all_ok = insert_array_in_root_and_send(main_struct, array);
                             json_decref(array);
                         }
@@ -728,7 +728,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                     g_checksum_reset(checksum);
                                     digest_len = HASH_LEN;
 
-                                    if (read_bytes >= CLIENT_MIN_BUFFER)
+                                    if (read_bytes >= main_struct->opt->buffersize)
                                         {
                                             /* sending datas naïvely */
                                             print_debug(_("Sending data: %d bytes\n"), read_bytes);

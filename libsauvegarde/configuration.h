@@ -89,6 +89,15 @@
 
 
 /**
+ * @def KN_BUFFER_SIZE
+ * Defines the key name for the buffersize option that allow one to
+ * specify a maximum size of data to be accumulated before sending them
+ * to serveur.
+ */
+#define KN_BUFFER_SIZE ("buffersize")
+
+
+/**
  * @def KN_DIR_LIST
  * Defines a list of directories that we want to watch.
  */

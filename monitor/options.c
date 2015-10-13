@@ -73,6 +73,7 @@ static void print_selected_options(options_t *opt)
             print_string_option(_("Cache database name: %s\n"), opt->dbname);
             print_string_option(_("Serveur's IP address: %s\n"), opt->ip);
             fprintf(stdout, _("Serveur's port number: %d\n"), opt->port);
+            fprintf(stdout, _("Buffersize: %d\n"), opt->buffersize);
         }
 }
 
@@ -106,7 +107,11 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
             /* Reading filename of the database if any */
             opt->dbname = read_string_from_file(keyfile, filename, GN_CLIENT, KN_DB_NAME, _("Could not load cache database name"));
 
+            /* Adaptative mode for blocksize ? */
             opt->adaptative = read_boolean_from_file(keyfile, filename, GN_CLIENT, KN_ADAPTATIVE, _("Could not load adaptative configuration from file."));
+
+            /* Buffer size to be used to send data to serveur */
+            opt->buffersize = read_int_from_file(keyfile, filename, GN_CLIENT, KN_BUFFER_SIZE, _("Could not load buffersize from file"));
         }
 
    read_debug_mode_from_file(keyfile, filename);
@@ -204,6 +209,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     gchar **dirname_array = NULL;  /** array of dirnames left on the command line            */
     gchar *configfile = NULL;      /** filename for the configuration file if any            */
     gint64 blocksize = 0;          /** computed block size in bytes                          */
+    gint buffersize = 0;           /** buffer size used to send data to serveur              */
     gchar *dircache = NULL;        /** Directory used to store cache files                   */
     gchar *dbname = NULL;          /** Database filename where data and meta data are cached */
     gchar *ip =  NULL;             /** IP address where is located serveur's program         */
@@ -214,8 +220,9 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version"), NULL },
         { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode."), N_("BOOLEAN")},
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
-        { "blocksize", 'b', 0, G_OPTION_ARG_INT64 , &blocksize, N_("Fixed block SIZE used to compute hashs."), N_("SIZE")},
-        { "adaptative", 'a', 0, G_OPTION_ARG_INT , &adaptative, N_("Adapative block size used to compute hashs."), N_("BOOLEAN")},
+        { "blocksize", 'b', 0, G_OPTION_ARG_INT64, &blocksize, N_("Fixed block SIZE used to compute hashs."), N_("SIZE")},
+        { "adaptative", 'a', 0, G_OPTION_ARG_INT, &adaptative, N_("Adapative block size used to compute hashs."), N_("BOOLEAN")},
+        { "buffersize", 's', 0, G_OPTION_ARG_INT, &buffersize, N_("SIZE of the cache used to send data to serveur."), N_("SIZE")},
         { "dircache", 'r', 0, G_OPTION_ARG_STRING, &dircache, N_("Directory DIRNAME where to cache files."), N_("DIRNAME")},
         { "dbname", 'f', 0, G_OPTION_ARG_STRING, &dbname, N_("Database FILENAME."), N_("FILENAME")},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), "IP"},
@@ -256,6 +263,8 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->dbname = g_strdup("filecache.db");
     opt->ip = g_strdup("localhost");
     opt->port = 5468;
+    opt->buffersize = -1;
+    opt->adaptative = FALSE;
 
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "client.conf");
@@ -318,6 +327,15 @@ options_t *manage_command_line_options(int argc, char **argv)
     else if (adaptative == 0)
         {
             opt->adaptative = FALSE;
+        }
+
+    if (buffersize > 0)
+        {
+            opt->buffersize = buffersize;
+        }
+    else if (opt->buffersize < 0)
+        {
+            opt->buffersize = CLIENT_MIN_BUFFER;
         }
 
     g_option_context_free(context);
