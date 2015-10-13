@@ -59,13 +59,20 @@ static void print_selected_options(options_t *opt)
                         }
                 }
 
-            fprintf(stdout, _("Blocksize: %" G_GINT64_FORMAT "\n"), opt->blocksize);
+            if (opt->adaptative == FALSE)
+                {
+                    fprintf(stdout, _("Blocksize: %" G_GINT64_FORMAT "\n"), opt->blocksize);
+                }
+            else
+                {
+                    fprintf(stdout, _("Blocksize: adaptative mode\n"));
+                }
 
             print_string_option(_("Configuration file: %s\n"), opt->configfile);
             print_string_option(_("Cache directory: %s\n"), opt->dircache);
             print_string_option(_("Cache database name: %s\n"), opt->dbname);
-            print_string_option(_("serveur's IP address: %s\n"), opt->ip);
-            fprintf(stdout, _("serveur's port number: %d\n"), opt->port);
+            print_string_option(_("Serveur's IP address: %s\n"), opt->ip);
+            fprintf(stdout, _("Serveur's port number: %d\n"), opt->port);
         }
 }
 
@@ -98,6 +105,8 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
 
             /* Reading filename of the database if any */
             opt->dbname = read_string_from_file(keyfile, filename, GN_CLIENT, KN_DB_NAME, _("Could not load cache database name"));
+
+            opt->adaptative = read_boolean_from_file(keyfile, filename, GN_CLIENT, KN_ADAPTATIVE, _("Could not load adaptative configuration from file."));
         }
 
    read_debug_mode_from_file(keyfile, filename);
@@ -306,7 +315,7 @@ options_t *manage_command_line_options(int argc, char **argv)
         {
             opt->adaptative = TRUE;
         }
-    else
+    else if (adaptative == 0)
         {
             opt->adaptative = FALSE;
         }

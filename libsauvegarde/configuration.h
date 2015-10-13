@@ -81,6 +81,14 @@
 
 
 /**
+ * @def KN_ADAPTATIVE
+ * Defines the key name for the adaptative option to determine blocksize
+ * behavior (fixed or adaptative).
+ */
+#define KN_ADAPTATIVE ("adaptative")
+
+
+/**
  * @def KN_DIR_LIST
  * Defines a list of directories that we want to watch.
  */
