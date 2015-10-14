@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-04 20:30+0200\n"
+"POT-Creation-Date: 2015-10-14 20:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -109,22 +109,22 @@ msgstr ""
 msgid "(%d) Error while trying to open %s database: %s\n"
 msgstr ""
 
-#: ../libsauvegarde/files.c:301
+#: ../libsauvegarde/files.c:301 ../libsauvegarde/files.c:302
 #, c-format
 msgid "Setting mode: %d\n"
 msgstr ""
 
-#: ../libsauvegarde/files.c:487
+#: ../libsauvegarde/files.c:487 ../libsauvegarde/files.c:488
 #, c-format
 msgid "Error while getting file information: %s\n"
 msgstr ""
 
-#: ../libsauvegarde/files.c:497
+#: ../libsauvegarde/files.c:497 ../libsauvegarde/files.c:498
 #, c-format
 msgid "Error or warning for file (%s): %s\n"
 msgstr ""
 
-#: ../libsauvegarde/files.c:528
+#: ../libsauvegarde/files.c:528 ../libsauvegarde/files.c:529
 #, c-format
 msgid "Error: unable to create symbolic link %s to %s: %s.\n"
 msgstr ""
@@ -275,51 +275,55 @@ msgstr ""
 msgid "Received unexpected signal\n"
 msgstr ""
 
-#: ../monitor/monitor.c:64
+#: ../monitor/monitor.c:64 ../monitor/monitor.c:66
 msgid "Please wait while initializing main structure...\n"
 msgstr ""
 
-#: ../monitor/monitor.c:96
+#: ../monitor/monitor.c:96 ../monitor/monitor.c:98
 msgid "Main structure initialized !\n"
 msgstr ""
 
-#: ../monitor/monitor.c:162 ../monitor/monitor.c:706
+#: ../monitor/monitor.c:162 ../monitor/monitor.c:706 ../monitor/monitor.c:164
+#: ../monitor/monitor.c:756
 #, c-format
 msgid "Error while reading file: %s\n"
 msgstr ""
 
-#: ../monitor/monitor.c:179 ../monitor/monitor.c:732
+#: ../monitor/monitor.c:179 ../monitor/monitor.c:732 ../monitor/monitor.c:181
+#: ../monitor/monitor.c:782
 #, c-format
 msgid "Unable to open file for reading: %s\n"
 msgstr ""
 
 #. Sends meta data here
-#: ../monitor/monitor.c:263
+#: ../monitor/monitor.c:263 ../monitor/monitor.c:265
 #, c-format
 msgid "Sending meta data: %s\n"
 msgstr ""
 
-#: ../monitor/monitor.c:426 ../monitor/monitor.c:487
+#: ../monitor/monitor.c:426 ../monitor/monitor.c:487 ../monitor/monitor.c:428
+#: ../monitor/monitor.c:489
 msgid "Error while loading JSON answer from serveur\n"
 msgstr ""
 
-#: ../monitor/monitor.c:646
+#: ../monitor/monitor.c:646 ../monitor/monitor.c:696
 #, c-format
 msgid "Processing file: %s\n"
 msgstr ""
 
 #. sending datas naïvely
-#: ../monitor/monitor.c:684 ../monitor/monitor.c:717
+#: ../monitor/monitor.c:684 ../monitor/monitor.c:717 ../monitor/monitor.c:734
+#: ../monitor/monitor.c:767
 #, c-format
 msgid "Sending data: %d bytes\n"
 msgstr ""
 
-#: ../monitor/monitor.c:791
+#: ../monitor/monitor.c:791 ../monitor/monitor.c:841
 #, c-format
 msgid "processing file %s"
 msgstr ""
 
-#: ../monitor/monitor.c:874
+#: ../monitor/monitor.c:874 ../monitor/monitor.c:924
 #, c-format
 msgid "Unable to enumerate directory %s: %s\n"
 msgstr ""
@@ -337,33 +341,34 @@ msgid "0.0.5"
 msgstr ""
 
 #: ../monitor/options.c:49 ../restaure/options.c:46 ../serveur/options.c:59
-#: ../serveur/options.c:90
+#: ../serveur/options.c:90 ../monitor/options.c:50
 #, c-format
 msgid ""
 "\n"
 "%s options are:\n"
 msgstr ""
 
-#: ../monitor/options.c:53
+#: ../monitor/options.c:53 ../monitor/options.c:54
 #, c-format
 msgid "Directory list:\n"
 msgstr ""
 
-#: ../monitor/options.c:62
+#: ../monitor/options.c:62 ../monitor/options.c:64
 msgid "Blocksize: %"
 msgstr ""
 
 #: ../monitor/options.c:64 ../restaure/options.c:47 ../serveur/options.c:61
+#: ../monitor/options.c:71 ../monitor/options.c:79
 #, c-format
 msgid "Configuration file: %s\n"
 msgstr ""
 
-#: ../monitor/options.c:65
+#: ../monitor/options.c:65 ../monitor/options.c:72 ../monitor/options.c:80
 #, c-format
 msgid "Cache directory: %s\n"
 msgstr ""
 
-#: ../monitor/options.c:66
+#: ../monitor/options.c:66 ../monitor/options.c:73 ../monitor/options.c:81
 #, c-format
 msgid "Cache database name: %s\n"
 msgstr ""
@@ -379,59 +384,73 @@ msgid "serveur's port number: %d\n"
 msgstr ""
 
 #. Reading the directory list
-#: ../monitor/options.c:91
+#: ../monitor/options.c:91 ../monitor/options.c:99 ../monitor/options.c:107
 msgid "Could not load directory list from file"
 msgstr ""
 
-#: ../monitor/options.c:92
+#: ../monitor/options.c:92 ../monitor/options.c:100 ../monitor/options.c:108
 msgid "Could not load blocksize from file"
 msgstr ""
 
 #. Reading the cache directory if any
-#: ../monitor/options.c:95
+#: ../monitor/options.c:95 ../monitor/options.c:103 ../monitor/options.c:111
 msgid "Could not load directory name"
 msgstr ""
 
 #. Reading filename of the database if any
 #. Reading IP address of serveur's host if any
+#. Reading filename of the database if any
+#. Reading IP address of serveur's host if any
+#. Reading filename of the database if any
+#. Reading IP address of serveur's host if any
 #: ../monitor/options.c:100 ../monitor/options.c:130 ../restaure/options.c:90
+#: ../monitor/options.c:108 ../monitor/options.c:144 ../monitor/options.c:116
+#: ../monitor/options.c:152
 msgid "Could not load cache database name"
 msgstr ""
 
 #. Reading the port number if any
 #: ../monitor/options.c:122 ../restaure/options.c:82 ../serveur/options.c:119
+#: ../monitor/options.c:136 ../monitor/options.c:144
 msgid "Could not load serveur port number from file."
 msgstr ""
 
 #: ../monitor/options.c:156 ../restaure/options.c:116 ../serveur/options.c:146
+#: ../monitor/options.c:170 ../monitor/options.c:178
 #, c-format
 msgid "Reading configuration from file %s\n"
 msgstr ""
 
 #: ../monitor/options.c:167 ../restaure/options.c:127
 #: ../serveur/file_backend.c:374 ../serveur/options.c:156
+#: ../monitor/options.c:181 ../monitor/options.c:189
 #, c-format
 msgid "Failed to open %s configuration file: %s\n"
 msgstr ""
 
-#: ../monitor/options.c:204
+#: ../monitor/options.c:204 ../monitor/options.c:220 ../monitor/options.c:228
 msgid "Prints program version"
 msgstr ""
 
 #: ../monitor/options.c:205 ../restaure/options.c:167 ../serveur/options.c:189
+#: ../monitor/options.c:221 ../restaure/options.c:168 ../monitor/options.c:229
 msgid "Activates (1) or desactivates (0) debug mode."
 msgstr ""
 
 #: ../monitor/options.c:205 ../restaure/options.c:167 ../serveur/options.c:189
+#: ../monitor/options.c:221 ../monitor/options.c:224 ../restaure/options.c:168
+#: ../monitor/options.c:229 ../monitor/options.c:232
 msgid "BOOLEAN"
 msgstr ""
 
 #: ../monitor/options.c:206 ../restaure/options.c:168 ../serveur/options.c:190
+#: ../monitor/options.c:222 ../restaure/options.c:169 ../monitor/options.c:230
 msgid "Specify an alternative configuration file."
 msgstr ""
 
 #: ../monitor/options.c:206 ../monitor/options.c:209 ../restaure/options.c:168
-#: ../serveur/options.c:190
+#: ../serveur/options.c:190 ../monitor/options.c:222 ../monitor/options.c:227
+#: ../restaure/options.c:169 ../monitor/options.c:230 ../monitor/options.c:235
 msgid "FILENAME"
 msgstr ""
 
@@ -439,70 +458,78 @@ msgstr ""
 msgid "Block SIZE used to compute hashs."
 msgstr ""
 
-#: ../monitor/options.c:207
+#: ../monitor/options.c:207 ../monitor/options.c:223 ../monitor/options.c:225
+#: ../monitor/options.c:231 ../monitor/options.c:233
 msgid "SIZE"
 msgstr ""
 
-#: ../monitor/options.c:208
+#: ../monitor/options.c:208 ../monitor/options.c:226 ../monitor/options.c:234
 msgid "Directory DIRNAME where to cache files."
 msgstr ""
 
-#: ../monitor/options.c:208
+#: ../monitor/options.c:208 ../monitor/options.c:226 ../monitor/options.c:234
 msgid "DIRNAME"
 msgstr ""
 
-#: ../monitor/options.c:209
+#: ../monitor/options.c:209 ../monitor/options.c:227 ../monitor/options.c:235
 msgid "Database FILENAME."
 msgstr ""
 
-#: ../monitor/options.c:210 ../restaure/options.c:169
+#: ../monitor/options.c:210 ../restaure/options.c:169 ../monitor/options.c:228
+#: ../restaure/options.c:171 ../monitor/options.c:236
 msgid "IP address where serveur program is."
 msgstr ""
 
-#: ../monitor/options.c:211 ../serveur/options.c:191
+#: ../monitor/options.c:211 ../serveur/options.c:191 ../monitor/options.c:229
+#: ../monitor/options.c:237
 msgid "Port NUMBER on which to listen."
 msgstr ""
 
 #: ../monitor/options.c:211 ../restaure/options.c:170 ../serveur/options.c:191
+#: ../monitor/options.c:229 ../restaure/options.c:172 ../monitor/options.c:237
 msgid "NUMBER"
 msgstr ""
 
 #: ../monitor/options.c:223 ../restaure/options.c:181 ../serveur/options.c:202
+#: ../monitor/options.c:241 ../restaure/options.c:183 ../monitor/options.c:249
 msgid "Please report bugs to: "
 msgstr ""
 
-#: ../monitor/options.c:224 ../serveur/options.c:203
+#: ../monitor/options.c:224 ../serveur/options.c:203 ../monitor/options.c:242
+#: ../monitor/options.c:250
 msgid ""
 "This program is monitoring file changes in the filesystem and is hashing\n"
 "files with SHA256 algorithms from Glib."
 msgstr ""
 
-#: ../monitor/options.c:233 ../restaure/options.c:191
+#: ../monitor/options.c:233 ../restaure/options.c:191 ../monitor/options.c:251
+#: ../restaure/options.c:193 ../monitor/options.c:259
 #, c-format
 msgid "Option parsing failed: %s\n"
 msgstr ""
 
 #: ../restaure/options.c:163 ../serveur/options.c:188
+#: ../restaure/options.c:164
 msgid "Prints program version."
 msgstr ""
 
-#: ../restaure/options.c:164
+#: ../restaure/options.c:164 ../restaure/options.c:165
 msgid "Gives a list of saved files that correspond to the given REGEX."
 msgstr ""
 
-#: ../restaure/options.c:165
+#: ../restaure/options.c:165 ../restaure/options.c:166
 msgid "Restore requested filename (REGEX) (by default latest version)."
 msgstr ""
 
-#: ../restaure/options.c:166
+#: ../restaure/options.c:166 ../restaure/options.c:167
 msgid "restores the selected file at that specific DATE."
 msgstr ""
 
-#: ../restaure/options.c:170
+#: ../restaure/options.c:170 ../restaure/options.c:172
 msgid "Port NUMBER on which serveur program is listening."
 msgstr ""
 
-#: ../restaure/options.c:182
+#: ../restaure/options.c:182 ../restaure/options.c:184
 msgid "This program is restoring files from serveur's server.\n"
 msgstr ""
 
@@ -526,17 +553,17 @@ msgstr ""
 msgid "Error while getting hash %s"
 msgstr ""
 
-#: ../restaure/restaure.c:303
+#: ../restaure/restaure.c:303 ../restaure/restaure.c:314
 #, c-format
 msgid "filename to restore: %s\n"
 msgstr ""
 
-#: ../restaure/restaure.c:319
+#: ../restaure/restaure.c:319 ../restaure/restaure.c:330
 #, c-format
 msgid "Error: unable to open file %s to write data in it (%s).\n"
 msgstr ""
 
-#: ../restaure/restaure.c:362
+#: ../restaure/restaure.c:362 ../restaure/restaure.c:373
 #, c-format
 msgid ""
 "File to be restored: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, "
@@ -754,4 +781,59 @@ msgstr ""
 
 #: ../serveur/serveur.c:850
 msgid "Error: initialization failed.\n"
+msgstr ""
+
+#: ../monitor/options.c:68 ../monitor/options.c:76
+#, c-format
+msgid "Blocksize: adaptative mode\n"
+msgstr ""
+
+#: ../monitor/options.c:74 ../monitor/options.c:82
+#, c-format
+msgid "Serveur's IP address: %s\n"
+msgstr ""
+
+#: ../monitor/options.c:75 ../monitor/options.c:83
+#, c-format
+msgid "Serveur's port number: %d\n"
+msgstr ""
+
+#: ../monitor/options.c:76 ../monitor/options.c:84
+#, c-format
+msgid "Buffersize: %d\n"
+msgstr ""
+
+#. Adaptative mode for blocksize ?
+#: ../monitor/options.c:111 ../monitor/options.c:119
+msgid "Could not load adaptative configuration from file."
+msgstr ""
+
+#. Buffer size to be used to send data to serveur
+#: ../monitor/options.c:114 ../monitor/options.c:122
+msgid "Could not load buffersize from file"
+msgstr ""
+
+#: ../monitor/options.c:223 ../monitor/options.c:231
+msgid "Fixed block SIZE used to compute hashs."
+msgstr ""
+
+#: ../monitor/options.c:224 ../monitor/options.c:232
+msgid "Adapative block size used to compute hashs."
+msgstr ""
+
+#: ../monitor/options.c:225 ../monitor/options.c:233
+msgid "SIZE of the cache used to send data to serveur."
+msgstr ""
+
+#: ../restaure/options.c:170
+msgid "Specify a DIRECTORY where to restore a file."
+msgstr ""
+
+#: ../restaure/options.c:170
+msgid "DIRECTORY"
+msgstr ""
+
+#: ../monitor/options.c:71
+#, c-format
+msgid "Blocksize: %s\n"
 msgstr ""
