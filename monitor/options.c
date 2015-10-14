@@ -43,6 +43,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename);
 static void print_selected_options(options_t *opt)
 {
     GSList *head = NULL;
+    gchar *blocksize = NULL;
 
     if (opt != NULL)
         {
@@ -61,7 +62,14 @@ static void print_selected_options(options_t *opt)
 
             if (opt->adaptative == FALSE)
                 {
-                    fprintf(stdout, _("Blocksize: %" G_GINT64_FORMAT "\n"), opt->blocksize);
+                    /**
+                     * We need to translated this numer into a string before
+                     * inserting it into the final string in order to allow
+                     * this final string to be translated
+                     */
+                    blocksize = g_strdup_printf("%" G_GINT64_FORMAT, opt->blocksize);
+                    fprintf(stdout, _("Blocksize: %s\n"), blocksize);
+                    free_variable(blocksize);
                 }
             else
                 {
