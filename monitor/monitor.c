@@ -590,10 +590,12 @@ static gint64 calculate_file_blocksize(main_struct_t *main_struct, gint64 size)
                         }
                     else if (size < 134217728)
                         {
+                            main_struct->opt->buffersize = (CLIENT_MIN_BUFFER) * 2;
                             return 131072;
                         }
                     else
                         {
+                            main_struct->opt->buffersize = (CLIENT_MIN_BUFFER) * 4;
                             return 262144;
                         }
                 }

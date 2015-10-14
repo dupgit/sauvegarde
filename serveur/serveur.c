@@ -538,6 +538,7 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
             root = load_json(received_data);
             hash_data_list = extract_gslist_from_array(root, "data_array", FALSE);
             head = hash_data_list;
+            json_decref(root);
 
             while (hash_data_list != NULL)
                 {

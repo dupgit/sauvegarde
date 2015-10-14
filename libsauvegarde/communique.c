@@ -197,7 +197,6 @@ gint post_url(comm_t *comm, gchar *url)
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
             curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
 
-
             success = curl_easy_perform(comm->curl_handle);
 
             if (success != CURLE_OK)

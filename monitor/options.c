@@ -86,8 +86,6 @@ static void print_selected_options(options_t *opt)
 }
 
 
-
-
 /**
  * Reads keys in keyfile if group GN_CLIENT is in that keyfile and fills
  * options_t *opt structure accordingly.
@@ -341,7 +339,7 @@ options_t *manage_command_line_options(int argc, char **argv)
         {
             opt->buffersize = buffersize;
         }
-    else if (opt->buffersize < 0)
+    else if (opt->buffersize <= 0)
         {
             opt->buffersize = CLIENT_MIN_BUFFER;
         }
