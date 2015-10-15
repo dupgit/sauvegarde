@@ -344,6 +344,27 @@ static gchar *get_unformatted_answer(serveur_struct_t *serveur_struct, const cha
 
 
 /**
+ * Creates a response sent to the client via MHD_queue_response
+ * @param connection is the MHD_Connection connection
+ * @param answer is the gchar * string to be sent.
+ */
+static int create_MHD_response(struct MHD_Connection *connection, gchar *answer)
+{
+    struct MHD_Response *response = NULL;
+    int success = MHD_NO;
+    a_clock_t *elapsed = NULL;
+
+    elapsed = new_clock_t();
+    response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+    success = MHD_queue_response(connection, MHD_HTTP_OK, response);
+    MHD_destroy_response(response);
+    end_clock(elapsed, "creation MHD response");
+
+    return success;
+}
+
+
+/**
  * Function to process get requests received from clients.
  * @param serveur_struct is the main structure for the server.
  * @param connection is the connection in MHD
@@ -356,7 +377,6 @@ static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Conn
     static int aptr = 0;
     int success = MHD_NO;
     gchar *answer = NULL;
-    struct MHD_Response *response = NULL;
 
 
     if (&aptr != *con_cls)
@@ -387,11 +407,7 @@ static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Conn
                 *con_cls = NULL;
 
                 /* Do not free answer variable as MHD will do it for us ! */
-                response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
-                success = MHD_queue_response(connection, MHD_HTTP_OK, response);
-
-                MHD_destroy_response(response);
-
+                success = create_MHD_response(connection, answer);
         }
 
     return success;
@@ -409,13 +425,10 @@ static int process_get_request(serveur_struct_t *serveur_struct, struct MHD_Conn
  */
 static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, gchar *received_data)
 {
-    struct MHD_Response *response = NULL;
     serveur_meta_data_t *smeta = NULL;
-    gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
-    int success = MHD_NO;
+    gchar *answer = NULL;       /** gchar *answer : Do not free answer variable as MHD will do it for us !  */
     json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json formatted */
     json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs       */
-    gchar *json_str = NULL;     /** gchar *json_str is the string to be returned at the end                 */
     GSList *needed = NULL;
 
     smeta = convert_json_to_smeta_data(received_data);
@@ -451,7 +464,7 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
 
             root = json_object();
             insert_json_value_into_json_root(root, "hash_list", array);
-            json_str = json_dumps(root, 0);
+            answer = json_dumps(root, 0);
             json_decref(root);
 
 
@@ -461,21 +474,13 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
              * be used after this "call" here.
              */
             g_async_queue_push(serveur_struct->meta_queue, smeta);
-
-            response = MHD_create_response_from_buffer(strlen(json_str), (void *) json_str, MHD_RESPMEM_MUST_FREE);
-            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
         }
     else
         {
             answer = g_strdup_printf(_("Error: could not convert json to metadata\n"));
-            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
-            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
         }
 
-    MHD_destroy_response(response);
-
-    return success;
-
+    return create_MHD_response(connection, answer);
 }
 
 
@@ -493,7 +498,6 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
  */
 static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, const char *url, gchar *received_data)
 {
-    struct MHD_Response *response = NULL;
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     int success = MHD_NO;
     gchar *encoded_hash = NULL;
@@ -501,6 +505,7 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
     json_t *root = NULL;
     GSList *hash_data_list = NULL;
     GSList *head = NULL;
+    a_clock_t *elapsed = NULL;
 
     if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
         {
@@ -527,19 +532,19 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
              * creating an answer for the client to say that everything went Ok!
              */
             answer = g_strdup_printf(_("Ok!"));
-            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
-            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
-            MHD_destroy_response(response);
+            success = create_MHD_response(connection, answer);
         }
     else if (g_strcmp0(url, "/Data_Array.json") == 0 && received_data != NULL)
         {
             /* print_debug("/Data_Array.json: %s\n", received_data); */
-
+            elapsed = new_clock_t();
             root = load_json(received_data);
             hash_data_list = extract_gslist_from_array(root, "data_array", FALSE);
             head = hash_data_list;
             json_decref(root);
+            end_clock(elapsed, "extract_gslist_from_array");
 
+            elapsed = new_clock_t();
             while (hash_data_list != NULL)
                 {
                     hash_data = hash_data_list->data;
@@ -555,23 +560,21 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
                 }
 
             g_slist_free(head);
+            end_clock(elapsed, "push hash_data to queue");
 
             /**
              * creating an answer for the client to say that everything went Ok!
              */
+
             answer = g_strdup_printf(_("Ok!"));
-            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
-            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
-            MHD_destroy_response(response);
+            success = create_MHD_response(connection, answer);
         }
     else
         {
             /* The url is unknown to the server and we can not process the request ! */
             print_error(__FILE__, __LINE__, "Error: invalid url: %s\n", url);
             answer = g_strdup_printf(_("Error: invalid url!\n"));
-            response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
-            success = MHD_queue_response(connection, MHD_HTTP_OK, response);
-            MHD_destroy_response(response);
+            success = create_MHD_response(connection, answer);
         }
 
     return success;
@@ -596,8 +599,9 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
     gchar *newpp = NULL;
     gchar *received_data = NULL;
     gchar *buf1 = NULL;
+    a_clock_t *elapsed = NULL;
 
-    /* print_debug("%ld, %s, %p\n", *upload_data_size, url, pp); */  /* This is for early debug only ! */
+    print_debug("%ld, %s, %p\n", *upload_data_size, url, pp);  /* This is for early debug only ! */
 
     if (pp == NULL)
         {
@@ -609,6 +613,7 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
         }
     else if (*upload_data_size != 0)
         {
+            elapsed = new_clock_t();
             /* Getting data whatever they are */
             buf1 = g_strndup(upload_data, *upload_data_size);
             newpp = g_strconcat(pp, buf1, NULL);
@@ -620,19 +625,20 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
             *upload_data_size = 0;
 
             success = MHD_YES;
+            end_clock(elapsed, "getting data");
         }
     else
         {
             /* reset when done */
             *con_cls = NULL;
 
-            received_data = g_strdup(pp);
-            pp = free_variable(pp);
+            /* received_data = g_strdup(pp);
+            pp = free_variable(pp); */
 
             /* Do something with received_data */
-            success = process_received_data(serveur_struct, connection, url, received_data);
+            success = process_received_data(serveur_struct, connection, url, pp);
 
-            free_variable(received_data);
+            free_variable(pp);
         }
 
     return success;

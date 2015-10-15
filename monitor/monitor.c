@@ -333,7 +333,6 @@ static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *ar
     json_t *root = NULL;
     gint success = CURLE_FAILED_INIT;
 
-
     root = json_object();
     insert_json_value_into_json_root(root, "data_array", array);
 
@@ -370,6 +369,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
     gint bytes = 0;
     json_t *to_insert = NULL;
     gint64 limit = 0;
+    a_clock_t *elapsed = NULL;
 
     if (answer != NULL && hash_data_list != NULL && main_struct != NULL && main_struct->opt != NULL)
         {
@@ -402,10 +402,13 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
                             if (bytes >= limit)
                                 {
                                     /* when we've got opt->buffersize bytes of data send them ! */
+
+                                    elapsed = new_clock_t();
                                     all_ok = insert_array_in_root_and_send(main_struct, array);
                                     json_decref(array);
                                     array = json_array();
                                     bytes = 0;
+                                    end_clock(elapsed, "insert_array_in_root_and_send");
                                 }
 
                             hash_list = g_slist_next(hash_list);
@@ -414,8 +417,10 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
                     if (bytes > 0)
                         {
                             /* Send the rest of the data (less than opt->buffersize bytes) */
+                            elapsed = new_clock_t();
                             all_ok = insert_array_in_root_and_send(main_struct, array);
                             json_decref(array);
+                            end_clock(elapsed, "insert_array_in_root_and_send");
                         }
 
                     if (head != NULL)
@@ -691,6 +696,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
     gsize read_bytes = 0;
     json_t *array = NULL;
     json_t *to_insert = NULL;
+    a_clock_t *elapsed = NULL;
 
     if (main_struct != NULL && main_struct->opt != NULL && meta != NULL)
         {
@@ -733,9 +739,9 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                     if (read_bytes >= main_struct->opt->buffersize)
                                         {
                                             /* sending datas naïvely */
+                                            elapsed = new_clock_t();
                                             print_debug(_("Sending data: %d bytes\n"), read_bytes);
                                             success = insert_array_in_root_and_send(main_struct, array);
-
                                             json_decref(array);
                                             array = json_array();
                                             read_bytes = 0;
@@ -745,6 +751,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                                     /* Something went wrong when sending data */
                                                     /* Need to save data in local cache because an error occured. */
                                                 }
+                                            end_clock(elapsed, "insert_array_in_root_and_send");
                                         }
 
                                     buffer = (guchar *) g_malloc0(meta->blocksize);
@@ -766,9 +773,11 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                     /* sending datas naïvely */
                                     if (read_bytes > 0)
                                         {
+                                            elapsed = new_clock_t();
                                             print_debug(_("Sending data: %d bytes\n"), read_bytes);
                                             success = insert_array_in_root_and_send(main_struct, array);
                                             json_decref(array);
+                                            end_clock(elapsed, "insert_array_in_root_and_send");
                                         }
 
                                     /* get the list in correct order (because we prepended the hashs to get speed when inserting hashs in the list) */
@@ -786,7 +795,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                         }
 
                     meta->hash_data_list = hash_data_list;
-                    send_meta_data_to_serveur(main_struct, meta, TRUE);
+                    answer = send_meta_data_to_serveur(main_struct, meta, TRUE);
 
                     if (answer != NULL)
                         {
