@@ -605,6 +605,7 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
 
     if (pp == NULL)
         {
+            print_headers(connection);
             /* Initialzing the structure at first connection */
             pp = g_strdup("");
             *con_cls = pp;
@@ -834,7 +835,7 @@ int main(int argc, char **argv)
             serveur_struct->data_thread = g_thread_new("data", data_thread, serveur_struct);
 
             /* Starting the libmicrohttpd daemon */
-            serveur_struct->d = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION | MHD_USE_DEBUG, serveur_struct->opt->port, NULL, NULL, &ahc, serveur_struct, MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
+            serveur_struct->d = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION | MHD_USE_DEBUG, serveur_struct->opt->port, NULL, NULL, &ahc, serveur_struct, MHD_OPTION_CONNECTION_MEMORY_LIMIT, (size_t) 131070 , MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
 
             if (serveur_struct->d == NULL)
                 {

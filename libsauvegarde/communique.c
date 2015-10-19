@@ -183,6 +183,7 @@ gint post_url(comm_t *comm, gchar *url)
     gchar *real_url = NULL;
     gchar *buffer = NULL;
     gchar *error_buf = NULL;
+    struct curl_slist *chunk = NULL;
 
     if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL && comm->buffer != NULL)
         {
@@ -191,13 +192,20 @@ gint post_url(comm_t *comm, gchar *url)
             real_url = g_strdup_printf("%s%s", comm->conn, url);
             buffer = g_strdup(comm->buffer);
 
+            curl_easy_reset(comm->curl_handle);
+            curl_easy_setopt(comm->curl_handle, CURLOPT_POST, 1);
             curl_easy_setopt(comm->curl_handle, CURLOPT_POSTFIELDS, buffer);
             curl_easy_setopt(comm->curl_handle, CURLOPT_URL, real_url);
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEFUNCTION, write_data);
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
             curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
+            curl_easy_setopt(comm->curl_handle, CURLOPT_VERBOSE, 1L);
+            chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
+            curl_easy_setopt(comm->curl_handle, CURLOPT_HTTPHEADER, chunk);
+            curl_easy_setopt(comm->curl_handle, CURLOPT_POSTFIELDSIZE, (long)strlen(buffer));
 
             success = curl_easy_perform(comm->curl_handle);
+            curl_slist_free_all(chunk);
 
             if (success != CURLE_OK)
                 {
