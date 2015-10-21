@@ -201,7 +201,7 @@ gint post_url(comm_t *comm, gchar *url)
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
             curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
             /* curl_easy_setopt(comm->curl_handle, CURLOPT_VERBOSE, 1L); */
-            chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
+            /* chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked"); */
 
             len = g_strdup_printf("Content-Length: %zd", strlen(buffer));
             chunk = curl_slist_append(chunk, len);
