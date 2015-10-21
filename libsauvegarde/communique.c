@@ -183,6 +183,7 @@ gint post_url(comm_t *comm, gchar *url)
     gchar *real_url = NULL;
     gchar *buffer = NULL;
     gchar *error_buf = NULL;
+    gchar *len = NULL;
     struct curl_slist *chunk = NULL;
 
     if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL && comm->buffer != NULL)
@@ -201,6 +202,9 @@ gint post_url(comm_t *comm, gchar *url)
             curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
             /* curl_easy_setopt(comm->curl_handle, CURLOPT_VERBOSE, 1L); */
             chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
+
+            len = g_strdup_printf("Content-Length: %zd", strlen(buffer));
+            chunk = curl_slist_append(chunk, len);
 
             if (g_str_has_suffix(url, ".json"))
                 {
@@ -229,6 +233,7 @@ gint post_url(comm_t *comm, gchar *url)
             free_variable(real_url);
             free_variable(buffer);
             free_variable(error_buf);
+            free_variable(len);
         }
 
     return success;
