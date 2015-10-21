@@ -599,7 +599,6 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
     gchar *newpp = NULL;
     gchar *received_data = NULL;
     gchar *buf1 = NULL;
-    a_clock_t *elapsed = NULL;
 
     print_debug("%ld, %s, %p\n", *upload_data_size, url, pp);  /* This is for early debug only ! */
 
@@ -614,7 +613,6 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
         }
     else if (*upload_data_size != 0)
         {
-            elapsed = new_clock_t();
             /* Getting data whatever they are */
             buf1 = g_strndup(upload_data, *upload_data_size);
             newpp = g_strconcat(pp, buf1, NULL);
@@ -626,7 +624,6 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
             *upload_data_size = 0;
 
             success = MHD_YES;
-            end_clock(elapsed, "getting data");
         }
     else
         {

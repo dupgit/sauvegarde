@@ -199,8 +199,18 @@ gint post_url(comm_t *comm, gchar *url)
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEFUNCTION, write_data);
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
             curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
-            curl_easy_setopt(comm->curl_handle, CURLOPT_VERBOSE, 1L);
+            /* curl_easy_setopt(comm->curl_handle, CURLOPT_VERBOSE, 1L); */
             chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
+
+            if (g_str_has_suffix(url, ".json"))
+                {
+                    chunk = curl_slist_append(chunk, "Content-Type: application/json");
+                }
+            else
+                {
+                    chunk = curl_slist_append(chunk, "Content-Type: text/plain");
+                }
+
             curl_easy_setopt(comm->curl_handle, CURLOPT_HTTPHEADER, chunk);
             curl_easy_setopt(comm->curl_handle, CURLOPT_POSTFIELDSIZE, (long)strlen(buffer));
 
