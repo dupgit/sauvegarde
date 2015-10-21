@@ -109,6 +109,8 @@ command line options are:
       -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
       -c, --configuration=FILENAME     Specify an alternative configuration file.
       -b, --blocksize=SIZE             Block SIZE used to compute hashs.
+      -a, --adaptative=BOOLEAN         Adapative block size used to compute hashs.
+      -s, --buffersize=SIZE            SIZE of the cache used to send data to serveur.
       -r, --dircache=DIRNAME           Directory DIRNAME where to cache files.
       -f, --dbname=FILENAME            Database FILENAME.
       -i, --ip=IP                      IP address where serveur program is.
@@ -135,6 +137,7 @@ options are:
       -t, --date=DATE                  restores the selected file at that specific DATE.
       -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
       -c, --configuration=FILENAME     Specify an alternative configuration file.
+      -w, --where=DIRECTORY            Specify a DIRECTORY where to restore a file.
       -i, --ip=IP                      IP address where serveur program is.
       -p, --port=NUMBER                Port NUMBER on which serveur program is listening.
 
