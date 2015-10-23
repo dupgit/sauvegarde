@@ -597,7 +597,6 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
     int success = MHD_NO;
     gchar *pp = *con_cls;
     gchar *newpp = NULL;
-    gchar *received_data = NULL;
     gchar *buf1 = NULL;
 
     print_debug("%ld, %s, %p\n", *upload_data_size, url, pp);  /* This is for early debug only ! */
@@ -629,9 +628,6 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
         {
             /* reset when done */
             *con_cls = NULL;
-
-            /* received_data = g_strdup(pp);
-            pp = free_variable(pp); */
 
             /* Do something with received_data */
             success = process_received_data(serveur_struct, connection, url, pp);

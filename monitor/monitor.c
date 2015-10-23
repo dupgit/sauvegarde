@@ -263,10 +263,10 @@ static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t 
 
             /* Sends meta data here */
             print_debug(_("Sending meta data: %s\n"), json_str);
-            main_struct->comm->buffer = json_str;
+            main_struct->comm->readbuffer = json_str;
             success = post_url(main_struct->comm, "/Meta.json");
 
-            free_variable(json_str);
+            /* free_variable(json_str); */
 
             if (success == CURLE_OK)
                 {
@@ -337,7 +337,7 @@ static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *ar
     insert_json_value_into_json_root(root, "data_array", array);
 
     /* main_struct->comm->buffer is the buffer sent to serveur */
-    main_struct->comm->buffer = json_dumps(root, 0);
+    main_struct->comm->readbuffer = json_dumps(root, 0);
 
     success = post_url(main_struct->comm, "/Data_Array.json");
 
@@ -405,7 +405,6 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
 
                                     elapsed = new_clock_t();
                                     all_ok = insert_array_in_root_and_send(main_struct, array);
-                                    json_decref(array);
                                     array = json_array();
                                     bytes = 0;
                                     end_clock(elapsed, "insert_array_in_root_and_send");
@@ -419,7 +418,6 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
                             /* Send the rest of the data (less than opt->buffersize bytes) */
                             elapsed = new_clock_t();
                             all_ok = insert_array_in_root_and_send(main_struct, array);
-                            json_decref(array);
                             end_clock(elapsed, "insert_array_in_root_and_send");
                         }
 
@@ -475,7 +473,7 @@ static gint send_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_l
                             found = find_hash_in_list(hash_data_list, hash_data->hash);
 
                             /* main_struct->comm->buffer is the buffer sent to serveur */
-                            main_struct->comm->buffer = convert_hash_data_t_to_string(found);
+                            main_struct->comm->readbuffer = convert_hash_data_t_to_string(found);
                             success = post_url(main_struct->comm, "/Data.json");
 
                             all_ok = success;
@@ -742,7 +740,6 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                             elapsed = new_clock_t();
                                             print_debug(_("Sending data: %d bytes\n"), read_bytes);
                                             success = insert_array_in_root_and_send(main_struct, array);
-                                            json_decref(array);
                                             array = json_array();
                                             read_bytes = 0;
 
@@ -776,7 +773,6 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                             elapsed = new_clock_t();
                                             print_debug(_("Sending data: %d bytes\n"), read_bytes);
                                             success = insert_array_in_root_and_send(main_struct, array);
-                                            json_decref(array);
                                             end_clock(elapsed, "insert_array_in_root_and_send");
                                         }
 

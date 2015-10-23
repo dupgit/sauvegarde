@@ -114,6 +114,54 @@ static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 }
 
 
+
+
+/**
+ * Used by libcurl to retrieve informations
+ * @param buffer is the buffer where received data are written by libcurl
+ * @param size is the size of an element in buffer
+ * @param nitems is the number of elements in buffer
+ * @param[in,out] userp is a user pointer and MUST be a pointer to comm_t *
+ *                structure
+ * @returns should return the size of the data taken into account.
+ *          Everything different from the size passed to this function is
+ *          considered as an error by libcurl.
+ */
+static size_t read_data(char *buffer, size_t size, size_t nitems, void *userp)
+{
+    comm_t *comm = (comm_t *) userp;
+    size_t whole_size = 0;
+
+    if (comm != NULL)
+        {
+            if (comm->pos >= comm->length)
+                {
+                    return 0;
+                }
+            else
+                {
+                    whole_size = size * nitems;
+
+                    if ((comm->pos + whole_size) > comm->length)
+                        {
+                            whole_size = comm->length - comm->pos;
+                            memcpy(buffer, comm->readbuffer + comm->pos, whole_size);
+                            comm->pos = comm->length;
+                            return (whole_size);
+                        }
+                    else
+                        {
+                            memcpy(buffer, comm->readbuffer + comm->pos, whole_size);
+                            comm->pos = comm->pos + whole_size;
+                            return whole_size;
+                        }
+                }
+        }
+
+    return 0;
+}
+
+
 /**
  * Uses curl to send a GET command to the http url
  * @param comm a comm_t * structure that must contain an initialized
@@ -136,6 +184,8 @@ gint get_url(comm_t *comm, gchar *url)
         {
             error_buf = (gchar *) g_malloc0(CURL_ERROR_SIZE + 1);
             comm->seq = 0;
+            comm->length = 0;
+            comm->pos = 0;
             real_url = g_strdup_printf("%s%s", comm->conn, url);
 
             curl_easy_setopt(comm->curl_handle, CURLOPT_URL, real_url);
@@ -181,29 +231,31 @@ gint post_url(comm_t *comm, gchar *url)
 {
     gint success = CURLE_FAILED_INIT;
     gchar *real_url = NULL;
-    gchar *buffer = NULL;
     gchar *error_buf = NULL;
     gchar *len = NULL;
     struct curl_slist *chunk = NULL;
 
-    if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL && comm->buffer != NULL)
+    if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL && comm->readbuffer != NULL)
         {
             error_buf = (gchar *) g_malloc0(CURL_ERROR_SIZE + 1);
             comm->seq = 0;
+            comm->pos = 0;
             real_url = g_strdup_printf("%s%s", comm->conn, url);
-            buffer = g_strdup(comm->buffer);
+
+            comm->length = strlen(comm->readbuffer);
 
             curl_easy_reset(comm->curl_handle);
             curl_easy_setopt(comm->curl_handle, CURLOPT_POST, 1);
-            curl_easy_setopt(comm->curl_handle, CURLOPT_POSTFIELDS, buffer);
+            curl_easy_setopt(comm->curl_handle, CURLOPT_READFUNCTION, read_data);
+            curl_easy_setopt(comm->curl_handle, CURLOPT_READDATA, comm);
             curl_easy_setopt(comm->curl_handle, CURLOPT_URL, real_url);
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEFUNCTION, write_data);
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
             curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
-            /* curl_easy_setopt(comm->curl_handle, CURLOPT_VERBOSE, 1L); */
-            /* chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked"); */
+            curl_easy_setopt(comm->curl_handle, CURLOPT_VERBOSE, 1L);
+            chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
 
-            len = g_strdup_printf("Content-Length: %zd", strlen(buffer));
+            len = g_strdup_printf("Content-Length: %zd", comm->length);
             chunk = curl_slist_append(chunk, len);
 
             if (g_str_has_suffix(url, ".json"))
@@ -216,7 +268,7 @@ gint post_url(comm_t *comm, gchar *url)
                 }
 
             curl_easy_setopt(comm->curl_handle, CURLOPT_HTTPHEADER, chunk);
-            curl_easy_setopt(comm->curl_handle, CURLOPT_POSTFIELDSIZE, (long)strlen(buffer));
+            /*curl_easy_setopt(comm->curl_handle, CURLOPT_POSTFIELDSIZE, (long)strlen(buffer)); */
 
             success = curl_easy_perform(comm->curl_handle);
             curl_slist_free_all(chunk);
@@ -231,7 +283,7 @@ gint post_url(comm_t *comm, gchar *url)
                 }
 
             free_variable(real_url);
-            free_variable(buffer);
+            free_variable(comm->readbuffer);
             free_variable(error_buf);
             free_variable(len);
         }
@@ -304,6 +356,9 @@ comm_t *init_comm_struct(gchar *conn)
     comm->curl_handle = curl_easy_init();
     comm->buffer = NULL;
     comm->conn = conn;
+    comm->readbuffer = NULL;
+    comm->pos = 0;
+    comm->length = 0;
 
     return comm;
 }

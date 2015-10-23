@@ -47,8 +47,11 @@ typedef struct
 {
     CURL *curl_handle; /**< Curl easy handle for a connection                */
     gchar *buffer;     /**< Buffer to pass things from the callback function */
+    gchar *readbuffer; /**< Buffer to be read                                */
     gchar *conn;       /**< Connexion string that should be http://ip:port   */
-    gint seq;          /**< sequence number when receiving multiples parts   */
+    guint seq;         /**< sequence number when receiving multiples parts   */
+    guint64 pos;       /**< Position in readbuffer                           */
+    size_t length;     /**< length of buffer                                 */
 } comm_t;
 
 
