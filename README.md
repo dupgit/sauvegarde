@@ -1,6 +1,6 @@
 # Sauvegarde
 
-Continuous data protection for GNU/Linux.
+Continuous data protection for GNU/Linux (cdpfgl).
 
 This page is sauvegarde doxygen's @mainpage.
 
