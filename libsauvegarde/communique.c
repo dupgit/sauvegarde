@@ -252,7 +252,7 @@ gint post_url(comm_t *comm, gchar *url)
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEFUNCTION, write_data);
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
             curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
-            curl_easy_setopt(comm->curl_handle, CURLOPT_VERBOSE, 1L);
+            /* curl_easy_setopt(comm->curl_handle, CURLOPT_VERBOSE, 1L); */
             chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
 
             len = g_strdup_printf("Content-Length: %zd", comm->length);
@@ -268,7 +268,6 @@ gint post_url(comm_t *comm, gchar *url)
                 }
 
             curl_easy_setopt(comm->curl_handle, CURLOPT_HTTPHEADER, chunk);
-            /*curl_easy_setopt(comm->curl_handle, CURLOPT_POSTFIELDSIZE, (long)strlen(buffer)); */
 
             success = curl_easy_perform(comm->curl_handle);
             curl_slist_free_all(chunk);

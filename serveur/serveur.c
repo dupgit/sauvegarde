@@ -598,12 +598,15 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
     gchar *pp = *con_cls;
     gchar *newpp = NULL;
     gchar *buf1 = NULL;
+    const char *length = NULL;
 
-    print_debug("%ld, %s, %p\n", *upload_data_size, url, pp);  /* This is for early debug only ! */
+    /* print_debug("%ld, %s, %p\n", *upload_data_size, url, pp); */ /* This is for early debug only ! */
 
     if (pp == NULL)
         {
-            print_headers(connection);
+            /* print_headers(connection); */
+            length = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "Content-Length");
+            fprintf(stderr, "length = %s\n", length);
             /* Initialzing the structure at first connection */
             pp = g_strdup("");
             *con_cls = pp;
