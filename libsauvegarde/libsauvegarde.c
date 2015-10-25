@@ -140,7 +140,7 @@ gchar *buffer_libraries_versions(gchar *name)
         {
             buffer = g_strdup_printf(_("%s was compiled with the following libraries:\n\t. GLIB version: %d.%d.%d\n"), name, glib_major_version, glib_minor_version, glib_micro_version);
 
-            if (g_strcmp0(name, "serveur") == 0)
+            if (g_strcmp0(name, "cdpfglserver") == 0)
                 {
                     comm_version = make_MHD_version();
                     buf1 = g_strdup_printf("%s\t. LIBMHD: %s\n", buffer, comm_version);

@@ -7,31 +7,31 @@ All urls ending with .json waits (POST) or provide (GET) json strings.
 
 ### /Version
 
-Gets the version of the serveur in a more human readable than a json string
+Gets the version of the server in a more human readable than a json string
 producing an output such as:
 
-    serveur version: 0.0.1-cb6c92b (27 04 2014)
+    cdpfglserver version: 0.0.1-cb6c92b (27 04 2014)
     Author(s): Olivier DELHOMME <olivier.delhomme@free.fr>
     License: GPL v3 or later
 
-    serveur was compiled with the following libraries:
+    cdpfglserver was compiled with the following libraries:
         . GLIB version: 2.36.3
         . LIBMHD: 0.9.39-2
         . SQLITE version: 3.8.6
         . JANSSON version: 2.7.0
 
-    serveur options are:
-    Configuration file: /home/dup/local/bin/../etc/sauvegarde/serveur.conf
+    cdpfglserver options are:
+    Configuration file: /home/dup/local/bin/../etc/sauvegarde/server.conf
     Port number: 5468
 
 
 ### /Version.json
 
-Gets the version of the serveur in a json parsable string producing an
+Gets the version of the server in a json parsable string producing an
 output such as:
 
     {"revision": "cb6c92b",
-     "name": "serveur",
+     "name": "cdpfglserver",
      "date": "27 04 2014",
      "librairies": [{"glib": "2.36.3"},
                     {"mhd": "0.9.39-2"},
@@ -79,7 +79,7 @@ Waits for a json string with "hash_list", "filetype", "group", "mode",
 "hash_list" field should contains hashs of data in an ordered way and
 base64 encoded.
 
-The serveur answers a hash_list that may be empty. This hash list is the
+The server answers a hash_list that may be empty. This hash list is the
 hashs that the server needs. The server should not ask for hash that it
 already has. Example:
 
@@ -89,7 +89,7 @@ already has. Example:
     }
 
 "data_sent" is true when data has already been sent before sending
-metadata and false otherwise. If "data_sent" is true then serveur does
+metadata and false otherwise. If "data_sent" is true then server does
 not tries to know which hashs are needed because it assumes that every
 block of needed data has already been received (thus no block is needed
 anymore).

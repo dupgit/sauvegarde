@@ -23,7 +23,7 @@
  * @file restaure/options.h
  *
  * This file contains all the definitions for the options of the command
- * line for 'restaure' program.
+ * line for 'cdpfglrestore' program.
  *
  */
 #ifndef _RESTAURE_OPTIONS_H_
@@ -32,10 +32,10 @@
 
 /**
  * @struct options_t
- * @brief Selected options for 'serveur' program
+ * @brief Selected options for 'cdpfglserver' program
  *
  * Structure Options gives a way to store program options passed from the
- * command line or read from a configuration file for 'serveur' program.
+ * command line or read from a configuration file for 'cdpfglserver' program.
  *
  * list, restore, date and where are pure command line options that will
  * not (unless requested by some user) be in the configuration file.
@@ -47,8 +47,8 @@ typedef struct
     gchar *restore;     /**< Must contain a filename or a directory name to be restored (latest version by default  */
     gchar *date;        /**< Should contain a date in the correct format to filter only files at that specific date */
     gchar *configfile;  /**< Filename for the configuration file specified on the command line                      */
-    gchar *ip;          /**< A string representing the IP address where serveur is located (may be a hotsname)      */
-    gint port;          /**< Port number on which to send things to serveur's server (on which it must listen)      */
+    gchar *ip;          /**< A string representing the IP address where server is located (may be a hotsname)       */
+    gint port;          /**< Port number on which to send things to cdpfglserver's server (on which it must listen) */
     gchar *where;       /**< where is a string that should contain a directory where to restore a file / dirtectory */
 } options_t;
 

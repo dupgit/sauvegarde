@@ -22,8 +22,8 @@
 
 /**
  * @file query.c
- * This file contains the functions to deal with queries in serveur and
- * restaure programs
+ * This file contains the functions to deal with queries in cdpfglserver and
+ * cdpfglrestore programs
  */
 
 #include "libsauvegarde.h"

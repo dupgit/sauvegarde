@@ -60,7 +60,7 @@ json_t *get_json_value_from_json_root(json_t *root, gchar *keyname)
 
 /**
  * returns the boolean with key keyname from the json tree root. It is used
- * by serveur to get the hostname from the json received message.
+ * by server to get the hostname from the json received message.
  * @note Freeing json_t *str here is a bad idea as it will free it into
  *       json_t *root variable that is freed afterwards.
  * @param[in,out] root is the main json tree
@@ -93,7 +93,7 @@ gboolean get_boolean_from_json_root(json_t *root, gchar *keyname)
 
 /**
  * returns the string with key keyname from the json tree root. It is used
- * by serveur to get the hostname from the json received message.
+ * by server to get the hostname from the json received message.
  * @note Freeing json_t *str here is a bad idea as it will free it into
  *       json_t *root variable that is freed afterwards.
  * @param[in,out] root is the main json tree
@@ -243,7 +243,7 @@ gint get_json_message_id(gchar *json_str)
 
 
 /**
- * Gets the version of a version json string as returned by serveur's
+ * Gets the version of a version json string as returned by server's
  * server.
  * @param json_str : a gchar * containing the JSON formated string.
  * @returns version string or NULL

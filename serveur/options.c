@@ -222,7 +222,7 @@ options_t *manage_command_line_options(int argc, char **argv)
 
 
     /* 1) Reading options from default configuration file */
-    defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "serveur.conf");
+    defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "server.conf");
     read_from_configuration_file(opt,  defaultconfigfilename);
     free_variable(defaultconfigfilename);
 

@@ -24,7 +24,7 @@
  * @file restaure.h
  *
  * This file contains all the definitions of the functions and structures
- * that are used by 'restaure' program.
+ * that are used by 'cdpfglrestore' program.
  */
 #ifndef _RESTAURE_H_
 #define _RESTAURE_H_
@@ -48,40 +48,39 @@
 
 /**
  * @struct res_struct_t
- * @brief This structure is used to keep all parameters for restaure's
+ * @brief This structure is used to keep all parameters for cdpfglrestore's
  *        program.
  */
 typedef struct
 {
-    options_t *opt;  /**< Program's options                                        */
-    comm_t *comm;    /**< Communication structure to operate with serveur's server */
-    gchar *hostname; /**< Host name where the program is executing itself          */
+    options_t *opt;  /**< Program's options                                             */
+    comm_t *comm;    /**< Communication structure to operate with cdpfglserver's server */
+    gchar *hostname; /**< Host name where the program is executing itself              */
 } res_struct_t;
 
 
 /**
  * @def RESTAURE_DATE
- * Defines restaure's creation date
+ * Defines restore's creation date
  *
  * @def RESTAURE_AUTHORS
- * Defines restaure's main authors
+ * Defines restore's main authors
  *
  * @def RESTAURE_LICENSE
- * Defines restaure's license (at least GPL v2)
+ * Defines restore's license (at least GPL v2)
  *
  * @def RESTAURE_VERSION
- * Defines restaure's version (which may be different of Sauvegarde's whole
+ * Defines restore's version (which may be different of Sauvegarde's whole
  * project and programs that composes it).
 
  * @def PROGRAM_NAME
- * Defines the main program name for this part (restaure + ciseaux +
- * antememoire).
+ * Defines the main program name for this part.
  */
 #define RESTAURE_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
 #define RESTAURE_DATE _("04 10 2015")
 #define RESTAURE_LICENSE _("GPL v3 or later")
 #define RESTAURE_VERSION _("0.0.5")
-#define PROGRAM_NAME ("restaure")
+#define PROGRAM_NAME ("cdpfglrestore")
 
 
 

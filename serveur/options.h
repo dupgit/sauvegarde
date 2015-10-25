@@ -23,7 +23,7 @@
  * @file serveur/options.h
  *
  * This file contains all the definitions for the options of the command
- * line for 'serveur' program. It is very similar to monitor's options.h
+ * line for 'cdpfglserver' program. It is very similar to monitor's options.h
  * file.
  *
  */
@@ -32,16 +32,16 @@
 
 /**
  * @struct options_t
- * @brief Selected options for 'serveur' program
+ * @brief Selected options for 'cdpfglserver' program
  *
  * Structure Options gives a way to store program options passed from the
- * command line or read from a configuration file for 'serveur' program.
+ * command line or read from a configuration file for 'cdpfglserver' program.
  */
 typedef struct
 {
-    gboolean version;   /**< TRUE if we have to display program's version                        */
-    gchar *configfile;  /**< filename for the configuration file specified on the command line   */
-    gint port;         /**< port number on which the serveur program will listen for connexions */
+    gboolean version;   /**< TRUE if we have to display program's version                             */
+    gchar *configfile;  /**< filename for the configuration file specified on the command line        */
+    gint port;          /**< port number on which the cdpfglserver program will listen for connexions */
 } options_t;
 
 

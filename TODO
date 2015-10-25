@@ -5,8 +5,8 @@
 * use some cryptography to cipher exchanges (gpg ? - JOSE ?)
 * UI integration to desktop managers like Xfce, Gnome, MATE, QT ?
 * file_backend: compress blocks on disk + ciphering ?
-* serveur: add a backend for Ceph.
-* serveur: add a /Stats.json URL to give some statistics about the
+* server: add a backend for Ceph.
+* server: add a /Stats.json URL to give some statistics about the
            server.
 * client: fit into "small memory" systems.
 * client: free main_struct_t's memory at the end of the program.

@@ -89,7 +89,7 @@
  * @def CLIENT_MIN_BUFFER
  *
  * defines the minimum of bytes to have into the buffer before sending
- * datas to the serveur.
+ * datas to the server.
  */
 #define CLIENT_MIN_BUFFER (1048576)
 
@@ -126,7 +126,7 @@ typedef struct
     options_t *opt;           /**< Options of the program from the command line                                                */
     const gchar *hostname;    /**< Name of the current machine                                                                 */
     db_t *database;           /**< Database structure that stores everything that is related to the database                   */
-    comm_t *comm;             /**< This is used to communicate with the 'serveur' program (which is the server)                */
+    comm_t *comm;             /**< This is used to communicate with the 'server' program (which is the server)                 */
     gint signal_fd;           /**< signal handler   */
     gint fanotify_fd;         /**< fanotify handler */
     GThread *save_one_file;   /**< thread that is used to save one file at a time (directory carving and live backup runs together) */
@@ -136,7 +136,7 @@ typedef struct
 
 /**
  * This function gets meta data and data from a file and sends them
- * to the serveur in order to save the file located in the directory
+ * to the server in order to save the file located in the directory
  * 'directory' and represented by 'fileinfo' variable.
  * @param main_struct : main structure of the program
  * @param directory is the directory we are iterating over

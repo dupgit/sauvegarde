@@ -327,7 +327,7 @@ hashs_t *get_all_inserted_hashs(db_t *database)
  *        cache.
  * @param only_meta : a gboolean that when set to TRUE only meta_data will
  *        be saved and hashs data will not ! FALSE means that something
- *        went wrong with serveur and that all data will be cached localy.
+ *        went wrong with server and that all data will be cached localy.
  */
 void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
 {

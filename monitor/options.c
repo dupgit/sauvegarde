@@ -79,8 +79,8 @@ static void print_selected_options(options_t *opt)
             print_string_option(_("Configuration file: %s\n"), opt->configfile);
             print_string_option(_("Cache directory: %s\n"), opt->dircache);
             print_string_option(_("Cache database name: %s\n"), opt->dbname);
-            print_string_option(_("Serveur's IP address: %s\n"), opt->ip);
-            fprintf(stdout, _("Serveur's port number: %d\n"), opt->port);
+            print_string_option(_("Server's IP address: %s\n"), opt->ip);
+            fprintf(stdout, _("Server's port number: %d\n"), opt->port);
             fprintf(stdout, _("Buffersize: %d\n"), opt->buffersize);
         }
 }
@@ -116,7 +116,7 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
             /* Adaptative mode for blocksize ? */
             opt->adaptative = read_boolean_from_file(keyfile, filename, GN_CLIENT, KN_ADAPTATIVE, _("Could not load adaptative configuration from file."));
 
-            /* Buffer size to be used to send data to serveur */
+            /* Buffer size to be used to send data to server */
             opt->buffersize = read_int_from_file(keyfile, filename, GN_CLIENT, KN_BUFFER_SIZE, _("Could not load buffersize from file"));
         }
 
@@ -146,7 +146,7 @@ static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *fi
                     opt->port = port;
                 }
 
-            /* Reading IP address of serveur's host if any */
+            /* Reading IP address of server's host if any */
             opt->ip = read_string_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_IP, _("Could not load cache database name"));
         }
 }
@@ -215,10 +215,10 @@ options_t *manage_command_line_options(int argc, char **argv)
     gchar **dirname_array = NULL;  /** array of dirnames left on the command line            */
     gchar *configfile = NULL;      /** filename for the configuration file if any            */
     gint64 blocksize = 0;          /** computed block size in bytes                          */
-    gint buffersize = 0;           /** buffer size used to send data to serveur              */
+    gint buffersize = 0;           /** buffer size used to send data to server               */
     gchar *dircache = NULL;        /** Directory used to store cache files                   */
     gchar *dbname = NULL;          /** Database filename where data and meta data are cached */
-    gchar *ip =  NULL;             /** IP address where is located serveur's program         */
+    gchar *ip =  NULL;             /** IP address where is located server's program          */
     gint port = 0;                 /** Port number on which to send things to the server     */
 
     GOptionEntry entries[] =
@@ -228,10 +228,10 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
         { "blocksize", 'b', 0, G_OPTION_ARG_INT64, &blocksize, N_("Fixed block SIZE used to compute hashs."), N_("SIZE")},
         { "adaptative", 'a', 0, G_OPTION_ARG_INT, &adaptative, N_("Adapative block size used to compute hashs."), N_("BOOLEAN")},
-        { "buffersize", 's', 0, G_OPTION_ARG_INT, &buffersize, N_("SIZE of the cache used to send data to serveur."), N_("SIZE")},
+        { "buffersize", 's', 0, G_OPTION_ARG_INT, &buffersize, N_("SIZE of the cache used to send data to server."), N_("SIZE")},
         { "dircache", 'r', 0, G_OPTION_ARG_STRING, &dircache, N_("Directory DIRNAME where to cache files."), N_("DIRNAME")},
         { "dbname", 'f', 0, G_OPTION_ARG_STRING, &dbname, N_("Database FILENAME."), N_("FILENAME")},
-        { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), "IP"},
+        { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where server program is."), "IP"},
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which to listen."), N_("NUMBER")},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }

@@ -53,7 +53,7 @@
 
 /**
  * @def IS_SERVEUR_UP
- * Indicates that we want to know if the serveur server is up.
+ * Indicates that we want to know if the server is up.
  */
 #define IS_SERVEUR_UP (2)
 
@@ -140,7 +140,7 @@ extern json_t *get_json_value_from_json_root(json_t *root, gchar *keyname);
 
 /**
  * returns the string with key keyname from the json tree root. It is used
- * by serveur to get the hostname from the json received message.
+ * by server to get the hostname from the json received message.
  * @param[in,out] root is the main json tree
  * @param keyname is the key for which we seek the string value.
  * @returns a newlly allocated gchar * string that is the value associated
@@ -206,7 +206,7 @@ extern GSList *extract_smeta_gslist_from_file_list(json_t *root);
  * @param hostname is the name of the host onw hich we are running and that
  *        we want to include into the json string.
  * @param data_sent is a boolean that is TRUE when data has already been
- *        sent to serveur, FALSE otherwise.
+ *        sent to server, FALSE otherwise.
  * @returns a json_t structure or NULL
  */
 json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname, gboolean data_sent);
@@ -220,7 +220,7 @@ json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname, gboo
  * @param hostname is the name of the host onw hich we are running and that
  *        we want to include into the json string.
  * @param data_sent is a boolean that is TRUE when data has already been
- *        sent to serveur, FALSE otherwise.
+ *        sent to server, FALSE otherwise.
  * @returns a JSON formated string or NULL
  */
 gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *hostname, gboolean data_sent);
@@ -308,7 +308,7 @@ extern gint get_json_message_id(gchar *json_str);
 
 /**
  * returns the boolean with key keyname from the json tree root. It is used
- * by serveur to get the hostname from the json received message.
+ * by server to get the hostname from the json received message.
  * @note Freeing json_t *str here is a bad idea as it will free it into
  *       json_t *root variable that is freed afterwards.
  * @param[in,out] root is the main json tree
@@ -321,7 +321,7 @@ extern gboolean get_boolean_from_json_root(json_t *root, gchar *keyname);
 
 
 /**
- * Gets the version of a version json string as returned by serveur's
+ * Gets the version of a version json string as returned by server's
  * server.
  * @param json_str : a gchar * containing the JSON formated string.
  * @returns version string or NULL
@@ -330,7 +330,7 @@ extern gchar *get_json_version(gchar *json_str);
 
 
 /**
- * Converts to a json gchar * string. Used only by serveur's program
+ * Converts to a json gchar * string. Used only by server's program
  * @param name : name of the program of which we want to print the version.
  * @param date : publication date of this version
  * @param version : version of the program.

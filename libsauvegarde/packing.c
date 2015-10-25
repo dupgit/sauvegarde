@@ -325,7 +325,7 @@ gchar *convert_hash_data_t_to_string(hash_data_t *hash_data)
  * @param hostname is the name of the host onw hich we are running and that
  *        we want to include into the json string.
  * @param data_sent is a boolean that is TRUE when data has already been
- *        sent to serveur, FALSE otherwise.
+ *        sent to server, FALSE otherwise.
  * @returns a json_t structure or NULL
  */
 json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname, gboolean data_sent)
@@ -375,7 +375,7 @@ json_t *convert_meta_data_to_json(meta_data_t *meta, const gchar *hostname, gboo
  * @param hostname is the name of the host onw hich we are running and that
  *        we want to include into the json string.
  * @param data_sent is a boolean that is TRUE when data has already been
- *        sent to serveur, FALSE otherwise.
+ *        sent to server, FALSE otherwise.
  * @returns a JSON formated string or NULL
  */
 gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *hostname, gboolean data_sent)
@@ -396,7 +396,7 @@ gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *hostname
 
 
 /**
- * Converts to a json gchar * string. Used only by serveur's program
+ * Converts to a json gchar * string. Used only by server's program
  * @param name : name of the program of which we want to print the version.
  * @param date : publication date of this version
  * @param version : version of the program.

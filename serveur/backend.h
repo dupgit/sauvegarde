@@ -24,7 +24,7 @@
  * @file serveur/backend.h
  *
  * This file contains all the definitions for the backend management of
- * serveur's server.
+ * cdpfglserver's server.
  */
 #ifndef _SERVEUR_BACKEND_H_
 #define _SERVEUR_BACKEND_H_
@@ -67,7 +67,7 @@ typedef struct
 
 /**
  * Inits the backend with the correct functions
- * @param store_smeta a function to store serveur meta data structure
+ * @param store_smeta a function to store serveur_meta_data_t structure
  * @param store_data a function to store data
  * @param init_backend a function to init the backend
  * @param build_needed_hash_list a function that must build a GSList * needed hash list

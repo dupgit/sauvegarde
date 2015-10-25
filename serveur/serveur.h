@@ -23,9 +23,9 @@
  * @file serveur.h
  *
  * This file contains all the definitions of the functions and structures
- * that are used by 'serveur' Sauvegarde's server.
+ * that are used by 'cdpfglserver' Sauvegarde's server.
  * @todo add some stats structure that will keep some values about the
- *       activity of serveur server.
+ *       activity of cdglserver server.
  */
 #ifndef _SERVEUR_H_
 #define _SERVEUR_H_
@@ -55,26 +55,27 @@
 
 /**
  * @def SERVEUR_DATE
- * Defines serveur's creation date
+ * Defines server's creation date
  *
  * @def SERVEUR_AUTHORS
- * Defines serveur's main authors
+ * Defines server's main authors
  *
  * @def SERVEUR_LICENSE
- * Defines serveur's license (at least GPL v2)
+ * Defines server's license (at least GPL v2)
  *
  * @def SERVEUR_VERSION
- * Defines serveur's version (which may be different of Sauvegarde's whole
+ * Defines server's version (which may be different of Sauvegarde's whole
  * project and programs that composes it).
  *
  * @def PROGRAM_NAME
- * Defines the main program name (serveur - server in french)
+ * Defines the main program name (cdpfglserver - stands for Continuous Data
+ * Protection under Gnu/Linux server)
  */
 #define SERVEUR_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
 #define SERVEUR_DATE _("04 10 2015")
 #define SERVEUR_LICENSE _("GPL v3 or later")
 #define SERVEUR_VERSION _("0.0.5")
-#define PROGRAM_NAME ("serveur")
+#define PROGRAM_NAME ("cdpfglserver")
 
 #include "options.h"
 #include "backend.h"
@@ -85,8 +86,7 @@
  * @brief Structure that contains everything needed by the program.
  *
  * This structure was named serveur_struct_t to avoid any confusion with
- * main_struct that is the structure for 'client' program (composed of
- * monitor, ciseaux and antememoire).
+ * main_struct that is the structure for 'client' program.
  */
 typedef struct
 {

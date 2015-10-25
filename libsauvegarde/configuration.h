@@ -41,18 +41,18 @@
 
  /**
   * @def GN_CLIENT
-  * Defines the group name for all preferences related to "client"
+  * Defines the group name for all preferences related to "cdpfglclient"
   * program.
   *
   * @def GN_SERVEUR
-  * Defines the group name for all preferences related to "serveur"
+  * Defines the group name for all preferences related to "cdpfglserver"
   * program.
   *
   * @def GN_ALL
   * Defines the group name for all preferences related to all programs
   *
   * @def GN_FILE_BACKEND
-  * Defines the group name for all preferences related to serveur's
+  * Defines the group name for all preferences related to server's
   * backend named file_backend that stores everything into flat files.
   *
   */
@@ -92,7 +92,7 @@
  * @def KN_BUFFER_SIZE
  * Defines the key name for the buffersize option that allow one to
  * specify a maximum size of data to be accumulated before sending them
- * to serveur.
+ * to server.
  */
 #define KN_BUFFER_SIZE ("buffersize")
 
@@ -127,7 +127,7 @@
 #define KN_SERVEUR_IP ("serveur-ip")
 
 
-/** Below you'll find some definitions for the serveur program */
+/** Below you'll find some definitions for the server program */
 /**
  * @def KN_SERVEUR_PORT
  * Defines the port number on which serveur program will listen for
@@ -136,7 +136,7 @@
 #define KN_SERVEUR_PORT ("serveur-port")
 
 
-/** Below you'll find some definitions for the serveur's backends */
+/** Below you'll find some definitions for the server's backends */
 /**
  * @def KN_FILE_DIRECTORY
  * Defines where file_backend might store its data

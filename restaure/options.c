@@ -23,7 +23,7 @@
  * @file restaure/options.c
  *
  *  This file contains all the functions to manage command line options for
- *  'restaure' program.
+ *  'cdpfglrestore' program.
  */
 
 #include "restaure.h"
@@ -79,14 +79,14 @@ static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *fi
     if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
         {
             /* Reading the port number if any */
-            port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, _("Could not load serveur port number from file."));
+            port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, _("Could not load server port number from file."));
 
             if (port > 1024 && port < 65535)
                 {
                     opt->port = port;
                 }
 
-            /* Reading IP address of serveur's host if any */
+            /* Reading IP address of server's host if any */
             opt->ip = read_string_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_IP, _("Could not load cache database name"));
         }
 }
@@ -152,7 +152,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     gboolean version = FALSE;      /** True if -v was selected on the command line                */
     gint debug = -4;               /** 0 == FALSE and other values == TRUE                        */
     gchar *configfile = NULL;      /** filename for the configuration file if any                 */
-    gchar *ip =  NULL;             /** IP address where is located serveur's program              */
+    gchar *ip =  NULL;             /** IP address where is located server's program               */
     gint port = 0;                 /** Port number on which to send things to the server          */
     gchar *list = NULL;            /** Should contain a filename or a directory to filter out     */
     gchar *restore = NULL;         /** Must contain a filename or a directory name to be restored */
@@ -168,8 +168,8 @@ static options_t *manage_command_line_options(int argc, char **argv)
         { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode."), N_("BOOLEAN")},
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
         { "where", 'w', 0, G_OPTION_ARG_STRING, &where, N_("Specify a DIRECTORY where to restore a file."), N_("DIRECTORY")},
-        { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where serveur program is."), "IP"},
-        { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which serveur program is listening."), N_("NUMBER")},
+        { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where server program is."), "IP"},
+        { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which server program is listening."), N_("NUMBER")},
         { NULL }
     };
 
@@ -181,7 +181,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     gchar *defaultconfigfilename = NULL;
 
     bugreport = g_strconcat(_("Please report bugs to: "), PACKAGE_BUGREPORT, NULL);
-    summary = g_strdup(_("This program is restoring files from serveur's server.\n"));
+    summary = g_strdup(_("This program is restoring files from cdpfglserver's server.\n"));
     context = g_option_context_new("");
 
     set_debug_mode(ENABLE_DEBUG);
@@ -210,7 +210,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
      *    note: restore option will never be read into the configuration
      *          file.
      */
-    defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "restaure.conf");
+    defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "restore.conf");
     read_from_configuration_file(opt,  defaultconfigfilename);
     defaultconfigfilename = free_variable(defaultconfigfilename);
 

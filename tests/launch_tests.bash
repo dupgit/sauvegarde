@@ -23,14 +23,14 @@
 
 # All paths
 
-# Launching the serveur
-$HOME/local/bin/serveur -c $HOME/build/dupgit/sauvegarde/tests/serveur.conf &
+# Launching the server
+$HOME/local/bin/cdpfglserver -c $HOME/build/dupgit/sauvegarde/tests/server.conf &
 
-# Waiting for the serveur to achieve directories creation
+# Waiting for the server to achieve directories creation
 sleep 40s
 
 # Launching the client
-$HOME/local/bin/client -c $HOME/build/dupgit/sauvegarde/tests/client.conf &
+$HOME/local/bin/cdpfglclient -c $HOME/build/dupgit/sauvegarde/tests/client.conf &
 
 # Waiting that the client finishes it's first pass (should be quick here).
 sleep 5s
@@ -43,5 +43,5 @@ dd if=/dev/urandom of=$HOME/build/dupgit/sauvegarde/tests/urandomfile.dd count=3
 sleep 1s
 
 # Ending programs
-killall -9 client
-killall -s SIGINT serveur
+killall -9 cdpfglclient
+killall -s SIGINT cdpfglserver

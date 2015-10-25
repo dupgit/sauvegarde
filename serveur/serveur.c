@@ -22,7 +22,7 @@
 
 /**
  * @file serveur.c
- * This file contains all the stuff for the serveur program of "Sauvegarde"
+ * This file contains all the stuff for the cdpfglserver program of "Sauvegarde"
  * project. The aim of this program is to save every checksum and data and
  * meta data of every 'client' program that is connected to.
  */
@@ -49,7 +49,7 @@ static gpointer data_thread(gpointer user_data);
 
 
 /**
- * Frees the serveur structure
+ * Frees server's structure
  * @param serveur_struct is the structure to be freed
  */
 void free_serveur_struct_t(serveur_struct_t *serveur_struct)
@@ -90,11 +90,11 @@ static gboolean int_signal_handler(gpointer user_data)
 
 
 /**
- * Inits main serveur's structure
+ * Inits main server's structure
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
  * @returns a serveur_struct_t * structure that contains everything that is
- *          needed for 'serveur' program.
+ *          needed for 'cdpfglserver' program.
  */
 static serveur_struct_t *init_serveur_main_structure(int argc, char **argv)
 {

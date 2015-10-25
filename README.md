@@ -7,9 +7,9 @@ This page is sauvegarde doxygen's @mainpage.
 [![Build Status](https://travis-ci.org/dupgit/sauvegarde.png?branch=master)](https://travis-ci.org/dupgit/sauvegarde)
 
 With this code you can backup and restore files in a live and continuous
-way. Compile the code put the `serveur` on the machine where you want to
-save your files. Let `client` crawl your files to save them. If needed
-use `restaure` to restore a file.
+way. Compile the code put the `cdpfglserver` on the machine where you want to
+save your files. Let `cdpfglclient` crawl your files to save them. If needed
+use `cdpfglrestore` to restore a file.
 
 
 ## License
@@ -71,12 +71,12 @@ in the classic way:
 
 ## Usage
 
-First you need to run the program `serveur` on a machine that will act as
-a server. You can configure options in `serveur.conf` (located by default
+First you need to run the program `cdpflgserver` on a machine that will act as
+a server. You can configure options in `server.conf` (located by default
 in `{prefix}/etc/sauvegarde/`) or use the command's line options:
 
     Usage:
-      serveur [OPTION...]
+      cdpfglserver [OPTION...]
 
     This program is monitoring file changes in the filesystem and is hashing
     files with SHA256 algorithms from Glib.
@@ -91,12 +91,12 @@ in `{prefix}/etc/sauvegarde/`) or use the command's line options:
       -p, --port=NUMBER                Port NUMBER on which to listen.
 
 
-Then you may use `client` program to report modified files to the serveur
+Then you may use `cdpfglclient` program to report modified files to the server
 and save them accordingly. Configuration file is named `client.conf` and
 command line options are:
 
     Usage:
-      client [OPTION...]
+      cdpfglclient [OPTION...]
 
     This program is monitoring file changes in the filesystem and is hashing
     files with SHA256 algorithms from Glib.
@@ -110,21 +110,21 @@ command line options are:
       -c, --configuration=FILENAME     Specify an alternative configuration file.
       -b, --blocksize=SIZE             Block SIZE used to compute hashs.
       -a, --adaptative=BOOLEAN         Adapative block size used to compute hashs.
-      -s, --buffersize=SIZE            SIZE of the cache used to send data to serveur.
+      -s, --buffersize=SIZE            SIZE of the cache used to send data to server.
       -r, --dircache=DIRNAME           Directory DIRNAME where to cache files.
       -f, --dbname=FILENAME            Database FILENAME.
-      -i, --ip=IP                      IP address where serveur program is.
+      -i, --ip=IP                      IP address where server program is.
       -p, --port=NUMBER                Port NUMBER on which to listen.
 
 
-At a time you may need to restore a file then you'll have to use `restaure`
-program. Configuration file is named `restaure.conf` and command line
+At a time you may need to restore a file then you'll have to use `cdpfglrestore`
+program. Configuration file is named `restore.conf` and command line
 options are:
 
     Usage:
-      restaure [OPTION...]
+      cdpfglrestore [OPTION...]
 
-    This program is restoring files from serveur's server.
+    This program is restoring files from cdpfglserver's server.
 
 
     Help Options:
@@ -138,8 +138,8 @@ options are:
       -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
       -c, --configuration=FILENAME     Specify an alternative configuration file.
       -w, --where=DIRECTORY            Specify a DIRECTORY where to restore a file.
-      -i, --ip=IP                      IP address where serveur program is.
-      -p, --port=NUMBER                Port NUMBER on which serveur program is listening.
+      -i, --ip=IP                      IP address where server program is.
+      -p, --port=NUMBER                Port NUMBER on which server program is listening.
 
 
 ## Manual
@@ -157,14 +157,14 @@ should consider that "It ships when its ready".
          option to choose fixed or adaptative. Add options to choose
          CLIENT_MIN_BUFFER and CLIENT_SMALL_FILE_SIZE.
 * 0.0.7  hability to exclude some files by extension or path. Caching
-         mecanism in client in case the serveur is unreachable.
+         mecanism in client in case the server is unreachable.
 * 0.0.8  restore the latest version of a file before a specific date.
          Add a new post url such as (Hash_Array.json) to submit an array
-         of hashs to serveur that will say which hashs are needed.
+         of hashs to server that will say which hashs are needed.
 * 0.0.9  restore all the versions of a file
 * 0.0.10 restore a directory and it's subfiles and directories at a
          specific date.
-* 0.1.0 nettoie program to clean serveur's data and meta-data
+* 0.1.0 nettoie program to clean server's data and meta-data
 
 
 ### Releases
@@ -172,7 +172,7 @@ should consider that "It ships when its ready".
 * 0.0.1  [08 07 2015] First usable version
 * 0.0.2  [15.08.2015] client redesigned
 * 0.0.3  [21.08.2015] saves and restores links
-* 0.0.4  [06.09.2015] new serveur url to post a bunch of hashs and
+* 0.0.4  [06.09.2015] new server url to post a bunch of hashs and
                       associated data. Clean the answer list of needed
                       hashs to avoid having duplicated hashs into it.
 * 0.0.5  [04.10.2015] fanotify's code reviewed. Avoid having one entire

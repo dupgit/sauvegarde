@@ -4,12 +4,12 @@ This is how I imagine the programs may interact themselves but it may
 evolve in the future.
 
     hid   | ----------                                   -----------
-    to    | | client |  <------------------------------> | serveur |
+    to    | | client |  <------------------------------> | server |
     user  | ----------                                   -----------
-                                                               ^
-    user                  ------------                         |
-    client                | restaure | <-----------------------|
-    (GUI ?)               ------------
+                                                              ^
+    user                  -----------                         |
+    client                | restore | <-----------------------|
+    (GUI ?)               -----------
     \                                       /            \          /
      ----- Client side (on a notebook) -----              - server -
                                                              side
@@ -17,13 +17,13 @@ evolve in the future.
 
 * "client" carve and monitors a filesystem, cuts files into pieces of
   16384 bytes (by default) and transmits every pieces along side with
-  meta data of each files to serveur, the server that saves everything.
+  meta data of each files to server, the server that saves everything.
 
-* "serveur" is the main sauvegarde server. Each client communicates with it
+* "server" is the main sauvegarde server. Each client communicates with it
   and it keeps every chunks of every files with their attributes.
 
-* "restaure" is a tool that will provide the ability to restore some
-  files or paths to some locations. It communicates directly with "serveur"
+* "restore" is a tool that will provide the ability to restore some
+  files or paths to some locations. It communicates directly with "cdpfglserver"
   main's sauvegarde server.
 
 

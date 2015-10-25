@@ -22,7 +22,7 @@
 
 /**
  * @file restaure.c
- * This program should be able to restaure files.
+ * This program should be able to restore files.
  */
 
 #include "restaure.h"
@@ -42,7 +42,7 @@ static void free_res_struct_t(res_struct_t *res_struct);
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
  * @returns a res_struct_t * structure containing all of what is needed
- *          by restaure program.
+ *          by cdpfglrestore program.
  */
 static res_struct_t *init_res_struct(int argc, char **argv)
 {
@@ -136,10 +136,10 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
 
 
 /**
- * Gets the file the serveur_metat_data_t * file list if any
- * @param res_struct is the main structure for restaure program.
+ * Gets the file the serveur_meta_data_t * file list if any
+ * @param res_struct is the main structure for cdpfglrestore program.
  * @param query is the structure that contains everything needed to
- *        query the serveur (and filter a bit). It must not be NULL.
+ *        query the server (and filter a bit). It must not be NULL.
  * @returns a GSList * of serveur_meta_data_t *
  */
 static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query)
@@ -183,9 +183,9 @@ static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query)
 
 /**
  * Prints all saved files
- * @param res_struct is the main structure for restaure program.
+ * @param res_struct is the main structure for cdpfglrestore program.
  * @param query is the structure that contains everything needed to
- *        query the serveur (and filter a bit). It must not be NULL.
+ *        query the server (and filter a bit). It must not be NULL.
  */
 static void print_all_files(res_struct_t *res_struct, query_t *query)
 {
@@ -213,7 +213,7 @@ static void print_all_files(res_struct_t *res_struct, query_t *query)
 
 
 /**
- * Writes data obtained from the serveur with the hash_list hashs
+ * Writes data obtained from the server with the hash_list hashs
  * to the stream.
  * @param stream is the stream where we are writing data (MUST be opened
  *        and not NULL)
@@ -277,8 +277,8 @@ static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *
 
 /**
  * Creates the file to be restored.
- * @param res_struct is the main structure for restaure program (used here
- *        to communicate with serveur's server).
+ * @param res_struct is the main structure for cdpfglrestore program (used here
+ *        to communicate with cdpfglserver's server).
  * @param meta is the whole meta_data file describing the file to be
  *        restored
  */
@@ -349,9 +349,9 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 
 /**
  * Restores the last file that the fetched list contains.
- * @param res_struct is the main structure for restaure program.
+ * @param res_struct is the main structure for cdpfglrestore program.
  * @param query is the structure that contains everything needed to
- *        query the serveur (and filter a bit). It must not be NULL.
+ *        query the server (and filter a bit). It must not be NULL.
  */
 static void restore_last_file(res_struct_t *res_struct, query_t *query)
 {

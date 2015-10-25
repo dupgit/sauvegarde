@@ -4,8 +4,8 @@ ACLOCAL_AMFLAGS = -I m4
 
 sauvegardeconfdir = $(sysconfdir)/sauvegarde
 sauvegardeconf_DATA = client.conf		\
-					  serveur.conf	    \
-					  restaure.conf
+					  server.conf	    \
+					  restore.conf
 
 EXTRA_DIST = $(sauvegardeconf_DATA)            \
 			 libsauvegarde/libsauvegarde.pc.in
