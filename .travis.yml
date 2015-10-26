@@ -25,8 +25,8 @@ install:
     - (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure --prefix=$HOME/local; make; make install)
 
     # libmicrohttpd (the one in ubuntu 12.04 is too old).
-    - wget --quiet -c http://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-0.9.42.tar.gz
-    - (tar zxf libmicrohttpd-0.9.42.tar.gz; cd libmicrohttpd-0.9.42; ./configure --prefix=$HOME/local; make; make install)
+    - wget --quiet -c http://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-0.9.44.tar.gz
+    - (tar zxf libmicrohttpd-0.9.44.tar.gz; cd libmicrohttpd-0.9.44; ./configure --prefix=$HOME/local; make; make install)
 
 # Building sauvegarde
 script:
