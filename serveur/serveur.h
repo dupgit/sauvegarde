@@ -103,6 +103,19 @@ typedef struct
 } serveur_struct_t;
 
 
+/**
+ * @struct upload_t
+ * @brief Structure to manage uploads of data in POST command.
+ *
+ */
+typedef struct
+{
+    gchar *buffer;
+    guint64 pos;
+} upload_t;
+
+
+
 #include "file_backend.h"
 
 

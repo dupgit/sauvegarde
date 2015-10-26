@@ -595,10 +595,11 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
 static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size)
 {
     int success = MHD_NO;
-    gchar *pp = *con_cls;
+    upload_t *pp = (upload_t *) *con_cls;
     gchar *newpp = NULL;
     gchar *buf1 = NULL;
     const char *length = NULL;
+    guint64 len = 0;
 
     /* print_debug("%ld, %s, %p\n", *upload_data_size, url, pp); */ /* This is for early debug only ! */
 
@@ -606,9 +607,13 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
         {
             /* print_headers(connection); */
             length = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "Content-Length");
-            fprintf(stderr, "length = %s\n", length);
+            /** @todo test len and return code for sscanf to validate a correct entry */
+            sscanf(length, "%ld", &len);
+            fprintf(stderr, "length = %ld\n", len);
             /* Initialzing the structure at first connection */
-            pp = g_strdup("");
+            pp = (upload_t *) g_malloc0(sizeof(upload_t));
+            pp->pos = 0;
+            pp->buffer = g_malloc0(sizeof(gchar) * (len + 1));
             *con_cls = pp;
 
             success = MHD_YES;
@@ -616,12 +621,15 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
     else if (*upload_data_size != 0)
         {
             /* Getting data whatever they are */
-            buf1 = g_strndup(upload_data, *upload_data_size);
+            memcpy(pp->buffer + pp->pos, upload_data, *upload_data_size);
+            pp->pos = pp->pos + *upload_data_size;
+
+            /* buf1 = g_strndup(upload_data, *upload_data_size);
             newpp = g_strconcat(pp, buf1, NULL);
             buf1 = free_variable(buf1);
-            pp = free_variable(pp);
+            pp = free_variable(pp); */
 
-            *con_cls = newpp;
+            *con_cls = pp;
 
             *upload_data_size = 0;
 
@@ -633,8 +641,9 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
             *con_cls = NULL;
 
             /* Do something with received_data */
-            success = process_received_data(serveur_struct, connection, url, pp);
+            success = process_received_data(serveur_struct, connection, url, pp->buffer);
 
+            free_variable(pp->buffer);
             free_variable(pp);
         }
 
