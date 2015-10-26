@@ -596,8 +596,6 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
 {
     int success = MHD_NO;
     upload_t *pp = (upload_t *) *con_cls;
-    gchar *newpp = NULL;
-    gchar *buf1 = NULL;
     const char *length = NULL;
     guint64 len = 0;
 
@@ -624,13 +622,7 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
             memcpy(pp->buffer + pp->pos, upload_data, *upload_data_size);
             pp->pos = pp->pos + *upload_data_size;
 
-            /* buf1 = g_strndup(upload_data, *upload_data_size);
-            newpp = g_strconcat(pp, buf1, NULL);
-            buf1 = free_variable(buf1);
-            pp = free_variable(pp); */
-
             *con_cls = pp;
-
             *upload_data_size = 0;
 
             success = MHD_YES;
