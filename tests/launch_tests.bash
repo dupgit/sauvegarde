@@ -44,4 +44,4 @@ sleep 1s
 
 # Ending programs
 killall -9 cdpfglclient
-killall -s SIGINT cdpfglserver
+killall -9 cdpfglserver
