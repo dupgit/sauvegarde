@@ -80,6 +80,12 @@
 #include "options.h"
 #include "backend.h"
 
+/**
+ * @def DEFAULT_SERVER_BUFFER_SIZE
+ * Defines default server buffer size used in MHD callbacks to reassemble
+ * POST data. Default is 8MB.
+ */
+#define DEFAULT_SERVER_BUFFER_SIZE (8388608)
 
 /**
  * @struct serveur_struct_t

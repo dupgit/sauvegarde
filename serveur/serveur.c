@@ -582,6 +582,36 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
 
 
 /**
+ * @param connection is the connection in MHD
+ * @returns in bytes the value (a guint) of the Content-Length: header
+ */
+static guint64 get_content_length(struct MHD_Connection *connection)
+{
+    const char *length = NULL;
+    guint64 len = DEFAULT_SERVER_BUFFER_SIZE;
+
+    length = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "Content-Length");
+
+    if (length != NULL)
+        {
+            /** @todo test len and return code for sscanf to validate a correct entry */
+            if (sscanf(length, "%"G_GUINT64_FORMAT, &len) <= 0)
+                {
+                    print_error(__FILE__, __LINE__, _("Could not guess Content-Length header value: %s\n"), strerror(errno));
+                    len = DEFAULT_SERVER_BUFFER_SIZE;
+                }
+
+            if (len < 0 || len > 4294967296)
+                {
+                    len = DEFAULT_SERVER_BUFFER_SIZE;
+                }
+        }
+
+    return len;
+}
+
+
+/**
  * Function to process post requests.
  * @param serveur_struct is the main structure for the server.
  * @param connection is the connection in MHD
@@ -596,7 +626,7 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
 {
     int success = MHD_NO;
     upload_t *pp = (upload_t *) *con_cls;
-    const char *length = NULL;
+    a_clock_t *elapsed = NULL;
     guint64 len = 0;
 
     /* print_debug("%ld, %s, %p\n", *upload_data_size, url, pp); */ /* This is for early debug only ! */
@@ -604,14 +634,11 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
     if (pp == NULL)
         {
             /* print_headers(connection); */
-            length = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "Content-Length");
-            /** @todo test len and return code for sscanf to validate a correct entry */
-            sscanf(length, "%ld", &len);
-            fprintf(stderr, "length = %ld\n", len);
             /* Initialzing the structure at first connection */
-            pp = (upload_t *) g_malloc0(sizeof(upload_t));
+            len = get_content_length(connection);
+            pp = (upload_t *) g_malloc(sizeof(upload_t));  /* not using g_malloc0 here because it's 1000 times slower */
             pp->pos = 0;
-            pp->buffer = g_malloc0(sizeof(gchar) * (len + 1));
+            pp->buffer = g_malloc(sizeof(gchar) * (len + 1));
             *con_cls = pp;
 
             success = MHD_YES;
@@ -631,7 +658,7 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
         {
             /* reset when done */
             *con_cls = NULL;
-
+            pp->buffer[pp->pos] = '\0';
             /* Do something with received_data */
             success = process_received_data(serveur_struct, connection, url, pp->buffer);
 
