@@ -352,13 +352,10 @@ static int create_MHD_response(struct MHD_Connection *connection, gchar *answer)
 {
     struct MHD_Response *response = NULL;
     int success = MHD_NO;
-    a_clock_t *elapsed = NULL;
 
-    elapsed = new_clock_t();
     response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
     success = MHD_queue_response(connection, MHD_HTTP_OK, response);
     MHD_destroy_response(response);
-    end_clock(elapsed, "creation MHD response");
 
     return success;
 }
@@ -539,20 +536,22 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
             /* print_debug("/Data_Array.json: %s\n", received_data); */
             elapsed = new_clock_t();
             root = load_json(received_data);
+            end_clock(elapsed, "load_json");
             hash_data_list = extract_gslist_from_array(root, "data_array", FALSE);
             head = hash_data_list;
             json_decref(root);
-            end_clock(elapsed, "extract_gslist_from_array");
 
-            elapsed = new_clock_t();
             while (hash_data_list != NULL)
                 {
                     hash_data = hash_data_list->data;
 
                     /* Only for debbugging ! */
-                    encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
-                    print_debug(_("Received data for hash: \"%s\" (%ld bytes)\n"), encoded_hash, hash_data->read);
-                    free_variable(encoded_hash);
+                    if (get_debug_mode() == TRUE)
+                        {
+                            encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
+                            print_debug(_("Received data for hash: \"%s\" (%ld bytes)\n"), encoded_hash, hash_data->read);
+                            free_variable(encoded_hash);
+                        }
 
                     /** Sending hash_data into the queue. */
                     g_async_queue_push(serveur_struct->data_queue, hash_data);
@@ -560,7 +559,6 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
                 }
 
             g_slist_free(head);
-            end_clock(elapsed, "push hash_data to queue");
 
             /**
              * creating an answer for the client to say that everything went Ok!
@@ -626,15 +624,14 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
 {
     int success = MHD_NO;
     upload_t *pp = (upload_t *) *con_cls;
-    a_clock_t *elapsed = NULL;
     guint64 len = 0;
 
     /* print_debug("%ld, %s, %p\n", *upload_data_size, url, pp); */ /* This is for early debug only ! */
 
     if (pp == NULL)
         {
-            /* print_headers(connection); */
-            /* Initialzing the structure at first connection */
+            /* print_headers(connection); */ /* Used for debugging */
+            /* Initialzing the structure at first connection       */
             len = get_content_length(connection);
             pp = (upload_t *) g_malloc(sizeof(upload_t));  /* not using g_malloc0 here because it's 1000 times slower */
             pp->pos = 0;
