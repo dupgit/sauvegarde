@@ -439,7 +439,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
 /**
  * Sends data as requested by the server 'cdpfglserver'.
  * @param main_struct : main structure of the program.
- * @param hash_data_list : list of hash_data_t * pointers containing all
+ * @param hash_data_list : list of hash_data_t * pointers containing
  *                          all the data to be saved.
  * @param answer is the request sent back by server when we had send
  *        meta data.
