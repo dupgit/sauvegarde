@@ -87,16 +87,23 @@ serveur_meta_data_t *new_smeta_data_t(void)
 /**
  * Frees the meta_data_t * structure
  * @param meta is a meta_data_t * structure to be freed
+ * @param free_link is a boolean that when set to TRUE will free
  * @returns always NULL
  */
-gpointer free_meta_data_t(meta_data_t *meta)
+gpointer free_meta_data_t(meta_data_t *meta, gboolean free_link)
 {
     if (meta != NULL)
         {
             free_variable(meta->owner);
             free_variable(meta->group);
             free_variable(meta->name);
-            /* meta->link should not be freed only in monitor */
+
+            if (free_link == TRUE)
+                {
+                    /* meta->link should not be freed only in monitor */
+                    free_variable(meta->link);
+                }
+
             g_slist_free_full(meta->hash_data_list, free_hdt_struct);
             free_variable(meta);
         }
@@ -114,7 +121,7 @@ gpointer free_smeta_data_t(serveur_meta_data_t *smeta)
 {
     if (smeta != NULL)
         {
-            smeta->meta = free_meta_data_t(smeta->meta);
+            smeta->meta = free_meta_data_t(smeta->meta, TRUE);
             smeta->hostname = free_variable(smeta->hostname);
             smeta = free_variable(smeta);
         }

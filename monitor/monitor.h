@@ -123,15 +123,16 @@ typedef struct
  */
 typedef struct
 {
-    options_t *opt;           /**< Options of the program from the command line                                                */
-    const gchar *hostname;    /**< Name of the current machine                                                                 */
-    db_t *database;           /**< Database structure that stores everything that is related to the database                   */
-    comm_t *comm;             /**< This is used to communicate with the 'server' program (which is the server)                 */
-    gint signal_fd;           /**< signal handler   */
-    gint fanotify_fd;         /**< fanotify handler */
-    GThread *save_one_file;   /**< thread that is used to save one file at a time (directory carving and live backup runs together) */
-    GAsyncQueue *save_queue;  /**< Queue where is sent all file_event_t structures upon event or while directory carving.           */
-    GAsyncQueue *dir_queue;   /**< A queue to collect directories when carving to avoid thread collision                            */
+    options_t *opt;                 /**< Options of the program from the command line                                                     */
+    const gchar *hostname;          /**< Name of the current machine                                                                      */
+    db_t *database;                 /**< Database structure that stores everything that is related to the database                        */
+    comm_t *comm;                   /**< This is used to communicate with the 'server' program (which is the server)                      */
+    gint signal_fd;                 /**< signal handler                                                                                   */
+    gint fanotify_fd;               /**< fanotify handler                                                                                 */
+    GThread *save_one_file;         /**< thread that is used to save one file at a time (directory carving and live backup runs together) */
+    GThread *carve_all_directories; /**< thread used to carve all directories and let fanotify executing itself                           */
+    GAsyncQueue *save_queue;        /**< Queue where is sent all file_event_t structures upon event or while directory carving.           */
+    GAsyncQueue *dir_queue;         /**< A queue to collect directories when carving to avoid thread collision                            */
 } main_struct_t;
 
 

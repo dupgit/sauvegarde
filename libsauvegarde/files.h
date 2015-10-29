@@ -185,9 +185,10 @@ extern serveur_meta_data_t *new_smeta_data_t(void);
 /**
  * Frees the meta_data_t * structure
  * @param meta is a meta_data_t * structure to be freed
+ * @param free_link is a boolean that when set to TRUE will free
  * @returns always NULL
  */
-extern gpointer free_meta_data_t(meta_data_t *meta);
+extern gpointer free_meta_data_t(meta_data_t *meta, gboolean free_link);
 
 
 /**

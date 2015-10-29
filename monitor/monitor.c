@@ -39,7 +39,7 @@ static gint send_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_l
 static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_list, gchar *answer);
 static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum);
 static void carve_one_directory(gpointer data, gpointer user_data);
-static void carve_all_directories(main_struct_t *main_struct);
+static gpointer carve_all_directories(gpointer data);
 static gpointer save_one_file_threaded(gpointer data);
 static gpointer free_file_event_t(file_event_t *file_event);
 static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *array);
@@ -91,11 +91,11 @@ static main_struct_t *init_main_structure(options_t *opt)
 
             /* inits the queue that will wait for events on files */
             main_struct->save_queue = g_async_queue_new();
+            main_struct->dir_queue = g_async_queue_new();
 
             /* Thread initialization */
             main_struct->save_one_file = g_thread_new("save_one_file", save_one_file_threaded, main_struct);
-
-            main_struct->dir_queue = g_async_queue_new();
+            main_struct->carve_all_directories = g_thread_new("carve_all_directories", carve_all_directories, main_struct);
 
             print_debug(_("Main structure initialized !\n"));
 
@@ -859,7 +859,7 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
 
                 }
 
-            free_meta_data_t(meta);
+            free_meta_data_t(meta, FALSE);
         }
 }
 
@@ -942,8 +942,9 @@ static void carve_one_directory(gpointer data, gpointer user_data)
  *        the options structure that should have a list of directories
  *        to save.
  */
-static void carve_all_directories(main_struct_t *main_struct)
+static gpointer carve_all_directories(gpointer data)
 {
+    main_struct_t *main_struct = (main_struct_t *) data;
     gchar *directory = NULL;
 
     if (main_struct != NULL && main_struct->opt != NULL)
@@ -959,6 +960,8 @@ static void carve_all_directories(main_struct_t *main_struct)
                     directory = g_async_queue_pop(main_struct->dir_queue);
                 }
         }
+
+    return NULL;
 }
 
 
@@ -991,8 +994,6 @@ int main(int argc, char **argv)
              * fanotify loop.
              */
             main_struct = init_main_structure(opt);
-
-            carve_all_directories(main_struct);
 
             /** Launching an infinite loop to get modifications done on
              * the filesystem (on directories we watch).

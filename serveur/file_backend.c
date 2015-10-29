@@ -705,12 +705,12 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
                                  }
                             else
                                 {
-                                    meta = free_meta_data_t(meta);
+                                    meta = free_meta_data_t(meta, TRUE);
                                 }
                         }
                     else
                         {
-                             meta = free_meta_data_t(meta);
+                             meta = free_meta_data_t(meta, TRUE);
                         }
                 }
             else
@@ -786,7 +786,7 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
                                             json_array_append_new(array, meta_json);
                                         }
 
-                                    free_meta_data_t(meta);
+                                    free_meta_data_t(meta, TRUE);
                                 }
 
                             free_variable(line);
