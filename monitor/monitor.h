@@ -131,6 +131,7 @@ typedef struct
     gint fanotify_fd;         /**< fanotify handler */
     GThread *save_one_file;   /**< thread that is used to save one file at a time (directory carving and live backup runs together) */
     GAsyncQueue *save_queue;  /**< Queue where is sent all file_event_t structures upon event or while directory carving.           */
+    GAsyncQueue *dir_queue;   /**< A queue to collect directories when carving to avoid thread collision                            */
 } main_struct_t;
 
 

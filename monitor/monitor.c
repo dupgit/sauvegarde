@@ -95,6 +95,8 @@ static main_struct_t *init_main_structure(options_t *opt)
             /* Thread initialization */
             main_struct->save_one_file = g_thread_new("save_one_file", save_one_file_threaded, main_struct);
 
+            main_struct->dir_queue = g_async_queue_new();
+
             print_debug(_("Main structure initialized !\n"));
 
         }
@@ -853,14 +855,11 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
                 {
                     /* This is a recursive call */
                     another_dir = g_strdup(meta->name);
-                    free_meta_data_t(meta);
-                    carve_one_directory(another_dir, main_struct);
-                    free_variable(another_dir);
+                    g_async_queue_push(main_struct->dir_queue, another_dir);
+
                 }
-            else
-                {
-                    free_meta_data_t(meta);
-                }
+
+            free_meta_data_t(meta);
         }
 }
 
@@ -945,9 +944,20 @@ static void carve_one_directory(gpointer data, gpointer user_data)
  */
 static void carve_all_directories(main_struct_t *main_struct)
 {
+    gchar *directory = NULL;
+
     if (main_struct != NULL && main_struct->opt != NULL)
         {
             g_slist_foreach(main_struct->opt->dirname_list, carve_one_directory, main_struct);
+
+            directory = g_async_queue_pop(main_struct->dir_queue);
+
+            while (directory != NULL)
+                {
+                    carve_one_directory(directory, main_struct);
+                    free_variable(directory);
+                    directory = g_async_queue_pop(main_struct->dir_queue);
+                }
         }
 }
 
