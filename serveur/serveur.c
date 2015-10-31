@@ -748,7 +748,7 @@ static gpointer meta_data_thread(gpointer user_data)
                         {
                             smeta = g_async_queue_pop(serveur_struct->meta_queue);
 
-                            if (smeta != NULL)
+                            if (smeta != NULL && smeta->meta != NULL)
                                 {
                                     print_debug("meta_data_thread: received from %s meta for file %s\n", smeta->hostname, smeta->meta->name);
                                     serveur_struct->backend->store_smeta(serveur_struct, smeta);

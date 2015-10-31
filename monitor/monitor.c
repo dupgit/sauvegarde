@@ -174,6 +174,9 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
                             hash_data_list = g_slist_reverse(hash_data_list);
                         }
 
+                    free_variable(buffer);
+                    free_variable(a_hash);
+
                     g_checksum_free(checksum);
                     g_input_stream_close((GInputStream *) stream, NULL, NULL);
                     free_object(stream);
@@ -421,6 +424,10 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
                             elapsed = new_clock_t();
                             all_ok = insert_array_in_root_and_send(main_struct, array);
                             end_clock(elapsed, "insert_array_in_root_and_send");
+                        }
+                    else
+                        {
+                            json_decref(array);
                         }
 
                     if (head != NULL)
@@ -782,6 +789,8 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                     hash_data_list = g_slist_reverse(hash_data_list);
                                 }
 
+                            free_variable(buffer);
+                            free_variable(a_hash);
                             g_checksum_free(checksum);
                             g_input_stream_close((GInputStream *) stream, NULL, NULL);
                             free_object(stream);
