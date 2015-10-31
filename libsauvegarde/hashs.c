@@ -104,7 +104,7 @@ gchar *hash_to_string(guint8 *a_hash)
     if (a_hash != NULL)
         {
             string = (gchar *) g_malloc0(HASH_LEN*2 + 1); /* two char per bytes */
-            octet = (gchar *) g_malloc0(3);
+            octet = (gchar *) g_malloc(3);
 
             for(i = 0; i < HASH_LEN; i++)
                 {
@@ -248,7 +248,7 @@ hash_data_t *new_hash_data_t(guchar *data, gssize read, guint8 *hash)
 {
     hash_data_t *hash_data = NULL;
 
-    hash_data = (hash_data_t *) g_malloc0(sizeof(hash_data_t));
+    hash_data = (hash_data_t *) g_malloc(sizeof(hash_data_t));
 
     hash_data->hash = hash;
     hash_data->data = data;

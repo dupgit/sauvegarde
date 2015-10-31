@@ -139,8 +139,8 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
                 {
 
                     checksum = g_checksum_new(G_CHECKSUM_SHA256);
-                    buffer = (guchar *) g_malloc0(blocksize);
-                    a_hash = (guint8 *) g_malloc0(digest_len);
+                    buffer = (guchar *) g_malloc(blocksize);
+                    a_hash = (guint8 *) g_malloc(digest_len);
 
                     read = g_input_stream_read((GInputStream *) stream, buffer, blocksize, NULL, &error);
 
@@ -156,8 +156,8 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
                             g_checksum_reset(checksum);
                             digest_len = HASH_LEN;
 
-                            buffer = (guchar *) g_malloc0(blocksize);
-                            a_hash = (guint8 *) g_malloc0(digest_len);
+                            buffer = (guchar *) g_malloc(blocksize);
+                            a_hash = (guint8 *) g_malloc(digest_len);
                             read = g_input_stream_read((GInputStream *) stream, buffer, blocksize, NULL, &error);
                         }
 
@@ -510,7 +510,7 @@ file_event_t *new_file_event_t(gchar *directory, GFileInfo *fileinfo)
     file_event_t *file_event = NULL;
 
 
-    file_event = (file_event_t *) g_malloc0(sizeof(file_event_t));
+    file_event = (file_event_t *) g_malloc(sizeof(file_event_t));
 
     file_event->directory = g_strdup(directory);
     file_event->fileinfo = g_file_info_dup(fileinfo);
@@ -711,8 +711,8 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                         {
 
                             checksum = g_checksum_new(G_CHECKSUM_SHA256);
-                            buffer = (guchar *) g_malloc0(meta->blocksize);
-                            a_hash = (guint8 *) g_malloc0(digest_len);
+                            buffer = (guchar *) g_malloc(meta->blocksize);
+                            a_hash = (guint8 *) g_malloc(digest_len);
 
                             read = g_input_stream_read((GInputStream *) stream, buffer, meta->blocksize, NULL, &error);
                             read_bytes = read_bytes + read;
@@ -753,8 +753,8 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                             end_clock(elapsed, "insert_array_in_root_and_send");
                                         }
 
-                                    buffer = (guchar *) g_malloc0(meta->blocksize);
-                                    a_hash = (guint8 *) g_malloc0(digest_len);
+                                    buffer = (guchar *) g_malloc(meta->blocksize);
+                                    a_hash = (guint8 *) g_malloc(digest_len);
                                     read = g_input_stream_read((GInputStream *) stream, buffer, meta->blocksize, NULL, &error);
                                     read_bytes = read_bytes + read;
                                 }

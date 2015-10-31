@@ -259,7 +259,7 @@ static file_row_t *new_file_row_t(void)
 {
     file_row_t *row = NULL;
 
-    row = (file_row_t *) g_malloc0(sizeof(file_row_t));
+    row = (file_row_t *) g_malloc(sizeof(file_row_t));
 
     row->nb_row = 0;
     row->id_list = NULL;

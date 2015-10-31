@@ -38,7 +38,7 @@ meta_data_t *new_meta_data_t(void)
 {
     meta_data_t *meta = NULL;
 
-    meta = (meta_data_t *) g_malloc0(sizeof(meta_data_t));
+    meta = (meta_data_t *) g_malloc(sizeof(meta_data_t));
 
     if (meta != NULL)
         {
@@ -71,7 +71,7 @@ serveur_meta_data_t *new_smeta_data_t(void)
 {
     serveur_meta_data_t *smeta = NULL;
 
-    smeta = (serveur_meta_data_t *) g_malloc0(sizeof(serveur_meta_data_t));
+    smeta = (serveur_meta_data_t *) g_malloc(sizeof(serveur_meta_data_t));
 
     if (smeta != NULL)
         {

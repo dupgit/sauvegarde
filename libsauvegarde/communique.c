@@ -182,7 +182,7 @@ gint get_url(comm_t *comm, gchar *url)
 
     if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL)
         {
-            error_buf = (gchar *) g_malloc0(CURL_ERROR_SIZE + 1);
+            error_buf = (gchar *) g_malloc(CURL_ERROR_SIZE + 1);
             comm->seq = 0;
             comm->length = 0;
             comm->pos = 0;
@@ -237,7 +237,7 @@ gint post_url(comm_t *comm, gchar *url)
 
     if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL && comm->readbuffer != NULL)
         {
-            error_buf = (gchar *) g_malloc0(CURL_ERROR_SIZE + 1);
+            error_buf = (gchar *) g_malloc(CURL_ERROR_SIZE + 1);
             comm->seq = 0;
             comm->pos = 0;
             real_url = g_strdup_printf("%s%s", comm->conn, url);

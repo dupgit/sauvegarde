@@ -135,6 +135,7 @@ static gchar *get_file_path_from_fd(gint fd)
 {
     gchar *path = NULL;
     gchar *proc = NULL;
+    ssize_t len = 0;
 
     if (fd <= 0)
         {
@@ -144,9 +145,9 @@ static gchar *get_file_path_from_fd(gint fd)
 
     proc = g_strdup_printf("/proc/self/fd/%d", fd);
 
-    path = (gchar *) g_malloc0((PATH_MAX) * sizeof(gchar));
+    path = (gchar *) g_malloc((PATH_MAX) * sizeof(gchar));
 
-    if (readlink(proc, path, PATH_MAX - 1) < 0)
+    if ((len = readlink(proc, path, PATH_MAX - 1)) < 0)
         {
             print_error(__FILE__, __LINE__, _("'readlink' error: %s\n"), strerror(errno));
             free_variable(proc);
@@ -155,6 +156,7 @@ static gchar *get_file_path_from_fd(gint fd)
         }
 
     free_variable(proc);
+    path[len] = '\0';
 
     return path;
 }
@@ -176,7 +178,7 @@ static char *get_program_name_from_pid(int pid)
             return NULL;
         }
 
-    buffer = (gchar *) g_malloc0(PATH_MAX);
+    buffer = (gchar *) g_malloc(PATH_MAX);
 
     /* Read file contents into buffer */
     if ((len = read(fd, buffer, PATH_MAX - 1)) <= 0)
@@ -189,7 +191,7 @@ static char *get_program_name_from_pid(int pid)
         {
             close (fd);
 
-            /* buffer[len] = '\0'; */
+            buffer[len] = '\0';
             aux = strstr(buffer, "^@");
 
             if (aux)
