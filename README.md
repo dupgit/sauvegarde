@@ -31,7 +31,7 @@ stated between () and recommended version between []):
 
 * `autotools`      (2.59)
 * `glib` and `gio` (2.30)
-* `libmicrohttpd`  (0.9.5)  [0.9.44-2]
+* `libmicrohttpd`  (0.9.5)  [0.9.45]
 * `libcurl`        (7.22.0)
 * `sqlite`         (3.6.20)
 * `jansson`        (2.5)    [2.7]
