@@ -104,16 +104,17 @@ gchar *hash_to_string(guint8 *a_hash)
     if (a_hash != NULL)
         {
             string = (gchar *) g_malloc0(HASH_LEN*2 + 1); /* two char per bytes */
-            octet = (gchar *) g_malloc(3);
+            /* octet = (gchar *) g_malloc(3); */
 
             for(i = 0; i < HASH_LEN; i++)
                 {
                     octet = g_strdup_printf("%02x", a_hash[i]);
                     memmove(string + i*2, octet, 2);
+                    free_variable(octet);
                 }
         }
 
-    free_variable(octet);
+    /* free_variable(octet); */
     return string;
 }
 

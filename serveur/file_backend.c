@@ -177,6 +177,7 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
 
                             g_output_stream_close((GOutputStream *) stream, NULL, &error);
 
+                            g_object_unref(stream);
                             free_variable(hash_data->data);
                             free_variable(hash_data->hash);
                             free_variable(hash_data);

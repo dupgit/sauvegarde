@@ -58,11 +58,17 @@ void free_serveur_struct_t(serveur_struct_t *serveur_struct)
     if (serveur_struct != NULL)
         {
             MHD_stop_daemon(serveur_struct->d);
+            print_debug(_("\tMHD daemon stopped.\n"));
             free_variable(serveur_struct->backend); /** we need a backend function to be called to free th backend structure */
+            print_debug(_("\tbackend variable freed.\n"));
             g_thread_unref(serveur_struct->data_thread);
+            print_debug(_("\tdata thread unrefed.\n"));
             g_thread_unref(serveur_struct->meta_thread);
+            print_debug(_("\tmeta thread unrefed.\n"));
             free_options_t_structure(serveur_struct->opt);
+            print_debug(_("\toption structure freed.\n"));
             free_variable(serveur_struct);
+             print_debug(_("\tmain structure freed.\n"));
         }
 }
 
@@ -79,8 +85,9 @@ static gboolean int_signal_handler(gpointer user_data)
 
     if (serveur_struct != NULL)
         {
-            print_debug(_("\nEnding the program.\n"));
+            print_debug(_("\nEnding the program:\n"));
             g_main_loop_quit(serveur_struct->loop);
+            print_debug(_("\tMain loop exited.\n"));
             free_serveur_struct_t(serveur_struct);
         }
 

@@ -270,7 +270,6 @@ static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *
                     free_variable(hash);
                 }
         }
-
 }
 
 
