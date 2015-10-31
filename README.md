@@ -27,14 +27,14 @@ projects used here (see dependencies section below).
 ## Dependencies
 
 This project depends on the following projects (minimum version required is
-stated between brakets):
+stated between () and recommended version between []):
 
 * `autotools`      (2.59)
 * `glib` and `gio` (2.30)
-* `libmicrohttpd`  (0.9.5)
+* `libmicrohttpd`  (0.9.5)  [0.9.44-2]
 * `libcurl`        (7.22.0)
 * `sqlite`         (3.6.20)
-* `jansson`        (2.5)
+* `jansson`        (2.5)    [2.7]
 
 doxygen (1.6.1) is used to generate code's documentation but is not
 required to build the project. jansson's library version is quite recent

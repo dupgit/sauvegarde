@@ -401,6 +401,7 @@ GSList *extract_smeta_gslist_from_file_list(json_t *root)
     return head;
 }
 
+
 /**
  * Function that converts json_t * root containing the keys "hash", "data"
  * and "read" into hash_data_t structure.

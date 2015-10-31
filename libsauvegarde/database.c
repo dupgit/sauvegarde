@@ -62,8 +62,9 @@ static void print_db_error(sqlite3 *db, const char *format, ...)
     vfprintf(stderr, format, ap);
     va_end(ap);
 
-    sqlite3_close(db);
-    exit(EXIT_FAILURE);
+  /*  sqlite3_close(db);
+      exit(EXIT_FAILURE);
+  */
 }
 
 
@@ -76,13 +77,16 @@ static void print_db_error(sqlite3 *db, const char *format, ...)
 static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message)
 {
     char *error_message = NULL;
+    const char *message = NULL;
     int result = 0;
 
     result = sqlite3_exec(database->db, sql_cmd, NULL, 0, &error_message);
 
     if (result != SQLITE_OK)
         {
-            print_db_error(database->db, format_message, result, error_message);
+            result = sqlite3_extended_errcode(database->db);
+            message = sqlite3_errstr(result);
+            print_db_error(database->db, format_message, result, message);
         }
 }
 
@@ -382,6 +386,7 @@ db_t *open_database(gchar *database_name)
     else
         {
             database->db = db;
+            sqlite3_extended_result_codes(db, 1);
             verify_if_tables_exists(database);
 
             return database;

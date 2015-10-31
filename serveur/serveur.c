@@ -433,7 +433,7 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
     if (smeta != NULL && smeta->meta != NULL)
         {   /* The convertion went well and smeta contains the meta data */
 
-            print_debug(_("Received meta data for file %s\n"), smeta->meta->name);
+            print_debug(_("Received meta data (%zd bytes) for file %s\n"), strlen(received_data), smeta->meta->name);
 
             if (smeta->data_sent == FALSE)
                 {
@@ -513,9 +513,12 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
 
             hash_data = convert_string_to_hash_data(received_data);
 
-            encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
-            print_debug(_("Received data for hash: \"%s\" (%ld bytes)\n"), encoded_hash, hash_data->read);
-            free_variable(encoded_hash);
+            if (get_debug_mode() == TRUE)
+                {
+                    encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
+                    print_debug(_("Received data for hash: \"%s\" (%ld bytes)\n"), encoded_hash, hash_data->read);
+                    free_variable(encoded_hash);
+                }
 
             /**
              * Sending received_data into the queue in order to be treated by
@@ -633,9 +636,9 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
             /* print_headers(connection); */ /* Used for debugging */
             /* Initialzing the structure at first connection       */
             len = get_content_length(connection);
-            pp = (upload_t *) g_malloc(sizeof(upload_t));  /* not using g_malloc0 here because it's 1000 times slower */
+            pp = (upload_t *) g_malloc(sizeof(upload_t));
             pp->pos = 0;
-            pp->buffer = g_malloc(sizeof(gchar) * (len + 1));
+            pp->buffer = g_malloc(sizeof(gchar) * (len + 1));  /* not using g_malloc0 here because it's 1000 times slower */
             *con_cls = pp;
 
             success = MHD_YES;

@@ -50,7 +50,6 @@ static res_struct_t *init_res_struct(int argc, char **argv)
     gchar *conn = NULL;
 
 
-
     res_struct = (res_struct_t *) g_malloc0(sizeof(res_struct_t));
 
     res_struct->hostname = (gchar *) g_get_host_name();

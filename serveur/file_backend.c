@@ -244,7 +244,7 @@ GSList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *ha
                             /* file does not exists and is not in the needed list so we need it!
                              * thus putting it it the needed list
                              */
-                            a_hash = (guint8 *) g_malloc0(sizeof(guint8) * HASH_LEN);
+                            a_hash = (guint8 *) g_malloc(sizeof(guint8) * HASH_LEN);  /* No need to do g_malloc0 here as we store binary data */
                             memcpy(a_hash, hash_data->hash, HASH_LEN);
                             needed_hash_data = new_hash_data_t(NULL, 0, a_hash);
                             needed = g_slist_prepend(needed, needed_hash_data);
@@ -379,8 +379,9 @@ static void read_from_group_file_backend(file_backend_t *file_backend, gchar *fi
         {
             file_backend->prefix = free_variable(file_backend->prefix);
             file_backend->prefix = normalize_directory(prefix);
-            free_variable(prefix);
         }
+
+    free_variable(prefix);
 
     if (level > 0 && level < 6)
         { /* Will anyone need more than 1 099 511 627 776 directories to
@@ -389,6 +390,8 @@ static void read_from_group_file_backend(file_backend_t *file_backend, gchar *fi
            */
             file_backend->level = level;
         }
+
+    g_key_file_free(keyfile);
 }
 
 
@@ -862,8 +865,8 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
             if (stream != NULL)
                 {
                     filesize = get_file_size(data_file);
-                    /* we can do this because files may not be too big: as large as FILE_BACKEND_BUFFER_SIZE ? */
-                    data = (guchar *) g_malloc0(filesize + 1);
+                    /* we can do this because files may not be too big: as large as the biggest CLIENT_BUFFER_SIZE. */
+                    data = (guchar *) g_malloc(filesize + 1);   /* No need to do g_malloc0  because data is binary data */
 
                     read = g_input_stream_read((GInputStream *) stream, data, filesize, NULL, &error);
 
