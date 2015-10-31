@@ -167,8 +167,7 @@ should consider that "It ships when its ready".
          associated data to go quicker when restoring files. Restore all
          the versions of a file
 * 0.0.10 restore a directory and it's subfiles and directories at a
-         specific date.
-* 0.1.0 nettoie program to clean server's data and meta-data
+         specific date. Write a man page for each programs.
 
 
 ### Releases
