@@ -157,11 +157,15 @@ should consider that "It ships when its ready".
          option to choose fixed or adaptative. Add options to choose
          CLIENT_MIN_BUFFER and CLIENT_SMALL_FILE_SIZE.
 * 0.0.7  hability to exclude some files by extension or path. Caching
-         mecanism in client in case the server is unreachable.
+         mecanism in client in case the server is unreachable. Change
+         GSList hash_data_list from meta_data_t structure to something
+         that allows deletion of elements while walking through it.
 * 0.0.8  restore the latest version of a file before a specific date.
          Add a new post url such as (Hash_Array.json) to submit an array
          of hashs to server that will say which hashs are needed.
-* 0.0.9  restore all the versions of a file
+* 0.0.9  New GET url in order to get a bunch of hashs and their
+         associated data to go quicker when restoring files. Restore all
+         the versions of a file
 * 0.0.10 restore a directory and it's subfiles and directories at a
          specific date.
 * 0.1.0 nettoie program to clean server's data and meta-data
