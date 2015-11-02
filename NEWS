@@ -1,5 +1,31 @@
+[02-11-2015] v0.0.6
+'sauvegarde' is a set of tools ('cdpfglserver', 'cdpfglclient' and 'cdpfglrestore' - as of now) that saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server (now named 'cdpfglserver') is stateless and achieves deduplication (at the block level). As a result it does not use much memory and may run on small machines (on a virtual machine for instance).
+
+This is v0.0.6 release of this project and some major features were added:
+
+    * Upon comments made by Pierre Bourgin when trying to package sauvegarde's project for voidlinux distribution the program names changed and are now cdpfglserver, cdpfglclient and cdpfglrestore. 'cdpfgl' stands for 'Continuous Data Protection For Gnu/Linux'.
+    * Now using cdpfglrestore with the -w (--where) option one can restore a file to some specific directory specified along with the option.
+    * cdpfglclient has a new mode to calculate hashs. This mode is called 'adaptative blocksize' it can be invoked with -a 1 (--adaptative=1) command line option or by using 'adaptative=true' directive in 'Client' section of client.conf configuration file. This option allows client to calculate hash with an adaptative blocksize that depends of the size of the file. It works by steps. File whose size is under 32768 bytes are hashed with a 512 bytes blocksize, files under 262144 bytes with a 2048 bytes blocksize and so on until files whose size is greater than 134217728 that are hashed with a 262144 bytes blocksize. It is believed that doing so, deduplication will hit a higher rate. The counter part is that cdpfglclient program is slower for small files.
+    * -s (--buffersize) option has been added to cdpfglclient program in order to let one choose the cache that cdpfglclient may use before sending data to cdpfglserver. This option has no effect when the adaptative blocksize option has been chosen has the program will adapt this buffersize roughly to each file.
+    * This release also contains many bugfixes and memory leakage fixes.
+    * Memory allocation strategy has been reviewed at some points: when it's possible, avoid allocating memory at all, when we must allocate see if g_malloc() is usable else use g_malloc0() which is 1000 times slower than g_malloc.
+
+Contributors to this version:
+    * Olivier Delhomme
+
+Links:
+
+    * Sauvegarde's project: https://github.com/dupgit/sauvegarde
+    * Sauvegarde's openhub: https://openhub.net/p/sauvegarde
+    * Sauvegarde release v0.0.6: http://src.delhomme.org/download/sauvegarde/releases/sauvegarde-0.0.6.tar.xz
+    * travis continuous integration status: https://travis-ci.org/dupgit/sauvegarde
+    * sauvegarde's frescode: http://freshcode.club/projects/sauvegarde
+    * voidlinux distribution: http://www.voidlinux.eu/
+
+
+
 [04-10-2015] v0.0.5
-'sauvegarde' is a set of tools ('serveur', 'client' and 'restore' - as of now) that saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server (named 'serveur') is stateless and achieves deduplication (at the block level). As a result it does not use much memory and may run on small machines (on a virtual machine for instance).
+'sauvegarde' is a set of tools ('serveur', 'client' and 'restaure' - as of now) that saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server (named 'serveur') is stateless and achieves deduplication (at the block level). As a result it does not use much memory and may run on small machines (on a virtual machine for instance).
 
 This is v0.0.5 release of this project. Some improvements were made as all what was expected in the roadmap (and more) has been coded:
 
@@ -24,7 +50,7 @@ Links:
 
 
 [06-09-2015] v0.0.4
-'sauvegarde' is a set of tools ('serveur', 'client' and 'restore' - as of now) that saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server (named 'serveur') is stateless and achieves deduplication (block level). As a result it does not use much memory and may run on small machines (on a virtual machine for instance).
+'sauvegarde' is a set of tools ('serveur', 'client' and 'restaure' - as of now) that saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server (named 'serveur') is stateless and achieves deduplication (block level). As a result it does not use much memory and may run on small machines (on a virtual machine for instance).
 
 This is the fourth release of this project. Some improvements were made. Let's see what's new in version v0.0.4:
 
@@ -51,7 +77,7 @@ Links:
 
 
 [21-08-2015] v0.0.3
-'sauvegarde' is a set of tools ('serveur', 'client' and 'restore' - as of now) that saves your files in a live continuous way that is to say while they are written to disks.
+'sauvegarde' is a set of tools ('serveur', 'client' and 'restaure' - as of now) that saves your files in a live continuous way that is to say while they are written to disks.
 
 New features in version v0.0.3:
 

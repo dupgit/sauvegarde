@@ -153,9 +153,6 @@ If you need more than the above hints, please have a look at the user
 I am coding on spare hours so I may not tell any release dates and you
 should consider that "It ships when its ready".
 
-* 0.0.6  restore to some specific place. client adaptative blocksize with
-         option to choose fixed or adaptative. Add options to choose
-         CLIENT_MIN_BUFFER and CLIENT_SMALL_FILE_SIZE.
 * 0.0.7  hability to exclude some files by extension or path. Caching
          mecanism in client in case the server is unreachable. Change
          GSList hash_data_list from meta_data_t structure to something
@@ -180,6 +177,9 @@ should consider that "It ships when its ready".
                       hashs to avoid having duplicated hashs into it.
 * 0.0.5  [04.10.2015] fanotify's code reviewed. Avoid having one entire
                       file in memory.
+* 0.0.6  [02 11 2015] restore to some specific place. client adaptative
+                      blocksize with option to choose fixed or adaptative.
+                      Add options to choose CLIENT_MIN_BUFFER.
 
 
 ## Code documentation
