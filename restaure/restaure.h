@@ -77,9 +77,9 @@ typedef struct
  * Defines the main program name for this part.
  */
 #define RESTAURE_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
-#define RESTAURE_DATE _("04 10 2015")
+#define RESTAURE_DATE _("02 11 2015")
 #define RESTAURE_LICENSE _("GPL v3 or later")
-#define RESTAURE_VERSION _("0.0.5")
+#define RESTAURE_VERSION _("0.0.6")
 #define PROGRAM_NAME ("cdpfglrestore")
 
 

@@ -1,6 +1,6 @@
 AC_PREREQ(2.59)
 
-AC_INIT([sauvegarde], [0.0.5], [Olivier DELHOMME <olivier.delhomme@free.fr>])
+AC_INIT([sauvegarde], [0.0.6], [Olivier DELHOMME <olivier.delhomme@free.fr>])
 AM_INIT_AUTOMAKE
 
 AC_PROG_CC
