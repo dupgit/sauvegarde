@@ -68,7 +68,7 @@ void free_serveur_struct_t(serveur_struct_t *serveur_struct)
             free_options_t_structure(serveur_struct->opt);
             print_debug(_("\toption structure freed.\n"));
             free_variable(serveur_struct);
-             print_debug(_("\tmain structure freed.\n"));
+            print_debug(_("\tmain structure freed.\n"));
         }
 }
 
@@ -646,6 +646,7 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
             pp = (upload_t *) g_malloc(sizeof(upload_t));
             pp->pos = 0;
             pp->buffer = g_malloc(sizeof(gchar) * (len + 1));  /* not using g_malloc0 here because it's 1000 times slower */
+            pp->number = 0;
             *con_cls = pp;
 
             success = MHD_YES;
@@ -655,6 +656,8 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
             /* Getting data whatever they are */
             memcpy(pp->buffer + pp->pos, upload_data, *upload_data_size);
             pp->pos = pp->pos + *upload_data_size;
+
+            pp->number = pp->number + 1;
 
             *con_cls = pp;
             *upload_data_size = 0;
@@ -666,6 +669,12 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
             /* reset when done */
             *con_cls = NULL;
             pp->buffer[pp->pos] = '\0';
+
+            if (get_debug_mode() == TRUE)
+                {
+                    /* to investigate libmicrohttpd shrinkage */
+                    fprintf(stderr, "%ld %ld %ld\n", pp->pos, pp->number, pp->pos / pp->number);
+                }
             /* Do something with received_data */
             success = process_received_data(serveur_struct, connection, url, pp->buffer);
 
