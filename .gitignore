@@ -49,3 +49,4 @@ manual/*.out
 manual/*.toc
 manual/*.log
 manual/graphs/*.png
+bugs/
