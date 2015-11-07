@@ -670,11 +670,6 @@ static int process_post_request(serveur_struct_t *serveur_struct, struct MHD_Con
             *con_cls = NULL;
             pp->buffer[pp->pos] = '\0';
 
-            if (get_debug_mode() == TRUE && pp->number != 0)
-                {
-                    /* to investigate libmicrohttpd shrinkage */
-                    fprintf(stderr, "%ld %ld %ld\n", pp->pos, pp->number, pp->pos / pp->number);
-                }
             /* Do something with received_data */
             success = process_received_data(serveur_struct, connection, url, pp->buffer);
 
