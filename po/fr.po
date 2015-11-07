@@ -764,7 +764,7 @@ msgstr "[%s, %d] Analyse des options échouée : %s\n"
 
 #: ../serveur/serveur.c:61
 msgid "\tMHD daemon stopped.\n"
-msgstr "\tDémon MHD arrêté.\n"
+msgstr "\tdémon MHD arrêté.\n"
 
 #. * we need a backend function to be called to free th backend structure
 #: ../serveur/serveur.c:63
