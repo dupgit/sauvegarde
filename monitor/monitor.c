@@ -580,32 +580,32 @@ static gint64 calculate_file_blocksize(main_struct_t *main_struct, gint64 size)
         {
             if (main_struct->opt->adaptative == TRUE)
                 {
-                    if (size < 32768)
+                    if (size < 32768)            /* max 64 blocks       */
                         {
                             return 512;
                         }
-                    else if (size < 262144)
+                    else if (size < 262144)      /* max 128 blocks      */
                         {
                             return 2048;
                         }
-                    else if (size < 1048576)
+                    else if (size < 1048576)     /* max 128 blocks      */
                         {
                             return 8192;
                         }
-                    else if (size < 8388608)
+                    else if (size < 8388608)     /* max 512 blocks      */
                         {
                             return 16384;
                         }
-                    else if (size < 67108864)
+                    else if (size < 67108864)    /* max 1024 blocks     */
                         {
                             return 65536;
                         }
-                    else if (size < 134217728)
+                    else if (size < 134217728)   /* max 1024 blocks     */
                         {
                             main_struct->opt->buffersize = (CLIENT_MIN_BUFFER) * 2;
                             return 131072;
                         }
-                    else
+                    else                         /* at least 512 blocks */
                         {
                             main_struct->opt->buffersize = (CLIENT_MIN_BUFFER) * 4;
                             return 262144;
