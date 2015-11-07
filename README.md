@@ -71,6 +71,8 @@ in the classic way:
 
 ## Usage
 
+### The server (the one that collects everything)
+
 First you need to run the program `cdpflgserver` on a machine that will act as
 a server. You can configure options in `server.conf` (located by default
 in `{prefix}/etc/sauvegarde/`) or use the command's line options:
@@ -90,6 +92,8 @@ in `{prefix}/etc/sauvegarde/`) or use the command's line options:
       -c, --configuration=FILENAME     Specify an alternative configuration file.
       -p, --port=NUMBER                Port NUMBER on which to listen.
 
+
+### The client (the one that saves your files).
 
 Then you may use `cdpfglclient` program to report modified files to the server
 and save them accordingly. Configuration file is named `client.conf` and
@@ -115,7 +119,13 @@ command line options are:
       -f, --dbname=FILENAME            Database FILENAME.
       -i, --ip=IP                      IP address where server program is.
       -p, --port=NUMBER                Port NUMBER on which to listen.
+      -x, --exclude=FILENAME           Exclude FILENAME from beeing saved.
 
+-x (--exclude=FILENAME) can be used multiple times to exclude more than
+one file or directory.
+
+
+### The restore program (the one that saves your life when needed)
 
 At a time you may need to restore a file then you'll have to use `cdpfglrestore`
 program. Configuration file is named `restore.conf` and command line
