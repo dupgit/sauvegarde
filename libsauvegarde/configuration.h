@@ -103,6 +103,12 @@
  */
 #define KN_DIR_LIST ("directory-list")
 
+/**
+ * @def KN_EXC_LIST
+ * Defines a list of directories or files to be excluded from being saved.
+ */
+#define KN_EXC_LIST ("exclude-list")
+
 
 /**
  * @def KN_CACHE_DIR

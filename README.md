@@ -119,7 +119,7 @@ command line options are:
       -f, --dbname=FILENAME            Database FILENAME.
       -i, --ip=IP                      IP address where server program is.
       -p, --port=NUMBER                Port NUMBER on which to listen.
-      -x, --exclude=FILENAME           Exclude FILENAME from beeing saved.
+      -x, --exclude=FILENAME           Exclude FILENAME from being saved.
 
 -x (--exclude=FILENAME) can be used multiple times to exclude more than
 one file or directory.

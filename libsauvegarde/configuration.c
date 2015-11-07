@@ -228,11 +228,8 @@ GSList *convert_gchar_array_to_GSList(gchar **array, GSList *first_list)
 
             for (i = 0; i < num; i++)
                 {
-                    /* */
                     a_string = normalize_directory(array[i]);
                     list = g_slist_append(list, a_string);
-
-                    print_debug("%s\n", a_string);
                 }
         }
 

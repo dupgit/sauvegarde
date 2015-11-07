@@ -117,6 +117,9 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
         {
             /* Reading the directory list */
             opt->dirname_list = read_list_from_file(keyfile, filename, GN_CLIENT, KN_DIR_LIST, _("Could not load directory list from file"));
+            opt->exclude_list = read_list_from_file(keyfile, filename, GN_CLIENT, KN_EXC_LIST, _("Could not load exclude file list from file"));
+
+            /* Reading blocksize */
             opt->blocksize = read_int64_from_file(keyfile, filename, GN_CLIENT, KN_BLOCK_SIZE, _("Could not load blocksize from file"));
 
             /* Reading the cache directory if any */
@@ -248,7 +251,7 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "dbname", 'f', 0, G_OPTION_ARG_STRING, &dbname, N_("Database FILENAME."), N_("FILENAME")},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where server program is."), "IP"},
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which to listen."), N_("NUMBER")},
-        { "exclude", 'x', 0, G_OPTION_ARG_FILENAME_ARRAY, &exclude_array, N_("Exclude FILENAME from beeing saved."), N_("FILENAME")},
+        { "exclude", 'x', 0, G_OPTION_ARG_FILENAME_ARRAY, &exclude_array, N_("Exclude FILENAME from being saved."), N_("FILENAME")},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
