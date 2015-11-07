@@ -33,6 +33,29 @@ static void print_selected_options(options_t *opt);
 static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static void read_from_configuration_file(options_t *opt, gchar *filename);
+static void print_filelist(GSList *filelist, gchar *title);
+
+
+/**
+ * Prints filenames contained in the list.
+ * @param filelist is a list containing file list (directories to be
+ *        savec or to be excluded for instance).
+ * @param title is a gchar * string that is printed at the top of the
+ *        list.
+ */
+static void print_filelist(GSList *filelist, gchar *title)
+{
+
+    if (filelist != NULL)
+        {
+            fprintf(stdout, title);
+            while (filelist != NULL)
+                {
+                    fprintf(stdout, "\t%s\n", (char *) filelist->data);
+                    filelist = g_slist_next(filelist);
+                }
+        }
+}
 
 
 /**
@@ -42,28 +65,19 @@ static void read_from_configuration_file(options_t *opt, gchar *filename);
  */
 static void print_selected_options(options_t *opt)
 {
-    GSList *head = NULL;
     gchar *blocksize = NULL;
 
     if (opt != NULL)
         {
             fprintf(stdout, _("\n%s options are:\n"), PROGRAM_NAME);
 
-            if (opt->dirname_list != NULL)
-                {
-                    fprintf(stdout, _("Directory list:\n"));
-                    head = opt->dirname_list;
-                    while (head != NULL)
-                        {
-                            fprintf(stdout, "\t%s\n", (char *) head->data);
-                            head = g_slist_next(head);
-                        }
-                }
+            print_filelist(opt->dirname_list, _("Directory list:\n"));
+            print_filelist(opt->exclude_list, _("Exclude list:\n"));
 
             if (opt->adaptative == FALSE)
                 {
                     /**
-                     * We need to translated this numer into a string before
+                     * We need to translated this number into a string before
                      * inserting it into the final string in order to allow
                      * this final string to be translated
                      */
@@ -213,6 +227,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     gint debug = -4;               /** 0 == FALSE and other values == TRUE                   */
     gint adaptative = -1;          /** 0 == FALSE and other positive values == TRUE          */
     gchar **dirname_array = NULL;  /** array of dirnames left on the command line            */
+    gchar **exclude_array = NULL;  /** array of dirnames and filenames to be excluded        */
     gchar *configfile = NULL;      /** filename for the configuration file if any            */
     gint64 blocksize = 0;          /** computed block size in bytes                          */
     gint buffersize = 0;           /** buffer size used to send data to server               */
@@ -233,6 +248,7 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "dbname", 'f', 0, G_OPTION_ARG_STRING, &dbname, N_("Database FILENAME."), N_("FILENAME")},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where server program is."), "IP"},
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which to listen."), N_("NUMBER")},
+        { "exclude", 'x', 0, G_OPTION_ARG_FILENAME_ARRAY, &exclude_array, N_("Exclude FILENAME from beeing saved."), N_("FILENAME")},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
@@ -263,6 +279,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt = (options_t *) g_malloc0(sizeof(options_t));
 
     opt->dirname_list = NULL;
+    opt->exclude_list = NULL;
     opt->blocksize = CLIENT_BLOCK_SIZE;
     opt->configfile = NULL;
     opt->dircache = g_strdup("/var/tmp/sauvegarde");
@@ -296,7 +313,10 @@ options_t *manage_command_line_options(int argc, char **argv)
     set_debug_mode_upon_cmdl(debug);
 
     opt->dirname_list = convert_gchar_array_to_GSList(dirname_array, opt->dirname_list);
+    opt->exclude_list = convert_gchar_array_to_GSList(exclude_array, opt->exclude_list);
+
     g_strfreev(dirname_array);
+    g_strfreev(exclude_array);
 
     if (blocksize > 0)
         {

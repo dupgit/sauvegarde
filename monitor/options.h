@@ -39,6 +39,7 @@ typedef struct
 {
     gboolean version;     /**< TRUE if we have to display program's version                                           */
     GSList *dirname_list; /**< Directory names that were left in the command line                                     */
+    GSList *exclude_list; /**< List of all files and directories to be excluded from beeing saved.                    */
     gint64 blocksize;     /**< block size in bytes                                                                    */
     gchar *configfile;    /**< filename for the configuration file specified on the command line                      */
     gchar *dircache;      /**< Directory where we will cache files and temporary stuff to do the job                  */

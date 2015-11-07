@@ -427,7 +427,6 @@ int main(int argc, char **argv)
             if (res_struct->opt->restore != NULL)
                 {
                     query = get_user_infos(res_struct->hostname, res_struct->opt->restore, res_struct->opt->date);
-                    fprintf(stdout, "We should restore %s!\n", res_struct->opt->restore);
                     restore_last_file(res_struct, query);
                     free_query_structure(query);
                 }
