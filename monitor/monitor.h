@@ -133,6 +133,7 @@ typedef struct
     GThread *carve_all_directories; /**< thread used to carve all directories and let fanotify executing itself                           */
     GAsyncQueue *save_queue;        /**< Queue where is sent all file_event_t structures upon event or while directory carving.           */
     GAsyncQueue *dir_queue;         /**< A queue to collect directories when carving to avoid thread collision                            */
+    GSList *regex_exclude_list;     /**< List of regular expressions used to exclude directories or files.                                */
 } main_struct_t;
 
 

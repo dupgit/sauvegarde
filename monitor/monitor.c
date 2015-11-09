@@ -30,6 +30,8 @@
 
 #include "monitor.h"
 
+static GSList *make_regex_exclude_list(GSList *exclude_list);
+static gboolean exclude_file(GSList *regex_exclude_list, gchar *filename);
 static main_struct_t *init_main_structure(options_t *opt);
 static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize);
 static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, main_struct_t *main_struct);
@@ -45,6 +47,61 @@ static gpointer free_file_event_t(file_event_t *file_event);
 static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *array);
 static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta);
 static gint64 calculate_file_blocksize(main_struct_t *main_struct, gint64 size);
+
+
+/**
+ * Make a list of precompiled GRegex to be used to filter out directories
+ * and filenames from being saved.
+ * @param exclude_list is the list of gchar * string that should contain
+ *        filenames and/or dirnames with basic regex notation.
+ * @returns A newly allocated list of compiled GRegex * pointers.
+ */
+static GSList *make_regex_exclude_list(GSList *exclude_list)
+{
+    GRegex *a_regex = NULL;
+    GError *error = NULL;
+    GSList *regex_exclude_list = NULL;
+
+    while (exclude_list != NULL)
+        {
+            a_regex = g_regex_new(exclude_list->data, G_REGEX_CASELESS, 0, &error);
+
+            if (error != NULL)
+                {
+                    print_error(__FILE__, __LINE__, _("Error while compiling %s to a regular expression: %s"), exclude_list->data, error->message);
+                }
+            else if (a_regex != NULL)
+                {
+                    regex_exclude_list = g_slist_prepend(regex_exclude_list, a_regex);
+                }
+
+            exclude_list = g_slist_next(exclude_list);
+        }
+
+    return regex_exclude_list;
+}
+
+
+/**
+ * Says if 'filename' may correspond to one of the regex of the list.
+ * @param regex_exclude_list is the list of precompiled Regex of files
+ *        to be excluded from being saved.
+ * @param filename is the name pf the file that we want to know if we
+ *        have to exclude it or not.
+ * @returns TRUE if the file has to be excluded, FALSE otherwise
+ */
+static gboolean exclude_file(GSList *regex_exclude_list, gchar *filename)
+{
+    gboolean result = FALSE;
+
+    while (regex_exclude_list != NULL && result == FALSE)
+        {
+            result = g_regex_match(regex_exclude_list->data, filename, 0, NULL);
+            regex_exclude_list = g_slist_next(regex_exclude_list);
+        }
+
+    return result;
+}
 
 
 /**
@@ -92,6 +149,7 @@ static main_struct_t *init_main_structure(options_t *opt)
             /* inits the queue that will wait for events on files */
             main_struct->save_queue = g_async_queue_new();
             main_struct->dir_queue = g_async_queue_new();
+            main_struct->regex_exclude_list = make_regex_exclude_list(opt->exclude_list);
 
             /* Thread initialization */
             main_struct->save_one_file = g_thread_new("save_one_file", save_one_file_threaded, main_struct);
@@ -215,34 +273,43 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
 
             meta->file_type = g_file_info_get_file_type(fileinfo);
             meta->name = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
-            meta->inode = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_UNIX_INODE);
-            meta->owner = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_USER);
-            meta->group = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_GROUP);
-            meta->uid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_UID);
-            meta->gid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_GID);
-            meta->atime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_ACCESS);
-            meta->ctime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_CHANGED);
-            meta->mtime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_MODIFIED);
-            meta->mode = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_MODE);
-            meta->size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
-            meta->blocksize = calculate_file_blocksize(main_struct, meta->size);
 
-             /* Do the right things with specific cases */
-            if (meta->file_type == G_FILE_TYPE_SYMBOLIC_LINK)
+            if (exclude_file(main_struct->regex_exclude_list, meta->name) == FALSE)
                 {
-                    meta->link = (gchar *) g_file_info_get_attribute_byte_string(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET);
+                    meta->inode = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_UNIX_INODE);
+                    meta->owner = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_USER);
+                    meta->group = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_GROUP);
+                    meta->uid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_UID);
+                    meta->gid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_GID);
+                    meta->atime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_ACCESS);
+                    meta->ctime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_CHANGED);
+                    meta->mtime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+                    meta->mode = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_MODE);
+                    meta->size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+                    meta->blocksize = calculate_file_blocksize(main_struct, meta->size);
+
+                     /* Do the right things with specific cases */
+                    if (meta->file_type == G_FILE_TYPE_SYMBOLIC_LINK)
+                        {
+                            meta->link = (gchar *) g_file_info_get_attribute_byte_string(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET);
+                        }
+                    else
+                        {
+                            meta->link = g_strdup("");
+                        }
+
+
+                    /* We need to determine if the file has already been saved by looking into the local database
+                     * This is usefull only when carving directories at the begining of the process as when called
+                     * by m_fanotify we already know that the file was written and that something changed.
+                     */
+                    meta->in_cache = is_file_in_cache(main_struct->database, meta);
                 }
             else
                 {
-                    meta->link = g_strdup("");
+                    free_variable(meta->name);
+                    meta = free_variable(meta);
                 }
-
-
-            /* We need to determine if the file has already been saved by looking into the local database
-             * This is usefull only when carving directories at the begining of the process as when called
-             * by m_fanotify we already know that the file was written and that something changed.
-             */
-            meta->in_cache = is_file_in_cache(main_struct->database, meta);
         }
 
     return meta;
@@ -843,32 +910,39 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
             /* Get data and meta_data for a file. */
             meta = get_meta_data_from_fileinfo(directory, fileinfo, main_struct);
 
-            if (meta->in_cache == FALSE)
+            /* We want to save all files that are not excluded (meta != NULL) */
+            if (meta != NULL)
                 {
+                    /* File is not in cache thus unknown thus we need to save it */
+                    if (meta->in_cache == FALSE)
+                        {
+                            if (meta->size < CLIENT_SMALL_FILE_SIZE)
+                                {
+                                    process_small_file_not_in_cache(main_struct, meta);
+                                }
+                            else
+                                {
+                                    process_big_file_not_in_cache(main_struct, meta);
+                                }
+                        }
 
-                    if (meta->size < CLIENT_SMALL_FILE_SIZE)
+                    if (meta->file_type == G_FILE_TYPE_DIRECTORY)
                         {
-                            process_small_file_not_in_cache(main_struct, meta);
+                            /* This is a recursive call */
+                            another_dir = g_strdup(meta->name);
+                            g_async_queue_push(main_struct->dir_queue, another_dir);
+
                         }
-                    else
-                        {
-                            process_big_file_not_in_cache(main_struct, meta);
-                        }
+                    message = g_strdup_printf(_("processing file %s"), meta->name);
+                    free_meta_data_t(meta, FALSE);
+                }
+            else
+                {
+                    message = g_strdup_printf(_("processing excluded file"));
                 }
 
-            message = g_strdup_printf(_("processing file %s"), meta->name);
             end_clock(my_clock, message);
             free_variable(message);
-
-            if (meta->file_type == G_FILE_TYPE_DIRECTORY)
-                {
-                    /* This is a recursive call */
-                    another_dir = g_strdup(meta->name);
-                    g_async_queue_push(main_struct->dir_queue, another_dir);
-
-                }
-
-            free_meta_data_t(meta, FALSE);
         }
 }
 
