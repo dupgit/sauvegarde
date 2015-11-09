@@ -1,6 +1,6 @@
 # Introduction
 
-Sauvegarde is a set of programs that will save your files while beeing created and written to your disks. It will save your files form a client machine (containing the files to be saved) to a server machine (that will contain all the saved files and informations about thoses files). It will allow you to restore the saved files at their latest version or at any older versions.
+Sauvegarde is a set of programs that will save your files while being created and written to your disks. It will save your files from a client machine (containing the files to be saved) to a server machine (that will contain all the saved files and informations about thoses files). It will allow you to restore the saved files at their latest version or at any older versions.
 
 
 # Getting sauvegarde
@@ -65,3 +65,48 @@ Download the latest release version from http://src.delhomme.org/download/sauveg
     $ cd sauvegarde-0.0.4
 
 Before using the configure script to install sauvegarde you'll have to install all dependencies. If you forgot a dependency the configure script will tell you!
+
+
+# Installing dependencies
+
+You'll have to install the dependencies in order to be able to compile sauvegarde's project. Some dependencies are fine to be installed with the system's package manager some are too old and needs to be installed manually. In this section we will install everthing to /usr/local. Consider your onw case to choose the right installation directory.
+
+
+## Install dependencies from the system (here for debian):
+
+    $ sudo apt-get install gettext pkg-config libglib2.0-dev libcurl4-openssl-dev
+
+
+## Install jansson, libmicrohttpd, sqlite:
+
+### jansson
+
+    $ git clone git://github.com/akheron/jansson.git
+    $ cd jansson
+    $ autoreconf -f -i
+    $ CFLAGS=-Werror ./configure --prefix=/usr/local
+    $ make
+    $ sudo make install
+
+
+### libmicrohttpd
+
+    $ wget --quiet -c http://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-0.9.46.tar.gz
+    $ tar zxf libmicrohttpd-0.9.46.tar.gz
+    $ cd libmicrohttpd-0.9.46
+    $ ./configure --prefix=/usr/local
+    $ make
+    $ sudo make install
+
+
+### sqlite
+
+    $ wget --quiet -c https://www.sqlite.org/2015/sqlite-autoconf-3090100.tar.gz
+    $ tar zxf sqlite-autoconf-3090100.tar.gz
+    $ cd sqlite-autoconf-3090100
+    $ ./configure --prefix=/usr/local
+    $ make
+    $ sudo make install
+
+
+
