@@ -179,17 +179,17 @@ static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 
 
 /**
  * Converts the hash list to a json_t * array
- * @param hash_list : the GSList * list of hashs
+ * @param hash_list : the GList * list of hashs
  * @returns a json_t * array with the element of the list in it (if any).
  * @todo : I'm not sure that the order of the list is respected when using
  *         json. We should explicit this order :
  *         [ {number : n, hash : sdsdd}, {number : m, hash : sazsdd}, ... ]
  */
-json_t *convert_hash_list_to_json(GSList *hash_list)
+json_t *convert_hash_list_to_json(GList *hash_list)
 {
     json_t *array = NULL;           /** json_t *array is the array that will receive base64 encoded hashs        */
     gchar *encoded_hash = NULL;     /** gchar encoded_hash is an hash base64 encoded                             */
-    GSList *head = NULL;            /** GSList *head is a list to iter over that will contain the hash data list */
+    GList *head = NULL;            /** GSList *head is a list to iter over that will contain the hash data list */
     hash_data_t *hash_data = NULL;  /** A pointer to get the hash_data structure */
 
     /* creating an array with the whole hash list */
@@ -205,7 +205,7 @@ json_t *convert_hash_list_to_json(GSList *hash_list)
 
             free_variable(encoded_hash);
 
-            head = g_slist_next(head);
+            head = g_list_next(head);
         }
 
     return array;

@@ -38,22 +38,22 @@
  */
 typedef struct
 {
-    guint64 inode;          /**< file's inode.                                                                    */
-    guint8 file_type;       /**< type of the file : FILE, DIR, SYMLINK...                                         */
-    guint32 mode;           /**< UNIX mode of the file : contains rights for the file                             */
-    guint64 atime;          /**< access time                                                                      */
-    guint64 ctime;          /**< changed time                                                                     */
-    guint64 mtime;          /**< modified time                                                                    */
-    guint64 size;           /**< size of the file                                                                 */
-    gchar *owner;           /**< owner for the file ie root, apache, dup...                                       */
-    gchar *group;           /**< group for the file ie root, apache, admin...                                     */
-    guint32 uid;            /**< uid (owner)                                                                      */
-    guint32 gid;            /**< gid (group owner)                                                                */
-    gchar *name;            /**< name for the file or the directory                                               */
-    gchar *link;            /**< link name where points the LINK if file_type is a link                           */
-    GSList *hash_data_list; /**< List of hash_data_t structures of the file (hash and data are in a binary form)  */
-    gboolean in_cache;      /**< in_cache is a boolean that may be TRUE if the file is in the local cache (client)*/
-    gint64 blocksize;       /**< blocksize is the blocksize to be applied on the file                             */
+    guint64 inode;         /**< file's inode.                                                                    */
+    guint8 file_type;      /**< type of the file : FILE, DIR, SYMLINK...                                         */
+    guint32 mode;          /**< UNIX mode of the file : contains rights for the file                             */
+    guint64 atime;         /**< access time                                                                      */
+    guint64 ctime;         /**< changed time                                                                     */
+    guint64 mtime;         /**< modified time                                                                    */
+    guint64 size;          /**< size of the file                                                                 */
+    gchar *owner;          /**< owner for the file ie root, apache, dup...                                       */
+    gchar *group;          /**< group for the file ie root, apache, admin...                                     */
+    guint32 uid;           /**< uid (owner)                                                                      */
+    guint32 gid;           /**< gid (group owner)                                                                */
+    gchar *name;           /**< name for the file or the directory                                               */
+    gchar *link;           /**< link name where points the LINK if file_type is a link                           */
+    GList *hash_data_list; /**< List of hash_data_t structures of the file (hash and data are in a binary form)  */
+    gboolean in_cache;     /**< in_cache is a boolean that may be TRUE if the file is in the local cache (client)*/
+    gint64 blocksize;      /**< blocksize is the blocksize to be applied on the file                             */
 } meta_data_t;
 
 

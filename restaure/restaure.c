@@ -32,7 +32,7 @@ static gchar *encode_to_base64(gchar *string);
 static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date);
 static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query);
 static void print_all_files(res_struct_t *res_struct, query_t *query);
-static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GSList *hash_list);
+static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GList *hash_list);
 static void create_file(res_struct_t *res_struct, meta_data_t *meta);
 static void restore_last_file(res_struct_t *res_struct, query_t *query);
 static void free_res_struct_t(res_struct_t *res_struct);
@@ -219,7 +219,7 @@ static void print_all_files(res_struct_t *res_struct, query_t *query)
  * @param hash_list list of hashs of the file to be restored
  * @todo error management.
  */
-static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GSList *hash_list)
+static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GList *hash_list)
 {
     gchar *hash = NULL;
     hash_data_t *hash_data = NULL;
@@ -265,7 +265,7 @@ static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *
                             print_error(__FILE__, __LINE__, _("Error while getting hash %s"), hash);
                         }
 
-                    hash_list = g_slist_next(hash_list);
+                    hash_list = g_list_next(hash_list);
                     free_variable(request);
                     free_variable(hash);
                 }

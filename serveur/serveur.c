@@ -433,7 +433,7 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
     gchar *answer = NULL;       /** gchar *answer : Do not free answer variable as MHD will do it for us !  */
     json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json formatted */
     json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs       */
-    GSList *needed = NULL;
+    GList *needed = NULL;
 
     smeta = convert_json_to_smeta_data(received_data);
 
@@ -454,7 +454,7 @@ static int answer_meta_json_post_request(serveur_struct_t *serveur_struct, struc
                         {
                             needed = serveur_struct->backend->build_needed_hash_list(serveur_struct, smeta->meta->hash_data_list);
                             array = convert_hash_list_to_json(needed);
-                            needed = free_list(needed);
+                            g_list_free_full(needed, free_hdt_struct);
                         }
                     else
                         {
@@ -507,8 +507,8 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
     gchar *encoded_hash = NULL;
     hash_data_t *hash_data = NULL;
     json_t *root = NULL;
-    GSList *hash_data_list = NULL;
-    GSList *head = NULL;
+    GList *hash_data_list = NULL;
+    GList *head = NULL;
     a_clock_t *elapsed = NULL;
 
     if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
@@ -547,7 +547,7 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
             elapsed = new_clock_t();
             root = load_json(received_data);
             end_clock(elapsed, "load_json");
-            hash_data_list = extract_gslist_from_array(root, "data_array", FALSE);
+            hash_data_list = extract_glist_from_array(root, "data_array", FALSE);
             head = hash_data_list;
             json_decref(root);
 
@@ -565,10 +565,10 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
 
                     /** Sending hash_data into the queue. */
                     g_async_queue_push(serveur_struct->data_queue, hash_data);
-                    hash_data_list = g_slist_next(hash_data_list);
+                    hash_data_list = g_list_next(hash_data_list);
                 }
 
-            g_slist_free(head);
+            g_list_free(head);
 
             /**
              * creating an answer for the client to say that everything went Ok!

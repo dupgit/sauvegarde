@@ -210,11 +210,11 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
  * @returns to the client a list of hashs in no specific order for which
  *          the server needs the data.
  */
-GSList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *hash_data_list)
+GList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GList *hash_data_list)
 {
     GFile *data_file = NULL;
-    GSList *head = hash_data_list;
-    GSList *needed = NULL;
+    GList *head = hash_data_list;
+    GList *needed = NULL;
     gchar *hex_hash = NULL;
     gchar *filename = NULL;
     gchar *path = NULL;
@@ -248,7 +248,7 @@ GSList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *ha
                             a_hash = (guint8 *) g_malloc(sizeof(guint8) * HASH_LEN);  /* No need to do g_malloc0 here as we store binary data */
                             memcpy(a_hash, hash_data->hash, HASH_LEN);
                             needed_hash_data = new_hash_data_t(NULL, 0, a_hash);
-                            needed = g_slist_prepend(needed, needed_hash_data);
+                            needed = g_list_prepend(needed, needed_hash_data);
                         }
 
                     free_object(data_file);
@@ -256,7 +256,7 @@ GSList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GSList *ha
                     free_variable(hex_hash);
                     free_variable(path);
 
-                    head = g_slist_next(head);
+                    head = g_list_next(head);
                 }
 
             free_variable(prefix);

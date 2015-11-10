@@ -33,12 +33,12 @@
 static GSList *make_regex_exclude_list(GSList *exclude_list);
 static gboolean exclude_file(GSList *regex_exclude_list, gchar *filename);
 static main_struct_t *init_main_structure(options_t *opt);
-static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize);
+static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize);
 static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, main_struct_t *main_struct);
 static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent);
-static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash);
-static gint send_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_list, gchar *answer);
-static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_list, gchar *answer);
+static hash_data_t *find_hash_in_list(GList *hash_data_list, guint8 *hash);
+static gint send_data_to_serveur(main_struct_t *main_struct, GList *hash_data_list, gchar *answer);
+static gint send_all_data_to_serveur(main_struct_t *main_struct, GList *hash_data_list, gchar *answer);
 static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum);
 static void carve_one_directory(gpointer data, gpointer user_data);
 static gpointer carve_all_directories(gpointer data);
@@ -177,11 +177,11 @@ static main_struct_t *init_main_structure(options_t *opt)
  * @param blocksize is the blocksize to be used to calculate hashs upon.
  * @returns a GSList * list of hashs stored in a binary form.
  */
-static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
+static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
 {
     GFileInputStream *stream = NULL;
     GError *error = NULL;
-    GSList *hash_data_list = NULL;
+    GList *hash_data_list = NULL;
     hash_data_t *hash_data = NULL;
     gssize read = 0;
     guchar *buffer = NULL;
@@ -210,7 +210,7 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
                             /* Need to save data and read in hash_data_t structure */
                             hash_data = new_hash_data_t(buffer, read, a_hash);
 
-                            hash_data_list = g_slist_prepend(hash_data_list, hash_data);
+                            hash_data_list = g_list_prepend(hash_data_list, hash_data);
                             g_checksum_reset(checksum);
                             digest_len = HASH_LEN;
 
@@ -223,13 +223,13 @@ static GSList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize
                         {
                             print_error(__FILE__, __LINE__, _("Error while reading file: %s\n"), error->message);
                             error = free_error(error);
-                            g_slist_free_full(hash_data_list, free_hdt_struct);
+                            g_list_free_full(hash_data_list, free_hdt_struct);
                             hash_data_list =  NULL;
                         }
                     else
                         {
                             /* get the list in correct order (because we prepended the hashs to get speed when inserting hashs in the list) */
-                            hash_data_list = g_slist_reverse(hash_data_list);
+                            hash_data_list = g_list_reverse(hash_data_list);
                         }
 
                     free_variable(buffer);
@@ -363,9 +363,9 @@ static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t 
  * @param hash is the hash to look for.
  * @returns the hash_data_t  structure that corresponds to the hash 'hash'.
  */
-static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash)
+static hash_data_t *find_hash_in_list(GList *hash_data_list, guint8 *hash)
 {
-    GSList *iter = hash_data_list;
+    GList *iter = hash_data_list;
     hash_data_t *found = NULL;
     gboolean ok = FALSE;
 
@@ -379,7 +379,7 @@ static hash_data_t *find_hash_in_list(GSList *hash_data_list, guint8 *hash)
                 }
             else
                 {
-                   iter = g_slist_next(iter);
+                   iter = g_list_next(iter);
                 }
         }
 
@@ -429,12 +429,12 @@ static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *ar
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_list, gchar *answer)
+static gint send_all_data_to_serveur(main_struct_t *main_struct, GList *hash_data_list, gchar *answer)
 {
     json_t *root = NULL;
     json_t *array = NULL;
-    GSList *hash_list = NULL;      /** hash_list is local to this function and contains the needed hashs as answer by server */
-    GSList *head = NULL;
+    GList *hash_list = NULL;      /** hash_list is local to this function and contains the needed hashs as answer by server */
+    GList *head = NULL;
     hash_data_t *found = NULL;
     hash_data_t *hash_data = NULL;
     gint all_ok = CURLE_OK;
@@ -452,7 +452,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
             if (root != NULL)
                 {
                     /* This hash_list is the needed hashs from server */
-                    hash_list = extract_gslist_from_array(root, "hash_list", TRUE);
+                    hash_list = extract_glist_from_array(root, "hash_list", TRUE);
                     json_decref(root);
 
                     array = json_array();
@@ -467,6 +467,11 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
                             found = find_hash_in_list(hash_data_list, hash_data->hash);
 
                             to_insert = convert_hash_data_t_to_json(found);
+
+                             /* hash_data_list = g_list_remove_link(hash_data_list, found);
+                              * free_hash_data_t_structure(found);
+                              */
+
                             json_array_append_new(array, to_insert);
 
                             bytes = bytes + found->read;
@@ -482,7 +487,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
                                     end_clock(elapsed, "insert_array_in_root_and_send");
                                 }
 
-                            hash_list = g_slist_next(hash_list);
+                            hash_list = g_list_next(hash_list);
                         }
 
                     if (bytes > 0)
@@ -499,7 +504,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
 
                     if (head != NULL)
                         {
-                            g_slist_free_full(head, free_hdt_struct);
+                            g_list_free_full(head, free_hdt_struct);
                         }
                 }
             else
@@ -521,11 +526,11 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GSList *hash_da
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static gint send_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_list, gchar *answer)
+static gint send_data_to_serveur(main_struct_t *main_struct, GList *hash_data_list, gchar *answer)
 {
     json_t *root = NULL;
-    GSList *hash_list = NULL;         /** hash_list is local to this function */
-    GSList *head = NULL;
+    GList *hash_list = NULL;         /** hash_list is local to this function */
+    GList *head = NULL;
     gint success = CURLE_FAILED_INIT;
     hash_data_t *found = NULL;
     hash_data_t *hash_data = NULL;
@@ -538,7 +543,7 @@ static gint send_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_l
             if (root != NULL)
                 {
                     /* This hash_list is the needed hashs from server */
-                    hash_list = extract_gslist_from_array(root, "hash_list", TRUE);
+                    hash_list = extract_glist_from_array(root, "hash_list", TRUE);
                     json_decref(root);
                     head = hash_list;
 
@@ -555,12 +560,12 @@ static gint send_data_to_serveur(main_struct_t *main_struct, GSList *hash_data_l
                             all_ok = success;
 
                             main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
-                            hash_list = g_slist_next(hash_list);
+                            hash_list = g_list_next(hash_list);
                         }
 
                     if (head != NULL)
                         {
-                            g_slist_free_full(head, free_hdt_struct);
+                            g_list_free_full(head, free_hdt_struct);
                         }
                 }
             else
@@ -760,7 +765,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
     gint success = 0;      /** success returns a CURL Error status such as CURLE_OK for instance */
     GFileInputStream *stream = NULL;
     GError *error = NULL;
-    GSList *hash_data_list = NULL;
+    GList *hash_data_list = NULL;
     hash_data_t *hash_data = NULL;
     gssize read = 0;
     guchar *buffer = NULL;
@@ -805,7 +810,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
 
                                     /* Only keeping hashs in the list */
                                     hash_data->data = free_variable(hash_data->data);
-                                    hash_data_list = g_slist_prepend(hash_data_list, hash_data);
+                                    hash_data_list = g_list_prepend(hash_data_list, hash_data);
 
                                     g_checksum_reset(checksum);
                                     digest_len = HASH_LEN;
@@ -837,7 +842,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                 {
                                     print_error(__FILE__, __LINE__, _("Error while reading file: %s\n"), error->message);
                                     error = free_error(error);
-                                    g_slist_free_full(hash_data_list, free_hdt_struct);
+                                    g_list_free_full(hash_data_list, free_hdt_struct);
                                     hash_data_list =  NULL;
                                 }
                             else
@@ -853,7 +858,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                         }
 
                                     /* get the list in correct order (because we prepended the hashs to get speed when inserting hashs in the list) */
-                                    hash_data_list = g_slist_reverse(hash_data_list);
+                                    hash_data_list = g_list_reverse(hash_data_list);
                                 }
 
                             free_variable(buffer);

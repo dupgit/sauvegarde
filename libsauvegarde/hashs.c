@@ -262,12 +262,12 @@ hash_data_t *new_hash_data_t(guchar *data, gssize read, guint8 *hash)
 /**
  * Converts the hash list to a list of comma separated hashs in one gchar *
  * string. Hashs are base64 encoded
- * @param hash_list à GSList of hash_data_t * elements
+ * @param hash_list a GList of hash_data_t * elements
  * @returns a list of comma separated hashs in one gchar * string.
  */
-gchar *convert_hash_data_list_to_gchar(GSList *hash_list)
+gchar *convert_hash_data_list_to_gchar(GList *hash_list)
 {
-    GSList *head = hash_list;
+    GList *head = hash_list;
     gchar *base64 = NULL;
     gchar *list = NULL;
     gchar *old_list = NULL;
@@ -292,7 +292,7 @@ gchar *convert_hash_data_list_to_gchar(GSList *hash_list)
 
             free_variable(base64);
 
-            head = g_slist_next(head);
+            head = g_list_next(head);
         }
 
     list = old_list;
@@ -353,13 +353,13 @@ gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level)
  * @returns a GSList of hash_data_t * where each elements contains a
  *          base64 decoded hash (binary form).
  */
-GSList *make_hash_data_list_from_string(gchar *hash_string)
+GList *make_hash_data_list_from_string(gchar *hash_string)
 {
     uint i = 0;
     gchar **hashs = NULL;
     gchar *a_hash = NULL;
     hash_data_t *hash_data = NULL;
-    GSList *hash_list = NULL;
+    GList *hash_list = NULL;
     gsize len = 0;
 
     if (hash_string != NULL)
@@ -375,14 +375,14 @@ GSList *make_hash_data_list_from_string(gchar *hash_string)
                      * and then into the meta_data one.
                      */
                     hash_data = new_hash_data_t(NULL, 0, g_base64_decode(a_hash, &len));
-                    hash_list = g_slist_prepend(hash_list, hash_data);
+                    hash_list = g_list_prepend(hash_list, hash_data);
                     free_variable(a_hash);
                     i = i + 1;
                 }
 
             g_strfreev(hashs);
 
-            hash_list = g_slist_reverse(hash_list);
+            hash_list = g_list_reverse(hash_list);
         }
 
     return hash_list;
@@ -394,11 +394,11 @@ GSList *make_hash_data_list_from_string(gchar *hash_string)
  * needed list of hash_data_t structures.
  * @param hash_data contains the hash that we are looking for into the
  *        needed list.
- * @param needed is a GSList of hash_data_t structures that may already
+ * @param needed is a GList of hash_data_t structures that may already
  *        contain one with the same hash than the one in hash_data
  * @returns TRUE if the hash is found, FALSE otherwise
  */
-gboolean hash_data_is_in_list(hash_data_t *hash_data, GSList *needed)
+gboolean hash_data_is_in_list(hash_data_t *hash_data, GList *needed)
 {
     gboolean found = FALSE;
     hash_data_t *needed_hash_data = NULL;
@@ -414,7 +414,7 @@ gboolean hash_data_is_in_list(hash_data_t *hash_data, GSList *needed)
                         }
                     else
                         {
-                            needed = g_slist_next(needed);
+                            needed = g_list_next(needed);
                         }
                 }
         }

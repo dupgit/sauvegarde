@@ -102,7 +102,7 @@ extern hash_data_t *new_hash_data_t(guchar * data, gssize read, guint8 *hash);
  * @param hash_list à GSList of hashs
  * @returns a list of comma separated hashs in one gchar * string.
  */
-extern gchar *convert_hash_data_list_to_gchar(GSList *hash_list);
+extern gchar *convert_hash_data_list_to_gchar(GList *hash_list);
 
 
 /**
@@ -132,7 +132,7 @@ extern gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level);
  * @returns a GSList of hash_data_t * where each elements contains a
  *          base64 decoded hash (binary form).
  */
-extern GSList *make_hash_data_list_from_string(gchar *hash_string);
+extern GList *make_hash_data_list_from_string(gchar *hash_string);
 
 
 /**
@@ -140,11 +140,11 @@ extern GSList *make_hash_data_list_from_string(gchar *hash_string);
  * needed list of hash_data_t structures.
  * @param hash_data contains the hash that we are looking for into the
  *        needed list.
- * @param needed is a GSList of hash_data_t structures that may already
+ * @param needed is a GList of hash_data_t structures that may already
  *        contain one with the same hash than the one in hash_data
  * @returns TRUE if the hash is found, FALSE otherwise
  */
-gboolean hash_data_is_in_list(hash_data_t *hash_data, GSList *needed);
+gboolean hash_data_is_in_list(hash_data_t *hash_data, GList *needed);
 
 
 

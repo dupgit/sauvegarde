@@ -155,7 +155,7 @@ extern gchar *get_string_from_json_root(json_t *root, gchar *keyname);
  * @param hash_list : the GSList * list of hashs
  * @returns a json_t * array with the element of the list in it (if any).
  */
-extern json_t *convert_hash_list_to_json(GSList *hash_list);
+extern json_t *convert_hash_list_to_json(GList *hash_list);
 
 
 /**
@@ -185,7 +185,7 @@ extern gchar *convert_file_list_to_json_string(GSList *file_list);
  * @returns a GSList that me be composed of 0 element (ie NULL). Elements
  *          are of type hash_data_t *.
  */
-GSList *extract_gslist_from_array(json_t *root, gchar *name, gboolean only_hash);
+GList *extract_glist_from_array(json_t *root, gchar *name, gboolean only_hash);
 
 
 /**
