@@ -85,6 +85,7 @@ static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message)
     if (result != SQLITE_OK)
         {
             result = sqlite3_extended_errcode(database->db);
+            /* sqlite3_errstr needs at least sqlite 3.7.15 */
             message = sqlite3_errstr(result);
             print_db_error(database->db, format_message, result, message);
         }

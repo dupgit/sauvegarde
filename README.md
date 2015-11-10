@@ -33,7 +33,7 @@ stated between () and recommended version between []):
 * `glib` and `gio` (2.30)
 * `libmicrohttpd`  (0.9.5)  [0.9.46]
 * `libcurl`        (7.22.0)
-* `sqlite`         (3.6.20)
+* `sqlite`         (3.7.15)
 * `jansson`        (2.5)    [2.7]
 
 doxygen (1.6.1) is used to generate code's documentation but is not
