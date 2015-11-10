@@ -16,7 +16,7 @@ use `cdpfglrestore` to restore a file.
 
 This is free software and real open source as GPLv3 is used for this
 collection of programs and Creative Commons Attribution-ShareAlike 4.0
-is used for the artwork. You'll find on LICENSE file in this directory
+is used for the artwork. You'll find a LICENSE file in this directory
 for the programs (GPL v3) and one in the pixmaps file for the artwork
 (CC-BY-SA 4.0).
 
@@ -31,7 +31,7 @@ stated between () and recommended version between []):
 
 * `autotools`      (2.59)
 * `glib` and `gio` (2.30)
-* `libmicrohttpd`  (0.9.5)
+* `libmicrohttpd`  (0.9.5)  [0.9.46]
 * `libcurl`        (7.22.0)
 * `sqlite`         (3.6.20)
 * `jansson`        (2.5)    [2.7]
@@ -67,6 +67,9 @@ in the classic way:
     ./configure --prefix=/my/local/install --enable-debug
     make
     make install
+
+If you need more information about how to install sauvegarde you can
+also have a look at the [installation manual](manual/installation.md).
 
 
 ## Usage
