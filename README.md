@@ -26,6 +26,8 @@ projects used here (see dependencies section below).
 
 ## Dependencies
 
+### Mandatory
+
 This project depends on the following projects (minimum version required is
 stated between () and recommended version between []):
 
@@ -36,9 +38,8 @@ stated between () and recommended version between []):
 * `sqlite`         (3.7.15)
 * `jansson`        (2.5)    [2.7]
 
-doxygen (1.6.1) is used to generate code's documentation but is not
-required to build the project. jansson's library version is quite recent
-but it compiles nicely and depends on nothing (as far as I know).
+jansson's library version is quite recent but it compiles nicely and
+depends on nothing (as far as I know).
 Compiling sauvegarde also needs gnutls development files (used by
 libmicrohttpd). Please have a look at .travis.yml file in order to see how
 to compile dependencies before compiling sauvegarde.
@@ -48,6 +49,16 @@ recompiling and installing newer versions of dependencies) under Centos 7,
 Debian Jessie, Ubuntu 12.04 LTS and raspbian 3 and on x86_64 and arm7l
 architectures. Please let me know if you have compiled Sauvegarde
 successfully in a system that is not listed here.
+
+
+### Optional
+
+* `doxygen` (1.6.1) is used to generate code's documentation.
+* `gnuplot` (4.6) is used to generate graphs for the documentation.
+* `gource`  (0.43) is used to generate the video about project's life in
+            git
+* `pandoc`  (1.12.4.2) is used to generate a .tex and then a .pdf from
+            .md manual files.
 
 
 ## Download
