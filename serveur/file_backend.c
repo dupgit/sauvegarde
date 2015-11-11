@@ -259,6 +259,7 @@ GList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GList *hash
                     head = g_list_next(head);
                 }
 
+            needed = g_list_reverse(needed);
             free_variable(prefix);
         }
 

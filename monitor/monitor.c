@@ -36,9 +36,9 @@ static main_struct_t *init_main_structure(options_t *opt);
 static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize);
 static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, main_struct_t *main_struct);
 static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent);
-static hash_data_t *find_hash_in_list(GList *hash_data_list, guint8 *hash);
-static gint send_data_to_serveur(main_struct_t *main_struct, GList *hash_data_list, gchar *answer);
-static gint send_all_data_to_serveur(main_struct_t *main_struct, GList *hash_data_list, gchar *answer);
+static GList *find_hash_in_list(GList *hash_data_list, guint8 *hash);
+static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
+static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
 static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum);
 static void carve_one_directory(gpointer data, gpointer user_data);
 static gpointer carve_all_directories(gpointer data);
@@ -361,9 +361,10 @@ static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t 
  * something.
  * @param hash_data_list is the list to look into for the hash 'hash'
  * @param hash is the hash to look for.
- * @returns the hash_data_t  structure that corresponds to the hash 'hash'.
+ * @returns the GList * pointer that contains hash_data_t structure that
+ *          corresponds to the hash 'hash'.
  */
-static hash_data_t *find_hash_in_list(GList *hash_data_list, guint8 *hash)
+static GList *find_hash_in_list(GList *hash_data_list, guint8 *hash)
 {
     GList *iter = hash_data_list;
     hash_data_t *found = NULL;
@@ -385,7 +386,7 @@ static hash_data_t *find_hash_in_list(GList *hash_data_list, guint8 *hash)
 
     if (ok == TRUE)
         {
-            return found;
+            return iter;
         }
     else
         {
@@ -423,18 +424,20 @@ static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *ar
 /**
  * Sends data as requested by the server 'cdpfglserver' in a buffered way.
  * @param main_struct : main structure of the program.
- * @param hash_data_list : list of hash_data_t * pointers containing all
- *                          all the data to be saved.
+ * @param meta : meta is a pointer to meta_data_t strcuture that contains
+ *               hash_data_list the list of hash_data_t * pointers
+ *               containing all all the data to be saved.
  * @param answer is the request sent back by server when we had send
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static gint send_all_data_to_serveur(main_struct_t *main_struct, GList *hash_data_list, gchar *answer)
+static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
 {
     json_t *root = NULL;
     json_t *array = NULL;
     GList *hash_list = NULL;      /** hash_list is local to this function and contains the needed hashs as answer by server */
     GList *head = NULL;
+    GList *iter = NULL;
     hash_data_t *found = NULL;
     hash_data_t *hash_data = NULL;
     gint all_ok = CURLE_OK;
@@ -443,7 +446,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GList *hash_dat
     gint64 limit = 0;
     a_clock_t *elapsed = NULL;
 
-    if (answer != NULL && hash_data_list != NULL && main_struct != NULL && main_struct->opt != NULL)
+    if (answer != NULL && meta != NULL && meta->hash_data_list != NULL && main_struct != NULL && main_struct->opt != NULL)
         {
             root = load_json(answer);
 
@@ -464,17 +467,16 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GList *hash_dat
                             hash_data = hash_list->data;
                             /* hash_data_list contains all hashs and their associated data for the file
                              * being processed */
-                            found = find_hash_in_list(hash_data_list, hash_data->hash);
+                            iter = find_hash_in_list(meta->hash_data_list, hash_data->hash);
+                            found = iter->data;
 
                             to_insert = convert_hash_data_t_to_json(found);
-
-                             /* hash_data_list = g_list_remove_link(hash_data_list, found);
-                              * free_hash_data_t_structure(found);
-                              */
-
                             json_array_append_new(array, to_insert);
 
                             bytes = bytes + found->read;
+
+                            meta->hash_data_list = g_list_remove_link(meta->hash_data_list, iter);
+                            g_list_free_full(iter, free_hdt_struct);
 
                             if (bytes >= limit)
                                 {
@@ -526,17 +528,18 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, GList *hash_dat
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static gint send_data_to_serveur(main_struct_t *main_struct, GList *hash_data_list, gchar *answer)
+static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
 {
     json_t *root = NULL;
     GList *hash_list = NULL;         /** hash_list is local to this function */
     GList *head = NULL;
     gint success = CURLE_FAILED_INIT;
+    GList *iter = NULL;
     hash_data_t *found = NULL;
     hash_data_t *hash_data = NULL;
     gint all_ok = CURLE_OK;
 
-    if (main_struct != NULL && answer != NULL &&  hash_data_list!= NULL)
+    if (main_struct != NULL && answer != NULL &&  meta != NULL && meta->hash_data_list!= NULL)
         {
             root = load_json(answer);
 
@@ -551,13 +554,17 @@ static gint send_data_to_serveur(main_struct_t *main_struct, GList *hash_data_li
                         {
                             hash_data = hash_list->data;
                             /* hash_data_list contains all hashs and their associated data */
-                            found = find_hash_in_list(hash_data_list, hash_data->hash);
+                            iter = find_hash_in_list(meta->hash_data_list, hash_data->hash);
+                            found = iter->data;
 
                             /* main_struct->comm->buffer is the buffer sent to server */
                             main_struct->comm->readbuffer = convert_hash_data_t_to_string(found);
                             success = post_url(main_struct->comm, "/Data.json");
 
                             all_ok = success;
+
+                            meta->hash_data_list = g_list_remove_link(meta->hash_data_list, iter);
+                            g_list_free_full(iter, free_hdt_struct);
 
                             main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
                             hash_list = g_list_next(hash_list);
@@ -721,12 +728,12 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
                     if (meta->size < meta->blocksize)
                         {
                             /* Only one block to send (size is less than blocksize's value) */
-                            success = send_data_to_serveur(main_struct, meta->hash_data_list, answer);
+                            success = send_data_to_serveur(main_struct, meta, answer);
                         }
                     else
                         {
                             /* A least 2 blocks to send */
-                            success = send_all_data_to_serveur(main_struct, meta->hash_data_list, answer);
+                            success = send_all_data_to_serveur(main_struct, meta, answer);
                         }
 
                     free_variable(answer); /* Not used by now */
