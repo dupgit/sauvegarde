@@ -1,6 +1,6 @@
 # Travis CI script
 language: c
-sudo: required
+sudo: false
 
 # Compilers to test.
 compiler:
@@ -37,7 +37,7 @@ script:
     - export PATH=$PATH:$HOME/local/bin
     - export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/local/lib/pkgconfig
     - ./autoclean.sh && ./autogen.sh && ./configure --prefix=$HOME/local --enable-debug --disable-silent && make && make install && $HOME/local/bin/cdpfglclient --version && $HOME/local/bin/cdpfglserver --version && $HOME/local/bin/cdpfglrestore --version
-    - sudo $HOME/build/dupgit/sauvegarde/tests/launch_tests.bash $HOME
+    - $HOME/build/dupgit/sauvegarde/tests/launch_tests.bash
 
 # irc bot notification
 notifications:
