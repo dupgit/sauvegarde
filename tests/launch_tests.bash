@@ -29,8 +29,8 @@ $HOME/local/bin/cdpfglserver -c $HOME/build/dupgit/sauvegarde/tests/server.conf 
 # Waiting for the server to achieve directories creation
 sleep 40s
 
-# Launching the client
-$HOME/local/bin/cdpfglclient -c $HOME/build/dupgit/sauvegarde/tests/client.conf &
+# Launching the client (must be root to be able to use fanotify).
+sudo $HOME/local/bin/cdpfglclient -c $HOME/build/dupgit/sauvegarde/tests/client.conf &
 
 # Waiting that the client finishes it's first pass (should be quick here).
 sleep 10s
