@@ -23,7 +23,7 @@
 
 # All paths
 
-export $HOMEDIR=$1
+export HOMEDIR=$1
 
 # Launching the server
 $HOMEDIR/local/bin/cdpfglserver -c $HOMEDIR/build/dupgit/sauvegarde/tests/server.conf &
