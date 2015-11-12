@@ -189,6 +189,7 @@ should consider that "It ships when its ready".
          the versions of a file
 * 0.0.10 restore a directory and it's subfiles and directories at a
          specific date. Write a man page for each programs.
+* 0.0.11 have some statistics with the server.
 
 
 ### Releases
