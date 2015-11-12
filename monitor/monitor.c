@@ -322,6 +322,8 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
  * @param main_struct : main structure of the program (contains pointers
  *        to the communication socket.
  * @param meta : the meta_data_t * structure to be saved.
+ * @returns a newly allocated gchar * string that may be freed when no
+ *          longer needed.
  */
 static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent)
 {
@@ -333,12 +335,10 @@ static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t 
         {
             json_str = convert_meta_data_to_json_string(meta, main_struct->hostname, data_sent);
 
-            /* Sends meta data here */
+            /* Sends meta data here: readbuffer is the buffer sent to server */
             print_debug(_("Sending meta data: %s\n"), json_str);
             main_struct->comm->readbuffer = json_str;
             success = post_url(main_struct->comm, "/Meta.json");
-
-            /* free_variable(json_str); */
 
             if (success == CURLE_OK)
                 {
@@ -349,6 +349,8 @@ static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t 
                 {
                     /* Need to manage HTTP errors ? */
                 }
+
+            free_variable(main_struct->comm->readbuffer);
         }
 
     return answer;
@@ -406,16 +408,28 @@ static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *ar
     json_t *root = NULL;
     gint success = CURLE_FAILED_INIT;
 
-    root = json_object();
-    insert_json_value_into_json_root(root, "data_array", array);
 
-    /* main_struct->comm->buffer is the buffer sent to server */
-    main_struct->comm->readbuffer = json_dumps(root, 0);
+    if (main_struct != NULL && main_struct->comm != NULL && array != NULL)
+        {
 
-    success = post_url(main_struct->comm, "/Data_Array.json");
+            root = json_object();
+            insert_json_value_into_json_root(root, "data_array", array);
 
-    json_decref(root);
-    main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
+            /* readbuffer is the buffer sent to server */
+            main_struct->comm->readbuffer = json_dumps(root, 0);
+
+            success = post_url(main_struct->comm, "/Data_Array.json");
+
+            if (success != CURLE_OK)
+                {
+
+                }
+
+            free_variable(main_struct->comm->readbuffer);
+            json_decref(root);
+            main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
+
+        }
 
     return success;
 }
@@ -539,7 +553,7 @@ static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, 
     hash_data_t *hash_data = NULL;
     gint all_ok = CURLE_OK;
 
-    if (main_struct != NULL && answer != NULL &&  meta != NULL && meta->hash_data_list!= NULL)
+    if (main_struct != NULL && main_struct->comm != NULL && answer != NULL &&  meta != NULL && meta->hash_data_list!= NULL)
         {
             root = load_json(answer);
 
@@ -557,10 +571,16 @@ static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, 
                             iter = find_hash_in_list(meta->hash_data_list, hash_data->hash);
                             found = iter->data;
 
-                            /* main_struct->comm->buffer is the buffer sent to server */
+                            /* readbuffer is the buffer sent to server  */
                             main_struct->comm->readbuffer = convert_hash_data_t_to_string(found);
                             success = post_url(main_struct->comm, "/Data.json");
 
+                            if (success != CURLE_OK)
+                                {
+
+                                }
+
+                            free_variable(main_struct->comm->readbuffer);
                             all_ok = success;
 
                             meta->hash_data_list = g_list_remove_link(meta->hash_data_list, iter);

@@ -282,7 +282,6 @@ gint post_url(comm_t *comm, gchar *url)
                 }
 
             free_variable(real_url);
-            free_variable(comm->readbuffer);
             free_variable(error_buf);
             free_variable(len);
         }
