@@ -33,11 +33,25 @@ sleep 40s
 $HOME/local/bin/cdpfglclient -c $HOME/build/dupgit/sauvegarde/tests/client.conf &
 
 # Waiting that the client finishes it's first pass (should be quick here).
-sleep 5s
+sleep 10s
 
 # Creating files in the monitored directory
 dd if=/dev/zero of=$HOME/build/dupgit/sauvegarde/tests/zerofile.dd count=3 bs=16k
 dd if=/dev/urandom of=$HOME/build/dupgit/sauvegarde/tests/urandomfile.dd count=3 bs=16k
+
+sleep 5s
+
+md5sum $HOME/build/dupgit/sauvegarde/tests/d2/file_with_repetitions >$HOME/md5sums
+md5sum $HOME/build/dupgit/sauvegarde/tests/urandomfile.dd >>$HOME/md5sums
+
+# Trying to restore two files.
+$HOME/local/bin/cdpfglrestore -c $HOME/build/dupgit/sauvegarde/tests/restore.conf -r d2/file_with_repetitions$ -w $HOME/
+$HOME/local/bin/cdpfglrestore -c $HOME/build/dupgit/sauvegarde/tests/restore.conf -r urandomfile.dd$ -w $HOME/
+
+md5sum $HOME/file_with_repetitions >>$HOME/md5sums
+md5sum $HOME/urandomfile.dd >>$HOME/md5sums
+
+cat $HOME/md5sums
 
 # Waiting a bit before killing the programs
 sleep 1s
