@@ -99,12 +99,12 @@ extern void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_m
 
 
 /**
- * Gets all encoded hashs already inserted into the 'data' table from the
- * database.
+ * Saves buffers that could not be sent to server
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
+ * @param url is the url where buffer should have been POSTed
+ * @param buffer is the buffer containing data that should have been
+ *        POSTed to server but couldn't.
  */
-/* extern hashs_t *get_all_inserted_hashs(db_t *database); */
-
-
+extern void db_save_buffer(db_t *database, gchar *url, gchar *buffer);
 #endif /* #ifndef _DATABASE_H_ */

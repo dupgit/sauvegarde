@@ -85,7 +85,7 @@ static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message)
     if (result != SQLITE_OK)
         {
             result = sqlite3_extended_errcode(database->db);
-            /* sqlite3_errstr needs at least sqlite 3.7.15 */
+            /** @note sqlite3_errstr needs at least sqlite 3.7.15 */
             message = sqlite3_errstr(result);
             print_db_error(database->db, format_message, result, message);
         }
@@ -132,11 +132,8 @@ static void verify_if_tables_exists(db_t *database)
             print_debug(_("Creating tables into the database\n"));
 
             /* The database does not contain any tables. So we have to create them.         */
-            /* Creation of checksum table that contains checksums and their associated data */
-            exec_sql_cmd(database, "CREATE TABLE data (checksum TEXT PRIMARY KEY, size INTEGER, data TEXT);", _("(%d) Error while creating database table 'data': %s\n"));
-
             /* Creation of buffers table that contains checksums and their associated data */
-            exec_sql_cmd(database, "CREATE TABLE buffers (cache_time INTEGER, buf_order INTEGER, checksum TEXT);", _("(%d) Error while creating database table 'buffers': %s\n"));
+            exec_sql_cmd(database, "CREATE TABLE buffers (buffer_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, data TEXT);", _("(%d) Error while creating database table 'buffers': %s\n"));
 
             /* Creation of files table that contains everything about a file */
             exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL, link TEXT);", _("(%d) Error while creating database table 'files': %s\n"));
@@ -147,7 +144,7 @@ static void verify_if_tables_exists(db_t *database)
     /**
      * We are setting the asynchronous mode of SQLITE here. Tradeoff is that any
      * powerloss is leading to a database corruption and data loss !
-     * @todo make this PRAGMA selection an option from the command line.
+     * @note This is NOT a good idea !
      */
     /* exec_sql_cmd(database, "PRAGMA synchronous = OFF;", _("Error while trying to set asynchronous mode.\n")); */
 
@@ -234,11 +231,14 @@ static file_row_t *get_file_id(db_t *database, meta_data_t *meta)
 
     row = new_file_row_t();
 
+     /* beginning a transaction */
+    exec_sql_cmd(database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n"));
     sql_command = g_strdup_printf("SELECT file_id from files WHERE inode=%" G_GUINT64_FORMAT " AND name='%s' AND type=%d AND uid=%d AND gid=%d AND ctime=%" G_GUINT64_FORMAT " AND mtime=%" G_GUINT64_FORMAT " AND mode=%d AND size=%" G_GUINT64_FORMAT ";", meta->inode, meta->name, meta->file_type, meta->uid, meta->gid, meta->ctime, meta->mtime, meta->mode, meta->size);
 
     db_result = sqlite3_exec(database->db, sql_command, get_file_callback, row, &error_message);
 
     free_variable(sql_command);
+    exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));
 
     if (db_result == SQLITE_OK)
         {
@@ -284,44 +284,6 @@ static void free_file_row_t(file_row_t *row)
 
 
 /**
- * Gets all encoded hashs already inserted into the 'data' table from the
- * database.
- * @param database is the structure that contains everything that is
- *        related to the database (it's connexion for instance).
- * @returns a hashs_t * structure that contains all hashs that are in the
- *          'data' table of the database but without it's data (the buffer
- *          field is set to NULL but into_cache is set to TRUE).
- */
- /*
-hashs_t *get_all_inserted_hashs(db_t *database)
-{
-    hashs_t *inserted_hashs = NULL;
-    char *error_message = NULL;
-    gchar *sql_command = NULL;
-    int db_result = 0;
-
-    inserted_hashs = new_hash_struct();
-
-    sql_command = g_strdup_printf("SELECT checksum, size FROM data;");
-
-    db_result = sqlite3_exec(database->db, sql_command, get_all_checksum_callback, inserted_hashs, &error_message);
-
-    free_variable(sql_command);
-
-    if (db_result == SQLITE_OK)
-        {
-           return inserted_hashs;
-        }
-    else
-        {
-            print_db_error(database->db, _("(%d) Error while searching into the table 'data': %s\n"), db_result, error_message);
-            return NULL;  to avoid a compilation warning as we exited with failure in print_db_error
-        }
-}
-*/
-
-
-/**
  * Insert file into cache. One should have verified that the file
  * does not already exists in the database.
  * @note insert_file_into_cache is fast but does not garantee that the
@@ -357,6 +319,32 @@ void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
             exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));
         }
 }
+
+
+/**
+ * Saves buffers that could not be sent to server
+ * @param database is the structure that contains everything that is
+ *        related to the database (it's connexion for instance).
+ * @param url is the url where buffer should have been POSTed
+ * @param buffer is the buffer containing data that should have been
+ *        POSTed to server but couldn't.
+ */
+void db_save_buffer(db_t *database, gchar *url, gchar *buffer)
+{
+    gchar *sql_command = NULL;     /** gchar *sql_command is the command to be executed */
+
+    if (database != NULL && url != NULL && buffer != NULL)
+        {
+            exec_sql_cmd(database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n"));
+
+            sql_command = g_strdup_printf("INSERT INTO buffers (url, data) VALUES ('%s', '%s');", url, buffer);
+            exec_sql_cmd(database, sql_command,  _("(%d) Error while inserting into the table 'buffers': %s\n"));
+            free_variable(sql_command);
+
+            exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));
+        }
+}
+
 
 
 /**

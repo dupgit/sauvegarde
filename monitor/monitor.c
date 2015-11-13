@@ -37,8 +37,8 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
 static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, main_struct_t *main_struct);
 static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent);
 static GList *find_hash_in_list(GList *hash_data_list, guint8 *hash);
-static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
-static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
+static void send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
+static void send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
 static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum);
 static void carve_one_directory(gpointer data, gpointer user_data);
 static gpointer carve_all_directories(gpointer data);
@@ -330,6 +330,8 @@ static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t 
     gchar *json_str = NULL;
     gchar *answer = NULL;
     gint success = CURLE_FAILED_INIT;
+    json_t *root = NULL;
+    json_t *array = NULL;
 
     if (main_struct != NULL && meta != NULL && main_struct->hostname != NULL)
         {
@@ -348,6 +350,17 @@ static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t 
             else
                 {
                     /* Need to manage HTTP errors ? */
+                    /* Saving meta data that should have been sent to sqlite database */
+                    db_save_buffer(main_struct->database, "/Meta.json", main_struct->comm->readbuffer);
+
+                    /* An error occured -> we need the whole hash list to be saved
+                     * we are building a 'fake' answer with the whole hash list.
+                     */
+                    array = convert_hash_list_to_json(meta->hash_data_list);
+                    root = json_object();
+                    insert_json_value_into_json_root(root, "hash_list", array);
+                    answer = json_dumps(root, 0);
+                    json_decref(root);
                 }
 
             free_variable(main_struct->comm->readbuffer);
@@ -422,7 +435,7 @@ static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *ar
 
             if (success != CURLE_OK)
                 {
-
+                    db_save_buffer(main_struct->database, "/Data_Array.json", main_struct->comm->readbuffer);
                 }
 
             free_variable(main_struct->comm->readbuffer);
@@ -445,7 +458,7 @@ static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *ar
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
+static void send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
 {
     json_t *root = NULL;
     json_t *array = NULL;
@@ -454,7 +467,6 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
     GList *iter = NULL;
     hash_data_t *found = NULL;
     hash_data_t *hash_data = NULL;
-    gint all_ok = CURLE_OK;
     gint bytes = 0;
     json_t *to_insert = NULL;
     gint64 limit = 0;
@@ -476,7 +488,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
 
                     head = hash_list;
 
-                    while (hash_list != NULL && all_ok == CURLE_OK)
+                    while (hash_list != NULL)
                         {
                             hash_data = hash_list->data;
                             /* hash_data_list contains all hashs and their associated data for the file
@@ -497,7 +509,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
                                     /* when we've got opt->buffersize bytes of data send them ! */
 
                                     elapsed = new_clock_t();
-                                    all_ok = insert_array_in_root_and_send(main_struct, array);
+                                    insert_array_in_root_and_send(main_struct, array);
                                     array = json_array();
                                     bytes = 0;
                                     end_clock(elapsed, "insert_array_in_root_and_send");
@@ -510,7 +522,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
                         {
                             /* Send the rest of the data (less than opt->buffersize bytes) */
                             elapsed = new_clock_t();
-                            all_ok = insert_array_in_root_and_send(main_struct, array);
+                            insert_array_in_root_and_send(main_struct, array);
                             end_clock(elapsed, "insert_array_in_root_and_send");
                         }
                     else
@@ -528,8 +540,6 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
                     print_error(__FILE__, __LINE__, _("Error while loading JSON answer from serveur\n"));
                 }
         }
-
-   return all_ok;
 }
 
 
@@ -542,7 +552,7 @@ static gint send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
+static void send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
 {
     json_t *root = NULL;
     GList *hash_list = NULL;         /** hash_list is local to this function */
@@ -551,7 +561,6 @@ static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, 
     GList *iter = NULL;
     hash_data_t *found = NULL;
     hash_data_t *hash_data = NULL;
-    gint all_ok = CURLE_OK;
 
     if (main_struct != NULL && main_struct->comm != NULL && answer != NULL &&  meta != NULL && meta->hash_data_list!= NULL)
         {
@@ -564,7 +573,7 @@ static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, 
                     json_decref(root);
                     head = hash_list;
 
-                    while (hash_list != NULL && all_ok == CURLE_OK)
+                    while (hash_list != NULL)
                         {
                             hash_data = hash_list->data;
                             /* hash_data_list contains all hashs and their associated data */
@@ -577,11 +586,10 @@ static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, 
 
                             if (success != CURLE_OK)
                                 {
-
+                                    db_save_buffer(main_struct->database, "/Data.json", main_struct->comm->readbuffer);
                                 }
 
                             free_variable(main_struct->comm->readbuffer);
-                            all_ok = success;
 
                             meta->hash_data_list = g_list_remove_link(meta->hash_data_list, iter);
                             g_list_free_full(iter, free_hdt_struct);
@@ -600,8 +608,6 @@ static gint send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, 
                     print_error(__FILE__, __LINE__, _("Error while loading JSON answer from server\n"));
                 }
         }
-
-   return all_ok;
 }
 
 
@@ -743,37 +749,24 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
 
             answer = send_meta_data_to_serveur(main_struct, meta, FALSE);
 
-            if (answer != NULL)
+            if (meta->size < meta->blocksize)
                 {
-                    if (meta->size < meta->blocksize)
-                        {
-                            /* Only one block to send (size is less than blocksize's value) */
-                            success = send_data_to_serveur(main_struct, meta, answer);
-                        }
-                    else
-                        {
-                            /* A least 2 blocks to send */
-                            success = send_all_data_to_serveur(main_struct, meta, answer);
-                        }
-
-                    free_variable(answer); /* Not used by now */
-
-                    if (success == CURLE_OK)
-                        {
-                            /* Everything has been transmitted so we can save meta data into the local db cache */
-                            /* This is usefull for file carving to avoid sending too much things to the server  */
-                            db_save_meta_data(main_struct->database, meta, TRUE);
-                        }
-                    else
-                        {
-                            /* Something went wrong when sending data */
-                            /* Need to save data and meta data because an error occured. */
-                        }
+                    /* Only one block to send (size is less than blocksize's value) */
+                    send_data_to_serveur(main_struct, meta, answer);
                 }
             else
                 {
-                    /* Something went wrong when sending meta-data */
-                    /* Need to save data and meta data because an error occured when transmitting. */
+                    /* A least 2 blocks to send */
+                    send_all_data_to_serveur(main_struct, meta, answer);
+                }
+
+            free_variable(answer); /* Not used by now */
+
+            if (success == CURLE_OK)
+                {
+                    /* Everything has been transmitted so we can save meta data into the local db cache */
+                    /* This is usefull for file carving to avoid sending too much things to the server  */
+                    db_save_meta_data(main_struct->database, meta, TRUE);
                 }
         }
 }
@@ -789,7 +782,6 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
 {
     GFile *a_file = NULL;
     gchar *answer = NULL;
-    gint success = 0;      /** success returns a CURL Error status such as CURLE_OK for instance */
     GFileInputStream *stream = NULL;
     GError *error = NULL;
     GList *hash_data_list = NULL;
@@ -847,15 +839,9 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                             /* sending datas naïvely */
                                             elapsed = new_clock_t();
                                             print_debug(_("Sending data: %d bytes\n"), read_bytes);
-                                            success = insert_array_in_root_and_send(main_struct, array);
+                                            insert_array_in_root_and_send(main_struct, array);
                                             array = json_array();
                                             read_bytes = 0;
-
-                                            if (success != CURLE_OK)
-                                                {
-                                                    /* Something went wrong when sending data */
-                                                    /* Need to save data in local cache because an error occured. */
-                                                }
                                             end_clock(elapsed, "insert_array_in_root_and_send");
                                         }
 
@@ -880,7 +866,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                         {
                                             elapsed = new_clock_t();
                                             print_debug(_("Sending data: %d bytes\n"), read_bytes);
-                                            success = insert_array_in_root_and_send(main_struct, array);
+                                            insert_array_in_root_and_send(main_struct, array);
                                             end_clock(elapsed, "insert_array_in_root_and_send");
                                         }
 
@@ -904,7 +890,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                     answer = send_meta_data_to_serveur(main_struct, meta, TRUE);
 
                     if (answer != NULL)
-                        {
+                        {   /** @todo may be we should check that answer is something that tells that everything went Ok. */
                             /* Everything has been transmitted so we can save meta data into the local db cache */
                             /* This is usefull for file carving to avoid sending too much things to the server  */
                             db_save_meta_data(main_struct->database, meta, TRUE);
