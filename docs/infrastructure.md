@@ -114,12 +114,12 @@ As an example a JSON structure for a file looks like:
 For now Information is stored with the following scheme:
 
     --- files ----          -- buffers ---
-    | file_id *  |     /n-> | cache_time |
-    | cache_time | <-1/     | buf_order  |         --- data ----
-    | type       |          | checksum   | <-n,1-> | checksum *|
-    | file_user  |          --------------         | size      |
-    | file_group |                                 | data      |
-    | uid        |                                 -------------
+    | file_id *  |          | data       |
+    | cache_time |          --------------
+    | type       |
+    | file_user  |
+    | file_group |
+    | uid        |
     | gid        |
     | atime      |
     | ctime      |
@@ -131,12 +131,12 @@ For now Information is stored with the following scheme:
     | link       |
     --------------
 
-Buffer order has to be kept. In the SQLITE cache we can keep it in an
-explicit manner (by storing the order of the buffer of the checksum). In
-the programs (when we pass things into memory with C structure or into
-JSON formatted message) We keep buffer order in an implicit manner (by
-storing the ordered list of checksums of a file). Fields marked with '*'
-are primary keys.
+Buffer order has to be kept. In the programs (when we pass things into
+memory with C structure or into JSON formatted message) we keep buffer
+order in an implicit manner (by storing the ordered list of checksums
+of a file). So we store every JSON buffer we should have sent to server
+into a simple table named buffers. file_id field marked with '*' is a
+primary key.
 
 SQLITE is not used with asynchronous mode (PRAGMA synchronous = OFF;). When
 asynchronous mode is used all reads to the database for records that has
