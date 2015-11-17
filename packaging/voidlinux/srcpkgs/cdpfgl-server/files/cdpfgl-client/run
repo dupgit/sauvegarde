@@ -1,0 +1,2 @@
+#!/bin/sh
+exec cdpfglclient -c /etc/sauvegarde/client.conf 2>&1 > /dev/null

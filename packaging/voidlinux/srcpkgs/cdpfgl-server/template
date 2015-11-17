@@ -1,0 +1,58 @@
+
+# Template file for 'cdpfgl'
+_desc="Continuous data protection for GNU/Linux"
+pkgname=cdpfgl-server
+version=0.0.6
+revision=1
+build_style=gnu-configure
+wrksrc=sauvegarde-${version}
+conf_files="/etc/sauvegarde/server.conf"
+hostmakedepends="automake libtool perl pkg-config"
+makedepends="intltool glib-devel gettext-devel libmicrohttpd-devel libcurl-devel sqlite-devel jansson-devel"
+short_desc="${_desc} - Server"
+maintainer="Olivier Delhomme <olivier.delhomme@free.fr>"
+license="GPL-3"
+homepage="https://github.com/dupgit/sauvegarde"
+distfiles="https://github.com/dupgit/sauvegarde/archive/v${version}.tar.gz>sauvegarde-${version}.tar.gz"
+checksum=a8135c581a55aaf5a7a776301a25f23f0f1dfa531921adc142de44e07e095a95
+
+pre_configure() {
+	./autogen.sh
+}
+
+post_install() {
+	vsv ${pkgname}
+}
+
+cdpfgl-lib_package() {
+	short_desc+=" - library"
+	pkg_install() {
+		vdoc "README"
+		vdoc "NEWS"
+		vlicense "COPYING"
+		vmove "usr/share/locale"
+		vmove "usr/lib/sauvegarde/*.so.*"
+	}
+}
+
+cdpfgl-client_package() {
+	short_desc+=" - client"
+	conf_files="/etc/sauvegarde/client.conf /etc/sauvegarde/restore.conf"
+	pkg_install() {
+		vsv cdpfgl-client
+		vmove "usr/bin/cdpfglclient"
+		vmove "usr/bin/cdpfglrestore"
+		vmove "etc/sauvegarde/client.conf"
+		vmove "etc/sauvegarde/restore.conf"
+	}
+}
+
+cdpfgl-devel_package() {
+	depends="cdpfgl-lib>=${version}_${revision}"
+	short_desc+=" - development files"
+	pkg_install() {
+		vmove usr/include
+		vmove usr/lib/pkgconfig
+		vmove "usr/lib/sauvegarde/*.so"
+	}
+}
