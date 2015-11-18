@@ -13,4 +13,5 @@ EXTRA_DIST = $(sauvegardeconf_DATA)            \
 			 docs/coding_in_sauvegarde.md 	   \
 			 docs/API.md                       \
 			 docs/infrastructure.md            \
-			 docs/sauvegarde.doxygen
+			 docs/sauvegarde.doxygen		   \
+			 autogen.sh
