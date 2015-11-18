@@ -1038,7 +1038,9 @@ static void carve_one_directory(gpointer data, gpointer user_data)
 
 
 /**
- * Does carve all directories from the list in the option list
+ * Does carve all directories from the list in the option list.
+ * This function is a thread that is run at the end of the initialisation
+ * of main_struct structure.
  * @param main_struct : main structure of the program that contains also
  *        the options structure that should have a list of directories
  *        to save.
