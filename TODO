@@ -10,14 +10,10 @@
            server.
 * client: fit into "small memory" systems.
 * client: free main_struct_t's memory at the end of the program.
-
+* add a fourth program to clean older data and meta data (nettoie ?)
 
 ## In the roadmap already.
 
-* add a fourth program to clean older data and meta data (nettoie ?)
-* Filters to exclude files by path or by extension
-* client: adaptative block size that will depend on the file size. Option
-          to choose adaptative or fixed.
 
 # Manual
 
