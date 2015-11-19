@@ -14,6 +14,6 @@ cdpfglclient_HEADERFILES = monitor.h            \
 cdpfglclient_SOURCES = monitor.c                \
 						options.c				  \
 						m_fanotify.c			  \
-						$(client_HEADERFILES)
+						$(cdpfglclient_HEADERFILES)
 
 AM_CPPFLAGS = $(GLIB_CFLAGS) $(GIO_CFLAGS)

@@ -12,7 +12,7 @@ cdpfglrestore_HEADERFILES = restaure.h	   \
 
 cdpfglrestore_SOURCES = restaure.c 		   \
 			 options.c  		   \
-			 $(restaure_HEADERFILES)
+			 $(cdpfglrestore_HEADERFILES)
 
 AM_CPPFLAGS = $(GLIB_CFLAGS) $(GIO_CFLAGS) $(SQLITE_CFLAGS) \
               $(JANSSON_CFLAGS) $(CURL_CFLAGS)

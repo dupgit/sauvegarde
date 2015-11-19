@@ -16,6 +16,6 @@ cdpfglserver_SOURCES = serveur.c             \
 						options.c				\
 						backend.c				\
 						file_backend.c		\
-						$(serveur_HEADERFILES)
+						$(cdpfglserver_HEADERFILES)
 
 AM_CPPFLAGS = $(GLIB_CFLAGS) $(GIO_CFLAGS)
