@@ -14,4 +14,5 @@ EXTRA_DIST = $(sauvegardeconf_DATA)            \
 			 docs/API.md                       \
 			 docs/infrastructure.md            \
 			 docs/sauvegarde.doxygen		   \
-			 autogen.sh
+			 autogen.sh						   \
+			 LICENSE
