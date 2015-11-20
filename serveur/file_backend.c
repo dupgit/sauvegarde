@@ -706,7 +706,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
                                 {
                                     meta->hash_data_list = make_hash_data_list_from_string(params[13]);
 
-                                    print_debug(_("file_backend: Found: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d, link: %s\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid, meta->link);
+                                    print_debug("file_backend: type %d, inode: %"G_GUINT64_FORMAT", mode: %d, atime: %"G_GUINT64_FORMAT", ctime: %"G_GUINT64_FORMAT", mtime: %"G_GUINT64_FORMAT", size: %"G_GUINT64_FORMAT", filename: %s, owner: %s, group: %s, uid: %d, gid: %d, link: %s\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid, meta->link);
                                  }
                             else
                                 {
