@@ -1,9 +1,9 @@
 
-# Template file for 'cdpfgl'
+# Template file for 'cdpfgl-server'
 _desc="Continuous data protection for GNU/Linux"
 pkgname=cdpfgl-server
 version=0.0.6
-revision=1
+revision=2
 build_style=gnu-configure
 wrksrc=sauvegarde-${version}
 conf_files="/etc/sauvegarde/server.conf"
@@ -13,12 +13,8 @@ short_desc="${_desc} - Server"
 maintainer="Olivier Delhomme <olivier.delhomme@free.fr>"
 license="GPL-3"
 homepage="https://github.com/dupgit/sauvegarde"
-distfiles="https://github.com/dupgit/sauvegarde/archive/v${version}.tar.gz>sauvegarde-${version}.tar.gz"
-checksum=a8135c581a55aaf5a7a776301a25f23f0f1dfa531921adc142de44e07e095a95
-
-pre_configure() {
-	./autogen.sh
-}
+distfiles="http://src.delhomme.org/download/sauvegarde/releases/sauvegarde-${version}.tar.xz"
+checksum=235627b0e3bced9c0bd42c8521fa61dc69b0a4d51209ad4ae3d2c634217b82aa
 
 post_install() {
 	vsv ${pkgname}
