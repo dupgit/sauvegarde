@@ -65,6 +65,7 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
     GError *error = NULL;
     gsize count = 0;
     gssize written = 0;
+    gchar *string_written = NULL;
     gchar *buffer = NULL;
     gchar *hash_list = NULL;
     meta_data_t *meta = NULL;
@@ -105,7 +106,8 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
 
                             if (error != NULL)
                                 {
-                                    print_error(__FILE__, __LINE__, _("Error: unable to write to file %s (%ld bytes written).\n"), filename, written);
+                                    string_written = g_strdup_printf("%"G_GSSIZE_FORMAT, written);
+                                    print_error(__FILE__, __LINE__, _("Error: unable to write to file %s (%s bytes written).\n"), filename, string_written);
                                 }
 
                             g_output_stream_close((GOutputStream *) stream, NULL, &error);
@@ -147,6 +149,7 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
     GFileOutputStream *stream = NULL;
     GError *error = NULL;
     gssize written = 0;
+    gchar *string_written = NULL;
     gchar *hex_hash = NULL;
     gchar *path = NULL;
     gchar *prefix = NULL;
@@ -172,7 +175,9 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
 
                             if (error != NULL)
                                 {
-                                    print_error(__FILE__, __LINE__, _("Error: unable to write to file %s (%ld bytes written).\n"), filename, written);
+                                    string_written = g_strdup_printf("%"G_GSSIZE_FORMAT, written);
+                                    print_error(__FILE__, __LINE__, _("Error: unable to write to file %s (%s bytes written).\n"), filename, string_written);
+                                    free_variable(string_written);
                                 }
 
                             g_output_stream_close((GOutputStream *) stream, NULL, &error);
@@ -706,7 +711,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
                                 {
                                     meta->hash_data_list = make_hash_data_list_from_string(params[13]);
 
-                                    print_debug("file_backend: type %d, inode: %"G_GUINT64_FORMAT", mode: %d, atime: %"G_GUINT64_FORMAT", ctime: %"G_GUINT64_FORMAT", mtime: %"G_GUINT64_FORMAT", size: %"G_GUINT64_FORMAT", filename: %s, owner: %s, group: %s, uid: %d, gid: %d, link: %s\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid, meta->link);
+                                    print_debug("file_backend: --> type %d, inode: %"G_GUINT64_FORMAT", mode: %d, atime: %"G_GUINT64_FORMAT", ctime: %"G_GUINT64_FORMAT", mtime: %"G_GUINT64_FORMAT", size: %"G_GUINT64_FORMAT", filename: %s, owner: %s, group: %s, uid: %d, gid: %d, link: %s\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid, meta->link);
                                  }
                             else
                                 {
@@ -843,6 +848,7 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
     GFileInputStream *stream = NULL;
     GError *error = NULL;
     gssize read = 0;
+    gchar *string_read = NULL;
     gchar *path = NULL;
     gchar *prefix = NULL;
     file_backend_t *file_backend = NULL;
@@ -874,7 +880,9 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
 
                     if (error != NULL)
                         {
-                            print_error(__FILE__, __LINE__, _("Error: unable to read from file %s (%ld bytes read): %s.\n"), filename, read, error->message);
+                            string_read = g_strdup_printf("%"G_GSSIZE_FORMAT, read);
+                            print_error(__FILE__, __LINE__, _("Error: unable to read from file %s (%s bytes read): %s.\n"), filename, string_read, error->message);
+                            free_variable(string_read);
                             free_error(error);
                         }
                     else

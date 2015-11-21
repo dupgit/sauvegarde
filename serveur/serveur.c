@@ -505,6 +505,7 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     int success = MHD_NO;
     gchar *encoded_hash = NULL;
+    gchar *string_read = NULL;
     hash_data_t *hash_data = NULL;
     json_t *root = NULL;
     GList *hash_data_list = NULL;
@@ -523,7 +524,9 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
             if (get_debug_mode() == TRUE)
                 {
                     encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
-                    print_debug(_("Received data for hash: \"%s\" (%ld bytes)\n"), encoded_hash, hash_data->read);
+                    string_read = g_strdup_printf("%"G_GSSIZE_FORMAT, hash_data->read);
+                    print_debug(_("Received data for hash: \"%s\" (%s bytes)\n"), encoded_hash, string_read);
+                    free_variable(string_read);
                     free_variable(encoded_hash);
                 }
 
@@ -559,7 +562,9 @@ static int process_received_data(serveur_struct_t *serveur_struct, struct MHD_Co
                     if (get_debug_mode() == TRUE)
                         {
                             encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
-                            print_debug(_("Received data for hash: \"%s\" (%ld bytes)\n"), encoded_hash, hash_data->read);
+                            string_read = g_strdup_printf("%"G_GSSIZE_FORMAT, hash_data->read);
+                            print_debug(_("Received data for hash: \"%s\" (%s bytes)\n"), encoded_hash, string_read);
+                            free_variable(string_read);
                             free_variable(encoded_hash);
                         }
 

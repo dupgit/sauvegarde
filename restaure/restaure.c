@@ -357,6 +357,11 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
     GSList *last = NULL;      /** last element of the list                 */
     serveur_meta_data_t *smeta = NULL;
     meta_data_t *meta = NULL;
+    gchar *string_inode = NULL;
+    gchar *string_atime = NULL;
+    gchar *string_ctime = NULL;
+    gchar *string_mtime = NULL;
+    gchar *string_size = NULL;
 
     if (res_struct != NULL && query != NULL)
         {
@@ -368,7 +373,22 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
                     smeta = (serveur_meta_data_t *) last->data;
                     meta = smeta->meta;
 
-                    print_debug(_("File to be restored: type %d, inode: %ld, mode: %d, atime: %ld, ctime: %ld, mtime: %ld, size: %ld, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
+                    if (get_debug_mode() == TRUE)
+                        {
+                            string_inode = g_strdup_printf("%"G_GUINT64_FORMAT, meta->inode);
+                            string_atime = g_strdup_printf("%"G_GUINT64_FORMAT, meta->atime);
+                            string_ctime = g_strdup_printf("%"G_GUINT64_FORMAT, meta->ctime);
+                            string_mtime = g_strdup_printf("%"G_GUINT64_FORMAT, meta->mtime);
+                            string_size = g_strdup_printf("%"G_GUINT64_FORMAT, meta->size);
+
+                            print_debug(_("File to be restored: type %d, inode: %s, mode: %d, atime: %s, ctime: %s, mtime: %s, size: %s, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, string_inode, meta->mode, string_atime, string_ctime, string_mtime, string_size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
+
+                            free_variable(string_inode);
+                            free_variable(string_atime);
+                            free_variable(string_ctime);
+                            free_variable(string_mtime);
+                            free_variable(string_size);
+                        }
 
                     create_file(res_struct, meta);
                 }

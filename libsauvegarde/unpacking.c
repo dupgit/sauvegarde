@@ -417,6 +417,10 @@ hash_data_t *convert_json_t_to_hash_data(json_t *root)
     gsize data_len = 0;
     gsize hash_len = 0;
     gssize read = 0;
+    gchar *string_read = NULL;
+    gchar *string_hash_len = NULL;
+    gchar *string_data_len = NULL;
+
     hash_data_t *hash_data = NULL;
 
     if (root != NULL)
@@ -434,7 +438,20 @@ hash_data_t *convert_json_t_to_hash_data(json_t *root)
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, _("Something is wrong with lengths: data_len = %ld, read = %ld, hash_len = %ld, HASH_LEN = %ld\n"), data_len, read, hash_len, HASH_LEN);
+                    /**
+                     * We need to translated this number into a string before
+                     * inserting it into the final string in order to allow
+                     * this final string to be translated in an other language.
+                     */
+                    string_data_len = g_strdup_printf("%" G_GSIZE_FORMAT, data_len);
+                    string_hash_len = g_strdup_printf("%" G_GSIZE_FORMAT, hash_len);
+                    string_read = g_strdup_printf("%" G_GSSIZE_FORMAT, read);
+
+                    print_error(__FILE__, __LINE__, _("Something is wrong with lengths: data_len = %s, read = %s, hash_len = %s, HASH_LEN = %d\n"), string_data_len, string_read, string_hash_len, HASH_LEN);
+
+                    free_variable(string_data_len);
+                    free_variable(string_hash_len);
+                    free_variable(string_read);
                 }
         }
 
