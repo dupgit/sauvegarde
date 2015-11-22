@@ -52,3 +52,4 @@ manual/graphs/*.png
 manual/video/*.log
 manual/video/*.mp4
 bugs/
+packaging/debian/sauvegarde*
