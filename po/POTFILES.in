@@ -36,4 +36,3 @@ serveur/options.c
 serveur/options.h
 serveur/serveur.c
 serveur/serveur.h
-tools/gprof-helper.c
