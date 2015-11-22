@@ -79,7 +79,7 @@ static void print_selected_options(options_t *opt)
                     /**
                      * We need to translated this number into a string before
                      * inserting it into the final string in order to allow
-                     * this final string to be translated
+                     * this final string to be translated in an other language.
                      */
                     blocksize = g_strdup_printf("%" G_GINT64_FORMAT, opt->blocksize);
                     fprintf(stdout, _("Blocksize: %s\n"), blocksize);

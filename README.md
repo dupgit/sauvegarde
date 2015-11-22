@@ -45,10 +45,10 @@ libmicrohttpd). Please have a look at .travis.yml file in order to see how
 to compile dependencies before compiling sauvegarde.
 
 Sauvegarde's project is known to compile (sometimes at the expense of
-recompiling and installing newer versions of dependencies) under Centos 7,
-Debian Jessie, Ubuntu 12.04 LTS, VoidLinux and raspbian 3 and on x86_64
-and arm7l architectures. Please let me know if you have compiled Sauvegarde
-successfully in a system that is not listed here.
+recompiling and installing newer versions of dependencies) and run under
+Centos 7, Debian Jessie, Ubuntu 12.04 LTS, VoidLinux and raspbian 3 and
+on x86_64 and arm7l architectures. Please let me know if you have compiled
+Sauvegarde successfully in a system that is not listed here.
 
 
 ### Optional
