@@ -50,7 +50,7 @@ Standards-Version: ${version}
 Build-Depends: debhelper (>= 9)
 
 Package: sauvegarde
-Architecture: amd64
+Architecture: any
 Depends: \${shlibs:Depends}, \${misc:Depends}
 Description: Continuous data protection for GNU/Linux
  cdpfgl saves your files in a live continuous way that is to say while they are written to disks.
