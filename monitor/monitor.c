@@ -1091,12 +1091,19 @@ int main(int argc, char **argv)
     if (opt != NULL)
         {
             /**
-             * Inits the main structure and launches a thread that will
-             * save the files with an asynchronous queue called by
-             * the directory carving (that may end quickly) and the
-             * fanotify loop.
+             * Inits the main structure and launches two threads one that
+             * will save the files with an asynchronous queue and a second
+             * that will do directory carving. Threads communicates with
+             * the asynchronous queue.
              */
             main_struct = init_main_structure(opt);
+
+
+            if (db_is_there_buffers_to_transmit(main_struct->database))
+                {
+                    print_debug(_("We have data and meta data to transmit to server\n"));
+                }
+
 
             /** Launching an infinite loop to get modifications done on
              * the filesystem (on directories we watch).

@@ -99,6 +99,16 @@ extern void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_m
 
 
 /**
+ * This function says if the table 'buffers' is empty or not, that is
+ * to say whether we have to transmit unsaved data or not.
+ * @param database is the structure that contains everything that is
+ *        related to the database (it's connexion for instance).
+ * @returns TRUE if table 'buffers' is not empty and FALSE otherwise
+ */
+extern gboolean db_is_there_buffers_to_transmit(db_t *database);
+
+
+/**
  * Saves buffers that could not be sent to server
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).

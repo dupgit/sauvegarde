@@ -346,6 +346,41 @@ void db_save_buffer(db_t *database, gchar *url, gchar *buffer)
 }
 
 
+/**
+ * This function says if the table 'buffers' is empty or not, that is
+ * to say whether we have to transmit unsaved data or not.
+ * @param database is the structure that contains everything that is
+ *        related to the database (it's connexion for instance).
+ * @returns TRUE if table 'buffers' is not empty and FALSE otherwise
+ */
+gboolean db_is_there_buffers_to_transmit(db_t *database)
+{
+    char *error_message = NULL;
+    int result = 0;
+    int *i = NULL;               /** int *i is used to count the number of row */
+
+    i = (int *) g_malloc0(sizeof(int));
+    *i = 0;
+
+    result = sqlite3_exec(database->db, "SELECT * FROM buffers;", table_callback, i, &error_message);
+
+    if (result == SQLITE_OK && *i == 0)
+        {
+            /* Table exists but there is no buffers to transmit to server */
+            return FALSE;
+        }
+    else if (result == SQLITE_OK && *i > 0)
+        {
+            /* Table exists and there is buffers to transmit to server    */
+            return TRUE;
+        }
+    else
+        {
+            /* result is not SQLITE_OK : something went wrong */
+            return FALSE;
+        }
+}
+
 
 /**
  * Returns a database connexion or NULL.
