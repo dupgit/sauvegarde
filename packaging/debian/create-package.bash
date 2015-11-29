@@ -26,43 +26,13 @@
 # References :
 #  . https://wiki.debian.org/IntroDebianPackaging documentation
 #
-
-export DEBEMAIL="Olivier Delhomme <olivier.delhomme@free.fr>"
 export version=0.0.6
-export revision=1
-export homepage="https://github.com/dupgit/sauvegarde"
 export distfiles="http://src.delhomme.org/download/sauvegarde/releases/sauvegarde-${version}.tar.xz"
 
 wget -c $distfiles
 mv sauvegarde-${version}.tar.xz sauvegarde_${version}.orig.tar.xz
 tar Jxf sauvegarde_${version}.orig.tar.xz
 cd sauvegarde-${version}
-mkdir debian
-dch --create -v ${version} --package sauvegarde "This is release ${version} of sauvegarde's project"
-echo "9" >debian/compat
-
-cat <<control_EOF >debian/control
-Source: sauvegarde
-Maintainer: Olivier Delhomme <olivier.delhomme@free.fr>
-Section: misc
-Priority: optional
-Standards-Version: ${version}
-Build-Depends: debhelper (>= 9)
-
-Package: sauvegarde
-Architecture: any
-Depends: \${shlibs:Depends}, \${misc:Depends}
-Description: Continuous data protection for GNU/Linux
- cdpfgl saves your files in a live continuous way that is to say while they are written to disks.
-control_EOF
-
-
-touch debian/copyright
-
-
-cp ../rules debian/
-
-mkdir debian/source
-echo "3.0 (native)" >debian/source/format
+cp -a ../debian .
 
 debuild -us -uc 
