@@ -42,6 +42,9 @@ gchar *get_probable_etc_path(gchar *progname, const gchar *configfile)
 {
     gchar *abs_path = NULL;
     gchar *path = NULL;
+    const gchar * const *system_dirs = NULL;
+    gint i = 0;
+    gboolean ok = FALSE;
 
     if (progname != NULL && configfile != NULL)
         {
@@ -51,6 +54,27 @@ gchar *get_probable_etc_path(gchar *progname, const gchar *configfile)
                 {
                     path =  g_build_path(G_DIR_SEPARATOR_S, g_path_get_dirname(abs_path), "..", "etc", "sauvegarde", configfile, NULL);
                     free_variable(abs_path);
+
+                    if (file_exists(path) == FALSE)
+                        {
+                            free_variable(path);
+                            system_dirs = g_get_system_config_dirs();
+                            i = 0;
+                            while (system_dirs[i] != NULL && ok == FALSE)
+                                {
+                                    path =  g_build_path(G_DIR_SEPARATOR_S, system_dirs[i], "sauvegarde", configfile, NULL);
+
+                                    if (file_exists(path) == FALSE)
+                                        {
+                                            free_variable(path);
+                                        }
+                                    else
+                                        {
+                                            ok = TRUE;
+                                        }
+                                    i++;
+                                }
+                        }
                 }
         }
 
