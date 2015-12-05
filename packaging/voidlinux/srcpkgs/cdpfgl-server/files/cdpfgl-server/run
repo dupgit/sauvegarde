@@ -1,2 +1,2 @@
 #!/bin/sh
-exec cdpfglserver -c /etc/sauvegarde/server.conf
+exec cdpfglserver -c /etc/cdpfgl/server.conf

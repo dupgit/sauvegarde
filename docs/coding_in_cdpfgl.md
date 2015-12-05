@@ -19,8 +19,8 @@ continue to use this style into comments in the whole project as it will
 be parsed by doxygen. doxygen has been configured to figure out which
 parameters are not documented. Please have a look at doxygen output and
 avoid any warning. If you want the documentation not to include the whole
-path for files please have a look at sauvegarde.doxygen file and modify
-STRIP_FROM_PATH variable with your path (where sauvegarde's sources are).
+path for files please have a look at cdpfgl.doxygen file and modify
+STRIP_FROM_PATH variable with your path (where cdpfgl's sources are).
 
 
 ## Verifying complexity

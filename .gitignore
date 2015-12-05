@@ -19,7 +19,7 @@ depcomp
 install-sh
 libsauvegarde/.deps/
 libsauvegarde/.libs/
-libsauvegarde/libsauvegarde.pc
+libsauvegarde/libcdpfgl.pc
 libtool
 ltmain.sh
 m4/

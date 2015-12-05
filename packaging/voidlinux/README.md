@@ -8,7 +8,8 @@ VoidLinux distribution with the XBPS package manager.  For all other aspects
 
 ## Changelog
 
-* 2016-11-20 use sourcefile from src.delhomme.org instead of github.com.
+* 2015-12-05 changes sauvegarde package to cdpfgl the new name of the project
+* 2015-11-20 use sourcefile from src.delhomme.org instead of github.com.
 * 2015-11-xx cdpfgl version 0.0.6: basic runtime tests are fine.
 * 2015-11-xx initial revision of this documentation
 
@@ -16,7 +17,6 @@ VoidLinux distribution with the XBPS package manager.  For all other aspects
 ## Packaging internals TODO list
 
 * check build log.
-* config files in /etc/sauvegarde/, not in /etc/cdpfgl/ ?
 * /usr/lib/sauvegarde/libsauvegarde.so.0.0.0: not in /usr/lib/ instead ?
 * keep a copy of config file also in samples ?
 * manage localization ?
@@ -56,9 +56,9 @@ in file `cdpfgl-server/template`:
     $ ln -s cdpfgl-server cdpfgl-devel
 
 You also have to update content of file `void-packages/common/shlibs` in order
-to point that `libsauvegarde.so.0` file is owned by the package `cdpfgl-lib`:
+to point that `libcdpfgl.so.0` file is owned by the package `cdpfgl-lib`:
 
-    $ echo "libsauvegarde.so.0 cdpfgl-lib-0.0.6_2" >> void-packages/common/shlibs
+    $ echo "libcdpfgl.so.0 cdpfgl-lib-0.0.6_2" >> void-packages/common/shlibs
 
 
 The packages building can be now launched with the following command:
@@ -143,8 +143,8 @@ cdpfgl-client-0.0.6_2: installed successfully.
 (optional) List the files in this newly installed package:
 
     $ xbps-query -f cdpfgl-client | sort
-    /etc/sauvegarde/client.conf
-    /etc/sauvegarde/restore.conf
+    /etc/cdpfgl/client.conf
+    /etc/cdpfgl/restore.conf
     /etc/sv/cdpfgl-client/run
     /etc/sv/cdpfgl-client/supervise -> /run/runit/supervise.cdpfgl-client
     /usr/bin/cdpfglclient

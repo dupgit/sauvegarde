@@ -1,4 +1,4 @@
-pkglib_LTLIBRARIES = libsauvegarde.la
+pkglib_LTLIBRARIES = libcdpfgl.la
 
 headerfiles = libsauvegarde.h	\
 			  configuration.h	\
@@ -10,7 +10,7 @@ headerfiles = libsauvegarde.h	\
 			  query.h			\
 			  clock.h
 
-libsauvegarde_la_SOURCES = libsauvegarde.c 	    \
+libcdpfgl_la_SOURCES = libsauvegarde.c 	    \
 						   configuration.c		\
 						   communique.c		    \
 						   files.c				\
@@ -22,23 +22,23 @@ libsauvegarde_la_SOURCES = libsauvegarde.c 	    \
 						   clock.c              \
 						   $(headerfiles)
 
-libsauvegarde_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)   \
-                          $(SQLITE_CFLAGS) $(JANSSON_CFLAGS)       \
+libcdpfgl_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)    \
+                          $(SQLITE_CFLAGS) $(JANSSON_CFLAGS)    \
                           $(MHD_CFLAGS) $(CURL_CFLAGS)
 
-AM_LDFLAGS = $(LDFLAGS) $(GLIB_LIBS) $(GIO_LIBS) $(SQLITE_LIBS)    \
+AM_LDFLAGS = $(LDFLAGS) $(GLIB_LIBS) $(GIO_LIBS) $(SQLITE_LIBS) \
              $(JANSSON_LIBS) $(MHD_LIBS) $(CURL_LIBS)
 
 
-includedir=$(prefix)/include/sauvegarde
+includedir=$(prefix)/include/cdpfgl
 
 include_HEADERS = $(headerfiles)
 
-libsauvegardedir =$(libdir)/sauvegarde
+libsauvegardedir =$(libdir)/cdpfgl
 
 pkgconfigdir = $(libdir)/pkgconfig
 
-pkgconfig_DATA = libsauvegarde.pc
+pkgconfig_DATA = libcdpfgl.pc
 $(pkgconfig_DATA): ../config.status
 
 

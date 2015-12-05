@@ -1,6 +1,6 @@
 AC_PREREQ(2.59)
 
-AC_INIT([sauvegarde], [0.0.6], [Olivier DELHOMME <olivier.delhomme@free.fr>])
+AC_INIT([cdpfgl], [0.0.6], [Olivier DELHOMME <olivier.delhomme@free.fr>])
 AM_INIT_AUTOMAKE
 
 AC_PROG_CC
@@ -76,7 +76,7 @@ ALL_LINGUAS="fr"
 dnl ***********************************************************************
 dnl * triggers gettext                                                    *
 dnl ***********************************************************************
-GETTEXT_PACKAGE=sauvegarde
+GETTEXT_PACKAGE=cdpfgl
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Gettext Package used])
 AM_GLIB_GNU_GETTEXT
@@ -232,7 +232,7 @@ monitor/Makefile
 serveur/Makefile
 restaure/Makefile
 po/Makefile.in
-libsauvegarde/libsauvegarde.pc
+libsauvegarde/libcdpfgl.pc
 ])
 
 AC_OUTPUT
