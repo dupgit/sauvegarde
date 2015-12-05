@@ -1,10 +1,10 @@
 bin_PROGRAMS = cdpfglclient
 
-DEFS = -I../libsauvegarde $(GLIB_CFLAGS) $(GIO_CFLAGS)   \
+DEFS = -I../libcdpfgl $(GLIB_CFLAGS) $(GIO_CFLAGS)   \
 	   $(SQLITE_CFLAGS) $(JANSSON_CFLAGS) $(CURL_CFLAGS)
 
 cdpfglclient_LDFLAGS = $(LDFLAGS)
-cdpfglclient_LDADD = $(GLIB_LIBS) $(GIO_LIBS)  -L../libsauvegarde -lcdpfgl \
+cdpfglclient_LDADD = $(GLIB_LIBS) $(GIO_LIBS)  -L../libcdpfgl -lcdpfgl \
 					  $(SQLITE_LIBS) $(JANSSON_LIBS) $(CURL_LIBS)
 
 cdpfglclient_HEADERFILES =  monitor.h      \

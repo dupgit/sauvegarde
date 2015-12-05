@@ -227,12 +227,12 @@ AC_SUBST(CURL_LIBS)
 
 AC_CONFIG_FILES([
 Makefile
-libsauvegarde/Makefile
+libcdpfgl/Makefile
 monitor/Makefile
 serveur/Makefile
 restaure/Makefile
 po/Makefile.in
-libsauvegarde/libcdpfgl.pc
+libcdpfgl/libcdpfgl.pc
 ])
 
 AC_OUTPUT

@@ -1,4 +1,4 @@
-SUBDIRS = libsauvegarde serveur monitor restaure po
+SUBDIRS = libcdpfgl serveur monitor restaure po
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -7,12 +7,12 @@ cdpfglconf_DATA = client.conf    \
 			      server.conf    \
 			      restore.conf
 
-EXTRA_DIST = $(cdpfglconf_DATA)                \
-			 libsauvegarde/libcdpfgl.pc.in     \
-			 manual/installation.md            \
-			 docs/coding_in_sauvegarde.md 	   \
-			 docs/API.md                       \
-			 docs/infrastructure.md            \
-			 docs/sauvegarde.doxygen		   \
-			 autogen.sh						   \
+EXTRA_DIST = $(cdpfglconf_DATA)            \
+			 libcdpfgl/libcdpfgl.pc.in     \
+			 manual/installation.md        \
+			 docs/coding_in_sauvegarde.md  \
+			 docs/API.md                   \
+			 docs/infrastructure.md        \
+			 docs/cdpfgl.doxygen		   \
+			 autogen.sh					   \
 			 LICENSE

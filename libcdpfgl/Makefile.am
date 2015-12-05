@@ -34,7 +34,7 @@ includedir=$(prefix)/include/cdpfgl
 
 include_HEADERS = $(headerfiles)
 
-libsauvegardedir =$(libdir)/cdpfgl
+libcdpfgldir =$(libdir)/cdpfgl
 
 pkgconfigdir = $(libdir)/pkgconfig
 

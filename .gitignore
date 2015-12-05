@@ -17,9 +17,9 @@ config.sub
 configure
 depcomp
 install-sh
-libsauvegarde/.deps/
-libsauvegarde/.libs/
-libsauvegarde/libcdpfgl.pc
+libcdpfgl/.deps/
+libcdpfgl/.libs/
+libcdpfgl/libcdpfgl.pc
 libtool
 ltmain.sh
 m4/
@@ -53,4 +53,4 @@ manual/video/*.log
 manual/video/*.mp4
 bugs/
 packaging/debian/sauvegarde*
-po/sauvegarde.pot
+po/cdpfgl.pot
