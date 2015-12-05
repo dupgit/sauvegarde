@@ -15,7 +15,7 @@ else
     echo
     echo "Failure building the configure script."
     echo "You may miss required tools (aclocal, libtoolize, automake or"
-    echo "autoconf) to build Sauvegarde."
+    echo "autoconf) to build cdpfgl."
     echo
     echo "Please install the appropriated package and re-run autogen.sh"
     echo "This might also happen if you don't have the m4 provided as a"

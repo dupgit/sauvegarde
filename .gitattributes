@@ -1,7 +1,7 @@
 autoclean.sh                export-ignore
 docs/                       export-ignore
 po/find_files.sh            export-ignore
-po/sauvegarde.po            export-ignore
+po/cdpfgl.po                export-ignore
 po/update_languages.bash    export-ignore
 tests/                      export-ignore
 tools/                      export-ignore

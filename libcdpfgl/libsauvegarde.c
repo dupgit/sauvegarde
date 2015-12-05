@@ -23,8 +23,7 @@
 
 /**
  * @file libsauvegarde.c
- * This library contains all tools that may be used in at least two of
- * the "Sauvegarde" programs.
+ * This library contains all tools that may be used in cdpfgl's programs.
  */
 
 #include "libsauvegarde.h"
@@ -243,7 +242,7 @@ void print_program_version(gchar *name, gchar *date, gchar *version, gchar *auth
 
 
 /**
- *  Inits internationalization domain for sauvegarde project
+ *  Inits internationalization domain for cdpfgl project
  */
 void init_international_languages(void)
 {

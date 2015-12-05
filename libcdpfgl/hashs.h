@@ -108,7 +108,7 @@ extern gchar *convert_hash_data_list_to_gchar(GList *hash_list);
 /**
  * Makes a path from a binary hash : 0E/39/AF for level 3 with hash (in hex)
  * begining by 0E39AF.
- * @param path is a gchar * prefix for the path (ie /var/tmp/sauvegarde for
+ * @param path is a gchar * prefix for the path (ie /var/tmp/cdpfgl for
  *        instance).
  * @param hash is a guint8 pointer to the binary representation of a hash.
  * @param level The level we want the path to have. It is an unsigned int
@@ -117,7 +117,7 @@ extern gchar *convert_hash_data_list_to_gchar(GList *hash_list);
  *        in each last subdirectories.
  * @returns a string as a gchar * made of the path and the hex
  *          representation of hash on 'level' levels. With the example above
- *          it will return /var/tmp/sauvegarde/0E/39/AF
+ *          it will return /var/tmp/cdpfgl/0E/39/AF
  */
 extern gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level);
 

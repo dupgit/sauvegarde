@@ -23,7 +23,7 @@
  * @file libsauvegarde.h
  *
  *  This file contains all the definitions for the common tools of
- * "Sauvegarde" collection programs.
+ *  cdpfgl's collection programs.
  */
 #ifndef _LIBSAUVEGARDE_H_
 #define _LIBSAUVEGARDE_H_

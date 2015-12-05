@@ -52,7 +52,7 @@ gchar *get_probable_etc_path(gchar *progname, const gchar *configfile)
             abs_path = g_find_program_in_path(progname);
             if (abs_path != NULL)
                 {
-                    path =  g_build_path(G_DIR_SEPARATOR_S, g_path_get_dirname(abs_path), "..", "etc", "sauvegarde", configfile, NULL);
+                    path =  g_build_path(G_DIR_SEPARATOR_S, g_path_get_dirname(abs_path), "..", "etc", "cdpfgl", configfile, NULL);
                     free_variable(abs_path);
 
                     if (file_exists(path) == FALSE)
@@ -62,7 +62,7 @@ gchar *get_probable_etc_path(gchar *progname, const gchar *configfile)
                             i = 0;
                             while (system_dirs[i] != NULL && ok == FALSE)
                                 {
-                                    path =  g_build_path(G_DIR_SEPARATOR_S, system_dirs[i], "sauvegarde", configfile, NULL);
+                                    path =  g_build_path(G_DIR_SEPARATOR_S, system_dirs[i], "cdpfgl", configfile, NULL);
 
                                     if (file_exists(path) == FALSE)
                                         {

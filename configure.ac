@@ -239,7 +239,7 @@ AC_OUTPUT
 
 AC_MSG_NOTICE([
 
- *** Flags that will be used to compile Sauvegarde ***
+ *** Flags that will be used to compile cdpfgl ***
 
  CFLAGS         : ${CFLAGS}
  LDFLAGS        : ${LDFLAGS}
@@ -277,6 +277,6 @@ AC_MSG_NOTICE([
        . debbuging is on ?            : $debug
        . Disabled quiet compilation ? : $silent
 
-You can now run 'make' to compile Sauvegarde.
+You can now run 'make' to compile cdpfgl.
 
 ])

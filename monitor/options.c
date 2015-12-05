@@ -285,7 +285,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->exclude_list = NULL;
     opt->blocksize = CLIENT_BLOCK_SIZE;
     opt->configfile = NULL;
-    opt->dircache = g_strdup("/var/tmp/sauvegarde");
+    opt->dircache = g_strdup("/var/tmp/cdpfgl");
     opt->dbname = g_strdup("filecache.db");
     opt->ip = g_strdup("localhost");
     opt->port = 5468;

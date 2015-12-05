@@ -420,7 +420,7 @@ void file_init_backend(serveur_struct_t *serveur_struct)
             file_backend = (file_backend_t *) g_malloc0(sizeof(file_backend_t));
 
             /* default values */
-            file_backend->prefix = g_strdup("/var/tmp/sauvegarde/serveur");
+            file_backend->prefix = g_strdup("/var/tmp/cdpfgl/serveur");
             file_backend->level = 2;
 
             if (serveur_struct->opt != NULL && serveur_struct->opt->configfile != NULL)

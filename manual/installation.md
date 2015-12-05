@@ -1,16 +1,16 @@
 # Introduction
 
-Sauvegarde is a set of programs that will save your files while being created and written to your disks. It will save your files from a client machine (containing the files to be saved) to a server machine (that will contain all the saved files and informations about thoses files). It will allow you to restore the saved files at their latest version or at any older versions.
+'cdpfgl' is a set of programs that will save your files while being created and written to your disks. It will save your files from a client machine (containing the files to be saved) to a server machine (that will contain all the saved files and informations about thoses files). It will allow you to restore the saved files at their latest version or at any older versions.
 
 
-# Getting sauvegarde
+# Getting cdpfgl
 
 You can get sauvegarde downloading a specific release from http://src.delhomme.org/download/sauvegarde/releases/ or by cloning the github repository.
 
 
 ## Cloning from github
 
-Use the following command to clone sauvegarde's git repository:
+Use the following command to clone cdpfgl's git repository:
 
     $ git clone https://github.com/dupgit/sauvegarde.git
     Cloning into 'sauvegarde'...
@@ -64,12 +64,12 @@ Download the latest release version from http://src.delhomme.org/download/sauveg
     $ tar Jxf sauvegarde-0.0.4.tar.xz
     $ cd sauvegarde-0.0.4
 
-Before using the configure script to install sauvegarde you'll have to install all dependencies. If you forgot a dependency the configure script will tell you!
+Before using the configure script to install cdpfgl you'll have to install all dependencies. If you forgot a dependency the configure script will tell you!
 
 
 # Installing dependencies
 
-You'll have to install the dependencies in order to be able to compile sauvegarde's project. Some dependencies are fine to be installed with the system's package manager some are too old and needs to be installed manually. In this section we will install everthing to /usr/local. Consider your onw case to choose the right installation directory.
+You'll have to install the dependencies in order to be able to compile cdpfgl's project. Some dependencies are fine to be installed with the system's package manager some are too old and needs to be installed manually. In this section we will install everthing to /usr/local. Consider your onw case to choose the right installation directory.
 
 
 ## Install dependencies from the system (here for debian):

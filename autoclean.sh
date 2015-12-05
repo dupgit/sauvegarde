@@ -59,7 +59,7 @@ delete_file "config.log"
 delete_file "libtool"
 delete_file "compile"
 delete_dir "autom4te.cache"
-delete_dir "packaging/debian/sauvegarde*"
+delete_dir "packaging/debian/cdpfgl*"
 
 delete_evrywhere "*~"
 delete_evrywhere "*#"

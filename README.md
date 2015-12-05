@@ -1,8 +1,6 @@
-# Sauvegarde
+# cdpfgl: Continuous data protection for GNU/Linux
 
-Continuous data protection for GNU/Linux (cdpfgl).
-
-This page is sauvegarde doxygen's @mainpage.
+This page is cdpfgl's doxygen's @mainpage.
 
 [![Build Status](https://travis-ci.org/dupgit/sauvegarde.png?branch=master)](https://travis-ci.org/dupgit/sauvegarde)
 
@@ -20,7 +18,7 @@ is used for the artwork. You'll find a LICENSE file in this directory
 for the programs (GPL v3) and one in the pixmaps file for the artwork
 (CC-BY-SA 4.0).
 
-Feel free to contibute to sauvegarde's project and/or give help to the
+Feel free to contibute to cdpfgl's project and/or give help to the
 projects used here (see dependencies section below).
 
 
@@ -40,15 +38,15 @@ stated between () and recommended version between []):
 
 jansson's library version is quite recent but it compiles nicely and
 depends on nothing (as far as I know).
-Compiling sauvegarde also needs gnutls development files (used by
+Compiling cdpfgl also needs gnutls development files (used by
 libmicrohttpd). Please have a look at .travis.yml file in order to see how
-to compile dependencies before compiling sauvegarde.
+to compile dependencies before compiling cdpfgl.
 
-Sauvegarde's project is known to compile (sometimes at the expense of
+cdpfgl's project is known to compile (sometimes at the expense of
 recompiling and installing newer versions of dependencies) and run under
 Centos 7, Debian Jessie, Ubuntu 12.04 LTS, VoidLinux and raspbian 3 and
 on x86_64 and arm7l architectures. Please let me know if you have compiled
-Sauvegarde successfully in a system that is not listed here.
+cdpfgl successfully in a system that is not listed here.
 
 
 ### Optional
@@ -79,7 +77,7 @@ in the classic way:
     make
     make install
 
-If you need more information about how to install sauvegarde you can
+If you need more information about how to install cdpfgl you can
 also have a look at the [installation manual](manual/installation.md).
 
 
@@ -89,7 +87,7 @@ also have a look at the [installation manual](manual/installation.md).
 
 First you need to run the program `cdpflgserver` on a machine that will act as
 a server. You can configure options in `server.conf` (located by default
-in `{prefix}/etc/sauvegarde/`) or use the command's line options:
+in `{prefix}/etc/cdpfgl/`) or use the command's line options:
 
     Usage:
       cdpfglserver [OPTION...]
@@ -210,7 +208,7 @@ should consider that "It ships when its ready".
 ## Code documentation
 
 If you are interrested in helping the projet please have a look at
-[coding_in_sauvegarde.md](docs/coding_in_sauvegarde.md) file. Some
+[coding_in_cdpfgl.md](docs/coding_in_cdpfgl.md) file. Some
 inside insights are in the [infrastructure](docs/infrastructure.md)
 documentation as well for the [API](docs/API.md) part.
 

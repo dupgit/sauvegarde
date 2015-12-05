@@ -19,12 +19,12 @@ evolve in the future.
   16384 bytes (by default) and transmits every pieces along side with
   meta data of each files to server, the server that saves everything.
 
-* "server" is the main sauvegarde server. Each client communicates with it
+* "server" is the main cdpfgl server. Each client communicates with it
   and it keeps every chunks of every files with their attributes.
 
 * "restore" is a tool that will provide the ability to restore some
   files or paths to some locations. It communicates directly with "cdpfglserver"
-  main's sauvegarde server.
+  main's cdpfgl server.
 
 
 ## Messages contents
