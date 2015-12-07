@@ -20,7 +20,7 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file monitor/options.c
+ * @file client/options.c
  *
  *  This file contains all the functions to manage command line options.
  * @todo review file configuration sections to make it more consistant

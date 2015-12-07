@@ -20,7 +20,7 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file monitor/options.h
+ * @file client/options.h
  *
  *  This file contains all the definitions for the options of the command
  *  line.

@@ -13,7 +13,7 @@ dnl * Put the preprocessor macros in a header file                        *
 dnl * instead of command line                                             *
 dnl ***********************************************************************
 AC_CONFIG_HEADER([config.h])
-AC_CONFIG_SRCDIR([monitor/client.c])
+AC_CONFIG_SRCDIR([client/client.c])
 
 
 dnl ***********************************************************************
@@ -228,7 +228,7 @@ AC_SUBST(CURL_LIBS)
 AC_CONFIG_FILES([
 Makefile
 libcdpfgl/Makefile
-monitor/Makefile
+client/Makefile
 server/Makefile
 restaure/Makefile
 po/Makefile.in

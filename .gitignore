@@ -27,9 +27,9 @@ po/*.mo
 po/*~
 missing
 mkinstalldirs
-monitor/.deps/
-monitor/.libs/
-monitor/cdpfglclient
+client/.deps/
+client/.libs/
+client/cdpfglclient
 po/POTFILES
 po/fr.gmo
 po/stamp-it

@@ -62,7 +62,7 @@ As an example a JSON structure for a directory looks like:
      "atime": 1401024480,
      "uid": 530,
      "ctime": 1401024479,
-     "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/monitor/.deps",
+     "name": "/home/dup/Dossiers_Perso/projets/sauvegarde/client/.deps",
      "link": "",
      "hostname": "d630",
      "mtime": 1401024479,
