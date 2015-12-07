@@ -58,7 +58,7 @@ typedef struct
 
 
 /**
- * @struct serveur_meta_data_t
+ * @struct SERVER_meta_data_t
  * @brief This structure contains a meta_data_t * field with all
  *        informations about a file's metadata and a hostname field that
  *        says from which machine the file comes from.
@@ -68,7 +68,7 @@ typedef struct
     gchar *hostname;    /**< machine's hostname from which comes the metadata below */
     gboolean data_sent; /**< Tells wether data has already been sent to us or not   */
     meta_data_t *meta;  /**< metadata of a file of the 'hostname' machine           */
-} serveur_meta_data_t;
+} SERVER_meta_data_t;
 
 
 /**
@@ -177,9 +177,9 @@ extern meta_data_t *new_meta_data_t(void);
 
 
 /**
- * @returns a newly allocated serveur_meta_data_t * empty structure.
+ * @returns a newly allocated SERVER_meta_data_t * empty structure.
  */
-extern serveur_meta_data_t *new_smeta_data_t(void);
+extern SERVER_meta_data_t *new_smeta_data_t(void);
 
 
 /**
@@ -192,11 +192,11 @@ extern gpointer free_meta_data_t(meta_data_t *meta, gboolean free_link);
 
 
 /**
- * Frees the serveur_meta_data_t * structure
+ * Frees the SERVER_meta_data_t * structure
  * @param smeta is a meta_data_t * structure to be freed
  * @returns always NULL
  */
-extern gpointer free_smeta_data_t(serveur_meta_data_t *smeta);
+extern gpointer free_smeta_data_t(SERVER_meta_data_t *smeta);
 
 
 /**
@@ -230,7 +230,7 @@ extern gint compare_filenames(gconstpointer a, gconstpointer b);
  * @param smeta is the server meta data of the file to be printed on the
  *        screen
  */
-extern void print_smeta_to_screen(serveur_meta_data_t *smeta);
+extern void print_smeta_to_screen(SERVER_meta_data_t *smeta);
 
 
 /**

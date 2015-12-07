@@ -135,17 +135,17 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
 
 
 /**
- * Gets the file the serveur_meta_data_t * file list if any
+ * Gets the file the SERVER_meta_data_t * file list if any
  * @param res_struct is the main structure for cdpfglrestore program.
  * @param query is the structure that contains everything needed to
  *        query the server (and filter a bit). It must not be NULL.
- * @returns a GSList * of serveur_meta_data_t *
+ * @returns a GSList * of SERVER_meta_data_t *
  */
 static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query)
 {
     gchar *request = NULL;
     json_t *root = NULL;
-    GSList *list = NULL;    /** List of serveur_meta_data_t * returned by this function */
+    GSList *list = NULL;    /** List of SERVER_meta_data_t * returned by this function */
     gint res = CURLE_FAILED_INIT;
 
     if (res_struct != NULL && query != NULL)
@@ -188,9 +188,9 @@ static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query)
  */
 static void print_all_files(res_struct_t *res_struct, query_t *query)
 {
-    GSList *list = NULL;   /** List of serveur_meta_data_t * */
+    GSList *list = NULL;   /** List of SERVER_meta_data_t * */
     GSList *head = NULL;   /** head of the list to be freed  */
-    serveur_meta_data_t *smeta = NULL;
+    SERVER_meta_data_t *smeta = NULL;
 
     if (res_struct != NULL && query != NULL)
         {
@@ -199,7 +199,7 @@ static void print_all_files(res_struct_t *res_struct, query_t *query)
 
             while (list != NULL)
                 {
-                    smeta = (serveur_meta_data_t *) list->data;
+                    smeta = (SERVER_meta_data_t *) list->data;
                     print_smeta_to_screen(smeta);
                     free_smeta_data_t(smeta);
 
@@ -353,9 +353,9 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
  */
 static void restore_last_file(res_struct_t *res_struct, query_t *query)
 {
-    GSList *list = NULL;      /** List of serveur_meta_data_t *            */
+    GSList *list = NULL;      /** List of SERVER_meta_data_t *            */
     GSList *last = NULL;      /** last element of the list                 */
-    serveur_meta_data_t *smeta = NULL;
+    SERVER_meta_data_t *smeta = NULL;
     meta_data_t *meta = NULL;
     gchar *string_inode = NULL;
     gchar *string_atime = NULL;
@@ -370,7 +370,7 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
 
             if (last != NULL)
                 {
-                    smeta = (serveur_meta_data_t *) last->data;
+                    smeta = (SERVER_meta_data_t *) last->data;
                     meta = smeta->meta;
 
                     if (get_debug_mode() == TRUE)

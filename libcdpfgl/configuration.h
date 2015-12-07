@@ -127,19 +127,19 @@
 
 
 /**
- * @def KN_SERVEUR_IP
+ * @def KN_SERVER_IP
  * Defines server's IP address for the client.
  */
-#define KN_SERVEUR_IP ("serveur-ip")
+#define KN_SERVER_IP ("serveur-ip")
 
 
 /** Below you'll find some definitions for the server program */
 /**
- * @def KN_SERVEUR_PORT
+ * @def KN_SERVER_PORT
  * Defines the port number on which serveur program will listen for
  * connexions
  */
-#define KN_SERVEUR_PORT ("serveur-port")
+#define KN_SERVER_PORT ("serveur-port")
 
 
 /** Below you'll find some definitions for the server's backends */

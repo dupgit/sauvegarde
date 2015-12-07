@@ -54,16 +54,16 @@
 #include "libcdpfgl.h"
 
 /**
- * @def SERVEUR_DATE
+ * @def SERVER_DATE
  * Defines server's creation date
  *
- * @def SERVEUR_AUTHORS
+ * @def SERVER_AUTHORS
  * Defines server's main authors
  *
- * @def SERVEUR_LICENSE
+ * @def SERVER_LICENSE
  * Defines server's license (at least GPL v2)
  *
- * @def SERVEUR_VERSION
+ * @def SERVER_VERSION
  * Defines server's version (which may be different of Sauvegarde's whole
  * project and programs that composes it).
  *
@@ -71,10 +71,10 @@
  * Defines the main program name (cdpfglserver - stands for Continuous Data
  * Protection under Gnu/Linux server)
  */
-#define SERVEUR_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
-#define SERVEUR_DATE _("02 11 2015")
-#define SERVEUR_LICENSE _("GPL v3 or later")
-#define SERVEUR_VERSION _("0.0.6")
+#define SERVER_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
+#define SERVER_DATE _("02 11 2015")
+#define SERVER_LICENSE _("GPL v3 or later")
+#define SERVER_VERSION _("0.0.6")
 #define PROGRAM_NAME ("cdpfglserver")
 
 #include "options.h"
@@ -88,10 +88,10 @@
 #define DEFAULT_SERVER_BUFFER_SIZE (8388608)
 
 /**
- * @struct serveur_struct_t
+ * @struct SERVER_struct_t
  * @brief Structure that contains everything needed by the program.
  *
- * This structure was named serveur_struct_t to avoid any confusion with
+ * This structure was named SERVER_struct_t to avoid any confusion with
  * main_struct that is the structure for 'client' program.
  */
 typedef struct
@@ -106,7 +106,7 @@ typedef struct
     GThread *data_thread;     /**< Thread that will take care of storing data      */
     GThread *meta_thread;     /**< Thread that will take care of storing meta data */
     GMainLoop* loop;          /**< Main loop in glib                               */
-} serveur_struct_t;
+} SERVER_struct_t;
 
 
 /**

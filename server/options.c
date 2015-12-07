@@ -116,7 +116,7 @@ static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *fi
     if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
         {
             /* Reading the port number if any */
-            opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVEUR_PORT, _("Could not load serveur port number from file."));
+            opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVER_PORT, _("Could not load serveur port number from file."));
         }
 
     read_debug_mode_from_file(keyfile, filename);
@@ -272,7 +272,7 @@ options_t *do_what_is_needed_from_command_line_options(int argc, char **argv)
         {
             if (opt->version == TRUE)
                 {
-                    print_program_version(PROGRAM_NAME, SERVEUR_DATE, SERVEUR_VERSION, SERVEUR_AUTHORS, SERVEUR_LICENSE);
+                    print_program_version(PROGRAM_NAME, SERVER_DATE, SERVER_VERSION, SERVER_AUTHORS, SERVER_LICENSE);
                     print_libraries_versions(PROGRAM_NAME);
                     print_selected_options(opt);
                     exit(EXIT_SUCCESS);

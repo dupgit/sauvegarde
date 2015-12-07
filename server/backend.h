@@ -31,7 +31,7 @@
 
 /**
  * Function templates definition to be used by backend_t structure.
- * void * pointers are ment to be serveur_struct_t * pointers.
+ * void * pointers are ment to be SERVER_struct_t * pointers.
  * @todo have a function that will say if a hash and its associated data
  *       have already been stored.
  * @todo have a function that will be called when reading configuration
@@ -39,7 +39,7 @@
  * @todo try to imagine a solution to append backend specific new options
  *       to the command line.
  */
-typedef void (* store_smeta_func) (void *, serveur_meta_data_t *);   /**< Stores a serveur_meta_data_t structure according to the backend                            */
+typedef void (* store_smeta_func) (void *, SERVER_meta_data_t *);   /**< Stores a SERVER_meta_data_t structure according to the backend                            */
 typedef void (* store_data_func) (void *, hash_data_t *);            /**< Stores a hash_data_t structure according to the backend                                    */
 typedef GList * (* build_needed_hash_list_func) (void *, GList *);   /**< A function that will check if a hash is already known and build a list
                                                                       *   of needed hashs that the client may send                                                   */
@@ -67,7 +67,7 @@ typedef struct
 
 /**
  * Inits the backend with the correct functions
- * @param store_smeta a function to store serveur_meta_data_t structure
+ * @param store_smeta a function to store SERVER_meta_data_t structure
  * @param store_data a function to store data
  * @param init_backend a function to init the backend
  * @param build_needed_hash_list a function that must build a GSList * needed hash list

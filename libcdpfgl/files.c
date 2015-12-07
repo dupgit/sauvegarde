@@ -65,13 +65,13 @@ meta_data_t *new_meta_data_t(void)
 
 
 /**
- * @returns a newly allocated serveur_meta_data_t * empty structure.
+ * @returns a newly allocated SERVER_meta_data_t * empty structure.
  */
-serveur_meta_data_t *new_smeta_data_t(void)
+SERVER_meta_data_t *new_smeta_data_t(void)
 {
-    serveur_meta_data_t *smeta = NULL;
+    SERVER_meta_data_t *smeta = NULL;
 
-    smeta = (serveur_meta_data_t *) g_malloc(sizeof(serveur_meta_data_t));
+    smeta = (SERVER_meta_data_t *) g_malloc(sizeof(SERVER_meta_data_t));
 
     if (smeta != NULL)
         {
@@ -113,11 +113,11 @@ gpointer free_meta_data_t(meta_data_t *meta, gboolean free_link)
 
 
 /**
- * Frees the serveur_meta_data_t * structure
+ * Frees the SERVER_meta_data_t * structure
  * @param smeta is a meta_data_t * structure to be freed
  * @returns always NULL
  */
-gpointer free_smeta_data_t(serveur_meta_data_t *smeta)
+gpointer free_smeta_data_t(SERVER_meta_data_t *smeta)
 {
     if (smeta != NULL)
         {
@@ -137,7 +137,7 @@ gpointer free_smeta_data_t(serveur_meta_data_t *smeta)
  */
 void gslist_free_smeta(gpointer data)
 {
-    free_smeta_data_t((serveur_meta_data_t *)data);
+    free_smeta_data_t((SERVER_meta_data_t *)data);
 }
 
 
@@ -387,8 +387,8 @@ gboolean file_exists(gchar *filename)
  * Comparison function to be used when sorting filenames. First filenames
  * are compared and when an equality is found then the modified time is
  * compared (as a second sorting criteria)
- * @param a serveur_meta_data_t * representing a file 'a'
- * @param b serveur_meta_data_t * representing a file 'b' to be compared
+ * @param a SERVER_meta_data_t * representing a file 'a'
+ * @param b SERVER_meta_data_t * representing a file 'b' to be compared
  *          with 'a'
  * @returns a negative integer if the a comes before b, 0 if they are
  *          equal, or a positive integer if the a comes after b.
@@ -398,8 +398,8 @@ gint compare_filenames(gconstpointer a, gconstpointer b)
     gchar *key_a = NULL;
     gchar *key_b = NULL;
     gint value = 0;
-    serveur_meta_data_t *sa = (serveur_meta_data_t *) a;
-    serveur_meta_data_t *sb = (serveur_meta_data_t *) b;
+    SERVER_meta_data_t *sa = (SERVER_meta_data_t *) a;
+    SERVER_meta_data_t *sb = (SERVER_meta_data_t *) b;
 
 
     key_a = g_utf8_collate_key_for_filename(sa->meta->name, -1);
@@ -435,7 +435,7 @@ gint compare_filenames(gconstpointer a, gconstpointer b)
  * @param smeta is the serveur meta data of the file to be printed on the
  *        screen
  */
-void print_smeta_to_screen(serveur_meta_data_t *smeta)
+void print_smeta_to_screen(SERVER_meta_data_t *smeta)
 {
     meta_data_t *meta = NULL;   /**< helper to access smeta->meta structure do not free ! */
     GDateTime *la_date = NULL;

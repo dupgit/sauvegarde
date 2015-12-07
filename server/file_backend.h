@@ -79,67 +79,67 @@ typedef struct
  * not safe to call it from different threads unless some mechanism
  * garantees that a write will never occur in the same file at the same
  * time.
- * @param serveur_struct is the server's main structure where all
+ * @param SERVER_struct is the server's main structure where all
  *        informations needed by the program are stored.
  * @param smeta the server's structure for file meta data. It contains the
  *        hostname that sent it. This structure MUST be freed by this
  *        function.
  */
-extern void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *smeta);
+extern void file_store_smeta(SERVER_struct_t *SERVER_struct, SERVER_meta_data_t *smeta);
 
 
 /**
  * Inits the backend : takes care of the directories we want to write to.
  * user_data of the backend structure is a gchar * that represents the
  * prefix path where to store data.
- * @param serveur_struct is the server's main structure where all
+ * @param SERVER_struct is the server's main structure where all
  *        informations needed by the program are stored.
  */
-extern void file_init_backend(serveur_struct_t *serveur_struct);
+extern void file_init_backend(SERVER_struct_t *SERVER_struct);
 
 
 /**
  * Stores data into a flat file. The file is named by its hash in hex
  * representation (one should easily check that the sha256sum of such a
  * file gives its name !).
- * @param serveur_struct is the server's main structure where all
+ * @param SERVER_struct is the server's main structure where all
  *        informations needed by the program are stored.
  * @param hash_data is a hash_data_t * structure that contains the hash and
  *        the corresponding data in a binary form and a 'read' field that
  *        contains the number of bytes in 'data' field.
  */
-extern void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data);
+extern void file_store_data(SERVER_struct_t *SERVER_struct, hash_data_t *hash_data);
 
 
 /**
  * Builds a list of hashs that server's server needs.
- * @param serveur_struct is the server's main structure where all
+ * @param SERVER_struct is the server's main structure where all
  *        informations needed by the program are stored.
  * @param hash_list is the list of hashs that we have to check for.
  */
-extern GList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GList *hash_list);
+extern GList *file_build_needed_hash_list(SERVER_struct_t *SERVER_struct, GList *hash_list);
 
 
 /**
  * Gets the list of all saved files
- * @param serveur_struct is the structure that contains all data for the
+ * @param SERVER_struct is the structure that contains all data for the
  *        server.
  * @param query is the structure that contains everything about the
  *        requested query.
  * @returns a JSON string containing all filenames requested
  */
-extern gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query);
+extern gchar *file_get_list_of_files(SERVER_struct_t *SERVER_struct, query_t *query);
 
 
 /**
  * Retrieves data from a flat file. The file is named by its hash in hex
  * representation (one should easily check that the sha256sum of such a
  * file gives its name !).
- * @param serveur_struct is the server's main structure where all
+ * @param SERVER_struct is the server's main structure where all
  *        informations needed by the program are stored.
  * @param hex_hash is a gchar * hash in hexadecimal format as retrieved
  *        from the url.
  */
-extern hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_hash);
+extern hash_data_t *file_retrieve_data(SERVER_struct_t *SERVER_struct, gchar *hex_hash);
 
 #endif /* #ifndef _SERVER_FILE_BACKEND_H_ */

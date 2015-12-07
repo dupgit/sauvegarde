@@ -652,10 +652,10 @@ msgstr ""
 
 #: ../serveur/file_backend.c:124
 msgid ""
-"Error: no serveur_meta_data_t structure or missing hostname or missing "
+"Error: no SERVER_meta_data_t structure or missing hostname or missing "
 "meta_data_t * structure.\n"
 msgstr ""
-"Erreur : pas de structure serveur_meta_data_t ou nom de l'hôte manquant ou "
+"Erreur : pas de structure SERVER_meta_data_t ou nom de l'hôte manquant ou "
 "structure meta_data_t manquante.\n"
 
 #: ../serveur/file_backend.c:187

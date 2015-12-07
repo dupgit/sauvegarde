@@ -50,14 +50,14 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
  * not safe to call it from different threads unless some mechanism
  * garantees that a write will never occur in the same file at the same
  * time.
- * @param serveur_struct is the serveur main structure where all
+ * @param SERVER_struct is the serveur main structure where all
  *        informations needed by the program are stored.
  * @param smeta the server's structure for file meta data. It contains the
  *        hostname that sent it. This structure IS FREED by this
  *        function.
  * @todo prefix should be set as a configuration's option.
  */
-void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *smeta)
+void file_store_smeta(SERVER_struct_t *SERVER_struct, SERVER_meta_data_t *smeta)
 {
     GFile *meta_file = NULL;
     gchar *filename = NULL;
@@ -73,10 +73,10 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
     file_backend_t *file_backend = NULL;
 
 
-    if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL && smeta != NULL)
+    if (SERVER_struct != NULL && SERVER_struct->backend != NULL && SERVER_struct->backend->user_data != NULL && smeta != NULL)
         {
             meta = smeta->meta;
-            file_backend = serveur_struct->backend->user_data;
+            file_backend = SERVER_struct->backend->user_data;
             prefix = g_build_filename((gchar *) file_backend->prefix, "meta", NULL);
 
             if (smeta->hostname != NULL && meta != NULL)
@@ -123,7 +123,7 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, _("Error: no serveur_meta_data_t structure or missing hostname or missing meta_data_t * structure.\n"));
+                    print_error(__FILE__, __LINE__, _("Error: no SERVER_meta_data_t structure or missing hostname or missing meta_data_t * structure.\n"));
                 }
 
             free_variable(prefix);
@@ -135,14 +135,14 @@ void file_store_smeta(serveur_struct_t *serveur_struct, serveur_meta_data_t *sme
  * Stores data into a flat file. The file is named by its hash in hex
  * representation (one should easily check that the sha256sum of such a
  * file gives its name !).
- * @param serveur_struct is the server's main structure where all
+ * @param SERVER_struct is the server's main structure where all
  *        informations needed by the program are stored.
  * @param hash_data is a hash_data_t * structure that contains the hash and
  *        the corresponding data in a binary form and a 'read' field that
  *        contains the number of bytes in 'data' field.
  * @todo prefix should be set as a configuration's option.
  */
-void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
+void file_store_data(SERVER_struct_t *SERVER_struct, hash_data_t *hash_data)
 {
     GFile *data_file = NULL;
     gchar *filename = NULL;
@@ -155,9 +155,9 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
     gchar *prefix = NULL;
     file_backend_t *file_backend = NULL;
 
-    if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL)
+    if (SERVER_struct != NULL && SERVER_struct->backend != NULL && SERVER_struct->backend->user_data != NULL)
         {
-            file_backend = serveur_struct->backend->user_data;
+            file_backend = SERVER_struct->backend->user_data;
             prefix = g_build_filename((gchar *) file_backend->prefix, "data", NULL);
 
             if (hash_data != NULL && hash_data->hash != NULL && hash_data->data != NULL)
@@ -209,13 +209,13 @@ void file_store_data(serveur_struct_t *serveur_struct, hash_data_t *hash_data)
 
 /**
  * Builds a list of hashs that cdpfglerver's server needs.
- * @param serveur_struct is the server's main structure where all
+ * @param SERVER_struct is the server's main structure where all
  *        informations needed by the program are stored.
  * @param hash_list is the list of hashs that we have to check for.
  * @returns to the client a list of hashs in no specific order for which
  *          the server needs the data.
  */
-GList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GList *hash_data_list)
+GList *file_build_needed_hash_list(SERVER_struct_t *SERVER_struct, GList *hash_data_list)
 {
     GFile *data_file = NULL;
     GList *head = hash_data_list;
@@ -230,9 +230,9 @@ GList *file_build_needed_hash_list(serveur_struct_t *serveur_struct, GList *hash
     hash_data_t *needed_hash_data = NULL;
 
 
-    if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL)
+    if (SERVER_struct != NULL && SERVER_struct->backend != NULL && SERVER_struct->backend->user_data != NULL)
         {
-            file_backend = serveur_struct->backend->user_data;
+            file_backend = SERVER_struct->backend->user_data;
 
             prefix = g_build_filename((gchar *) file_backend->prefix, "data", NULL);
 
@@ -407,15 +407,15 @@ static void read_from_group_file_backend(file_backend_t *file_backend, gchar *fi
  * user_data of the backend structure is a file_backend_t structure that
  * contains the prefix path where to store data and the level of
  * indirections
- * @param serveur_struct is the server's main structure where all
+ * @param SERVER_struct is the server's main structure where all
  *        informations needed by the program are stored.
  */
-void file_init_backend(serveur_struct_t *serveur_struct)
+void file_init_backend(SERVER_struct_t *SERVER_struct)
 {
     file_backend_t *file_backend = NULL;
     gchar *path = NULL;
 
-    if (serveur_struct != NULL && serveur_struct->backend != NULL)
+    if (SERVER_struct != NULL && SERVER_struct->backend != NULL)
         {
             file_backend = (file_backend_t *) g_malloc0(sizeof(file_backend_t));
 
@@ -423,13 +423,13 @@ void file_init_backend(serveur_struct_t *serveur_struct)
             file_backend->prefix = g_strdup("/var/tmp/cdpfgl/serveur");
             file_backend->level = 2;
 
-            if (serveur_struct->opt != NULL && serveur_struct->opt->configfile != NULL)
+            if (SERVER_struct->opt != NULL && SERVER_struct->opt->configfile != NULL)
                 {
                     /* Values from the config file */
-                    read_from_group_file_backend(file_backend, serveur_struct->opt->configfile);
+                    read_from_group_file_backend(file_backend, SERVER_struct->opt->configfile);
                 }
 
-            serveur_struct->backend->user_data = file_backend;
+            SERVER_struct->backend->user_data = file_backend;
 
             file_create_directory(file_backend->prefix, "meta");
             file_create_directory(file_backend->prefix, "data");
@@ -738,7 +738,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
 /**
  * Gets the list of all saved files.
- * @param serveur_struct is the structure that contains all data for the
+ * @param SERVER_struct is the structure that contains all data for the
  *        server.
  * @param query is the structure that contains everything about the
  *        requested query.
@@ -746,7 +746,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
  * @note g_str_match_string is only available since glib 2.40 and
  *       travis-ci.org has an older version of it!
  */
-gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
+gchar *file_get_list_of_files(SERVER_struct_t *SERVER_struct, query_t *query)
 {
     gchar *filename = NULL;
     file_backend_t *file_backend = NULL;
@@ -765,14 +765,14 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
 
     array = json_array();
 
-    if (serveur_struct != NULL && serveur_struct->backend != NULL &&  serveur_struct->backend->user_data != NULL && query != NULL)
+    if (SERVER_struct != NULL && SERVER_struct->backend != NULL &&  SERVER_struct->backend->user_data != NULL && query != NULL)
         {
 
             print_debug(_("file_backend: filter is: %s && %s\n"), query->filename, query->date);
 
             a_regex = g_regex_new(query->filename, G_REGEX_CASELESS, 0, &error);
 
-            file_backend = serveur_struct->backend->user_data;
+            file_backend = SERVER_struct->backend->user_data;
             filename =  g_build_filename(file_backend->prefix, "meta", query->hostname, NULL);
             the_file = g_file_new_for_path(filename);
 
@@ -836,12 +836,12 @@ gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *query)
  * Retrieves data from a flat file. The file is named by its hash in hex
  * representation (one should easily check that the sha256sum of such a
  * file gives its name !).
- * @param serveur_struct is the server's main structure where all
+ * @param SERVER_struct is the server's main structure where all
  *        informations needed by the program are stored.
  * @param hex_hash is a gchar * hash in hexadecimal format as retrieved
  *        from the url.
  */
-hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_hash)
+hash_data_t *file_retrieve_data(SERVER_struct_t *SERVER_struct, gchar *hex_hash)
 {
     GFile *data_file = NULL;
     gchar *filename = NULL;
@@ -858,9 +858,9 @@ hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_has
     guint64 filesize = 0;
 
 
-    if (serveur_struct != NULL && serveur_struct->backend != NULL && serveur_struct->backend->user_data != NULL)
+    if (SERVER_struct != NULL && SERVER_struct->backend != NULL && SERVER_struct->backend->user_data != NULL)
         {
-            file_backend = serveur_struct->backend->user_data;
+            file_backend = SERVER_struct->backend->user_data;
             prefix = g_build_filename((gchar *) file_backend->prefix, "data", NULL);
             hash = string_to_hash(hex_hash);
             path = make_path_from_hash(prefix, hash, file_backend->level);
