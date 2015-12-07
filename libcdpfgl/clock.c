@@ -25,7 +25,7 @@
  * This file contains the functions to measure time.
  */
 
-#include "libsauvegarde.h"
+#include "libcdpfgl.h"
 
 /**
  * Creates a new clock_t structure filled accordingly

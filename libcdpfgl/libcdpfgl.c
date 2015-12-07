@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
- *    libsauvegarde.c
+ *    libcdpfgl.c
  *
  *    This file is part of "Sauvegarde" project.
  *
@@ -22,11 +22,11 @@
  */
 
 /**
- * @file libsauvegarde.c
+ * @file libcdpfgl.c
  * This library contains all tools that may be used in cdpfgl's programs.
  */
 
-#include "libsauvegarde.h"
+#include "libcdpfgl.h"
 
 static void catcher(int sig);
 static void print_buffer(gchar *buffer);

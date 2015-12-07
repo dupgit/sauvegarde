@@ -29,7 +29,7 @@
  *    http://curl.haxx.se/libcurl/c/CURLOPT_ERRORBUFFER.html
  */
 
-#include "libsauvegarde.h"
+#include "libcdpfgl.h"
 
 static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
 

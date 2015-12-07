@@ -26,7 +26,7 @@
  * of "Sauvegarde" project.
  */
 
-#include "libsauvegarde.h"
+#include "libcdpfgl.h"
 
 /**
  * Comparison function used to compare two hashs (binary form) mainly

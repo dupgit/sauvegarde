@@ -26,7 +26,7 @@
  * programs of "Sauvegarde" project.
  */
 
-#include "libsauvegarde.h"
+#include "libcdpfgl.h"
 
 static void print_db_error(sqlite3 *db, const char *format, ...);
 static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message);

@@ -1,6 +1,6 @@
 pkglib_LTLIBRARIES = libcdpfgl.la
 
-headerfiles = libsauvegarde.h	\
+headerfiles = libcdpfgl.h	    \
 			  configuration.h	\
 			  communique.h		\
 			  files.h			\
@@ -10,17 +10,17 @@ headerfiles = libsauvegarde.h	\
 			  query.h			\
 			  clock.h
 
-libcdpfgl_la_SOURCES = libsauvegarde.c 	    \
-						   configuration.c		\
-						   communique.c		    \
-						   files.c				\
-						   hashs.c				\
-						   database.c			\
-						   packing.c			\
-						   unpacking.c			\
-						   query.c				\
-						   clock.c              \
-						   $(headerfiles)
+libcdpfgl_la_SOURCES = libcdpfgl.c          \
+                       configuration.c		\
+                       communique.c		    \
+                       files.c				\
+                       hashs.c				\
+                       database.c			\
+                       packing.c			\
+                       unpacking.c			\
+                       query.c				\
+                       clock.c              \
+                       $(headerfiles)
 
 libcdpfgl_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)    \
                           $(SQLITE_CFLAGS) $(JANSSON_CFLAGS)    \

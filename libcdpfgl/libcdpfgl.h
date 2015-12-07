@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
- *    libsauvegarde.h
+ *    libcdpfgl.h
+ *
  *    This file is part of "Sauvegarde" project.
  *
  *    (C) Copyright 2014 - 2015 Olivier Delhomme
@@ -20,13 +21,13 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file libsauvegarde.h
+ * @file libcdpfgl.h
  *
  *  This file contains all the definitions for the common tools of
  *  cdpfgl's collection programs.
  */
-#ifndef _LIBSAUVEGARDE_H_
-#define _LIBSAUVEGARDE_H_
+#ifndef _LIBCDPFGL_H_
+#define _LIBCDPFGL_H_
 
 /* Configuration from ./configure script */
 #include "config.h"
@@ -251,4 +252,4 @@ extern void wait_for_queue_to_flush(GAsyncQueue *queue, guint nbelem, useconds_t
 extern gchar *make_MHD_version(void);
 
 
-#endif /* #ifndef _LIBSAUVEGARDE_H_ */
+#endif /* #ifndef _LIBCDPFGL_H_ */

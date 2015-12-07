@@ -26,7 +26,7 @@
  * programs of "Sauvegarde" project.
  */
 
-#include "libsauvegarde.h"
+#include "libcdpfgl.h"
 
 static guint8 get_guint8_from_json_root(json_t *root, gchar *keyname);
 static guint32 get_guint32_from_json_root(json_t *root, gchar *keyname);

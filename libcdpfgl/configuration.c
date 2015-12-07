@@ -26,7 +26,7 @@
  * of the "Sauvegarde" programs.
  */
 
-#include "libsauvegarde.h"
+#include "libcdpfgl.h"
 
 /**
  * Gets the probable filename for the configuration file of sauvegarde
