@@ -54,16 +54,16 @@
 
 
 /**
- * @def MONITOR_DATE
+ * @def CLIENT_DATE
  * Defines monitor's creation date
  *
- * @def MONITOR_AUTHORS
+ * @def CLIENT_AUTHORS
  * Defines monitor's main authors
  *
- * @def MONITOR_LICENSE
+ * @def CLIENT_LICENSE
  * Defines monitor's license (at least GPL v2)
  *
- * @def MONITOR_VERSION
+ * @def CLIENT_VERSION
  * Defines monitor's version (which may be different of Sauvegarde's whole
  * project and programs that composes it).
 
@@ -71,10 +71,10 @@
  * Defines the main program name for this part (monitor + ciseaux +
  * antememoire).
  */
-#define MONITOR_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
-#define MONITOR_DATE _("02 11 2015")
-#define MONITOR_LICENSE _("GPL v3 or later")
-#define MONITOR_VERSION _("0.0.6")
+#define CLIENT_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
+#define CLIENT_DATE _("02 11 2015")
+#define CLIENT_LICENSE _("GPL v3 or later")
+#define CLIENT_VERSION _("0.0.6")
 #define PROGRAM_NAME ("client")
 
 
