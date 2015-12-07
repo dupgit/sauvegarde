@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
- *    serveur.c
+ *    server.c
  *    This file is part of "Sauvegarde" project.
  *
  *    (C) Copyright 2014 - 2015 Olivier Delhomme
@@ -21,13 +21,13 @@
  */
 
 /**
- * @file serveur.c
+ * @file server.c
  * This file contains all the stuff for the cdpfglserver program of "Sauvegarde"
  * project. The aim of this program is to save every checksum and data and
  * meta data of every 'client' program that is connected to.
  */
 
-#include "serveur.h"
+#include "server.h"
 
 static void free_serveur_struct_t(serveur_struct_t *serveur_struct);
 static gboolean int_signal_handler(gpointer user_data);

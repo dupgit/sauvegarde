@@ -29,7 +29,7 @@
  * do not translate this. Thanks.
  */
 
-#include "serveur.h"
+#include "server.h"
 
 
 static void file_create_directory(gchar *save_dir, gchar *sub_dir);

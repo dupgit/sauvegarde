@@ -26,7 +26,7 @@
  * cdpfglserver's server.
  */
 
-#include "serveur.h"
+#include "server.h"
 
 
 /**

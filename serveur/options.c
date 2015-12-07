@@ -26,7 +26,7 @@
  *  'serveur' program.
  */
 
-#include "serveur.h"
+#include "server.h"
 
 static void print_selected_options(options_t *opt);
 static void read_from_configuration_file(options_t *opt, gchar *filename);

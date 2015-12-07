@@ -34,5 +34,5 @@ serveur/file_backend.c
 serveur/file_backend.h
 serveur/options.c
 serveur/options.h
-serveur/serveur.c
-serveur/serveur.h
+serveur/server.c
+serveur/server.h

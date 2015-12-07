@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
- *    serveur.h
+ *    server.h
  *    This file is part of "Sauvegarde" project.
  *
  *    (C) Copyright 2014 - 2015 Olivier Delhomme
@@ -20,7 +20,7 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file serveur.h
+ * @file server.h
  *
  * This file contains all the definitions of the functions and structures
  * that are used by 'cdpfglserver' Sauvegarde's server.
