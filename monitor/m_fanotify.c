@@ -29,7 +29,7 @@
  *         now - but should not be like that after tests).
  */
 
-#include "monitor.h"
+#include "client.h"
 
 static gchar *get_file_path_from_fd(gint fd);
 static char *get_program_name_from_pid(int pid);

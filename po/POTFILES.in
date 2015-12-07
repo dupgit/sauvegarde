@@ -20,8 +20,8 @@ libcdpfgl/query.h
 libcdpfgl/unpacking.c
 monitor/m_fanotify.c
 monitor/m_fanotify.h
-monitor/monitor.c
-monitor/monitor.h
+monitor/client.c
+monitor/client.h
 monitor/options.c
 monitor/options.h
 restaure/options.c

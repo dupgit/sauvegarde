@@ -7,11 +7,11 @@ cdpfglclient_LDFLAGS = $(LDFLAGS)
 cdpfglclient_LDADD = $(GLIB_LIBS) $(GIO_LIBS)  -L../libcdpfgl -lcdpfgl \
 					  $(SQLITE_LIBS) $(JANSSON_LIBS) $(CURL_LIBS)
 
-cdpfglclient_HEADERFILES =  monitor.h      \
+cdpfglclient_HEADERFILES =  client.h       \
 							options.h      \
 							m_fanotify.h
 
-cdpfglclient_SOURCES =  monitor.c                   \
+cdpfglclient_SOURCES =  client.c                    \
 						options.c                   \
 						m_fanotify.c                \
 						$(cdpfglclient_HEADERFILES)

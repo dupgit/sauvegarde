@@ -27,7 +27,7 @@
  *       with actual program.
  */
 
-#include "monitor.h"
+#include "client.h"
 
 static void print_selected_options(options_t *opt);
 static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *filename);

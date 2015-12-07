@@ -13,7 +13,7 @@ dnl * Put the preprocessor macros in a header file                        *
 dnl * instead of command line                                             *
 dnl ***********************************************************************
 AC_CONFIG_HEADER([config.h])
-AC_CONFIG_SRCDIR([monitor/monitor.c])
+AC_CONFIG_SRCDIR([monitor/client.c])
 
 
 dnl ***********************************************************************

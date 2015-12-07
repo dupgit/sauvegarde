@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
- *    monitor.h
+ *    client.h
  *    This file is part of "Sauvegarde" project.
  *
  *    (C) Copyright 2014 - 2015 Olivier Delhomme
@@ -20,12 +20,12 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file monitor.h
+ * @file client.h
  *
  *  This file contains all the definitions for the monitor program.
  */
-#ifndef _MONITOR_H_
-#define _MONITOR_H_
+#ifndef _CLIENT_H_
+#define _CLIENT_H_
 
 /* Configuration from ./configure script */
 #include "config.h"
@@ -158,4 +158,4 @@ extern file_event_t *new_file_event_t(gchar *directory, GFileInfo *fileinfo);
 
 #include "m_fanotify.h"
 
-#endif /* #IFNDEF _MONITOR_H_ */
+#endif /* #IFNDEF _CLIENT_H_ */

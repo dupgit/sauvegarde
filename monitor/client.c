@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
- *    monitor.c
+ *    client.c
  *    This file is part of "Sauvegarde" project.
  *
  *    (C) Copyright 2014 - 2015 Olivier Delhomme
@@ -21,14 +21,14 @@
  */
 
 /**
- * @file monitor.c
+ * @file client.c
  *
  * This file is the main file for the monitor program. This monitor
  * program has to monitor file changes onto filesystems. It should notice
  * when a file is created, deleted or changed
  */
 
-#include "monitor.h"
+#include "client.h"
 
 static GSList *make_regex_exclude_list(GSList *exclude_list);
 static gboolean exclude_file(GSList *regex_exclude_list, gchar *filename);
