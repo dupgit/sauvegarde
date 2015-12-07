@@ -20,7 +20,7 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file serveur/file_backend.c
+ * @file server/file_backend.c
  *
  * This file contains all the functions for the file backend that saves
  * everything to some flat files somewhere into the filesystem.

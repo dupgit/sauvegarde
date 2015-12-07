@@ -27,8 +27,8 @@
  * @todo add some stats structure that will keep some values about the
  *       activity of cdglserver server.
  */
-#ifndef _SERVEUR_H_
-#define _SERVEUR_H_
+#ifndef _SERVER_H_
+#define _SERVER_H_
 
 #include "config.h"
 
@@ -126,4 +126,4 @@ typedef struct
 #include "file_backend.h"
 
 
-#endif /* #ifndef _SERVEUR_H_ */
+#endif /* #ifndef _SERVER_H_ */

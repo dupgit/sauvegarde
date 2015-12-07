@@ -229,7 +229,7 @@ AC_CONFIG_FILES([
 Makefile
 libcdpfgl/Makefile
 monitor/Makefile
-serveur/Makefile
+server/Makefile
 restaure/Makefile
 po/Makefile.in
 libcdpfgl/libcdpfgl.pc

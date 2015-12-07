@@ -20,14 +20,14 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file serveur/file_backend.h
+ * @file server/file_backend.h
  *
  * This file contains all definition for the functions for the file backend
  * system.
  */
 
-#ifndef _SERVEUR_FILE_BACKEND_H_
-#define _SERVEUR_FILE_BACKEND_H_
+#ifndef _SERVER_FILE_BACKEND_H_
+#define _SERVER_FILE_BACKEND_H_
 
 
 /**
@@ -142,4 +142,4 @@ extern gchar *file_get_list_of_files(serveur_struct_t *serveur_struct, query_t *
  */
 extern hash_data_t *file_retrieve_data(serveur_struct_t *serveur_struct, gchar *hex_hash);
 
-#endif /* #ifndef _SERVEUR_FILE_BACKEND_H_ */
+#endif /* #ifndef _SERVER_FILE_BACKEND_H_ */

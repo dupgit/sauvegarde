@@ -20,15 +20,15 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file serveur/options.h
+ * @file server/options.h
  *
  * This file contains all the definitions for the options of the command
  * line for 'cdpfglserver' program. It is very similar to monitor's options.h
  * file.
  *
  */
-#ifndef _SERVEUR_OPTIONS_H_
-#define _SERVEUR_OPTIONS_H_
+#ifndef _SERVER_OPTIONS_H_
+#define _SERVER_OPTIONS_H_
 
 /**
  * @struct options_t
@@ -89,4 +89,4 @@ extern options_t *manage_command_line_options(int argc, char **argv);
 extern options_t *do_what_is_needed_from_command_line_options(int argc, char **argv);
 
 
-#endif /* #IFNDEF _SERVEUR_OPTIONS_H_ */
+#endif /* #IFNDEF _SERVER_OPTIONS_H_ */

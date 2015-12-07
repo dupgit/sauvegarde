@@ -20,7 +20,7 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file serveur/backend.c
+ * @file server/backend.c
  *
  * This file contains all the functions for the backend management of
  * cdpfglserver's server.

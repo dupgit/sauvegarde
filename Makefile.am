@@ -1,4 +1,4 @@
-SUBDIRS = libcdpfgl serveur monitor restaure po
+SUBDIRS = libcdpfgl server monitor restaure po
 
 ACLOCAL_AMFLAGS = -I m4
 

@@ -20,10 +20,10 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file serveur/options.c
+ * @file server/options.c
  *
  *  This file contains all the functions to manage command line options for
- *  'serveur' program.
+ *  'cdpfglserver' program.
  */
 
 #include "server.h"

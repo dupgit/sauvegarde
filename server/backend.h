@@ -21,13 +21,13 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file serveur/backend.h
+ * @file server/backend.h
  *
  * This file contains all the definitions for the backend management of
  * cdpfglserver's server.
  */
-#ifndef _SERVEUR_BACKEND_H_
-#define _SERVEUR_BACKEND_H_
+#ifndef _SERVER_BACKEND_H_
+#define _SERVER_BACKEND_H_
 
 /**
  * Function templates definition to be used by backend_t structure.
@@ -81,4 +81,4 @@ extern backend_t *init_backend_structure(void *store_smeta, void *store_data, vo
 
 
 
-#endif /* #ifndef _SERVEUR_BACKEND_H_ */
+#endif /* #ifndef _SERVER_BACKEND_H_ */

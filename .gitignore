@@ -34,9 +34,9 @@ po/POTFILES
 po/fr.gmo
 po/stamp-it
 stamp-h1
-serveur/.deps/
-serveur/.libs/
-serveur/cdpfglserver
+server/.deps/
+server/.libs/
+server/cdpfglserver
 restaure/.deps/
 restaure/.libs/
 restaure/cdpfglrestore
