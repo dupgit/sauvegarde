@@ -24,10 +24,10 @@ client/client.c
 client/client.h
 client/options.c
 client/options.h
-restaure/options.c
-restaure/options.h
-restaure/restaure.c
-restaure/restaure.h
+restore/options.c
+restore/options.h
+restore/restaure.c
+restore/restaure.h
 server/backend.c
 server/backend.h
 server/file_backend.c

@@ -1,4 +1,4 @@
-SUBDIRS = libcdpfgl server client restaure po
+SUBDIRS = libcdpfgl server client restore po
 
 ACLOCAL_AMFLAGS = -I m4
 

@@ -37,9 +37,9 @@ stamp-h1
 server/.deps/
 server/.libs/
 server/cdpfglserver
-restaure/.deps/
-restaure/.libs/
-restaure/cdpfglrestore
+restore/.deps/
+restore/.libs/
+restore/cdpfglrestore
 compile
 manual/*.tex
 manual/*.pdf

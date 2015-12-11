@@ -230,7 +230,7 @@ Makefile
 libcdpfgl/Makefile
 client/Makefile
 server/Makefile
-restaure/Makefile
+restore/Makefile
 po/Makefile.in
 libcdpfgl/libcdpfgl.pc
 ])
