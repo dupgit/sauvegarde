@@ -22,15 +22,15 @@ addons:
 install:
     # jansson (not found by travis's apt as of 24.08.2015)
     - git clone git://github.com/akheron/jansson.git
-    - (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure --prefix=$HOME/local; make; make install)
+    - (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure --prefix=$HOME/local; make; make install; cd ..; rm -fr jansson)
 
     # libmicrohttpd (the one in ubuntu 12.04 is too old).
     - wget --quiet -c http://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-0.9.46.tar.gz
-    - (tar zxf libmicrohttpd-0.9.46.tar.gz; cd libmicrohttpd-0.9.46; ./configure --prefix=$HOME/local; make; make install)
+    - (tar zxf libmicrohttpd-0.9.46.tar.gz; cd libmicrohttpd-0.9.46; ./configure --prefix=$HOME/local; make; make install; cd ..; rm -fr libmicrohttpd-0.9.46)
 
     # sqlite newer version
     - wget --quiet -c https://www.sqlite.org/2015/sqlite-autoconf-3090100.tar.gz
-    - (tar zxf sqlite-autoconf-3090100.tar.gz; cd sqlite-autoconf-3090100; ./configure --prefix=$HOME/local; make; make install)
+    - (tar zxf sqlite-autoconf-3090100.tar.gz; cd sqlite-autoconf-3090100; ./configure --prefix=$HOME/local; make; make install; cd..; rm -fr sqlite-autoconf-3090100)
 
 # Building cdpfgl
 script:
