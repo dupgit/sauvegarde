@@ -26,7 +26,7 @@
  *  'cdpfglrestore' program.
  */
 
-#include "restaure.h"
+#include "restore.h"
 
 static void print_selected_options(options_t *opt);
 static void read_from_group_all(GKeyFile *keyfile, gchar *filename);

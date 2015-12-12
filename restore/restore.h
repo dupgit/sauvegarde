@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
- *    restaure.h
+ *    restore.h
  *    This file is part of "Sauvegarde" project.
  *
  *    (C) Copyright 2015 Olivier Delhomme
@@ -21,13 +21,13 @@
  */
 
 /**
- * @file restaure.h
+ * @file restore.h
  *
  * This file contains all the definitions of the functions and structures
  * that are used by 'cdpfglrestore' program.
  */
-#ifndef _RESTAURE_H_
-#define _RESTAURE_H_
+#ifndef _RESTORE_H_
+#define _RESTORE_H_
 
 /* Configuration from ./configure script */
 #include "config.h"
@@ -84,4 +84,4 @@ typedef struct
 
 
 
-#endif /* #ifndef _RESTAURE_OPTIONS_H_ */
+#endif /* #ifndef _RESTORE_OPTIONS_H_ */

@@ -26,8 +26,8 @@ client/options.c
 client/options.h
 restore/options.c
 restore/options.h
-restore/restaure.c
-restore/restaure.h
+restore/restore.c
+restore/restore.h
 server/backend.c
 server/backend.h
 server/file_backend.c

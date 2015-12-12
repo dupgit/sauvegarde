@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
- *    restaure.c
+ *    restore.c
  *    This file is part of "Sauvegarde" project.
  *
  *    (C) Copyright 2015 Olivier Delhomme
@@ -21,11 +21,11 @@
  */
 
 /**
- * @file restaure.c
+ * @file restore.c
  * This program should be able to restore files.
  */
 
-#include "restaure.h"
+#include "restore.h"
 
 static res_struct_t *init_res_struct(int argc, char **argv);
 static gchar *encode_to_base64(gchar *string);
