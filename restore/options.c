@@ -20,7 +20,7 @@
  *    along with "Sauvegarde".  If not, see <http://www.gnu.org/licenses/>
  */
 /**
- * @file restaure/options.c
+ * @file restore/options.c
  *
  *  This file contains all the functions to manage command line options for
  *  'cdpfglrestore' program.
