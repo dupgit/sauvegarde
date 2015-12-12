@@ -26,8 +26,8 @@
  * line for 'cdpfglrestore' program.
  *
  */
-#ifndef _RESTAURE_OPTIONS_H_
-#define _RESTAURE_OPTIONS_H_
+#ifndef _RESTORE_OPTIONS_H_
+#define _RESTORE_OPTIONS_H_
 
 
 /**
@@ -69,4 +69,4 @@ extern options_t *do_what_is_needed_from_command_line_options(int argc, char **a
  */
 extern void free_options_t_structure(options_t *opt);
 
-#endif /* #ifndef _RESTAURE_OPTIONS_H_ */
+#endif /* #ifndef _RESTORE_OPTIONS_H_ */

@@ -60,26 +60,26 @@ typedef struct
 
 
 /**
- * @def RESTAURE_DATE
+ * @def RESTORE_DATE
  * Defines restore's creation date
  *
- * @def RESTAURE_AUTHORS
+ * @def RESTORE_AUTHORS
  * Defines restore's main authors
  *
- * @def RESTAURE_LICENSE
+ * @def RESTORE_LICENSE
  * Defines restore's license (at least GPL v2)
  *
- * @def RESTAURE_VERSION
+ * @def RESTORE_VERSION
  * Defines restore's version (which may be different of Sauvegarde's whole
  * project and programs that composes it).
 
  * @def PROGRAM_NAME
  * Defines the main program name for this part.
  */
-#define RESTAURE_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
-#define RESTAURE_DATE _("02 11 2015")
-#define RESTAURE_LICENSE _("GPL v3 or later")
-#define RESTAURE_VERSION _("0.0.6")
+#define RESTORE_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
+#define RESTORE_DATE _("02 11 2015")
+#define RESTORE_LICENSE _("GPL v3 or later")
+#define RESTORE_VERSION _("0.0.6")
 #define PROGRAM_NAME ("cdpfglrestore")
 
 
