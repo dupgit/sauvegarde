@@ -21,14 +21,17 @@ addons:
 
 install:
     # jansson (not found by travis's apt as of 24.08.2015)
+    - cd $HOME
     - git clone git://github.com/akheron/jansson.git
     - (cd jansson;  autoreconf -f -i ; CFLAGS=-Werror ./configure --prefix=$HOME/local; make; make install)
 
     # libmicrohttpd (the one in ubuntu 12.04 is too old).
+    - cd $HOME
     - wget --quiet -c http://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-0.9.46.tar.gz
     - (tar zxf libmicrohttpd-0.9.46.tar.gz; cd libmicrohttpd-0.9.46; ./configure --prefix=$HOME/local; make; make install)
 
     # sqlite newer version
+    - cd $HOME
     - wget --quiet -c https://www.sqlite.org/2015/sqlite-autoconf-3090100.tar.gz
     - (tar zxf sqlite-autoconf-3090100.tar.gz; cd sqlite-autoconf-3090100; ./configure --prefix=$HOME/local; make; make install)
 
@@ -36,7 +39,8 @@ install:
 script:
     - export PATH=$PATH:$HOME/local/bin
     - export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/local/lib/pkgconfig
-    - ./autoclean.sh && ./autogen.sh && ./configure --prefix=$HOME/local --enable-debug --disable-silent && make && make check && make install && make dist &&  $HOME/local/bin/cdpfglclient --version && $HOME/local/bin/cdpfglserver --version && $HOME/local/bin/cdpfglrestore --version
+    - ./autoclean.sh && ./autogen.sh && ./configure --prefix=$HOME/local --enable-debug --disable-silent && make && make install &&  $HOME/local/bin/cdpfglclient --version && $HOME/local/bin/cdpfglserver --version && $HOME/local/bin/cdpfglrestore --version
+    - make check && make dist
     - $HOME/build/dupgit/sauvegarde/tests/launch_tests.bash
 
 # irc bot notification
