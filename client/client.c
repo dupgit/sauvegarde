@@ -35,10 +35,10 @@ static gboolean exclude_file(GSList *regex_exclude_list, gchar *filename);
 static main_struct_t *init_main_structure(options_t *opt);
 static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize);
 static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, main_struct_t *main_struct);
-static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent);
+static gchar *send_meta_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent);
 static GList *find_hash_in_list(GList *hash_data_list, guint8 *hash);
-static void send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
-static void send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
+static void send_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
+static void send_all_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
 static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum);
 static void carve_one_directory(gpointer data, gpointer user_data);
 static gpointer carve_all_directories(gpointer data);
@@ -325,7 +325,7 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
  * @returns a newly allocated gchar * string that may be freed when no
  *          longer needed.
  */
-static gchar *send_meta_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent)
+static gchar *send_meta_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent)
 {
     gchar *json_str = NULL;
     gchar *answer = NULL;
@@ -458,7 +458,7 @@ static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *ar
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static void send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
+static void send_all_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
 {
     json_t *root = NULL;
     json_t *array = NULL;
@@ -537,7 +537,7 @@ static void send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, _("Error while loading JSON answer from serveur\n"));
+                    print_error(__FILE__, __LINE__, _("Error while loading JSON answer from server\n"));
                 }
         }
 }
@@ -552,7 +552,7 @@ static void send_all_data_to_serveur(main_struct_t *main_struct, meta_data_t *me
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static void send_data_to_serveur(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
+static void send_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
 {
     json_t *root = NULL;
     GList *hash_list = NULL;         /** hash_list is local to this function */
@@ -747,17 +747,17 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
                     a_file = free_object(a_file);
                 }
 
-            answer = send_meta_data_to_serveur(main_struct, meta, FALSE);
+            answer = send_meta_data_to_server(main_struct, meta, FALSE);
 
             if (meta->size < meta->blocksize)
                 {
                     /* Only one block to send (size is less than blocksize's value) */
-                    send_data_to_serveur(main_struct, meta, answer);
+                    send_data_to_server(main_struct, meta, answer);
                 }
             else
                 {
                     /* A least 2 blocks to send */
-                    send_all_data_to_serveur(main_struct, meta, answer);
+                    send_all_data_to_server(main_struct, meta, answer);
                 }
 
             free_variable(answer); /* Not used by now */
@@ -887,7 +887,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                         }
 
                     meta->hash_data_list = hash_data_list;
-                    answer = send_meta_data_to_serveur(main_struct, meta, TRUE);
+                    answer = send_meta_data_to_server(main_struct, meta, TRUE);
 
                     if (answer != NULL)
                         {   /** @todo may be we should check that answer is something that tells that everything went Ok. */

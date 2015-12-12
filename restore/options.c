@@ -30,7 +30,7 @@
 
 static void print_selected_options(options_t *opt);
 static void read_from_group_all(GKeyFile *keyfile, gchar *filename);
-static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename);
+static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static options_t *manage_command_line_options(int argc, char **argv);
 
 
@@ -45,8 +45,8 @@ static void print_selected_options(options_t *opt)
         {
             fprintf(stdout, _("\n%s options are:\n"), PROGRAM_NAME);
             print_string_option(_("Configuration file: %s\n"), opt->configfile);
-            print_string_option(_("serveur's IP address: %s\n"), opt->ip);
-            fprintf(stdout, _("serveur's port number: %d\n"), opt->port);
+            print_string_option(_("server's IP address: %s\n"), opt->ip);
+            fprintf(stdout, _("server's port number: %d\n"), opt->port);
         }
 }
 
@@ -72,7 +72,7 @@ static void read_from_group_all(GKeyFile *keyfile, gchar *filename)
  *        groups and keys from.
  * @param filename : the filename of the configuration file to read from
  */
-static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename)
+static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
     gint port = 0;
 
@@ -120,7 +120,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
                     read_from_group_all(keyfile, filename);
-                    read_from_group_serveur(opt, keyfile, filename);
+                    read_from_group_server(opt, keyfile, filename);
                 }
             else if (error != NULL)
                 {

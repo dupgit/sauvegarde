@@ -30,7 +30,7 @@
 
 static void print_selected_options(options_t *opt);
 static void read_from_configuration_file(options_t *opt, gchar *filename);
-static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename);
+static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename);
 
 /**
  * Frees the options structure if necessary.
@@ -111,12 +111,12 @@ gchar *buffer_selected_option(options_t *opt)
  *        groups and keys from.
  * @param filename : the filename of the configuration file to read from
  */
-static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename)
+static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
     if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
         {
             /* Reading the port number if any */
-            opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVER_PORT, _("Could not load serveur port number from file."));
+            opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVER_PORT, _("Could not load server port number from file."));
         }
 
     read_debug_mode_from_file(keyfile, filename);
@@ -149,7 +149,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
-                    read_from_group_serveur(opt, keyfile, filename);
+                    read_from_group_server(opt, keyfile, filename);
                 }
             else if (error != NULL)
                 {

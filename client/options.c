@@ -31,7 +31,7 @@
 
 static void print_selected_options(options_t *opt);
 static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *filename);
-static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename);
+static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static void read_from_configuration_file(options_t *opt, gchar *filename);
 static void print_filelist(GSList *filelist, gchar *title);
 
@@ -149,14 +149,14 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
  *        groups and keys from.
  * @param filename : the filename of the configuration file to read from
  */
-static void read_from_group_serveur(options_t *opt, GKeyFile *keyfile, gchar *filename)
+static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
     gint port = 0;
 
     if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
         {
             /* Reading the port number if any */
-            port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVER_PORT, _("Could not load serveur port number from file."));
+            port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVER_PORT, _("Could not load server port number from file."));
 
             if (port > 1024 && port < 65535)
                 {
@@ -197,7 +197,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
                     read_from_group_client(opt, keyfile, filename);
-                    read_from_group_serveur(opt, keyfile, filename);
+                    read_from_group_server(opt, keyfile, filename);
                 }
             else if (error != NULL)
                 {

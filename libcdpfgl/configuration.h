@@ -130,16 +130,16 @@
  * @def KN_SERVER_IP
  * Defines server's IP address for the client.
  */
-#define KN_SERVER_IP ("serveur-ip")
+#define KN_SERVER_IP ("server-ip")
 
 
 /** Below you'll find some definitions for the server program */
 /**
  * @def KN_SERVER_PORT
- * Defines the port number on which serveur program will listen for
+ * Defines the port number on which server program will listen for
  * connexions
  */
-#define KN_SERVER_PORT ("serveur-port")
+#define KN_SERVER_PORT ("server-port")
 
 
 /** Below you'll find some definitions for the server's backends */

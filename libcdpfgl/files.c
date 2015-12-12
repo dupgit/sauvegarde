@@ -432,7 +432,7 @@ gint compare_filenames(gconstpointer a, gconstpointer b)
 
 /**
  * Prints a file ands its meta data to the screen
- * @param smeta is the serveur meta data of the file to be printed on the
+ * @param smeta is the server meta data of the file to be printed on the
  *        screen
  */
 void print_smeta_to_screen(SERVER_meta_data_t *smeta)

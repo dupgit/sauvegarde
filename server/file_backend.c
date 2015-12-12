@@ -50,7 +50,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
  * not safe to call it from different threads unless some mechanism
  * garantees that a write will never occur in the same file at the same
  * time.
- * @param SERVER_struct is the serveur main structure where all
+ * @param SERVER_struct is the server main structure where all
  *        informations needed by the program are stored.
  * @param smeta the server's structure for file meta data. It contains the
  *        hostname that sent it. This structure IS FREED by this
@@ -420,7 +420,7 @@ void file_init_backend(SERVER_struct_t *SERVER_struct)
             file_backend = (file_backend_t *) g_malloc0(sizeof(file_backend_t));
 
             /* default values */
-            file_backend->prefix = g_strdup("/var/tmp/cdpfgl/serveur");
+            file_backend->prefix = g_strdup("/var/tmp/cdpfgl/server");
             file_backend->level = 2;
 
             if (SERVER_struct->opt != NULL && SERVER_struct->opt->configfile != NULL)
@@ -446,7 +446,7 @@ void file_init_backend(SERVER_struct_t *SERVER_struct)
         }
     else
         {
-            print_error(__FILE__, __LINE__, _("Error: no serveur structure or no backend structure.\n"));
+            print_error(__FILE__, __LINE__, _("Error: no server structure or no backend structure.\n"));
         }
 }
 

@@ -105,7 +105,7 @@ static gboolean int_signal_handler(gpointer user_data)
  */
 static SERVER_struct_t *init_SERVER_main_structure(int argc, char **argv)
 {
-    SERVER_struct_t *SERVER_struct = NULL;  /** main structure for 'serveur' program. */
+    SERVER_struct_t *SERVER_struct = NULL;  /** main structure for 'server' program. */
 
     SERVER_struct = (SERVER_struct_t *) g_malloc0(sizeof(SERVER_struct_t));
 
@@ -715,7 +715,7 @@ static void print_headers(struct MHD_Connection *connection)
 
 /**
  * MHD_AccessHandlerCallback function that manages all connections requests
- * @param cls is the SERVER_struct_t * SERVER_struct main serveur
+ * @param cls is the SERVER_struct_t * SERVER_struct main server
  *        structure.
  * @todo . free some memory where needed
  *       . manage errors codes
@@ -839,7 +839,7 @@ static gpointer data_thread(gpointer user_data)
  */
 int main(int argc, char **argv)
 {
-    SERVER_struct_t *SERVER_struct = NULL;  /** main structure for 'serveur' program.           */
+    SERVER_struct_t *SERVER_struct = NULL;  /** main structure for 'server' program.           */
     guint id_int = 0;
     guint id_term = 0;
 

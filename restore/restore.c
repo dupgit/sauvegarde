@@ -30,7 +30,7 @@
 static res_struct_t *init_res_struct(int argc, char **argv);
 static gchar *encode_to_base64(gchar *string);
 static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date);
-static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query);
+static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query);
 static void print_all_files(res_struct_t *res_struct, query_t *query);
 static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GList *hash_list);
 static void create_file(res_struct_t *res_struct, meta_data_t *meta);
@@ -141,7 +141,7 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
  *        query the server (and filter a bit). It must not be NULL.
  * @returns a GSList * of SERVER_meta_data_t *
  */
-static GSList *get_files_from_serveur(res_struct_t *res_struct, query_t *query)
+static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query)
 {
     gchar *request = NULL;
     json_t *root = NULL;
@@ -194,7 +194,7 @@ static void print_all_files(res_struct_t *res_struct, query_t *query)
 
     if (res_struct != NULL && query != NULL)
         {
-            list = get_files_from_serveur(res_struct, query);
+            list = get_files_from_server(res_struct, query);
             head = list;
 
             while (list != NULL)
@@ -365,7 +365,7 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
 
     if (res_struct != NULL && query != NULL)
         {
-            list = get_files_from_serveur(res_struct, query);
+            list = get_files_from_server(res_struct, query);
             last = g_slist_last(list);
 
             if (last != NULL)
