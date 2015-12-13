@@ -306,7 +306,7 @@ options_t *do_what_is_needed_from_command_line_options(int argc, char **argv)
  * Frees the option structure
  * @param opt is the structure to be freed
  */
-void free_options_t_structure(options_t *opt)
+void free_options_t(options_t *opt)
 {
     if (opt != NULL)
         {

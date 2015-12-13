@@ -65,7 +65,7 @@ void free_SERVER_struct_t(SERVER_struct_t *SERVER_struct)
             print_debug(_("\tdata thread unrefed.\n"));
             g_thread_unref(SERVER_struct->meta_thread);
             print_debug(_("\tmeta thread unrefed.\n"));
-            free_options_t_structure(SERVER_struct->opt);
+            free_options_t(SERVER_struct->opt);
             print_debug(_("\toption structure freed.\n"));
             free_variable(SERVER_struct);
             print_debug(_("\tmain structure freed.\n"));

@@ -50,7 +50,7 @@ typedef struct
  * Frees the options structure if necessary
  * @param opt : the malloc'ed options_t structure
  */
-extern void free_options_t_structure(options_t *opt);
+extern void free_options_t(options_t *opt);
 
 /**
  * creates a buffer containing every selected options ...

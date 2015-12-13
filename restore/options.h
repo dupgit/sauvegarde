@@ -67,6 +67,6 @@ extern options_t *do_what_is_needed_from_command_line_options(int argc, char **a
  * Frees the option structure
  * @param opt is the structure to be freed
  */
-extern void free_options_t_structure(options_t *opt);
+extern void free_options_t(options_t *opt);
 
 #endif /* #ifndef _RESTORE_OPTIONS_H_ */

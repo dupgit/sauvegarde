@@ -406,7 +406,7 @@ static void free_res_struct_t(res_struct_t *res_struct)
 {
     if (res_struct != NULL)
         {
-            free_options_t_structure(res_struct->opt);
+            free_options_t(res_struct->opt);
             free_comm_t(res_struct->comm);
             free_variable(res_struct->hostname);
             free_variable(res_struct);

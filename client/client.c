@@ -136,6 +136,7 @@ static main_struct_t *init_main_structure(options_t *opt)
                 {
                     conn = make_connexion_string(opt->ip, opt->port);
                     main_struct->comm = init_comm_struct(conn);
+                    main_struct->reconnected = init_comm_struct(conn);
                 }
             else
                 {
@@ -1084,6 +1085,8 @@ int main(int argc, char **argv)
     #endif
 
     init_international_languages();
+
+    /* Global curl initialisation to avoid curl_easy_init() calls to call it. */
     curl_global_init(CURL_GLOBAL_ALL);
 
     opt = do_what_is_needed_from_command_line_options(argc, argv);
@@ -1114,7 +1117,7 @@ int main(int argc, char **argv)
              */
             fanotify_loop(main_struct);
 
-            free_options_t_structure(main_struct->opt);
+            free_options_t(main_struct->opt);
         }
 
     return 0;

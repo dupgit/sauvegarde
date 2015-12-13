@@ -36,7 +36,7 @@ static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *fil
  * Frees the options structure if necessary.
  * @param opt : the malloc'ed options_t structure
  */
-void free_options_t_structure(options_t *opt)
+void free_options_t(options_t *opt)
 {
 
     if (opt != NULL)

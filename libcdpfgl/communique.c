@@ -355,6 +355,7 @@ comm_t *init_comm_struct(gchar *conn)
     comm->buffer = NULL;
     comm->conn = conn;
     comm->readbuffer = NULL;
+    comm->seq = 0;
     comm->pos = 0;
     comm->length = 0;
 
@@ -372,6 +373,7 @@ void free_comm_t(comm_t *comm)
         {
             curl_easy_cleanup(comm->curl_handle);
             free_variable(comm->buffer);
+            free_variable(comm->readbuffer);
             free_variable(comm->conn);
             free_variable(comm);
         }
