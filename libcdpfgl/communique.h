@@ -29,19 +29,14 @@
 #ifndef _COMMUNIQUE_H_
 #define _COMMUNIQUE_H_
 
-
-/**
- * @def MAX_MESSAGE_SIZE
- * Defines the maximum message size that we will be able to send or receive
- * default is 131072
- */
-#define MAX_MESSAGE_SIZE (131072)
-
-
 /**
  * @struct comm_t
  * @brief Structure that will contain everything needed to the
  *        communication layer.
+ *
+ * This structure contains everything needed for the communication layer.
+ * Buffers in this structure is ok because it is not possible to use
+ * one curl_handle into different threads.
  */
 typedef struct
 {
