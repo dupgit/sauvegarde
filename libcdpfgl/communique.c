@@ -353,7 +353,7 @@ comm_t *init_comm_struct(gchar *conn)
 
     comm->curl_handle = curl_easy_init();
     comm->buffer = NULL;
-    comm->conn = conn;
+    comm->conn = g_strdup(conn);
     comm->readbuffer = NULL;
     comm->seq = 0;
     comm->pos = 0;

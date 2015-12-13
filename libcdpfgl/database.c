@@ -231,14 +231,14 @@ static file_row_t *get_file_id(db_t *database, meta_data_t *meta)
 
     row = new_file_row_t();
 
-     /* beginning a transaction */
-    exec_sql_cmd(database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n"));
+    /* beginning a transaction */
+    /* exec_sql_cmd(database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n")); */
     sql_command = g_strdup_printf("SELECT file_id from files WHERE inode=%" G_GUINT64_FORMAT " AND name='%s' AND type=%d AND uid=%d AND gid=%d AND ctime=%" G_GUINT64_FORMAT " AND mtime=%" G_GUINT64_FORMAT " AND mode=%d AND size=%" G_GUINT64_FORMAT ";", meta->inode, meta->name, meta->file_type, meta->uid, meta->gid, meta->ctime, meta->mtime, meta->mode, meta->size);
 
     db_result = sqlite3_exec(database->db, sql_command, get_file_callback, row, &error_message);
 
     free_variable(sql_command);
-    exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));
+    /* exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n")); */
 
     if (db_result == SQLITE_OK)
         {

@@ -137,6 +137,7 @@ static main_struct_t *init_main_structure(options_t *opt)
                     conn = make_connexion_string(opt->ip, opt->port);
                     main_struct->comm = init_comm_struct(conn);
                     main_struct->reconnected = init_comm_struct(conn);
+                    free_variable(conn);
                 }
             else
                 {
