@@ -100,7 +100,7 @@ gpointer free_meta_data_t(meta_data_t *meta, gboolean free_link)
 
             if (free_link == TRUE)
                 {
-                    /* meta->link should not be freed only in monitor */
+                    /* meta->link should not be freed only in 'client' program */
                     free_variable(meta->link);
                 }
 

@@ -22,7 +22,7 @@
 /**
  * @file client.h
  *
- *  This file contains all the definitions for the monitor program.
+ *  This file contains all the definitions for the client program.
  */
 #ifndef _CLIENT_H_
 #define _CLIENT_H_
@@ -55,21 +55,20 @@
 
 /**
  * @def CLIENT_DATE
- * Defines monitor's creation date
+ * Defines client's creation date
  *
  * @def CLIENT_AUTHORS
- * Defines monitor's main authors
+ * Defines client's main authors
  *
  * @def CLIENT_LICENSE
- * Defines monitor's license (at least GPL v2)
+ * Defines client's license (at least GPL v2)
  *
  * @def CLIENT_VERSION
- * Defines monitor's version (which may be different of Sauvegarde's whole
+ * Defines client's version (which may be different of Sauvegarde's whole
  * project and programs that composes it).
 
  * @def PROGRAM_NAME
- * Defines the main program name for this part (monitor + ciseaux +
- * antememoire).
+ * Defines the main program name for this part (client)
  */
 #define CLIENT_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
 #define CLIENT_DATE _("02 11 2015")

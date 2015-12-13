@@ -23,7 +23,7 @@
  * @file server/options.h
  *
  * This file contains all the definitions for the options of the command
- * line for 'cdpfglserver' program. It is very similar to monitor's options.h
+ * line for 'cdpfglserver' program. It is very similar to client's options.h
  * file.
  *
  */

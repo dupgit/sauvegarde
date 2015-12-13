@@ -23,8 +23,8 @@
 /**
  * @file client.c
  *
- * This file is the main file for the monitor program. This monitor
- * program has to monitor file changes onto filesystems. It should notice
+ * This file is the main file for the client program. This program has
+ * to monitor file changes onto filesystems. It should notice
  * when a file is created, deleted or changed
  */
 
