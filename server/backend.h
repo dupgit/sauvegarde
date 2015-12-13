@@ -31,7 +31,7 @@
 
 /**
  * Function templates definition to be used by backend_t structure.
- * void * pointers are ment to be SERVER_struct_t * pointers.
+ * void * pointers are ment to be server_struct_t * pointers.
  * @todo have a function that will say if a hash and its associated data
  *       have already been stored.
  * @todo have a function that will be called when reading configuration

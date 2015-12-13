@@ -88,10 +88,10 @@
 #define DEFAULT_SERVER_BUFFER_SIZE (8388608)
 
 /**
- * @struct SERVER_struct_t
+ * @struct server_struct_t
  * @brief Structure that contains everything needed by the program.
  *
- * This structure was named SERVER_struct_t to avoid any confusion with
+ * This structure was named server_struct_t to avoid any confusion with
  * main_struct that is the structure for 'client' program.
  */
 typedef struct
@@ -106,7 +106,7 @@ typedef struct
     GThread *data_thread;     /**< Thread that will take care of storing data      */
     GThread *meta_thread;     /**< Thread that will take care of storing meta data */
     GMainLoop* loop;          /**< Main loop in glib                               */
-} SERVER_struct_t;
+} server_struct_t;
 
 
 /**

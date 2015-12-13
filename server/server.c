@@ -29,18 +29,18 @@
 
 #include "server.h"
 
-static void free_SERVER_struct_t(SERVER_struct_t *SERVER_struct);
+static void free_server_struct_t(server_struct_t *server_struct);
 static gboolean int_signal_handler(gpointer user_data);
-static SERVER_struct_t *init_SERVER_main_structure(int argc, char **argv);
-static gchar *get_data_from_a_specific_hash(SERVER_struct_t *SERVER_struct, gchar *hash);
+static server_struct_t *init_SERVER_main_structure(int argc, char **argv);
+static gchar *get_data_from_a_specific_hash(server_struct_t *server_struct, gchar *hash);
 static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key, gboolean encoded);
-static gchar *get_a_list_of_files(SERVER_struct_t *SERVER_struct, struct MHD_Connection *connection);
-static gchar *get_json_answer(SERVER_struct_t *SERVER_struct, struct MHD_Connection *connection, const char *url);
-static gchar *get_unformatted_answer(SERVER_struct_t *SERVER_struct, const char *url);
-static int process_get_request(SERVER_struct_t *SERVER_struct, struct MHD_Connection *connection, const char *url, void **con_cls);
-static int answer_meta_json_post_request(SERVER_struct_t *SERVER_struct, struct MHD_Connection *connection, gchar *received_data);
-static int process_received_data(SERVER_struct_t *SERVER_struct, struct MHD_Connection *connection, const char *url, gchar *received_data);
-static int process_post_request(SERVER_struct_t *SERVER_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size);
+static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Connection *connection);
+static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url);
+static gchar *get_unformatted_answer(server_struct_t *server_struct, const char *url);
+static int process_get_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls);
+static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data);
+static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, gchar *received_data);
+static int process_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size);
 static int print_out_key(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
 static void print_headers(struct MHD_Connection *connection);
 static int ahc(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **con_cls);
@@ -50,24 +50,24 @@ static gpointer data_thread(gpointer user_data);
 
 /**
  * Frees server's structure
- * @param SERVER_struct is the structure to be freed
+ * @param server_struct is the structure to be freed
  */
-void free_SERVER_struct_t(SERVER_struct_t *SERVER_struct)
+void free_server_struct_t(server_struct_t *server_struct)
 {
 
-    if (SERVER_struct != NULL)
+    if (server_struct != NULL)
         {
-            MHD_stop_daemon(SERVER_struct->d);
+            MHD_stop_daemon(server_struct->d);
             print_debug(_("\tMHD daemon stopped.\n"));
-            free_variable(SERVER_struct->backend); /** we need a backend function to be called to free th backend structure */
+            free_variable(server_struct->backend); /** we need a backend function to be called to free th backend structure */
             print_debug(_("\tbackend variable freed.\n"));
-            g_thread_unref(SERVER_struct->data_thread);
+            g_thread_unref(server_struct->data_thread);
             print_debug(_("\tdata thread unrefed.\n"));
-            g_thread_unref(SERVER_struct->meta_thread);
+            g_thread_unref(server_struct->meta_thread);
             print_debug(_("\tmeta thread unrefed.\n"));
-            free_options_t(SERVER_struct->opt);
+            free_options_t(server_struct->opt);
             print_debug(_("\toption structure freed.\n"));
-            free_variable(SERVER_struct);
+            free_variable(server_struct);
             print_debug(_("\tmain structure freed.\n"));
         }
 }
@@ -76,19 +76,19 @@ void free_SERVER_struct_t(SERVER_struct_t *SERVER_struct)
 /**
  * SIGINT signal handler function
  * @param user_data is a gpointer that MUST be a pointer to the
- *        SERVER_struct_t *
+ *        server_struct_t *
  * @returns FALSE if user_data is NULL and frees memory and exits if TRUE.
  */
 static gboolean int_signal_handler(gpointer user_data)
 {
-    SERVER_struct_t *SERVER_struct = (SERVER_struct_t *) user_data;
+    server_struct_t *server_struct = (server_struct_t *) user_data;
 
-    if (SERVER_struct != NULL)
+    if (server_struct != NULL)
         {
             print_debug(_("\nEnding the program:\n"));
-            g_main_loop_quit(SERVER_struct->loop);
+            g_main_loop_quit(server_struct->loop);
             print_debug(_("\tMain loop exited.\n"));
-            free_SERVER_struct_t(SERVER_struct);
+            free_server_struct_t(server_struct);
         }
 
     /** we can remove the handler as we are exiting the program anyway */
@@ -100,49 +100,49 @@ static gboolean int_signal_handler(gpointer user_data)
  * Inits main server's structure
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
- * @returns a SERVER_struct_t * structure that contains everything that is
+ * @returns a server_struct_t * structure that contains everything that is
  *          needed for 'cdpfglserver' program.
  */
-static SERVER_struct_t *init_SERVER_main_structure(int argc, char **argv)
+static server_struct_t *init_SERVER_main_structure(int argc, char **argv)
 {
-    SERVER_struct_t *SERVER_struct = NULL;  /** main structure for 'server' program. */
+    server_struct_t *server_struct = NULL;  /** main structure for 'server' program. */
 
-    SERVER_struct = (SERVER_struct_t *) g_malloc0(sizeof(SERVER_struct_t));
+    server_struct = (server_struct_t *) g_malloc0(sizeof(server_struct_t));
 
-    SERVER_struct->data_thread = NULL;
-    SERVER_struct->meta_thread = NULL;
-    SERVER_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
-    SERVER_struct->d = NULL;            /* libmicrohttpd daemon pointer */
-    SERVER_struct->meta_queue = g_async_queue_new();
-    SERVER_struct->data_queue = g_async_queue_new();
-    SERVER_struct->loop = NULL;
+    server_struct->data_thread = NULL;
+    server_struct->meta_thread = NULL;
+    server_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
+    server_struct->d = NULL;            /* libmicrohttpd daemon pointer */
+    server_struct->meta_queue = g_async_queue_new();
+    server_struct->data_queue = g_async_queue_new();
+    server_struct->loop = NULL;
 
     /* default backend (file_backend) */
-    SERVER_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend, file_build_needed_hash_list, file_get_list_of_files, file_retrieve_data);
+    server_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend, file_build_needed_hash_list, file_get_list_of_files, file_retrieve_data);
 
-    return SERVER_struct;
+    return server_struct;
 }
 
 
 /**
  * Function that gets the data of a specific hash
- * @param SERVER_struct is the main structure for the server.
+ * @param server_struct is the main structure for the server.
  * @param hash is the hash (in hex format) of which we want the data.
  * @returns a json formatted string.
  */
-static gchar *get_data_from_a_specific_hash(SERVER_struct_t *SERVER_struct, gchar *hash)
+static gchar *get_data_from_a_specific_hash(server_struct_t *server_struct, gchar *hash)
 {
     gchar *answer = NULL;
     backend_t *backend = NULL;
     hash_data_t *hash_data = NULL;
 
-    if (SERVER_struct != NULL && SERVER_struct->backend != NULL)
+    if (server_struct != NULL && server_struct->backend != NULL)
         {
-            backend = SERVER_struct->backend;
+            backend = server_struct->backend;
 
             if (backend->retrieve_data != NULL)
                 {
-                    hash_data = backend->retrieve_data(SERVER_struct, hash);
+                    hash_data = backend->retrieve_data(server_struct, hash);
                     answer = convert_hash_data_t_to_string(hash_data);
                     free_hash_data_t_structure(hash_data);
 
@@ -202,12 +202,12 @@ static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gch
 
 /**
  * Function to get a list of saved files.
- * @param SERVER_struct is the main structure for the server.
+ * @param server_struct is the main structure for the server.
  * @param connection is the connection in MHD
  * @param url is the requested url
  * @returns a json formatted string or NULL
  */
-static gchar *get_a_list_of_files(SERVER_struct_t *SERVER_struct, struct MHD_Connection *connection)
+static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Connection *connection)
 {
     gchar *answer = NULL;
     gchar *hostname = NULL;
@@ -221,9 +221,9 @@ static gchar *get_a_list_of_files(SERVER_struct_t *SERVER_struct, struct MHD_Con
     query_t *query = NULL;
 
 
-    if (SERVER_struct != NULL && SERVER_struct->backend != NULL)
+    if (server_struct != NULL && server_struct->backend != NULL)
         {
-            backend = SERVER_struct->backend;
+            backend = server_struct->backend;
 
             if (backend->get_list_of_files != NULL)
                 {
@@ -240,7 +240,7 @@ static gchar *get_a_list_of_files(SERVER_struct_t *SERVER_struct, struct MHD_Con
                     if (hostname != NULL && uid != NULL && gid != NULL && owner != NULL && group != NULL)
                         {
                             query = init_query_structure(hostname, uid, gid, owner, group, filename, date);
-                            answer = backend->get_list_of_files(SERVER_struct, query);
+                            answer = backend->get_list_of_files(server_struct, query);
                             free_query_structure(query); /** All variables hostname, uid... are freed there ! */
                         }
                     else
@@ -264,7 +264,7 @@ static gchar *get_a_list_of_files(SERVER_struct_t *SERVER_struct, struct MHD_Con
 /**
  * Function to answer to get requests in a json way. This mode should be
  * prefered.
- * @param SERVER_struct is the main structure for the server.
+ * @param server_struct is the main structure for the server.
  * @param connection is the connection in MHD
  * @param url is the requested url
  * @note to translators all json requests MUST NOT be translated because
@@ -272,7 +272,7 @@ static gchar *get_a_list_of_files(SERVER_struct_t *SERVER_struct, struct MHD_Con
  * @returns a newlly allocated gchar * string that contains the anwser to be
  *          sent back to the client.
  */
-static gchar *get_json_answer(SERVER_struct_t *SERVER_struct, struct MHD_Connection *connection, const char *url)
+static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url)
 {
     gchar *answer = NULL;
     gchar *hash = NULL;
@@ -284,7 +284,7 @@ static gchar *get_json_answer(SERVER_struct_t *SERVER_struct, struct MHD_Connect
         }
     else if (g_str_has_prefix(url, "/File/List.json"))
         {
-            answer = get_a_list_of_files(SERVER_struct, connection);
+            answer = get_a_list_of_files(server_struct, connection);
         }
     else if (g_str_has_prefix(url, "/Data/"))
         {
@@ -295,7 +295,7 @@ static gchar *get_json_answer(SERVER_struct_t *SERVER_struct, struct MHD_Connect
             if (hlen == HASH_LEN*2)
                 {
                     print_debug(_("Trying to get data for hash %s\n"), hash);
-                    answer = get_data_from_a_specific_hash(SERVER_struct, hash);
+                    answer = get_data_from_a_specific_hash(server_struct, hash);
                 }
             else
                 {
@@ -317,12 +317,12 @@ static gchar *get_json_answer(SERVER_struct_t *SERVER_struct, struct MHD_Connect
  * Function to answer to get requests in an unformatted way. Only some urls
  * May be like this. As we prefer to speak in json format in normal operation
  * mode
- * @param SERVER_struct is the main structure for the server.
+ * @param server_struct is the main structure for the server.
  * @param url is the requested url
  * @returns a newlly allocated gchar * string that contains the anwser to be
  *          sent back to the client.
  */
-static gchar *get_unformatted_answer(SERVER_struct_t *SERVER_struct, const char *url)
+static gchar *get_unformatted_answer(server_struct_t *server_struct, const char *url)
 {
     gchar *answer = NULL;
     gchar *buf1 = NULL;
@@ -333,7 +333,7 @@ static gchar *get_unformatted_answer(SERVER_struct_t *SERVER_struct, const char 
         {
             buf1 = buffer_program_version(PROGRAM_NAME, SERVER_DATE, SERVER_VERSION, SERVER_AUTHORS, SERVER_LICENSE);
             buf2 = buffer_libraries_versions(PROGRAM_NAME);
-            buf3 = buffer_selected_option(SERVER_struct->opt);
+            buf3 = buffer_selected_option(server_struct->opt);
 
             answer = g_strconcat(buf1, buf2, buf3, NULL);
 
@@ -370,13 +370,13 @@ static int create_MHD_response(struct MHD_Connection *connection, gchar *answer)
 
 /**
  * Function to process get requests received from clients.
- * @param SERVER_struct is the main structure for the server.
+ * @param server_struct is the main structure for the server.
  * @param connection is the connection in MHD
  * @param url is the requested url
  * @param con_cls is a pointer used to know if this is the first call or not
  * @returns an int that is either MHD_NO or MHD_YES upon failure or not.
  */
-static int process_get_request(SERVER_struct_t *SERVER_struct, struct MHD_Connection *connection, const char *url, void **con_cls)
+static int process_get_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls)
 {
     static int aptr = 0;
     int success = MHD_NO;
@@ -400,11 +400,11 @@ static int process_get_request(SERVER_struct_t *SERVER_struct, struct MHD_Connec
 
             if (g_str_has_suffix(url, ".json"))
                 { /* A json format answer was requested */
-                    answer = get_json_answer(SERVER_struct, connection, url);
+                    answer = get_json_answer(server_struct, connection, url);
                 }
             else
                 { /* An "unformatted" answer was requested */
-                    answer = get_unformatted_answer(SERVER_struct, url);
+                    answer = get_unformatted_answer(server_struct, url);
                 }
 
                 /* reset when done */
@@ -422,12 +422,12 @@ static int process_get_request(SERVER_struct_t *SERVER_struct, struct MHD_Connec
 /**
  * Answers /Meta.json POST request by storing data and answering to the
  * client.
- * @param SERVER_struct is the main structure for the server.
+ * @param server_struct is the main structure for the server.
  * @param connection is the connection in MHD
  * @param received_data is a gchar * string to the data that was received
  *        by the POST request.
  */
-static int answer_meta_json_post_request(SERVER_struct_t *SERVER_struct, struct MHD_Connection *connection, gchar *received_data)
+static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data)
 {
     SERVER_meta_data_t *smeta = NULL;
     gchar *answer = NULL;       /** gchar *answer : Do not free answer variable as MHD will do it for us !  */
@@ -450,9 +450,9 @@ static int answer_meta_json_post_request(SERVER_struct_t *SERVER_struct, struct 
                      * function we are returning the whole hash_list !
                      */
 
-                    if (SERVER_struct != NULL && SERVER_struct->backend != NULL && SERVER_struct->backend->build_needed_hash_list != NULL)
+                    if (server_struct != NULL && server_struct->backend != NULL && server_struct->backend->build_needed_hash_list != NULL)
                         {
-                            needed = SERVER_struct->backend->build_needed_hash_list(SERVER_struct, smeta->meta->hash_data_list);
+                            needed = server_struct->backend->build_needed_hash_list(server_struct, smeta->meta->hash_data_list);
                             array = convert_hash_list_to_json(needed);
                             g_list_free_full(needed, free_hdt_struct);
                         }
@@ -477,7 +477,7 @@ static int answer_meta_json_post_request(SERVER_struct_t *SERVER_struct, struct 
              * the corresponding thread. smeta is freed there and should not
              * be used after this "call" here.
              */
-            g_async_queue_push(SERVER_struct->meta_queue, smeta);
+            g_async_queue_push(server_struct->meta_queue, smeta);
         }
     else
         {
@@ -494,13 +494,13 @@ static int answer_meta_json_post_request(SERVER_struct_t *SERVER_struct, struct 
  * Here we may do something with this data (we may want to store it
  * somewhere).
  *
- * @param SERVER_struct is the main structure for the server.
+ * @param server_struct is the main structure for the server.
  * @param connection is the connection in MHD
  * @param url is the requested url
  * @param received_data is a gchar * string to the data that was received
  *        by the POST request.
  */
-static int process_received_data(SERVER_struct_t *SERVER_struct, struct MHD_Connection *connection, const char *url, gchar *received_data)
+static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, gchar *received_data)
 {
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     int success = MHD_NO;
@@ -514,7 +514,7 @@ static int process_received_data(SERVER_struct_t *SERVER_struct, struct MHD_Conn
 
     if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
         {
-            success = answer_meta_json_post_request(SERVER_struct, connection, received_data);
+            success = answer_meta_json_post_request(server_struct, connection, received_data);
         }
     else if (g_strcmp0(url, "/Data.json") == 0 && received_data != NULL)
         {
@@ -535,7 +535,7 @@ static int process_received_data(SERVER_struct_t *SERVER_struct, struct MHD_Conn
              * the corresponding thread. hash_data is freed by data_thread
              * and should not be used after this "call" here.
              */
-            g_async_queue_push(SERVER_struct->data_queue, hash_data);
+            g_async_queue_push(server_struct->data_queue, hash_data);
 
 
             /**
@@ -569,7 +569,7 @@ static int process_received_data(SERVER_struct_t *SERVER_struct, struct MHD_Conn
                         }
 
                     /** Sending hash_data into the queue. */
-                    g_async_queue_push(SERVER_struct->data_queue, hash_data);
+                    g_async_queue_push(server_struct->data_queue, hash_data);
                     hash_data_list = g_list_next(hash_data_list);
                 }
 
@@ -626,7 +626,7 @@ static guint64 get_content_length(struct MHD_Connection *connection)
 
 /**
  * Function to process post requests.
- * @param SERVER_struct is the main structure for the server.
+ * @param server_struct is the main structure for the server.
  * @param connection is the connection in MHD
  * @param url is the requested url
  * @param con_cls is a pointer used to know if this is the first call or not
@@ -635,7 +635,7 @@ static guint64 get_content_length(struct MHD_Connection *connection)
  *        is ti be copied from upload_data string.
  * @returns an int that is either MHD_NO or MHD_YES upon failure or not.
  */
-static int process_post_request(SERVER_struct_t *SERVER_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size)
+static int process_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size)
 {
     int success = MHD_NO;
     upload_t *pp = (upload_t *) *con_cls;
@@ -676,7 +676,7 @@ static int process_post_request(SERVER_struct_t *SERVER_struct, struct MHD_Conne
             pp->buffer[pp->pos] = '\0';
 
             /* Do something with received_data */
-            success = process_received_data(SERVER_struct, connection, url, pp->buffer);
+            success = process_received_data(server_struct, connection, url, pp->buffer);
 
             free_variable(pp->buffer);
             free_variable(pp);
@@ -715,25 +715,25 @@ static void print_headers(struct MHD_Connection *connection)
 
 /**
  * MHD_AccessHandlerCallback function that manages all connections requests
- * @param cls is the SERVER_struct_t * SERVER_struct main server
+ * @param cls is the server_struct_t * server_struct main server
  *        structure.
  * @todo . free some memory where needed
  *       . manage errors codes
  */
 static int ahc(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **con_cls)
 {
-    SERVER_struct_t *ahc_SERVER_struct = (SERVER_struct_t *) cls;
+    server_struct_t *ahc_server_struct = (server_struct_t *) cls;
     int success = MHD_NO;
 
 
     if (g_strcmp0(method, "GET") == 0)
         {
             /* We have a GET method that needs to be processed */
-            success = process_get_request(ahc_SERVER_struct, connection, url, con_cls);
+            success = process_get_request(ahc_server_struct, connection, url, con_cls);
         }
     else if (g_strcmp0(method, "POST") == 0)
         {  /* We have a POST method that needs to be processed */
-            success = process_post_request(ahc_SERVER_struct, connection, url, con_cls, upload_data, upload_data_size);
+            success = process_post_request(ahc_server_struct, connection, url, con_cls, upload_data, upload_data_size);
         }
     else
         { /* not a GET nor a POST -> we do not know what to do ! */
@@ -746,28 +746,28 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
 
 /**
  * Thread whose aim is to store meta-data according to the selected backend
- * @param data : SERVER_struct_t * structure.
+ * @param data : server_struct_t * structure.
  * @returns NULL to fullfill the template needed to create a GThread
  */
 static gpointer meta_data_thread(gpointer user_data)
 {
-    SERVER_struct_t *SERVER_struct = user_data;
+    server_struct_t *server_struct = user_data;
     SERVER_meta_data_t *smeta = NULL;
 
-    if (SERVER_struct != NULL && SERVER_struct->meta_queue != NULL)
+    if (server_struct != NULL && server_struct->meta_queue != NULL)
         {
 
-            if (SERVER_struct->backend != NULL && SERVER_struct->backend->store_smeta != NULL)
+            if (server_struct->backend != NULL && server_struct->backend->store_smeta != NULL)
                 {
 
                     while (TRUE)
                         {
-                            smeta = g_async_queue_pop(SERVER_struct->meta_queue);
+                            smeta = g_async_queue_pop(server_struct->meta_queue);
 
                             if (smeta != NULL && smeta->meta != NULL)
                                 {
                                     print_debug("meta_data_thread: received from %s meta for file %s\n", smeta->hostname, smeta->meta->name);
-                                    SERVER_struct->backend->store_smeta(SERVER_struct, smeta);
+                                    server_struct->backend->store_smeta(server_struct, smeta);
                                     free_smeta_data_t(smeta);
                                 }
                             else
@@ -792,27 +792,27 @@ static gpointer meta_data_thread(gpointer user_data)
 
 /**
  * Thread whose aim is to store data according to the selected backend
- * @param data : SERVER_struct_t * structure.
+ * @param data : server_struct_t * structure.
  * @returns NULL to fullfill the template needed to create a GThread
  */
 static gpointer data_thread(gpointer user_data)
 {
-    SERVER_struct_t *dt_SERVER_struct = user_data;
+    server_struct_t *dt_server_struct = user_data;
     hash_data_t *hash_data = NULL;
 
-    if (dt_SERVER_struct != NULL && dt_SERVER_struct->meta_queue != NULL)
+    if (dt_server_struct != NULL && dt_server_struct->meta_queue != NULL)
         {
 
-            if (dt_SERVER_struct->backend != NULL && dt_SERVER_struct->backend->store_data != NULL)
+            if (dt_server_struct->backend != NULL && dt_server_struct->backend->store_data != NULL)
                 {
 
                     while (TRUE)
                         {
-                            hash_data = g_async_queue_pop(dt_SERVER_struct->data_queue);
+                            hash_data = g_async_queue_pop(dt_server_struct->data_queue);
 
                             if (hash_data != NULL)
                                 {
-                                    dt_SERVER_struct->backend->store_data(dt_SERVER_struct, hash_data);
+                                    dt_server_struct->backend->store_data(dt_server_struct, hash_data);
                                 }
                         }
                 }
@@ -839,7 +839,7 @@ static gpointer data_thread(gpointer user_data)
  */
 int main(int argc, char **argv)
 {
-    SERVER_struct_t *SERVER_struct = NULL;  /** main structure for 'server' program.           */
+    server_struct_t *server_struct = NULL;  /** main structure for 'server' program.           */
     guint id_int = 0;
     guint id_term = 0;
 
@@ -851,13 +851,13 @@ int main(int argc, char **argv)
 
     init_international_languages();
 
-    SERVER_struct = init_SERVER_main_structure(argc, argv);
+    server_struct = init_SERVER_main_structure(argc, argv);
 
-    if (SERVER_struct != NULL && SERVER_struct->opt != NULL && SERVER_struct->backend != NULL)
+    if (server_struct != NULL && server_struct->opt != NULL && server_struct->backend != NULL)
         {
-            SERVER_struct->loop = g_main_loop_new(g_main_context_default(), FALSE);
-            id_int = g_unix_signal_add(SIGINT, int_signal_handler, SERVER_struct);
-            id_term = g_unix_signal_add(SIGTERM, int_signal_handler, SERVER_struct);
+            server_struct->loop = g_main_loop_new(g_main_context_default(), FALSE);
+            id_int = g_unix_signal_add(SIGINT, int_signal_handler, server_struct);
+            id_term = g_unix_signal_add(SIGTERM, int_signal_handler, server_struct);
 
             if (id_int <= 0 || id_term <= 0)
                 {
@@ -865,19 +865,19 @@ int main(int argc, char **argv)
                 }
 
             /* Initializing the choosen backend by calling it's function */
-            if (SERVER_struct->backend->init_backend != NULL)
+            if (server_struct->backend->init_backend != NULL)
                 {
-                   SERVER_struct->backend->init_backend(SERVER_struct);
+                   server_struct->backend->init_backend(server_struct);
                 }
 
             /* Before starting anything else, start the threads */
-            SERVER_struct->meta_thread = g_thread_new("meta-data", meta_data_thread, SERVER_struct);
-            SERVER_struct->data_thread = g_thread_new("data", data_thread, SERVER_struct);
+            server_struct->meta_thread = g_thread_new("meta-data", meta_data_thread, server_struct);
+            server_struct->data_thread = g_thread_new("data", data_thread, server_struct);
 
             /* Starting the libmicrohttpd daemon */
-            SERVER_struct->d = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION | MHD_USE_DEBUG, SERVER_struct->opt->port, NULL, NULL, &ahc, SERVER_struct, MHD_OPTION_CONNECTION_MEMORY_LIMIT, (size_t) 131070 , MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
+            server_struct->d = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION | MHD_USE_DEBUG, server_struct->opt->port, NULL, NULL, &ahc, server_struct, MHD_OPTION_CONNECTION_MEMORY_LIMIT, (size_t) 131070 , MHD_OPTION_CONNECTION_TIMEOUT, (unsigned int) 120, MHD_OPTION_END);
 
-            if (SERVER_struct->d == NULL)
+            if (server_struct->d == NULL)
                 {
                     print_error(__FILE__, __LINE__, _("Error while spawning libmicrohttpd daemon\n"));
                     return 1;
@@ -886,10 +886,10 @@ int main(int argc, char **argv)
             /* Unless on error we will never join the threads as they
              * contain a while (TRUE) loop !
              */
-            g_main_loop_run(SERVER_struct->loop);
+            g_main_loop_run(server_struct->loop);
 
-            /* g_thread_join(SERVER_struct->meta_thread); */
-            /* g_thread_join(SERVER_struct->data_thread); */
+            /* g_thread_join(server_struct->meta_thread); */
+            /* g_thread_join(server_struct->data_thread); */
 
 
         }
