@@ -297,7 +297,7 @@ gint post_url(comm_t *comm, gchar *url)
  * @returns TRUE if the server is alive and has a correct version.
  *          FALSE otherwise
  */
-gboolean is_SERVER_alive(comm_t *comm)
+gboolean is_server_alive(comm_t *comm)
 {
     gint success = CURLE_FAILED_INIT;
     gchar *version = NULL;

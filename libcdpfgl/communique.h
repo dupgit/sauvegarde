@@ -120,7 +120,7 @@ extern gint post_url(comm_t *comm, gchar *url);
  * @returns TRUE if the server is alive and has a correct version.
  *          FALSE otherwise
  */
-extern gboolean is_SERVER_alive(comm_t *comm);
+extern gboolean is_server_alive(comm_t *comm);
 
 
 /**
