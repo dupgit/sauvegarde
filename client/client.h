@@ -106,6 +106,15 @@
 
 
 /**
+ * @def CLIENT_RECONNECT_SLEEP_TIME
+ *
+ * defines sleep times before trying to reconnect or reading the
+ * database.
+ */
+#define CLIENT_RECONNECT_SLEEP_TIME (5*60)  /* Sleeps for 5 minutes */
+
+
+/**
  * @struct file_event_t
  * @brief stores all the necessary things to manage an event on a file.
  */
@@ -131,6 +140,7 @@ typedef struct
     gint fanotify_fd;               /**< fanotify handler                                                                                 */
     GThread *save_one_file;         /**< thread that is used to save one file at a time (directory carving and live backup runs together) */
     GThread *carve_all_directories; /**< thread used to carve all directories and let fanotify executing itself                           */
+    GThread *reconn_thread;         /**< thread used to transmit buffers saved when server was unreachable                                */
     GAsyncQueue *save_queue;        /**< Queue where is sent all file_event_t structures upon event or while directory carving.           */
     GAsyncQueue *dir_queue;         /**< A queue to collect directories when carving to avoid thread collision                            */
     GSList *regex_exclude_list;     /**< List of regular expressions used to exclude directories or files.                                */

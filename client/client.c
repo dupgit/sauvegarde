@@ -47,7 +47,7 @@ static gpointer free_file_event_t(file_event_t *file_event);
 static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *array);
 static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta);
 static gint64 calculate_file_blocksize(main_struct_t *main_struct, gint64 size);
-
+static gpointer reconnected(gpointer data);
 
 /**
  * Make a list of precompiled GRegex to be used to filter out directories
@@ -156,6 +156,7 @@ static main_struct_t *init_main_structure(options_t *opt)
             /* Thread initialization */
             main_struct->save_one_file = g_thread_new("save_one_file", save_one_file_threaded, main_struct);
             main_struct->carve_all_directories = g_thread_new("carve_all_directories", carve_all_directories, main_struct);
+            main_struct->reconn_thread = g_thread_new("reconnected", reconnected, main_struct);
 
             print_debug(_("Main structure initialized !\n"));
 
@@ -1043,7 +1044,7 @@ static void carve_one_directory(gpointer data, gpointer user_data)
  * Does carve all directories from the list in the option list.
  * This function is a thread that is run at the end of the initialisation
  * of main_struct structure.
- * @param main_struct : main structure of the program that contains also
+ * @param data: main structure of the program that contains also
  *        the options structure that should have a list of directories
  *        to save.
  */
@@ -1068,6 +1069,45 @@ static gpointer carve_all_directories(gpointer data)
 
     return NULL;
 }
+
+
+/**
+ * Manages reconnections to the server and the data that may have been
+ * saved in local buffers while the server was unreachable.
+ * @param data: main structure of the program that contains also
+ *        the options structure.
+ */
+static gpointer reconnected(gpointer data)
+{
+    main_struct_t *main_struct = (main_struct_t *) data;
+
+
+    while (main_struct != NULL)
+        {
+            if (db_is_there_buffers_to_transmit(main_struct->database))
+                {
+                    if (is_server_alive(main_struct->reconnected))
+                        {
+                            print_debug(_("We have data and meta data to transmit to server\n"));
+                            /* we need to do the job: transmit again the data
+                             * sleep until we'll implement something
+                             */
+                             sleep(CLIENT_RECONNECT_SLEEP_TIME);
+                        }
+                    else
+                        {
+                            sleep(CLIENT_RECONNECT_SLEEP_TIME);
+                        }
+                }
+            else
+                {
+                    sleep(CLIENT_RECONNECT_SLEEP_TIME);
+                }
+        }
+
+    return NULL;
+}
+
 
 
 /**
@@ -1101,13 +1141,6 @@ int main(int argc, char **argv)
              * the asynchronous queue.
              */
             main_struct = init_main_structure(opt);
-
-
-            if (db_is_there_buffers_to_transmit(main_struct->database))
-                {
-                    print_debug(_("We have data and meta data to transmit to server\n"));
-                }
-
 
             /** Launching an infinite loop to get modifications done on
              * the filesystem (on directories we watch).
