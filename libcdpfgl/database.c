@@ -459,7 +459,7 @@ gboolean db_transmit_buffers(db_t *database, comm_t *comm)
 
     trans = new_transmited_t(database, comm);
 
-    result = sqlite3_exec(database->db, "SELECT * FROM buffers;", transmit_callback, trans, &error_message);
+    result = sqlite3_exec(database->db, "SELECT * FROM buffers LEFT JOIN transmited ON transmited.buffer_id <> buffers.buffer_id WHERE transmited.buffer_id is NULL;", transmit_callback, trans, &error_message);
 
     g_free(trans);
 

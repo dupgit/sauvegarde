@@ -1092,8 +1092,8 @@ static gpointer reconnected(gpointer data)
                             /* we need to do the job: transmit again the data
                              * sleep until we'll implement something
                              */
-                             db_transmit_buffers(main_struct->database, main_struct->reconnected);
-                             /* sleep(CLIENT_RECONNECT_SLEEP_TIME); */
+                            db_transmit_buffers(main_struct->database, main_struct->reconnected);
+                            sleep(CLIENT_RECONNECT_SLEEP_TIME);
                         }
                     else
                         {
