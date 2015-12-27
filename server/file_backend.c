@@ -140,7 +140,7 @@ void file_store_smeta(server_struct_t *server_struct, SERVER_meta_data_t *smeta)
  * @param hash_data is a hash_data_t * structure that contains the hash and
  *        the corresponding data in a binary form and a 'read' field that
  *        contains the number of bytes in 'data' field.
- * @todo prefix should be set as a configuration's option.
+ * @todo return errors when they occurs
  */
 void file_store_data(server_struct_t *server_struct, hash_data_t *hash_data)
 {

@@ -135,6 +135,9 @@ static void verify_if_tables_exists(db_t *database)
             /* Creation of buffers table that contains checksums and their associated data */
             exec_sql_cmd(database, "CREATE TABLE buffers (buffer_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, data TEXT);", _("(%d) Error while creating database table 'buffers': %s\n"));
 
+            /* Creation of transmited table that may contain id of transmited buffers  if any */
+            exec_sql_cmd(database, "CREATE TABLE transmited (buffer_id INTEGER PRIMARY KEY);", _("(%d) Error while creating database table 'transmited': %s\n"));
+
             /* Creation of files table that contains everything about a file */
             exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL, link TEXT);", _("(%d) Error while creating database table 'files': %s\n"));
         }
@@ -377,6 +380,97 @@ gboolean db_is_there_buffers_to_transmit(db_t *database)
     else
         {
             /* result is not SQLITE_OK : something went wrong */
+            return FALSE;
+        }
+}
+
+
+
+/**
+ * Transmits each row found in the database
+ * @param userp is a pointer to a comm_t * structure that must contain
+ *        an initialized curl_handle (must not be NULL).
+ * @param nb_col gives the number of columns in this row.
+ * @param data contains the data of each column.
+ * @param name_col contains the name of each column.
+ * @returns always 0.
+ */
+static int transmit_callback(void *userp, int nb_col, char **data, char **name_col)
+{
+    transmited_t *trans = (transmited_t *) userp;
+    gchar *sql_command = NULL;
+    gint success = 0;
+
+    if (trans != NULL && data != NULL && trans->comm != NULL && trans->database != NULL)
+        {
+
+            trans->comm->readbuffer = data[2];          /** data[2] is the data column in buffers table of the database */
+            success = post_url(trans->comm, data[1]);   /** data[1] is the url column in buffers table of the database  */
+
+            if (success == CURLE_OK)
+                {
+                    exec_sql_cmd(trans->database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n"));
+
+                    sql_command = g_strdup_printf("INSERT INTO transmited (buffer_id) VALUES ('%s');", data[0]);
+                    exec_sql_cmd(trans->database, sql_command,  _("(%d) Error while inserting into the table 'transmited': %s\n"));
+                    free_variable(sql_command);
+
+                    exec_sql_cmd(trans->database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));
+                }
+            /** @todo use the result of post to be able to manage errors */
+        }
+
+    return 0;
+}
+
+
+/**
+ * @param database is the pointer to the db_t * structure.
+ * @param comm_t is the pointer to the comm_t * structure.
+ * @returns a newly allocated transmited_t * structure that may be freed
+ *          when no longer needed.
+ */
+static transmited_t *new_transmited_t(db_t *database, comm_t *comm)
+{
+    transmited_t *trans = NULL;
+
+    trans = (transmited_t *) g_malloc0(sizeof(transmited_t));
+
+    trans->database = database;
+    trans->comm = comm;
+
+    return trans;
+}
+
+
+/**
+ * This function transferts the 'buffers' that are stored in the database
+ * @param database is the structure that contains everything that is
+ *        related to the database (it's connexion for instance).
+ * @param comm a comm_t * structure that must contain an initialized
+ *        curl_handle (must not be NULL).
+ * @returns TRUE if table 'buffers' is not empty and FALSE otherwise
+ */
+gboolean db_transmit_buffers(db_t *database, comm_t *comm)
+{
+    char *error_message = NULL;
+    int result = 0;
+    transmited_t *trans = NULL;
+
+    trans = new_transmited_t(database, comm);
+
+    result = sqlite3_exec(database->db, "SELECT * FROM buffers;", transmit_callback, trans, &error_message);
+
+    g_free(trans);
+
+    if (result == SQLITE_OK)
+        {
+            /* Table exists and buffers has been transmited to the server */
+            return TRUE;
+        }
+    else
+        {
+            /* result is not SQLITE_OK : something went wrong but buffers may have been transmited to the server */
             return FALSE;
         }
 }

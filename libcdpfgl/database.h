@@ -58,6 +58,18 @@ typedef struct
 
 
 /**
+ * @struct transmited_t
+ * @brief Structure used to pass things over sqlite3_exec callback procedure
+ *        to transmit buffers saved in the database.
+ */
+typedef struct
+{
+    db_t *database;
+    comm_t *comm;
+} transmited_t;
+
+
+/**
  * @returns a string containing the version of the database used.
  */
 extern gchar *db_version(void);
@@ -117,4 +129,17 @@ extern gboolean db_is_there_buffers_to_transmit(db_t *database);
  *        POSTed to server but couldn't.
  */
 extern void db_save_buffer(db_t *database, gchar *url, gchar *buffer);
+
+
+/**
+ * This function transferts the 'buffers' that are stored in the database
+ * @param database is the structure that contains everything that is
+ *        related to the database (it's connexion for instance).
+ * @param comm a comm_t * structure that must contain an initialized
+ *        curl_handle (must not be NULL).
+ * @returns TRUE if table 'buffers' is not empty and FALSE otherwise
+ */
+extern gboolean db_transmit_buffers(db_t *database, comm_t *comm);
+
+
 #endif /* #ifndef _DATABASE_H_ */

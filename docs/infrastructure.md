@@ -113,9 +113,9 @@ As an example a JSON structure for a file looks like:
 
 For now Information is stored with the following scheme:
 
-    --- files ----          -- buffers ---
-    | file_id *  |          | buffer_id *|
-    | cache_time |          | url        |
+    --- files ----          -- buffers ---    - transmited -
+    | file_id *  |          | buffer_id *|    | buffer_id *|
+    | cache_time |          | url        |    --------------
     | type       |          | data       |
     | file_user  |          --------------
     | file_group |
