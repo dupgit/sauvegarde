@@ -44,7 +44,7 @@
   * Defines the group name for all preferences related to "cdpfglclient"
   * program.
   *
-  * @def GN_SERVEUR
+  * @def GN_SERVER
   * Defines the group name for all preferences related to "cdpfglserver"
   * program.
   *
@@ -57,7 +57,7 @@
   *
   */
 #define GN_CLIENT ("Client")
-#define GN_SERVEUR ("Serveur")
+#define GN_SERVER ("Server")
 #define GN_ALL ("All")
 #define GN_FILE_BACKEND ("File_Backend")
 

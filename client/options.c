@@ -153,10 +153,10 @@ static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *fil
 {
     gint port = 0;
 
-    if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
+    if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVER) == TRUE)
         {
             /* Reading the port number if any */
-            port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVER_PORT, _("Could not load server port number from file."));
+            port = read_int_from_file(keyfile, filename, GN_SERVER, KN_SERVER_PORT, _("Could not load server port number from file."));
 
             if (port > 1024 && port < 65535)
                 {
@@ -164,7 +164,7 @@ static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *fil
                 }
 
             /* Reading IP address of server's host if any */
-            opt->ip = read_string_from_file(keyfile, filename, GN_SERVEUR, KN_SERVER_IP, _("Could not load cache database name"));
+            opt->ip = read_string_from_file(keyfile, filename, GN_SERVER, KN_SERVER_IP, _("Could not load cache database name"));
         }
 }
 

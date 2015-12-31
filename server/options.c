@@ -113,10 +113,10 @@ gchar *buffer_selected_option(options_t *opt)
  */
 static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
-    if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVEUR) == TRUE)
+    if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVER) == TRUE)
         {
             /* Reading the port number if any */
-            opt->port = read_int_from_file(keyfile, filename, GN_SERVEUR, KN_SERVER_PORT, _("Could not load server port number from file."));
+            opt->port = read_int_from_file(keyfile, filename, GN_SERVER, KN_SERVER_PORT, _("Could not load server port number from file."));
         }
 
     read_debug_mode_from_file(keyfile, filename);
