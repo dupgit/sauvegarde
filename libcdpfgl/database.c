@@ -385,7 +385,6 @@ gboolean db_is_there_buffers_to_transmit(db_t *database)
 }
 
 
-
 /**
  * Transmits each row found in the database
  * @param userp is a pointer to a comm_t * structure that must contain
@@ -459,6 +458,7 @@ gboolean db_transmit_buffers(db_t *database, comm_t *comm)
 
     trans = new_transmited_t(database, comm);
 
+    /* This should select only the rows in buffers that are not in transmited based on the primary key buffer_id */
     result = sqlite3_exec(database->db, "SELECT * FROM buffers LEFT JOIN transmited ON transmited.buffer_id <> buffers.buffer_id WHERE transmited.buffer_id is NULL;", transmit_callback, trans, &error_message);
 
     g_free(trans);
