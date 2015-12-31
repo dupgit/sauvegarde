@@ -144,7 +144,7 @@ static gchar *get_data_from_a_specific_hash(server_struct_t *server_struct, gcha
                 {
                     hash_data = backend->retrieve_data(server_struct, hash);
                     answer = convert_hash_data_t_to_string(hash_data);
-                    free_hash_data_t_structure(hash_data);
+                    free_hash_data_t(hash_data);
 
                     if (answer == NULL)
                         {
@@ -239,9 +239,9 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
 
                     if (hostname != NULL && uid != NULL && gid != NULL && owner != NULL && group != NULL)
                         {
-                            query = init_query_structure(hostname, uid, gid, owner, group, filename, date);
+                            query = init_query_t(hostname, uid, gid, owner, group, filename, date);
                             answer = backend->get_list_of_files(server_struct, query);
-                            free_query_structure(query); /** All variables hostname, uid... are freed there ! */
+                            free_query_t(query); /** All variables hostname, uid... are freed there ! */
                         }
                     else
                         {

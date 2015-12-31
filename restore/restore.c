@@ -126,7 +126,7 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
             encoded_filename = encode_to_base64(filename);
             encoded_date = encode_to_base64(date);
 
-            query = init_query_structure(hostname, the_uid, the_gid, owner, group, encoded_filename, encoded_date);
+            query = init_query_t(hostname, the_uid, the_gid, owner, group, encoded_filename, encoded_date);
             print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n"), hostname, the_uid, the_gid, owner, group);
         }
 
@@ -252,7 +252,7 @@ static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *
                                         {
                                             g_output_stream_write((GOutputStream *) stream, hash_data->data, hash_data->read, NULL, &error);
 
-                                            free_hash_data_t_structure(hash_data);
+                                            free_hash_data_t(hash_data);
                                         }
                                     else
                                         {
@@ -441,14 +441,14 @@ int main(int argc, char **argv)
                 {
                     query = get_user_infos(res_struct->hostname, res_struct->opt->list, res_struct->opt->date);
                     print_all_files(res_struct, query);
-                    free_query_structure(query);
+                    free_query_t(query);
                 }
 
             if (res_struct->opt->restore != NULL)
                 {
                     query = get_user_infos(res_struct->hostname, res_struct->opt->restore, res_struct->opt->date);
                     restore_last_file(res_struct, query);
-                    free_query_structure(query);
+                    free_query_t(query);
                 }
 
             free_res_struct_t(res_struct);

@@ -79,7 +79,7 @@ extern guint8 *string_to_hash(gchar *str_hash);
  * and its size to be freed.
  * @returns always NULL.
  */
-extern gpointer free_hash_data_t_structure(hash_data_t *hash_data);
+extern gpointer free_hash_data_t(hash_data_t *hash_data);
 
 
 /**

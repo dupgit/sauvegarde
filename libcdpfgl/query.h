@@ -54,7 +54,7 @@ typedef struct
  * @returns a newly allocated query_t * structure filled  with the
  *          corresponding data that may be freed when no longer needed.
  */
-extern query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group, gchar *filename, gchar *date);
+extern query_t *init_query_t(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group, gchar *filename, gchar *date);
 
 
 /**
@@ -62,6 +62,6 @@ extern query_t *init_query_structure(gchar *hostname, gchar *uid, gchar *gid, gc
  * @param query is the qery to be freed
  * @returns NULL;
  */
-extern gpointer free_query_structure(query_t *query);
+extern gpointer free_query_t(query_t *query);
 
 #endif /* #ifndef _QUERY_H_ */

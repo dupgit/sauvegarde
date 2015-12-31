@@ -217,7 +217,7 @@ guint8 *string_to_hash(gchar *str_hash)
  *        and its size to be freed.
  * @returns always NULL.
  */
-gpointer free_hash_data_t_structure(hash_data_t *hash_data)
+gpointer free_hash_data_t(hash_data_t *hash_data)
 {
 
     if (hash_data != NULL)
@@ -237,7 +237,7 @@ gpointer free_hash_data_t_structure(hash_data_t *hash_data)
  */
 void free_hdt_struct(gpointer data)
 {
-    free_hash_data_t_structure(data);
+    free_hash_data_t(data);
 }
 
 
