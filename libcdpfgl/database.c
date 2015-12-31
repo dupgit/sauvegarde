@@ -93,6 +93,26 @@ static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message)
 
 
 /**
+ * Does a commit on the database
+ * @param database : the db_t * structure that contains the database connexion
+ */
+static void sql_commit(db_t *database)
+{
+    exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));
+}
+
+
+/**
+ * Does a commit on the database
+ * @param database : the db_t * structure that contains the database connexion
+ */
+static void sql_begin(db_t *database)
+{
+    exec_sql_cmd(database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n"));
+}
+
+
+/**
  * Counts the number of row that we have by incrementing i.
  * @param num is an integer that will count the number of rows in the result.
  * @param nb_col gives the number of columns in this row.
@@ -234,8 +254,6 @@ static file_row_t *get_file_id(db_t *database, meta_data_t *meta)
 
     row = new_file_row_t();
 
-    /* beginning a transaction */
-    /* exec_sql_cmd(database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n")); */
     sql_command = g_strdup_printf("SELECT file_id from files WHERE inode=%" G_GUINT64_FORMAT " AND name='%s' AND type=%d AND uid=%d AND gid=%d AND ctime=%" G_GUINT64_FORMAT " AND mtime=%" G_GUINT64_FORMAT " AND mode=%d AND size=%" G_GUINT64_FORMAT ";", meta->inode, meta->name, meta->file_type, meta->uid, meta->gid, meta->ctime, meta->mtime, meta->mode, meta->size);
 
     db_result = sqlite3_exec(database->db, sql_command, get_file_callback, row, &error_message);
@@ -309,7 +327,7 @@ void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
             cache_time = g_get_real_time();
 
             /* beginning a transaction */
-            exec_sql_cmd(database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n"));
+            sql_begin(database);
 
             /* Inserting the file into the files table */
             sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted, link) VALUES (%" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', '%s', %d, %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', %d, '%s');", cache_time, meta->file_type, meta->inode, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name, only_meta, meta->link);
@@ -319,7 +337,7 @@ void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
             free_variable(sql_command);
 
             /* ending the transaction here */
-            exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));
+            sql_commit(database);
         }
 }
 
@@ -338,13 +356,13 @@ void db_save_buffer(db_t *database, gchar *url, gchar *buffer)
 
     if (database != NULL && url != NULL && buffer != NULL)
         {
-            exec_sql_cmd(database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n"));
+            sql_begin(database);
 
             sql_command = g_strdup_printf("INSERT INTO buffers (url, data) VALUES ('%s', '%s');", url, buffer);
             exec_sql_cmd(database, sql_command,  _("(%d) Error while inserting into the table 'buffers': %s\n"));
             free_variable(sql_command);
 
-            exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));
+            sql_commit(database);
         }
 }
 
@@ -408,13 +426,13 @@ static int transmit_callback(void *userp, int nb_col, char **data, char **name_c
 
             if (success == CURLE_OK)
                 {
-                    exec_sql_cmd(trans->database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n"));
+                    sql_begin(trans->database);
 
                     sql_command = g_strdup_printf("INSERT INTO transmited (buffer_id) VALUES ('%s');", data[0]);
                     exec_sql_cmd(trans->database, sql_command,  _("(%d) Error while inserting into the table 'transmited': %s\n"));
                     free_variable(sql_command);
 
-                    exec_sql_cmd(trans->database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));
+                    sql_commit(trans->database);
                 }
             /** @todo use the result of post to be able to manage errors */
         }
@@ -460,13 +478,13 @@ static int delete_transmited_callback(void *userp, int nb_col, char **data, char
 
     if (database != NULL && data != NULL)
         {
-            exec_sql_cmd(database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n"));
+            sql_begin(database);
 
             sql_command = g_strdup_printf("DELETE FROM buffers WHERE buffer_id='%s';", data[0]);
             exec_sql_cmd(database, sql_command,  _("(%d) Error while deleting from table 'buffers': %s\n"));
             free_variable(sql_command);
 
-            exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));
+           sql_commit(database);
         }
 
     return 0;
