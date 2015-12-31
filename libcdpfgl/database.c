@@ -387,8 +387,8 @@ gboolean db_is_there_buffers_to_transmit(db_t *database)
 
 /**
  * Transmits each row found in the database
- * @param userp is a pointer to a comm_t * structure that must contain
- *        an initialized curl_handle (must not be NULL).
+ * @param userp is a pointer to a transmited_t * structure that must contain
+ *        a comm_t * pointer and a db_t * pointer.
  * @param nb_col gives the number of columns in this row.
  * @param data contains the data of each column.
  * @param name_col contains the name of each column.
@@ -424,6 +424,8 @@ static int transmit_callback(void *userp, int nb_col, char **data, char **name_c
 
 
 /**
+ * Allocates a new structure to be passed sqlite3_exec callback in
+ * db_transmit_buffers function.
  * @param database is the pointer to the db_t * structure.
  * @param comm_t is the pointer to the comm_t * structure.
  * @returns a newly allocated transmited_t * structure that may be freed
@@ -439,6 +441,52 @@ static transmited_t *new_transmited_t(db_t *database, comm_t *comm)
     trans->comm = comm;
 
     return trans;
+}
+
+
+/**
+ * Deletes all transmited buffers from the buffers table in database
+ * based on transmited table.
+ * @param userp is a pointer to a db_t * structure
+ * @param nb_col gives the number of columns in this row.
+ * @param data contains the data of each column.
+ * @param name_col contains the name of each column.
+ * @returns always 0.
+ */
+static int delete_transmited_callback(void *userp, int nb_col, char **data, char **name_col)
+{
+    db_t *database = (db_t *) userp;
+    gchar *sql_command = NULL;
+
+    if (database != NULL && data != NULL)
+        {
+            exec_sql_cmd(database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n"));
+
+            sql_command = g_strdup_printf("DELETE FROM buffers WHERE buffer_id='%s';", data[0]);
+            exec_sql_cmd(database, sql_command,  _("(%d) Error while deleting from table 'buffers': %s\n"));
+            free_variable(sql_command);
+
+            exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));
+        }
+
+    return 0;
+}
+
+
+/**
+ * Deletes transmited buffers from table 'buffers' of the database
+ * @param database is the pointer to the db_t * structure.
+ * @returns the result of the sqlite3_exec() function
+ */
+static int delete_transmited_buffers(db_t *database)
+{
+    char *error_message = NULL;
+    int result = 0;
+
+    /* This should select every buffer_id that where transmited and not deleted (that are still present in buffers table) */
+    result = sqlite3_exec(database->db, "SELECT buffer_id FROM transmited INNER JOIN buffers ON transmited.buffer_id = buffers.buffer_id;", delete_transmited_callback, database, &error_message);
+
+    return result;
 }
 
 
@@ -462,6 +510,9 @@ gboolean db_transmit_buffers(db_t *database, comm_t *comm)
     result = sqlite3_exec(database->db, "SELECT * FROM buffers LEFT JOIN transmited ON transmited.buffer_id <> buffers.buffer_id WHERE transmited.buffer_id is NULL;", transmit_callback, trans, &error_message);
 
     g_free(trans);
+
+    delete_transmited_buffers(database);
+    /** @todo Catch the return value of this function and do something with it */
 
     if (result == SQLITE_OK)
         {
