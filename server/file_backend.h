@@ -85,7 +85,7 @@ typedef struct
  *        hostname that sent it. This structure MUST be freed by this
  *        function.
  */
-extern void file_store_smeta(server_struct_t *server_struct, SERVER_meta_data_t *smeta);
+extern void file_store_smeta(server_struct_t *server_struct, server_meta_data_t *smeta);
 
 
 /**

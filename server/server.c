@@ -31,7 +31,7 @@
 
 static void free_server_struct_t(server_struct_t *server_struct);
 static gboolean int_signal_handler(gpointer user_data);
-static server_struct_t *init_SERVER_main_structure(int argc, char **argv);
+static server_struct_t *init_server_main_structure(int argc, char **argv);
 static gchar *get_data_from_a_specific_hash(server_struct_t *server_struct, gchar *hash);
 static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key, gboolean encoded);
 static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Connection *connection);
@@ -103,7 +103,7 @@ static gboolean int_signal_handler(gpointer user_data)
  * @returns a server_struct_t * structure that contains everything that is
  *          needed for 'cdpfglserver' program.
  */
-static server_struct_t *init_SERVER_main_structure(int argc, char **argv)
+static server_struct_t *init_server_main_structure(int argc, char **argv)
 {
     server_struct_t *server_struct = NULL;  /** main structure for 'server' program. */
 
@@ -429,7 +429,7 @@ static int process_get_request(server_struct_t *server_struct, struct MHD_Connec
  */
 static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data)
 {
-    SERVER_meta_data_t *smeta = NULL;
+    server_meta_data_t *smeta = NULL;
     gchar *answer = NULL;       /** gchar *answer : Do not free answer variable as MHD will do it for us !  */
     json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json formatted */
     json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs       */
@@ -752,7 +752,7 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
 static gpointer meta_data_thread(gpointer user_data)
 {
     server_struct_t *server_struct = user_data;
-    SERVER_meta_data_t *smeta = NULL;
+    server_meta_data_t *smeta = NULL;
 
     if (server_struct != NULL && server_struct->meta_queue != NULL)
         {
@@ -851,7 +851,7 @@ int main(int argc, char **argv)
 
     init_international_languages();
 
-    server_struct = init_SERVER_main_structure(argc, argv);
+    server_struct = init_server_main_structure(argc, argv);
 
     if (server_struct != NULL && server_struct->opt != NULL && server_struct->backend != NULL)
         {

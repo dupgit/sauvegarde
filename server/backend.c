@@ -32,7 +32,7 @@
 /**
  * Inits the backend with the correct functions
  * @todo write some backends !
- * @param store_smeta a function to store SERVER_meta_data_t structure
+ * @param store_smeta a function to store server_meta_data_t structure
  * @param store_data a function to store data
  * @param init_backend a function to init the backend
  * @param build_needed_hash_list a function that must build a GSList * needed hash list

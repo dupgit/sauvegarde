@@ -39,7 +39,7 @@ encoded strings.
 
 msg_id field is used to identify message type. It is based on ENC_* macros
 defined in packing.h. ENC_META_DATA indicates that the JSON string contains
-a SERVER_meta_data_t structure.
+a server_meta_data_t structure.
 
 
 ### Directory

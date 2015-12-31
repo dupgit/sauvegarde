@@ -193,7 +193,7 @@ GList *extract_glist_from_array(json_t *root, gchar *name, gboolean only_hash);
  * @param root is the root json string that must contain an array named
  *        "file_list"
  * @returns a GSList that may be composed of 0 element (ie NULL). Elements
- *          are of type SERVER_meta_data_t *.
+ *          are of type server_meta_data_t *.
  */
 extern GSList *extract_smeta_gslist_from_file_list(json_t *root);
 
@@ -272,7 +272,7 @@ extern gchar *convert_hash_data_t_to_string(hash_data_t *hash_data);
  *          with free_meta_data_t() function when no longer needed. This
  *          function can return NULL if json_str is NULL itself.
  */
-extern SERVER_meta_data_t *convert_json_to_smeta_data(gchar *json_str);
+extern server_meta_data_t *convert_json_to_smeta_data(gchar *json_str);
 
 
 /**

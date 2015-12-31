@@ -57,7 +57,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
  *        function.
  * @todo prefix should be set as a configuration's option.
  */
-void file_store_smeta(server_struct_t *server_struct, SERVER_meta_data_t *smeta)
+void file_store_smeta(server_struct_t *server_struct, server_meta_data_t *smeta)
 {
     GFile *meta_file = NULL;
     gchar *filename = NULL;
@@ -123,7 +123,7 @@ void file_store_smeta(server_struct_t *server_struct, SERVER_meta_data_t *smeta)
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, _("Error: no SERVER_meta_data_t structure or missing hostname or missing meta_data_t * structure.\n"));
+                    print_error(__FILE__, __LINE__, _("Error: no server_meta_data_t structure or missing hostname or missing meta_data_t * structure.\n"));
                 }
 
             free_variable(prefix);

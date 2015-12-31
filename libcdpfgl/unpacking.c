@@ -321,16 +321,16 @@ GList *extract_glist_from_array(json_t *root, gchar *name, gboolean only_hash)
 
 
 /**
- * Fills a SERVER_meta_data_t from data that are in json_t *root
+ * Fills a server_meta_data_t from data that are in json_t *root
  * @param root is the JSON string that should contain all data needed
- *        to fill the SERVER_meta_data_t * structure.
- * @returns a newly allocated SERVER_meta_data_t * structure filled
+ *        to fill the server_meta_data_t * structure.
+ * @returns a newly allocated server_meta_data_t * structure filled
  *          accordingly.
  */
-static SERVER_meta_data_t *fills_SERVER_meta_data_t_from_json_t(json_t *root)
+static server_meta_data_t *fills_server_meta_data_t_from_json_t(json_t *root)
 {
     meta_data_t *meta = NULL;          /** meta_data_t *meta will be returned in smeta and contain file's metadata     */
-    SERVER_meta_data_t *smeta = NULL; /** SERVER_meta_data_t *smeta will be returned at the end                      */
+    server_meta_data_t *smeta = NULL; /** server_meta_data_t *smeta will be returned at the end                      */
 
     if (root != NULL)
         {
@@ -371,7 +371,7 @@ static SERVER_meta_data_t *fills_SERVER_meta_data_t_from_json_t(json_t *root)
  * @param root is the root json string that must contain an array named
  *        "file_list"
  * @returns a GSList that may be composed of 0 element (ie NULL). Elements
- *          are of type SERVER_meta_data_t *.
+ *          are of type server_meta_data_t *.
  */
 GSList *extract_smeta_gslist_from_file_list(json_t *root)
 {
@@ -379,7 +379,7 @@ GSList *extract_smeta_gslist_from_file_list(json_t *root)
     size_t index = 0;        /** size_t index is the iterator to iter over the array                         */
     json_t *value = NULL;    /** json_t *value : value = array[index] when iterating with json_array_foreach */
     GSList *head = NULL;     /** GSList *head the list to build and iclude into meta_data_t *meta            */
-    SERVER_meta_data_t *smeta = NULL; /** SERVER_meta_data_t *smeta will be returned at the end                      */
+    server_meta_data_t *smeta = NULL; /** server_meta_data_t *smeta will be returned at the end                      */
 
     if (root != NULL)
         {
@@ -393,7 +393,7 @@ GSList *extract_smeta_gslist_from_file_list(json_t *root)
              */
             json_array_foreach(array, index, value)
                 {
-                    smeta = fills_SERVER_meta_data_t_from_json_t(value);
+                    smeta = fills_server_meta_data_t_from_json_t(value);
                     head = g_slist_prepend(head, smeta);
                 }
         }
@@ -489,17 +489,17 @@ hash_data_t *convert_string_to_hash_data(gchar *json_str)
 
 
 /**
- * This function should return a newly allocated SERVER_meta_data_t *
+ * This function should return a newly allocated server_meta_data_t *
  * structure with all informations included from the json string.
  * @param json_str is a gchar * containing the JSON formated string.
- * @returns a newly_allocated SERVER_meta_data_t * structure that can be
+ * @returns a newly_allocated server_meta_data_t * structure that can be
  *          freed when no longer needed with free_smeta_data_t() function.
  *          This function can return NULL if json_str is NULL itself.
  */
-SERVER_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
+server_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
 {
     json_t *root = NULL;                 /** json_t *root is the json tree from which we will extract everything         */
-    SERVER_meta_data_t *smeta = NULL;   /** SERVER_meta_data_t *smeta will be returned at the end                      */
+    server_meta_data_t *smeta = NULL;    /** server_meta_data_t *smeta will be returned at the end                      */
 
     /**
      * @todo : validate that we have a json string and make
@@ -513,7 +513,7 @@ SERVER_meta_data_t *convert_json_to_smeta_data(gchar *json_str)
 
             if (root != NULL)
                 {
-                    smeta = fills_SERVER_meta_data_t_from_json_t(root);
+                    smeta = fills_server_meta_data_t_from_json_t(root);
 
                     json_decref(root);
                 }
