@@ -383,7 +383,7 @@ gboolean db_is_there_buffers_to_transmit(db_t *database)
     i = (int *) g_malloc0(sizeof(int));
     *i = 0;
 
-    result = sqlite3_exec(database->db, "SELECT * FROM buffers;", table_callback, i, &error_message);
+    result = sqlite3_exec(database->db, "SELECT * FROM buffers WHERE buffers.buffer_id NOT IN (SELECT transmited.buffer_id FROM transmited INNER JOIN buffers ON transmited.buffer_id = buffers.buffer_id);", table_callback, i, &error_message);
 
     if (result == SQLITE_OK && *i == 0)
         {
@@ -502,7 +502,7 @@ static int delete_transmited_buffers(db_t *database)
     int result = 0;
 
     /* This should select every buffer_id that where transmited and not deleted (that are still present in buffers table) */
-    result = sqlite3_exec(database->db, "SELECT buffer_id FROM transmited INNER JOIN buffers ON transmited.buffer_id = buffers.buffer_id;", delete_transmited_callback, database, &error_message);
+    result = sqlite3_exec(database->db, "SELECT transmited.buffer_id FROM transmited INNER JOIN buffers ON transmited.buffer_id = buffers.buffer_id;", delete_transmited_callback, database, &error_message);
 
     return result;
 }
@@ -525,7 +525,7 @@ gboolean db_transmit_buffers(db_t *database, comm_t *comm)
     trans = new_transmited_t(database, comm);
 
     /* This should select only the rows in buffers that are not in transmited based on the primary key buffer_id */
-    result = sqlite3_exec(database->db, "SELECT * FROM buffers LEFT JOIN transmited ON transmited.buffer_id <> buffers.buffer_id WHERE transmited.buffer_id is NULL;", transmit_callback, trans, &error_message);
+    result = sqlite3_exec(database->db, "SELECT * FROM buffers WHERE buffers.buffer_id NOT IN (SELECT transmited.buffer_id FROM transmited INNER JOIN buffers ON transmited.buffer_id = buffers.buffer_id);", transmit_callback, trans, &error_message);
 
     g_free(trans);
 
