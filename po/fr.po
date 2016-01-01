@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sauvegarde 0.0.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-01-01 17:54+0100\n"
-"PO-Revision-Date: 2016-01-01 18:04+0100\n"
+"POT-Creation-Date: 2016-01-01 21:12+0100\n"
+"PO-Revision-Date: 2016-01-01 21:13+0100\n"
 "Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
 "Language: fr\n"
@@ -448,6 +448,10 @@ msgstr "Impossible de charger la taille du bloc depuis le fichier"
 msgid "Could not load directory name"
 msgstr "Impossible de charger le nom du dossier"
 
+#. Reading filename of the database if any
+#. Reading IP address of server's host if any
+#. Reading filename of the database if any
+#. Reading IP address of server's host if any
 #. Reading filename of the database if any
 #. Reading IP address of server's host if any
 #. Reading filename of the database if any
@@ -1058,6 +1062,10 @@ msgstr ""
 #, c-format
 msgid "Received data for hash: \"%s\" (%s bytes)\n"
 msgstr "Réception des données pour le hash :  \"%s\" (%s octets)\n"
+
+#: ../server/options.c:189
+msgid "Activates (1) or deactivates (0) debug mode."
+msgstr "Active (1) ou désactive (0) le mode de débogage."
 
 #~ msgid "04 10 2015"
 #~ msgstr "04 10 2015"
