@@ -5,7 +5,7 @@
 #
 #  This file is part of "Sauvegarde" project.
 #
-#  (C) Copyright 2015 Olivier Delhomme
+#  (C) Copyright 2015  - 2016 Olivier Delhomme
 #   e-mail : olivier.delhomme@free.fr
 #
 #  "Sauvegarde" is free software: you can redistribute it and/or modify
@@ -26,13 +26,13 @@
 # References :
 #  . https://wiki.debian.org/IntroDebianPackaging documentation
 #
-export version=0.0.6
-export distfiles="http://src.delhomme.org/download/sauvegarde/releases/sauvegarde-${version}.tar.xz"
+export version=0.0.7
+export distfiles="../../cdpfgl-${version}.tar.xz"
 
-wget -c $distfiles
-mv sauvegarde-${version}.tar.xz sauvegarde_${version}.orig.tar.xz
-tar Jxf sauvegarde_${version}.orig.tar.xz
-cd sauvegarde-${version}
+cp $distfiles .
+mv cdpfgl-${version}.tar.xz cdpfgl_${version}.orig.tar.xz
+tar Jxf cdpfgl_${version}.orig.tar.xz
+cd cdpfgl-${version}
 cp -a ../debian .
 
 debuild -us -uc 

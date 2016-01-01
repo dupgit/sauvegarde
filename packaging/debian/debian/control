@@ -1,12 +1,15 @@
-Source: sauvegarde
+Source: cdpfgl
 Maintainer: Olivier Delhomme <olivier.delhomme@free.fr>
 Section: misc
 Priority: optional
 Standards-Version: 0.0.7
 Build-Depends: debhelper (>= 9)
+Vcs-Git: git://github.com/dupgit/sauvegarde -b master
+Vcs-Browser: https://github.com/dupgit/sauvegarde/tree/master
+Homepage: https://github.com/dupgit/sauvegarde/
 
 Package: cdpfgl
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Continuous data protection for GNU/Linux
-cdpfgl saves your files in a live continuous way that is to say while they are written to disks.
+ cdpfgl saves your files in a live continuous way that is to say while they are written to disks.
