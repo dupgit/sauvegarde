@@ -18,7 +18,7 @@ is used for the artwork. You'll find a LICENSE file in this directory
 for the programs (GPL v3) and one in the pixmaps file for the artwork
 (CC-BY-SA 4.0).
 
-Feel free to contibute to cdpfgl's project and/or give help to the
+Feel free to contribute to cdpfgl's project and/or give help to the
 projects used here (see dependencies section below).
 
 
@@ -157,7 +157,7 @@ options are:
       -l, --list=REGEX                 Gives a list of saved files that correspond to the given REGEX.
       -r, --restore=REGEX              Restore requested filename (REGEX) (by default latest version).
       -t, --date=DATE                  restores the selected file at that specific DATE.
-      -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
+      -d, --debug=BOOLEAN              Activates (1) or deactivates (0) debug mode.
       -c, --configuration=FILENAME     Specify an alternative configuration file.
       -w, --where=DIRECTORY            Specify a DIRECTORY where to restore a file.
       -i, --ip=IP                      IP address where server program is.
@@ -175,8 +175,8 @@ If you need more than the above hints, please have a look at the user
 I am coding on spare hours so I may not tell any release dates and you
 should consider that "It ships when its ready".
 
-* 0.0.7  hability to exclude some files by extension or path. Caching
-         mecanism in client in case the server is unreachable. Change
+* 0.0.7  Ability to exclude some files by extension or path. Caching
+         mechanism in client in case the server is unreachable. Change
          GSList hash_data_list from meta_data_t structure to something
          that allows deletion of elements while walking through it.
 * 0.0.8  restore the latest version of a file before a specific date.
@@ -200,14 +200,14 @@ should consider that "It ships when its ready".
                       hashs to avoid having duplicated hashs into it.
 * 0.0.5  [04.10.2015] fanotify's code reviewed. Avoid having one entire
                       file in memory.
-* 0.0.6  [02 11 2015] restore to some specific place. client adaptative
-                      blocksize with option to choose fixed or adaptative.
+* 0.0.6  [02 11 2015] restore to some specific place. client adaptive
+                      blocksize with option to choose fixed or adaptive.
                       Add options to choose CLIENT_MIN_BUFFER.
 
 
 ## Code documentation
 
-If you are interrested in helping the projet please have a look at
+If you are interested in helping the project please have a look at
 [coding_in_cdpfgl.md](docs/coding_in_cdpfgl.md) file. Some
 inside insights are in the [infrastructure](docs/infrastructure.md)
 documentation as well for the [API](docs/API.md) part.
