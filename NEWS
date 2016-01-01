@@ -13,7 +13,7 @@ This is v0.0.7 release of this project and some major features were added:
       at 0(1) cost.
     * I also corrected some bugs as they were found.
     * packaging directory now contains stuff for packaging for the distributions (voidlinux and debian as of now).
-    * dockerfiles directory contains Dockerfiles to build the whole project in different distributions in a light way.
+    * dockerfiles directory contains Dockerfiles to build the whole project in different distributions (centos and voidlinux) in a light way.
 
 While working on this version a performance problem was found. It was linked to a libmicrohttpd bug that was shrinking a buffer and did never grow it again leading to a very small buffer. I managed to make a small set of programs that demonstrated the bug and Christian Grothoff fixed it in minutes. Thank you very much Christian !
 
