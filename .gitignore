@@ -54,3 +54,4 @@ manual/video/*.mp4
 bugs/
 packaging/debian/sauvegarde*
 po/cdpfgl.pot
+packaging/debian/cdpfgl*
