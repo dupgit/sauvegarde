@@ -1,3 +1,39 @@
+[??-01-2016] v0.0.7
+'sauvegarde' project is also known as Continuous Data Protection For GNU/Linux (cdpfgl). It is a set of programs: 'cdpfglserver', 'cdpfglclient' and 'cdpfglrestore' as of now. They will saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server 'cdpfglserver' is stateless and achieves deduplication at the block level. As a result it does not use much memory and may run on small machines (for instance I run one cdpfglserver on a 1Gb bananapi).
+
+This is v0.0.7 release of this project and some major features were added:
+
+    * The project is still named 'sauvegarde' in github but I will name it Continuous Data Protection For GNU/Linux (cdpfgl) as much as I can. All the programs are now using cdpfgl acronym (even the libsauvegarde as been renamed libcdpfgl). An effort as been made in the source code to track down old french names such as 'serveur', 'restaure' and so on.
+    * In the same way I renamed 'Serveur' section into 'Server' section in configuration files. So v0.0.6 or older configuration files are not compatible with v0.0.7 and one may have to change this manually.
+    * Ability to exclude some files by extension or path. This adds a new file configuration option named 'exclude-list=' in [Client] section. It takes some basic regular expressions such as those given in example in 'client.conf' file. It also adds a new cdpfglclient command line option called '-x' or '--exclude'.
+    * Client is threaded and now uses at least 3 threads (one is used only to uncache cached buffers when the server comes alive again).
+    * Caching mechanism in client in case the server is unreachable. This is achieved by using tables in a the client's local sqlite database. It breaks compatibility form older versions ie v0.0.6 database is not usable as is with v0.0.7 (I'll do a migration script upon request).
+    * Change GSList hash_data_list from meta_data_t structure to a GList
+      structure that allows deleting elements while walking through it
+      at 0(1) cost.
+    * I also corrected some bugs as they were found.
+    * packaging directory now contains stuff for packaging for the distributions (voidlinux and debian as of now).
+    * dockerfiles directory contains Dockerfiles to build the whole project in different distributions in a light way.
+
+While working on this version a performance problem was found. It was linked to a libmicrohttpd bug that was shrinking a buffer and did never grow it again leading to a very small buffer. I managed to make a small set of programs that demonstrated the bug and Christian Grothoff fixed it in minutes. Thank you very much Christian !
+
+
+Contributors to this version:
+
+    * Olivier Delhomme
+    * Pierre Bourgin
+
+
+Links:
+
+    * Sauvegarde's project: https://github.com/dupgit/sauvegarde
+    * Sauvegarde's openhub: https://openhub.net/p/sauvegarde
+    * Sauvegarde release v0.0.7: http://cdpfgl.delhomme.org/download/releases/cdpfgl-0.0.7.tar.xz
+    * travis continuous integration status: https://travis-ci.org/dupgit/sauvegarde
+    * sauvegarde's frescode: http://freshcode.club/projects/sauvegarde
+    * voidlinux distribution: http://www.voidlinux.eu/
+
+
 [02-11-2015] v0.0.6
 'sauvegarde' is a set of tools ('cdpfglserver', 'cdpfglclient' and 'cdpfglrestore' - as of now) that saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server (now named 'cdpfglserver') is stateless and achieves deduplication (at the block level). As a result it does not use much memory and may run on small machines (on a virtual machine for instance).
 
