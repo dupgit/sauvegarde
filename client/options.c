@@ -39,7 +39,7 @@ static void print_filelist(GSList *filelist, gchar *title);
 /**
  * Prints filenames contained in the list.
  * @param filelist is a list containing file list (directories to be
- *        savec or to be excluded for instance).
+ *        saved or to be excluded for instance).
  * @param title is a gchar * string that is printed at the top of the
  *        list.
  */
@@ -48,7 +48,7 @@ static void print_filelist(GSList *filelist, gchar *title)
 
     if (filelist != NULL)
         {
-            fprintf(stdout, title);
+            fprintf(stdout, "%s", title);
             while (filelist != NULL)
                 {
                     fprintf(stdout, "\t%s\n", (char *) filelist->data);
