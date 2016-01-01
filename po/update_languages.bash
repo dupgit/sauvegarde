@@ -33,3 +33,5 @@ sed -i -e "s/CHARSET/us-ascii/" cdpfgl.po
 for l in fr; do
     msgmerge -U $l.po cdpfgl.po;
 done;
+
+sed -i s,\.\.\/,, ./POTFILES.in
