@@ -73,7 +73,7 @@
 #define CLIENT_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
 #define CLIENT_DATE _("02 11 2015")
 #define CLIENT_LICENSE _("GPL v3 or later")
-#define CLIENT_VERSION _("0.0.6")
+#define CLIENT_VERSION _("0.0.7")
 #define PROGRAM_NAME ("client")
 
 

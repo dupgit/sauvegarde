@@ -56,7 +56,7 @@ least all theses parameters:
 directory name).It must be base 64 encoded.
 
 'date' may be used to filter results for a specific date. It must be
-base 64 encoded and the string must be formatted "YYYY-MM-DD HH:MM:SS".
+base64 encoded and the string must be formatted "YYYY-MM-DD HH:MM:SS".
 
 The answer contains a json array named "file_list" that contains a
 server_meta_data_t structure (a JSON structure for a file as stated in

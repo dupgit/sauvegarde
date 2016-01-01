@@ -74,7 +74,7 @@
 #define SERVER_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
 #define SERVER_DATE _("02 11 2015")
 #define SERVER_LICENSE _("GPL v3 or later")
-#define SERVER_VERSION _("0.0.6")
+#define SERVER_VERSION _("0.0.7")
 #define PROGRAM_NAME ("cdpfglserver")
 
 #include "options.h"

@@ -2,7 +2,7 @@
 # Template file for 'cdpfgl-server'
 _desc="Continuous data protection for GNU/Linux"
 pkgname=cdpfgl-server
-version=0.0.6
+version=0.0.7
 revision=2
 build_style=gnu-configure
 wrksrc=cdpfgl-${version}
@@ -17,38 +17,38 @@ distfiles="http://src.delhomme.org/download/sauvegarde/releases/cdpfgl-${version
 checksum=235627b0e3bced9c0bd42c8521fa61dc69b0a4d51209ad4ae3d2c634217b82aa
 
 post_install() {
-	vsv ${pkgname}
+    vsv ${pkgname}
 }
 
 cdpfgl-lib_package() {
-	short_desc+=" - library"
-	pkg_install() {
-		vdoc "README"
-		vdoc "NEWS"
-		vlicense "COPYING"
-		vmove "usr/share/locale"
-		vmove "usr/lib/cdpfgl/*.so.*"
-	}
+    short_desc+=" - library"
+    pkg_install() {
+        vdoc "README"
+        vdoc "NEWS"
+        vlicense "COPYING"
+        vmove "usr/share/locale"
+        vmove "usr/lib/cdpfgl/*.so.*"
+    }
 }
 
 cdpfgl-client_package() {
-	short_desc+=" - client"
-	conf_files="/etc/cdpfgl/client.conf /etc/cdpfgl/restore.conf"
-	pkg_install() {
-		vsv cdpfgl-client
-		vmove "usr/bin/cdpfglclient"
-		vmove "usr/bin/cdpfglrestore"
-		vmove "etc/cdpfgl/client.conf"
-		vmove "etc/cdpfgl/restore.conf"
-	}
+    short_desc+=" - client"
+    conf_files="/etc/cdpfgl/client.conf /etc/cdpfgl/restore.conf"
+    pkg_install() {
+        vsv cdpfgl-client
+        vmove "usr/bin/cdpfglclient"
+        vmove "usr/bin/cdpfglrestore"
+        vmove "etc/cdpfgl/client.conf"
+        vmove "etc/cdpfgl/restore.conf"
+    }
 }
 
 cdpfgl-devel_package() {
-	depends="cdpfgl-lib>=${version}_${revision}"
-	short_desc+=" - development files"
-	pkg_install() {
-		vmove usr/include
-		vmove usr/lib/pkgconfig
-		vmove "usr/lib/cdpfgl/*.so"
-	}
+    depends="cdpfgl-lib>=${version}_${revision}"
+    short_desc+=" - development files"
+    pkg_install() {
+        vmove usr/include
+        vmove usr/lib/pkgconfig
+        vmove "usr/lib/cdpfgl/*.so"
+    }
 }
