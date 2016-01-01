@@ -3,7 +3,7 @@
 #    Updates all files for the translation system.
 #
 #    This file is part of "Sauvegarde" project.
-# 
+#
 #    (C) Copyright 2015 Olivier Delhomme
 #     e-mail : olivier.delhomme@free.fr
 #
@@ -25,11 +25,11 @@
 ./find_files.sh >./POTFILES.in
 
 # Updating sauvegarde.po
-xgettext -j --language=C --default-domain=sauvegarde --add-comments --from-code=UTF-8 --keyword=N_:1 --keyword=_:1 --files-from=./POTFILES.in
+xgettext -j --language=C --default-domain=cdpfgl --add-comments --from-code=UTF-8 --keyword=N_:1 --keyword=_:1 --files-from=./POTFILES.in
 
-sed -i -e "s/CHARSET/us-ascii/" sauvegarde.po
+sed -i -e "s/CHARSET/us-ascii/" cdpfgl.po
 
 # updating translations
 for l in fr; do
-	msgmerge -U $l.po sauvegarde.po;
+    msgmerge -U $l.po cdpfgl.po;
 done;
