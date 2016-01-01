@@ -977,7 +977,7 @@ msgstr "Impossible de charger la liste des dossiers depuis le fichier"
 
 #: ../client/options.c:254
 msgid "Exclude FILENAME from being saved."
-msgstr "Exclu FICHIER de la sauvegarde."
+msgstr "Exclu NOM DU FICHIER de la sauvegarde."
 
 #. Creation of transmited table that may contain id of transmited buffers  if any
 #: ../libcdpfgl/database.c:159
