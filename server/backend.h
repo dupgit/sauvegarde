@@ -3,7 +3,7 @@
  *    backend.h
  *    This file is part of "Sauvegarde" project.
  *
- *    (C) Copyright 2015 Olivier Delhomme
+ *    (C) Copyright 2015 - 2016 Olivier Delhomme
  *     e-mail : olivier.delhomme@free.fr
  *
  *    "Sauvegarde" is free software: you can redistribute it and/or modify
