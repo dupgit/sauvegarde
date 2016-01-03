@@ -14,5 +14,6 @@ RUN xbps-install -A -y -S ; \
     xbps-install -A -y -S sqlite-devel; \
     xbps-install -A -y -S git; \
     xbps-remove -F -y libressl-2.2.4_3; \
+    xbps-install -A -y -S make; \
     xbps-install -A -y -S libcurl-devel
-RUN cd; git clone https://github.com/dupgit/sauvegarde.git;
+RUN cd; git clone https://github.com/dupgit/sauvegarde.git; cd sauvegarde; ./autogen.sh && ./configure && make && make check && make install;
