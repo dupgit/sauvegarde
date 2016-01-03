@@ -13,8 +13,8 @@ short_desc="${_desc} - Server"
 maintainer="Olivier Delhomme <olivier.delhomme@free.fr>"
 license="GPL-3"
 homepage="https://github.com/dupgit/sauvegarde"
-distfiles="http://src.delhomme.org/download/sauvegarde/releases/cdpfgl-${version}.tar.xz"
-checksum=235627b0e3bced9c0bd42c8521fa61dc69b0a4d51209ad4ae3d2c634217b82aa
+distfiles="http://cdpfgl.delhomme.org/download/releases/cdpfgl-${version}.tar.xz"
+checksum=d8e341588cf1a216604ef8000c5bd9d29a39a011c706192e1ab79bf757339a7c
 
 post_install() {
     vsv ${pkgname}
