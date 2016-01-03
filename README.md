@@ -175,10 +175,6 @@ If you need more than the above hints, please have a look at the user
 I am coding on spare hours so I may not tell any release dates and you
 should consider that "It ships when its ready".
 
-* 0.0.7  Ability to exclude some files by extension or path. Caching
-         mechanism in client in case the server is unreachable. Change
-         GSList hash_data_list from meta_data_t structure to something
-         that allows deletion of elements while walking through it.
 * 0.0.8  restore the latest version of a file before a specific date.
          Add a new post url such as (Hash_Array.json) to submit an array
          of hashs to server that will say which hashs are needed.
@@ -203,7 +199,11 @@ should consider that "It ships when its ready".
 * 0.0.6  [02 11 2015] restore to some specific place. client adaptive
                       blocksize with option to choose fixed or adaptive.
                       Add options to choose CLIENT_MIN_BUFFER.
-
+* 0.0.7  [03 01 2016] Ability to exclude some files by extension or path.
+                      Caching mechanism in client in case the server is
+                      unreachable. Change GSList hash_data_list from
+                      meta_data_t structure to something that allows
+                      deletion of elements while walking through it.
 
 ## Code documentation
 
