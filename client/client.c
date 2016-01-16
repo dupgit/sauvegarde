@@ -686,7 +686,7 @@ static gint64 calculate_file_blocksize(main_struct_t *main_struct, gint64 size)
 
     if (main_struct != NULL && main_struct->opt != NULL)
         {
-            if (main_struct->opt->adaptative == TRUE)
+            if (main_struct->opt->adaptive == TRUE)
                 {
                     if (size < 32768)            /* max 64 blocks       */
                         {

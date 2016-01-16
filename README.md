@@ -125,7 +125,7 @@ command line options are:
       -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
       -c, --configuration=FILENAME     Specify an alternative configuration file.
       -b, --blocksize=SIZE             Block SIZE used to compute hashs.
-      -a, --adaptative=BOOLEAN         Adapative block size used to compute hashs.
+      -a, --adaptive=BOOLEAN         Adapative block size used to compute hashs.
       -s, --buffersize=SIZE            SIZE of the cache used to send data to server.
       -r, --dircache=DIRNAME           Directory DIRNAME where to cache files.
       -f, --dbname=FILENAME            Database FILENAME.

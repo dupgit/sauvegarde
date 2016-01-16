@@ -74,7 +74,7 @@ static void print_selected_options(options_t *opt)
             print_filelist(opt->dirname_list, _("Directory list:\n"));
             print_filelist(opt->exclude_list, _("Exclude list:\n"));
 
-            if (opt->adaptative == FALSE)
+            if (opt->adaptive == FALSE)
                 {
                     /**
                      * We need to translated this number into a string before
@@ -87,7 +87,7 @@ static void print_selected_options(options_t *opt)
                 }
             else
                 {
-                    fprintf(stdout, _("Blocksize: adaptative mode\n"));
+                    fprintf(stdout, _("Blocksize: adaptive mode\n"));
                 }
 
             print_string_option(_("Configuration file: %s\n"), opt->configfile);
@@ -131,7 +131,7 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
             opt->dbname = read_string_from_file(keyfile, filename, GN_CLIENT, KN_DB_NAME, _("Could not load cache database name"));
 
             /* Adaptative mode for blocksize ? */
-            opt->adaptative = read_boolean_from_file(keyfile, filename, GN_CLIENT, KN_ADAPTATIVE, _("Could not load adaptative configuration from file."));
+            opt->adaptive = read_boolean_from_file(keyfile, filename, GN_CLIENT, KN_ADAPTATIVE, _("Could not load adaptive configuration from file."));
 
             /* Buffer size to be used to send data to server */
             opt->buffersize = read_int_from_file(keyfile, filename, GN_CLIENT, KN_BUFFER_SIZE, _("Could not load buffersize from file"));
@@ -228,7 +228,7 @@ options_t *manage_command_line_options(int argc, char **argv)
 {
     gboolean version = FALSE;      /** True if -v was selected on the command line           */
     gint debug = -4;               /** 0 == FALSE and other values == TRUE                   */
-    gint adaptative = -1;          /** 0 == FALSE and other positive values == TRUE          */
+    gint adaptive = -1;          /** 0 == FALSE and other positive values == TRUE          */
     gchar **dirname_array = NULL;  /** array of dirnames left on the command line            */
     gchar **exclude_array = NULL;  /** array of dirnames and filenames to be excluded        */
     gchar *configfile = NULL;      /** filename for the configuration file if any            */
@@ -245,7 +245,7 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode."), N_("BOOLEAN")},
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
         { "blocksize", 'b', 0, G_OPTION_ARG_INT64, &blocksize, N_("Fixed block SIZE used to compute hashs."), N_("SIZE")},
-        { "adaptative", 'a', 0, G_OPTION_ARG_INT, &adaptative, N_("Adapative block size used to compute hashs."), N_("BOOLEAN")},
+        { "adaptive", 'a', 0, G_OPTION_ARG_INT, &adaptive, N_("Adapative block size used to compute hashs."), N_("BOOLEAN")},
         { "buffersize", 's', 0, G_OPTION_ARG_INT, &buffersize, N_("SIZE of the cache used to send data to server."), N_("SIZE")},
         { "dircache", 'r', 0, G_OPTION_ARG_STRING, &dircache, N_("Directory DIRNAME where to cache files."), N_("DIRNAME")},
         { "dbname", 'f', 0, G_OPTION_ARG_STRING, &dbname, N_("Database FILENAME."), N_("FILENAME")},
@@ -290,7 +290,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->ip = g_strdup("localhost");
     opt->port = 5468;
     opt->buffersize = -1;
-    opt->adaptative = FALSE;
+    opt->adaptive = FALSE;
 
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "client.conf");
@@ -349,13 +349,13 @@ options_t *manage_command_line_options(int argc, char **argv)
             opt->port = port;
         }
 
-    if (adaptative > 0)
+    if (adaptive > 0)
         {
-            opt->adaptative = TRUE;
+            opt->adaptive = TRUE;
         }
-    else if (adaptative == 0)
+    else if (adaptive == 0)
         {
-            opt->adaptative = FALSE;
+            opt->adaptive = FALSE;
         }
 
     if (buffersize > 0)
