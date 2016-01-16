@@ -626,6 +626,7 @@ static uint get_uint_from_string(gchar *string)
  * @param mtime the time in unix time
  * @param date the date in YYYY-MM-DD HH:MM:SS format - it may lack
  *        things from the end ie: YYYY-MM-DD HH: for instance.
+ * @returns TRUE if mtime has date as prefix and TRUE if date is NULL
  */
 static gboolean compare_mtime_to_date(guint64 mtime, gchar *date)
 {
