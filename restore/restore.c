@@ -137,6 +137,30 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
     return query;
 }
 
+/**
+ * Adds a field and its value to the request
+ * @param request is the request where to add the field and its value
+ * @param field is the field to be added to the request
+ * @param value is the value of the field
+ * @returns a newlly allocated gchar * request that may be freed when no
+ *          longer needed.
+ */
+static gchar *add_on_field_to_request(gchar *request, gchar *field, gchar *value)
+{
+    gchar *new_request = NULL;
+
+    if (request != NULL && field != NULL && value != NULL)
+        {
+            new_request = g_strconcat(request, "&", field, "=", value, NULL);
+        }
+    else
+        {
+            new_request = g_strdup(request);
+        }
+
+    return new_request;
+}
+
 
 /**
  * Gets the file the server_meta_data_t * file list if any
@@ -148,20 +172,19 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
 static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query)
 {
     gchar *request = NULL;
+    gchar *new_request = NULL;
     json_t *root = NULL;
     GSList *list = NULL;    /** List of server_meta_data_t * returned by this function */
     gint res = CURLE_FAILED_INIT;
 
     if (res_struct != NULL && query != NULL)
         {
-            if (query->date == NULL)
-                {
-                    request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s", query->hostname, query->uid, query->gid, query->owner, query->group, query->filename);
-                }
-            else
-                {
-                    request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s&date=%s", query->hostname, query->uid, query->gid, query->owner, query->group, query->filename, query->date);
-                }
+            /* This is the base request */
+            request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s", query->hostname, query->uid, query->gid, query->owner, query->group, query->filename);
+
+            new_request = add_on_field_to_request(request, "date", query->date);
+            free_variable(request);
+            request = new_request;
 
             print_debug(_("Query is: %s\n"), request);
             res = get_url(res_struct->comm, request);
