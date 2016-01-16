@@ -29,7 +29,7 @@
 
 static res_struct_t *init_res_struct(int argc, char **argv);
 static gchar *encode_to_base64(gchar *string);
-static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date);
+static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt);
 static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query);
 static void print_all_files(res_struct_t *res_struct, query_t *query);
 static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GList *hash_list);
@@ -95,11 +95,11 @@ static gchar *encode_to_base64(gchar *string)
  * Gets all user infos and fills a query_t * structure accordingly.
  * @param hostname the hostname where the program is run
  * @param filename is the name of the file we want to restore.
- * @param date is the date of the version of this file.
+ * @param opt is the option structure that contains all options.
  * @return a pointer to a newly allocated query_t structure that may be
  *         freed when no longer needed.
  */
-static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
+static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
 {
     uid_t uid;
     struct passwd *pass = NULL;
@@ -124,7 +124,7 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, gchar *date)
             the_gid = g_strdup_printf("%d", pass->pw_gid);
 
             encoded_filename = encode_to_base64(filename);
-            encoded_date = encode_to_base64(date);
+            encoded_date = encode_to_base64(opt->date);
 
             query = init_query_t(hostname, the_uid, the_gid, owner, group, encoded_filename, encoded_date);
             print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n"), hostname, the_uid, the_gid, owner, group);
@@ -439,14 +439,14 @@ int main(int argc, char **argv)
 
             if (res_struct->opt->list != NULL)
                 {
-                    query = get_user_infos(res_struct->hostname, res_struct->opt->list, res_struct->opt->date);
+                    query = get_user_infos(res_struct->hostname, res_struct->opt->list, res_struct->opt);
                     print_all_files(res_struct, query);
                     free_query_t(query);
                 }
 
             if (res_struct->opt->restore != NULL)
                 {
-                    query = get_user_infos(res_struct->hostname, res_struct->opt->restore, res_struct->opt->date);
+                    query = get_user_infos(res_struct->hostname, res_struct->opt->restore, res_struct->opt);
                     restore_last_file(res_struct, query);
                     free_query_t(query);
                 }
