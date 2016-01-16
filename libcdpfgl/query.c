@@ -39,10 +39,12 @@
  * @param group group for the file(s) hopefully corresponding to gid
  * @param filename is the filename that we are looking for.
  * @param date is the date at which we want the file's version back.
+ * @param afterdate is the date after which we want the files.
+ * @param beforedate is the date before which we want the files.
  * @returns a newly allocated query_t * structure filled  with the
  *          corresponding data that may be freed when no longer needed.
  */
-query_t *init_query_t(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group, gchar *filename, gchar *date)
+query_t *init_query_t(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group, gchar *filename, gchar *date, gchar *afterdate, gchar *beforedate)
 {
     query_t *query = NULL;
 
@@ -55,6 +57,8 @@ query_t *init_query_t(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gch
     query->group = group;
     query->filename = filename;
     query->date = date;
+    query->afterdate = afterdate;
+    query->beforedate = beforedate;
 
     return query;
 }
@@ -76,6 +80,8 @@ gpointer free_query_t(query_t *query)
             free_variable(query->group);
             free_variable(query->filename);
             free_variable(query->date);
+            free_variable(query->afterdate);
+            free_variable(query->beforedate);
             free_variable(query);
         }
 

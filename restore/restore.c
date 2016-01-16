@@ -111,6 +111,8 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
     gchar *group = NULL;
     gchar *encoded_date = NULL;
     gchar *encoded_filename = NULL;
+    gchar *encoded_afterdate = NULL;
+    gchar *encoded_beforedate = NULL;
 
     uid = geteuid();
     pass = getpwuid(uid);
@@ -125,8 +127,10 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
 
             encoded_filename = encode_to_base64(filename);
             encoded_date = encode_to_base64(opt->date);
+            encoded_afterdate = encode_to_base64(opt->afterdate);
+            encoded_beforedate = encode_to_base64(opt->beforedate);
 
-            query = init_query_t(hostname, the_uid, the_gid, owner, group, encoded_filename, encoded_date);
+            query = init_query_t(hostname, the_uid, the_gid, owner, group, encoded_filename, encoded_date, encoded_afterdate, encoded_beforedate);
             print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n"), hostname, the_uid, the_gid, owner, group);
         }
 

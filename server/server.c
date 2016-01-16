@@ -239,7 +239,7 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
 
                     if (hostname != NULL && uid != NULL && gid != NULL && owner != NULL && group != NULL)
                         {
-                            query = init_query_t(hostname, uid, gid, owner, group, filename, date);
+                            query = init_query_t(hostname, uid, gid, owner, group, filename, date, NULL, NULL);
                             answer = backend->get_list_of_files(server_struct, query);
                             free_query_t(query); /** All variables hostname, uid... are freed there ! */
                         }

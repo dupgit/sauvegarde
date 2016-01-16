@@ -41,6 +41,8 @@ typedef struct
     gchar *group;
     gchar *filename;
     gchar *date;
+    gchar *afterdate;
+    gchar *beforedate;
 } query_t;
 
 
@@ -51,10 +53,14 @@ typedef struct
  * @param gid gid for the file(s)
  * @param owner owner for the file(s) hopefully corresponding to uid
  * @param group group for the file(s) hopefully corresponding to gid
+ * @param filename is the filename that we are looking for.
+ * @param date is the date at which we want the file's version back.
+ * @param afterdate is the date after which we want the files.
+ * @param beforedate is the date before which we want the files.
  * @returns a newly allocated query_t * structure filled  with the
  *          corresponding data that may be freed when no longer needed.
  */
-extern query_t *init_query_t(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group, gchar *filename, gchar *date);
+extern query_t *init_query_t(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group, gchar *filename, gchar *date, gchar *afterdate, gchar *beforedate);
 
 
 /**
