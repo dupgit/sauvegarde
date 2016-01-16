@@ -149,15 +149,17 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
  */
 static options_t *manage_command_line_options(int argc, char **argv)
 {
-    gboolean version = FALSE;      /** True if -v was selected on the command line                */
-    gint debug = -4;               /** 0 == FALSE and other values == TRUE                        */
-    gchar *configfile = NULL;      /** filename for the configuration file if any                 */
-    gchar *ip =  NULL;             /** IP address where is located server's program               */
-    gint port = 0;                 /** Port number on which to send things to the server          */
-    gchar *list = NULL;            /** Should contain a filename or a directory to filter out     */
-    gchar *restore = NULL;         /** Must contain a filename or a directory name to be restored */
-    gchar *date = NULL;            /** date at which we want to restore a file or directory       */
-    gchar *where = NULL;           /** Contains the directory where to restore a file / directory */
+    gboolean version = FALSE;      /** True if -v was selected on the command line                                */
+    gint debug = -4;               /** 0 == FALSE and other values == TRUE                                        */
+    gchar *configfile = NULL;      /** filename for the configuration file if any                                 */
+    gchar *ip =  NULL;             /** IP address where is located server's program                               */
+    gint port = 0;                 /** Port number on which to send things to the server                          */
+    gchar *list = NULL;            /** Should contain a filename or a directory to filter out                     */
+    gchar *restore = NULL;         /** Must contain a filename or a directory name to be restored                 */
+    gchar *date = NULL;            /** date at which we want to restore a file or directory                       */
+    gchar *where = NULL;           /** Contains the directory where to restore a file / directory                 */
+    gchar *afterdate = NULL;       /** afterdate: we want to restore a file that has its mtime after this date    */
+    gchar *beforedate = NULL;      /** beforedate:  we want to restore a file that has its mtime before this date */
 
     GOptionEntry entries[] =
     {
@@ -165,6 +167,8 @@ static options_t *manage_command_line_options(int argc, char **argv)
         { "list", 'l', 0, G_OPTION_ARG_FILENAME, &list, N_("Gives a list of saved files that correspond to the given REGEX."), "REGEX"},
         { "restore", 'r', 0, G_OPTION_ARG_FILENAME, &restore, N_("Restore requested filename (REGEX) (by default latest version)."), "REGEX"},
         { "date", 't', 0, G_OPTION_ARG_STRING, &date, N_("restores the selected file at that specific DATE."), "DATE"},
+        { "after", 'a', 0, G_OPTION_ARG_STRING, &afterdate, N_("restores the selected file with mtime after DATE."), "DATE"},
+        { "before", 'b', 0, G_OPTION_ARG_STRING, &beforedate, N_("restores the selected file with mtime before DATE."), "DATE"},
         { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode."), N_("BOOLEAN")},
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
         { "where", 'w', 0, G_OPTION_ARG_STRING, &where, N_("Specify a DIRECTORY where to restore a file."), N_("DIRECTORY")},
@@ -235,6 +239,16 @@ static options_t *manage_command_line_options(int argc, char **argv)
             opt->date = g_strdup(date);
         }
 
+    if (afterdate != NULL)
+        {
+            opt->afterdate = g_strdup(afterdate);
+        }
+
+    if (beforedate != NULL)
+        {
+            opt->beforedate = g_strdup(beforedate);
+        }
+
     if (list != NULL)
         {
             opt->list = g_strdup(list);
@@ -268,6 +282,8 @@ static options_t *manage_command_line_options(int argc, char **argv)
     free_variable(list);
     free_variable(restore);
     free_variable(date);
+    free_variable(afterdate);
+    free_variable(beforedate);
     free_variable(where);
 
     return opt;
