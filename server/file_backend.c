@@ -905,7 +905,8 @@ gchar *file_get_list_of_files(server_struct_t *server_struct, query_t *query)
     if (server_struct != NULL && server_struct->backend != NULL &&  server_struct->backend->user_data != NULL && query != NULL)
         {
 
-            print_debug(_("file_backend: filter is: %s && %s\n"), query->filename, query->date);
+            print_debug(_("file_backend: filter is: %s && %s && %s && %s\n"), \
+                           query->filename, query->date, query->afterdate, query->beforedate);
 
             a_regex = g_regex_new(query->filename, G_REGEX_CASELESS, 0, &error);
 
