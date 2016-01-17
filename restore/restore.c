@@ -137,12 +137,15 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
     return query;
 }
 
+
 /**
  * Adds a field and its value to the request
- * @param request is the request where to add the field and its value
+ * @param request is the request where to add the field and its value.
+ *        This variable is freed here. Do not use its pointer after this
+ *        call !
  * @param field is the field to be added to the request
  * @param value is the value of the field
- * @returns a newlly allocated gchar * request that may be freed when no
+ * @returns a newly allocated gchar * request that may be freed when no
  *          longer needed.
  */
 static gchar *add_on_field_to_request(gchar *request, gchar *field, gchar *value)
@@ -158,7 +161,35 @@ static gchar *add_on_field_to_request(gchar *request, gchar *field, gchar *value
             new_request = g_strdup(request);
         }
 
+    free_variable(request);
+    request = new_request;
+
     return new_request;
+}
+
+
+/**
+ * Makes the base URL for all requests
+ * @param query is the structure that contains everything needed to
+ *        query the server (and filter a bit). It must not be NULL.
+ * @returns always returns a newly allocated gchar * that represents
+ *          the base of the right part of the URL for all requests.
+ */
+static gchar *make_base_request(query_t *query)
+{
+    gchar *request = NULL;
+
+    if (query != NULL)
+        {
+            /* This is the base request */
+            request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s", query->hostname, query->uid, query->gid, query->owner, query->group, query->filename);
+        }
+    else
+        {
+             request = g_strdup_printf("/File/List.json?");
+        }
+
+    return request;
 }
 
 
@@ -172,19 +203,16 @@ static gchar *add_on_field_to_request(gchar *request, gchar *field, gchar *value
 static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query)
 {
     gchar *request = NULL;
-    gchar *new_request = NULL;
     json_t *root = NULL;
     GSList *list = NULL;    /** List of server_meta_data_t * returned by this function */
     gint res = CURLE_FAILED_INIT;
 
     if (res_struct != NULL && query != NULL)
         {
-            /* This is the base request */
-            request = g_strdup_printf("/File/List.json?hostname=%s&uid=%s&gid=%s&owner=%s&group=%s&filename=%s", query->hostname, query->uid, query->gid, query->owner, query->group, query->filename);
-
-            new_request = add_on_field_to_request(request, "date", query->date);
-            free_variable(request);
-            request = new_request;
+            request = make_base_request(query);
+            request = add_on_field_to_request(request, "date", query->date);
+            request = add_on_field_to_request(request, "afterdate", query->afterdate);
+            request = add_on_field_to_request(request, "beforedate", query->beforedate);
 
             print_debug(_("Query is: %s\n"), request);
             res = get_url(res_struct->comm, request);
