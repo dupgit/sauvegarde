@@ -155,9 +155,11 @@ options are:
     Application Options:
       -v, --version                    Prints program version.
       -l, --list=REGEX                 Gives a list of saved files that correspond to the given REGEX.
-      -r, --restore=REGEX              Restore requested filename (REGEX) (by default latest version).
-      -t, --date=DATE                  restores the selected file at that specific DATE.
-      -d, --debug=BOOLEAN              Activates (1) or deactivates (0) debug mode.
+      -r, --restore=REGEX              Restores requested filename (REGEX) (by default latest version).
+      -t, --date=DATE                  Restores the selected file at that specific DATE (YYYY-MM-DD HH:MM:SS format).
+      -a, --after=DATE                 Restores the selected file with mtime after DATE (YYYY-MM-DD HH:MM:SS format).
+      -b, --before=DATE                Restores the selected file with mtime before DATE (YYYY-MM-DD HH:MM:SS format).
+      -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
       -c, --configuration=FILENAME     Specify an alternative configuration file.
       -w, --where=DIRECTORY            Specify a DIRECTORY where to restore a file.
       -i, --ip=IP                      IP address where server program is.
