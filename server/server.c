@@ -210,15 +210,6 @@ static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gch
 static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Connection *connection)
 {
     gchar *answer = NULL;
-    gchar *hostname = NULL;
-    gchar *uid = NULL;
-    gchar *gid = NULL;
-    gchar *owner = NULL;
-    gchar *group = NULL;
-    gchar *filename = NULL;
-    gchar *date = NULL;
-    gchar *afterdate = NULL;
-    gchar *beforedate = NULL;
     backend_t *backend = NULL;
     query_t *query = NULL;
 
@@ -229,35 +220,37 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
 
             if (backend->get_list_of_files != NULL)
                 {
-                    hostname = get_argument_value_from_key(connection, "hostname", FALSE);
-                    uid = get_argument_value_from_key(connection, "uid", FALSE);
-                    gid = get_argument_value_from_key(connection, "gid", FALSE);
-                    owner = get_argument_value_from_key(connection, "owner", FALSE);
-                    group = get_argument_value_from_key(connection, "group", FALSE);
-                    filename = get_argument_value_from_key(connection, "filename", TRUE);
-                    date = get_argument_value_from_key(connection, "date", TRUE);
-                    afterdate = get_argument_value_from_key(connection, "afterdate", TRUE);
-                    beforedate = get_argument_value_from_key(connection, "beforedate", TRUE);
+                    query = init_query_t(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
-                    print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s && %s\n"), hostname, uid, gid, owner, group, filename, date);
+                    query->hostname = get_argument_value_from_key(connection, "hostname", FALSE);
+                    query->uid = get_argument_value_from_key(connection, "uid", FALSE);
+                    query->gid = get_argument_value_from_key(connection, "gid", FALSE);
+                    query->owner = get_argument_value_from_key(connection, "owner", FALSE);
+                    query->group = get_argument_value_from_key(connection, "group", FALSE);
+                    query->filename = get_argument_value_from_key(connection, "filename", TRUE);
+                    query->date = get_argument_value_from_key(connection, "date", TRUE);
+                    query->afterdate = get_argument_value_from_key(connection, "afterdate", TRUE);
+                    query->beforedate = get_argument_value_from_key(connection, "beforedate", TRUE);
 
-                    if (hostname != NULL && uid != NULL && gid != NULL && owner != NULL && group != NULL)
+                    print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s && %s && %s && %s \n"), \
+                                   query->hostname, query->uid, query->gid, query->owner, query->group,                     \
+                                   query->filename, query->date, query->afterdate, query->beforedate);
+
+                    if (query->hostname != NULL && query-> uid != NULL && query->gid != NULL && query->owner != NULL && query->group != NULL)
                         {
-                            query = init_query_t(hostname, uid, gid, owner, group, filename, date, NULL, NULL);
                             answer = backend->get_list_of_files(server_struct, query);
-                            free_query_t(query); /** All variables hostname, uid... are freed there ! */
                         }
                     else
                         {
-                            answer = g_strdup_printf(_("Malformed request. hostname: %s, uid: %s, gid: %s, owner: %s, group: %s"), hostname, uid, gid, owner, group);
-                            free_variable(hostname);
-                            free_variable(uid);
-                            free_variable(gid);
-                            free_variable(owner);
-                            free_variable(group);
-                            free_variable(filename);
-                            free_variable(date);
+                            answer = g_strdup_printf(_("Malformed request. hostname: %s, uid: %s, gid: %s, owner: %s, group: %s"), \
+                                                        query->hostname, query->uid, query->gid, query->owner, query->group);
                         }
+
+                    free_query_t(query); /** All variables hostname, uid... are freed there ! */
+                }
+            else
+                {
+                    print_error(__FILE__, __LINE__, _("Error: no backend defined to get a list of files from it.\n"));
                 }
         }
 
