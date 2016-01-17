@@ -626,7 +626,7 @@ static uint get_uint_from_string(gchar *string)
  * @param mtime the time in unix time
  * @param date the date in YYYY-MM-DD HH:MM:SS format - it may lack
  *        things from the end ie: YYYY-MM-DD HH: for instance.
- * @returns TRUE if mtime has date as prefix and TRUE if date is NULL
+ * @returns TRUE if 'mtime' has 'date' as prefix and TRUE if 'date' is NULL
  */
 static gboolean compare_mtime_to_date(guint64 mtime, gchar *date)
 {
@@ -649,6 +649,126 @@ static gboolean compare_mtime_to_date(guint64 mtime, gchar *date)
 }
 
 
+/**
+ * Gets digit values at a given place into a gchar YYYY-MM-DD HH:MM:SS
+ * formatted string
+ * @param date the string to be parsed
+ * @param i the offset where to start
+ * @param size the size to be parsed
+ * @returns a gint that is supposed to be the value read into 'date' at
+ *          'i' position ('size' long).
+ */
+static gint get_digit_value(gchar *date, guint i, guint size)
+{
+    gchar *value = NULL;
+    gint digit_value = NULL;
+    guint j = 0;
+    gint ret = 0;
+
+    value = (gchar *) g_malloc0(size + 1);
+
+    while (isdigit(date[i]) && j < size)
+        {
+            value[j] = date[i];
+            i++;
+            j++;
+        }
+
+    ret = sscanf(value, "%d", &digit_value);
+
+    if (ret != 1)
+        {
+            digit_value = 0;
+        }
+
+    free_variable(value);
+
+    return digit_value;
+}
+
+
+/**
+ * Analyses a gchar string that may contain YYYY-MM-DD HH:MM:SS
+ * @param date is the gchar * string that may contain a date at the given
+ *        format.
+ * @returns a GDateTime * that may represents the date.
+ */
+static GDateTime *convert_gchar_date_to_gdatetime(gchar *date)
+{
+    gint year = 0;
+    gint month = 0;
+    gint day = 0;
+    gint hour = 0;
+    gint minute = 0;
+    gint second = 0;
+    GDateTime *datetime = NULL;
+    GTimeZone *tz = NULL;
+
+    year = get_digit_value(date, 0, 4);
+    month = get_digit_value(date, 5, 2);
+    day = get_digit_value(date, 8, 2);
+    hour = get_digit_value(date, 11, 2);
+    minute = get_digit_value(date, 14, 2);
+    second = get_digit_value(date, 17, 2);
+
+    tz = g_time_zone_new_local();
+    datetime = g_date_time_new(tz, year, month, day, hour, minute, second);
+    g_time_zone_unref(tz);
+
+    return datetime;
+}
+
+
+/**
+ * Compares mtime to a YYYY-MM-DD HH:MM:SS gchar * string formated date
+ * @param mtime the time in unix time
+ * @param date the date in YYYY-MM-DD HH:MM:SS format - it may lack
+ *        things from the end ie: YYYY-MM-DD HH: for instance.
+ * @returns -1, 0 or 1 if mtime is less than, equal to or greater than
+ *          'date'.
+ */
+static gint compare_mtime_to_gchar_date(guint64 mtime, gchar *date)
+{
+    GDateTime *mtime_date = NULL;
+    GDateTime *date_date = NULL;
+    gint result = 0;
+
+    date_date = convert_gchar_date_to_gdatetime(date);
+    mtime_date = g_date_time_new_from_unix_local(mtime);
+
+    result = g_date_time_compare(mtime_date, date_date);
+
+    g_date_time_unref(mtime_date);
+    g_date_time_unref(date_date);
+
+    return result;
+}
+
+
+/**
+ * returns true or false
+ * @param mtime the time in unix time
+ * @param date the date in YYYY-MM-DD HH:MM:SS format - it may lack
+ *        things from the end ie: YYYY-MM-DD HH: for instance.
+ * @param after is TRUE if we are to compare and after date and false
+ *        if its a before date.
+ */
+static gboolean compare_after_before_date(guint64 mtime, gchar *date, gboolean after)
+{
+    gint cmp_date = 0;
+
+    cmp_date = compare_mtime_to_gchar_date(mtime, date);
+
+    if (cmp_date >= 0)
+        {
+            return after;
+        }
+    else
+        {
+            return !after;
+        }
+}
+
 
 /**
  * Extracts all meta data from one line.
@@ -667,6 +787,7 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
     guint32 q_uid = 0;
     guint32 q_gid = 0;
 
+    gboolean res = FALSE;
 
     if (line != NULL && strlen(line) > 16)
         {
@@ -694,7 +815,22 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
                     meta->ctime = get_guint64_from_string(params[4]);
                     meta->mtime = get_guint64_from_string(params[5]);
 
-                    if (compare_mtime_to_date(meta->mtime, query->date))
+                    res = compare_mtime_to_date(meta->mtime, query->date);
+
+                    /** @todo gain speed in comparison by transforming query->afterdate and query->beforedate only once
+                     *        in the calling function
+                     */
+                    if (query->afterdate != NULL)
+                        {
+                            res = res && compare_after_before_date(meta->mtime, query->afterdate, TRUE);
+                        }
+
+                    if (query->beforedate != NULL)
+                        {
+                            res = res && compare_after_before_date(meta->mtime, query->beforedate, FALSE);
+                        }
+
+                    if (res == TRUE)
                         {
 
                             meta->size = get_guint64_from_string(params[6]);

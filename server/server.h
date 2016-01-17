@@ -49,7 +49,7 @@
 #include <sys/inotify.h>
 #include <errno.h>
 #include <math.h>
-
+#include <ctype.h>
 
 #include "libcdpfgl.h"
 
