@@ -652,7 +652,7 @@ static gboolean compare_mtime_to_date(guint64 mtime, gchar *date)
 
 /**
  * Extracts all meta data from one line.
- * @param line the line that has been read.
+ * @param line is the line that has been read.
  * @param a_regex is the regular expression to filter upon the filename
  * @param query is the structure that contains everything about the
  *        requested filename.

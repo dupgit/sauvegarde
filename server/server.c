@@ -217,6 +217,8 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
     gchar *group = NULL;
     gchar *filename = NULL;
     gchar *date = NULL;
+    gchar *afterdate = NULL;
+    gchar *beforedate = NULL;
     backend_t *backend = NULL;
     query_t *query = NULL;
 
@@ -234,6 +236,8 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
                     group = get_argument_value_from_key(connection, "group", FALSE);
                     filename = get_argument_value_from_key(connection, "filename", TRUE);
                     date = get_argument_value_from_key(connection, "date", TRUE);
+                    afterdate = get_argument_value_from_key(connection, "afterdate", TRUE);
+                    beforedate = get_argument_value_from_key(connection, "beforedate", TRUE);
 
                     print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s && %s\n"), hostname, uid, gid, owner, group, filename, date);
 
