@@ -30,12 +30,15 @@
 static res_struct_t *init_res_struct(int argc, char **argv);
 static gchar *encode_to_base64(gchar *string);
 static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt);
+static gchar *add_on_field_to_request(gchar *request, gchar *field, gchar *value);
+static gchar *make_base_request(query_t *query);
 static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query);
 static void print_all_files(res_struct_t *res_struct, query_t *query);
 static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GList *hash_list);
 static void create_file(res_struct_t *res_struct, meta_data_t *meta);
 static void restore_last_file(res_struct_t *res_struct, query_t *query);
 static void free_res_struct_t(res_struct_t *res_struct);
+
 
 /**
  * Inits a res_struct_t * structure. Manages the command line options.
