@@ -1,4 +1,4 @@
-SUBDIRS = libcdpfgl server client restore po
+SUBDIRS = libcdpfgl server client restore pixmaps po
 
 ACLOCAL_AMFLAGS = -I m4
 

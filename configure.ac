@@ -233,6 +233,22 @@ server/Makefile
 restore/Makefile
 po/Makefile.in
 libcdpfgl/libcdpfgl.pc
+pixmaps/Makefile
+pixmaps/hicolor/Makefile
+pixmaps/hicolor/16x16/Makefile
+pixmaps/hicolor/16x16/apps/Makefile
+pixmaps/hicolor/32x32/Makefile
+pixmaps/hicolor/32x32/apps/Makefile
+pixmaps/hicolor/48x48/Makefile
+pixmaps/hicolor/48x48/apps/Makefile
+pixmaps/hicolor/64x64/Makefile
+pixmaps/hicolor/64x64/apps/Makefile
+pixmaps/hicolor/128x128/Makefile
+pixmaps/hicolor/128x128/apps/Makefile
+pixmaps/hicolor/256x256/Makefile
+pixmaps/hicolor/256x256/apps/Makefile
+pixmaps/hicolor/512x512/Makefile
+pixmaps/hicolor/512x512/apps/Makefile
 ])
 
 AC_OUTPUT
