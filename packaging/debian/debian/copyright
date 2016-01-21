@@ -3,10 +3,16 @@ Upstream-Name: cdpfgl
 Upstream-Contact: Olivier Delhomme <olivier.delhomme@free.fr>
 Source: http://cdpfgl.delhomme.org/download/releases/cdpfgl-0.0.7.tar.xz
 
+Files: pixmaps/hicolor/*
+Copyright: 2015-2016 Olivier Delhomme
+License: CC-BY-SA-4.0
+    Creative Commons Attribution-ShareAlike 4.0
+    License text is provided in pixmaps/LICENSE file and can be viewed
+    at `https://creativecommons.org/licenses/by-sa/4.0/legalcode`
+
 Files: *
 Copyright: 2014-2016 Olivier Delhomme
            2015 Pierre Bourgin
-
 License: GPL-3
     On Debian systems, the full text of the GNU General Public
     License version 3 can be found in the file

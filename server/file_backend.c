@@ -872,7 +872,6 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 }
 
 
-
 /**
  * Gets the list of all saved files.
  * @param server_struct is the structure that contains all data for the
@@ -904,7 +903,6 @@ gchar *file_get_list_of_files(server_struct_t *server_struct, query_t *query)
 
     if (server_struct != NULL && server_struct->backend != NULL &&  server_struct->backend->user_data != NULL && query != NULL)
         {
-
             print_debug(_("file_backend: filter is: %s && %s && %s && %s\n"), \
                            query->filename, query->date, query->afterdate, query->beforedate);
 
