@@ -1,0 +1,4 @@
+usr/bin/cdpfglclient
+usr/bin/cdpfglrestore
+etc/cdpfgl/restore.conf
+etc/cdpfgl/client.conf
