@@ -8,8 +8,61 @@ Vcs-Git: git://github.com/dupgit/sauvegarde -b master
 Vcs-Browser: https://github.com/dupgit/sauvegarde/tree/master
 Homepage: https://github.com/dupgit/sauvegarde/
 
-Package: cdpfgl
+Package: cdpfglserver
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Continuous data protection for GNU/Linux
- cdpfgl saves your files in a live continuous way that is to say while they are written to disks.
+Depends:
+ libcdpfgl (= ${binary:Version}),
+ ${shlibs:Depends},
+ ${misc:Depends}
+Breaks:
+ cdpfgl (<= 0.0.6)
+Replaces:
+ cdpfgl (<= 0.0.6)
+Description: Continuous data protection for GNU/Linux server
+ cdpfglserver is the server part of Continuous data protection for GNU/Linux
+ project. It is a stateless REST http server that listen to a specific port
+ and waits for commands thrown by either cdpfglclient or cdpfglrestore.
+
+Package: cdpfglclient
+Architecture: any
+Depends:
+ libcdpfgl (= ${binary:Version}),
+ ${shlibs:Depends},
+ ${misc:Depends}
+Breaks:
+ cdpfgl (<= 0.0.6)
+Replaces:
+ cdpfgl (<= 0.0.6)
+Description: Continuous data protection for GNU/Linux client
+ cdpfglclient is the client part of Continuous data protection for GNU/Linux
+ project. It monitors your filesystem(s) and send blocks of files to the
+ server each time the files are saved. This package also contains
+ cdpfglrestore program. It allows one to restore already saved files at
+ any saved version.
+
+Package: libcdpfgl
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends}
+Breaks:
+ cdpfgl (<= 0.0.6)
+Replaces:
+ cdpfgl (<= 0.0.6)
+Description: Common library for all programs of continuous data protection for GNU/Linux
+ This library contains common parts for cdpfglserver, cdpfglclient and
+ cdpfglrestore.
+
+Package: libcdpfgl-devel
+Architecture: any
+Depends:
+ pkgconfig
+Description: Development files for cdpfgl
+ development files for libcdpfgl which is the common library for all
+ cdpfgl project.
+
+Package: cdpfgl-art
+Architecture: any
+Depends:
+Description: Continuous data protection for GNU/Linux server art work
+ This package contains pixmaps and art work for cdpfgl project.
