@@ -1,3 +1,2 @@
-usr/lib/x86_64-linux-gnu/cdpfgl/*
+usr/lib/x86_64-linux-gnu/cdpfgl/libcdpfgl.so*
 usr/share/locale/fr/LC_MESSAGES/cdpfgl.mo
-
