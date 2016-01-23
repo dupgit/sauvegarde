@@ -53,7 +53,7 @@ Description: Common library for all programs of continuous data protection for G
  This library contains common parts for cdpfglserver, cdpfglclient and
  cdpfglrestore.
 
-Package: libcdpfgl-devel
+Package: libcdpfgl-dev
 Architecture: any
 Depends:
  pkgconfig
