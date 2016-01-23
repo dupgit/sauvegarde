@@ -24,10 +24,10 @@ libcdpfgl_la_SOURCES = libcdpfgl.c          \
 
 libcdpfgl_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)    \
                           $(SQLITE_CFLAGS) $(JANSSON_CFLAGS)    \
-                          $(MHD_CFLAGS) $(CURL_CFLAGS)
+                          $(CURL_CFLAGS)
 
 AM_LDFLAGS = $(LDFLAGS) $(GLIB_LIBS) $(GIO_LIBS) $(SQLITE_LIBS) \
-             $(JANSSON_LIBS) $(MHD_LIBS) $(CURL_LIBS)
+             $(JANSSON_LIBS) $(CURL_LIBS)
 
 
 includedir=$(prefix)/include/cdpfgl

@@ -1,11 +1,11 @@
 bin_PROGRAMS = cdpfglserver
 
 DEFS = -I../libcdpfgl $(GLIB_CFLAGS) $(GIO_CFLAGS)       \
-	    $(SQLITE_CFLAGS) $(JANSSON_CFLAGS) $(MHD_CFLAGS)
+	    $(JANSSON_CFLAGS) $(MHD_CFLAGS)
 
-cdpfglserver_LDFLAGS = $(LDFLAGS)
+cdpfglserver_LDFLAGS = $(LDFLAGS) -lm
 cdpfglserver_LDADD = $(GLIB_LIBS) $(GIO_LIBS)  -L../libcdpfgl -lcdpfgl \
-					  $(SQLITE_LIBS) $(JANSSON_LIBS) $(MHD_LIBS)
+		     $(JANSSON_LIBS) $(MHD_LIBS)
 
 cdpfglserver_HEADERFILES =  server.h        \
 							options.h       \
@@ -18,4 +18,4 @@ cdpfglserver_SOURCES =  server.c                    \
 						file_backend.c              \
 						$(cdpfglserver_HEADERFILES)
 
-AM_CPPFLAGS = $(GLIB_CFLAGS) $(GIO_CFLAGS)
+AM_CPPFLAGS = $(GLIB_CFLAGS) $(GIO_CFLAGS) $(JANSSON_CFLAGS) $(MHD_CFLAGS)

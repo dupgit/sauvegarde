@@ -1,8 +1,8 @@
 Source: cdpfgl
 Maintainer: Olivier Delhomme <olivier.delhomme@free.fr>
-Section: misc
+Section: admin
 Priority: optional
-Standards-Version: 0.0.7
+Standards-Version: 3.9.6
 Build-Depends: debhelper (>= 9)
 Vcs-Git: git://github.com/dupgit/sauvegarde -b master
 Vcs-Browser: https://github.com/dupgit/sauvegarde/tree/master
@@ -25,6 +25,7 @@ Description: Continuous data protection for GNU/Linux server
 
 Package: cdpfglclient
 Architecture: any
+Section: utils
 Depends:
  libcdpfgl (= ${binary:Version}),
  ${shlibs:Depends},
@@ -55,8 +56,10 @@ Description: Common library for all programs of continuous data protection for G
 
 Package: libcdpfgl-dev
 Architecture: any
+Section: libdevel
 Depends:
- pkgconfig
+ pkgconfig,
+ ${misc:Depends}
 Description: Development files for cdpfgl
  development files for libcdpfgl which is the common library for all
  cdpfgl project.
@@ -64,5 +67,6 @@ Description: Development files for cdpfgl
 Package: cdpfgl-art
 Architecture: any
 Depends:
+ ${misc:Depends}
 Description: Continuous data protection for GNU/Linux server art work
  This package contains pixmaps and art work for cdpfgl project.
