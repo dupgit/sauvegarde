@@ -350,7 +350,12 @@ static void make_all_subdirectories(file_backend_t *file_backend)
             create_directory(path);
             free_variable(path);
         }
+    else if (file_backend != NULL)
+        {
+            print_error(__FILE__, __LINE__, _("dir-level (%d) should be > 1 and < 5\n"), file_backend->level);
+        }
 }
+
 
 /**
  * Reads keys in keyfile if groupname is in that keyfile and fills
@@ -373,7 +378,7 @@ static void read_from_group_file_backend(file_backend_t *file_backend, gchar *fi
             if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_FILE_BACKEND) == TRUE)
                 {
                     prefix = read_string_from_file(keyfile, filename, GN_FILE_BACKEND, KN_FILE_DIRECTORY, _("Could not load [file_backend] file-directory from file."));
-                    level = read_int_from_file(keyfile, filename, GN_FILE_BACKEND, KN_DIR_LEVEL, _("Could not load [file_backend] dir-level from file."));
+                    level = read_int_from_file(keyfile, filename, GN_FILE_BACKEND, KN_DIR_LEVEL, _("Could not load [file_backend] dir-level from file."), FILE_BACKEND_LEVEL);
                 }
         }
     else if (error != NULL)
@@ -421,7 +426,7 @@ void file_init_backend(server_struct_t *server_struct)
 
             /* default values */
             file_backend->prefix = g_strdup("/var/tmp/cdpfgl/server");
-            file_backend->level = 2;
+            file_backend->level = FILE_BACKEND_LEVEL;
 
             if (server_struct->opt != NULL && server_struct->opt->configfile != NULL)
                 {

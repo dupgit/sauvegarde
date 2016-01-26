@@ -60,6 +60,13 @@
 #include "clock.h"
 
 /**
+ * @def SERVER_PORT
+ * Defines default server port number
+ */
+#define SERVER_PORT (5468)
+
+
+/**
  * Sets debug_mode on or off if mode is TRUE or FALSE.
  * @param mode a boolean to say whether we want to have debug enabled
  *       (TRUE) or not (FALSE).

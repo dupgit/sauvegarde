@@ -79,7 +79,7 @@ static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *fil
     if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVER) == TRUE)
         {
             /* Reading the port number if any */
-            port = read_int_from_file(keyfile, filename, GN_SERVER, KN_SERVER_PORT, _("Could not load server port number from file."));
+            port = read_int_from_file(keyfile, filename, GN_SERVER, KN_SERVER_PORT, _("Could not load server port number from file."), SERVER_PORT);
 
             if (port > 1024 && port < 65535)
                 {
@@ -206,7 +206,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     opt->list = NULL;
     opt->restore = NULL;
     opt->ip = g_strdup("localhost");
-    opt->port = 5468;
+    opt->port = SERVER_PORT;
     opt->where = NULL;
 
 

@@ -116,7 +116,7 @@ static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *fil
     if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVER) == TRUE)
         {
             /* Reading the port number if any */
-            opt->port = read_int_from_file(keyfile, filename, GN_SERVER, KN_SERVER_PORT, _("Could not load server port number from file."));
+            opt->port = read_int_from_file(keyfile, filename, GN_SERVER, KN_SERVER_PORT, _("Could not load server port number from file."), SERVER_PORT);
         }
 
     read_debug_mode_from_file(keyfile, filename);
@@ -218,7 +218,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt = (options_t *) g_malloc0(sizeof(options_t));
 
     opt->configfile = NULL;
-    opt->port = 5468;
+    opt->port = SERVER_PORT;
 
 
     /* 1) Reading options from default configuration file */

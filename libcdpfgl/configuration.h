@@ -209,10 +209,11 @@ extern gchar *read_string_from_file(GKeyFile *keyfile, gchar *filename, gchar *g
  * @param groupname : the groupname where to look for the key
  * @param keyname : the key to read the gint64 from
  * @param errormsg : the error message to be displayed in case of an error
+ * @param def_value : the default value for the key.
  * @returns the gint64 read at the keyname in the groupname of keyfile
  *          file or 0;
  */
-extern gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
+extern gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg, gint64 def_value);
 
 
 /**
@@ -223,10 +224,11 @@ extern gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *gr
  * @param groupname : the groupname where to look for the key
  * @param keyname : the key to read the gint from
  * @param errormsg : the error message to be displayed in case of an error
+ * @param def_value : the default value for the key.
  * @returns the gint read at the keyname in the groupname of keyfile
  *          file or 0;
  */
-extern gint read_int_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg);
+extern gint read_int_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg, gint def_value);
 
 
 /**

@@ -35,8 +35,14 @@
  * Defines the buffer size used to read files in the file_backend backend.
  * Should be at least as big as CISEAUX_BLOCK_SIZE
  */
-#define FILE_BACKEND_BUFFER_SIZE 32768
+#define FILE_BACKEND_BUFFER_SIZE (32768)
 
+
+/**
+ * @def FILE_BACKEND_LEVEL
+ * Defines default level for directory creation
+ */
+#define FILE_BACKEND_LEVEL (2)
 
 /**
  * @struct file_backend_t

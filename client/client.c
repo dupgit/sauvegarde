@@ -219,6 +219,7 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
 
                             buffer = (guchar *) g_malloc(blocksize);
                             a_hash = (guint8 *) g_malloc(digest_len);
+
                             read = g_input_stream_read((GInputStream *) stream, buffer, blocksize, NULL, &error);
                         }
 
@@ -310,6 +311,7 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
                 }
             else
                 {
+                    /* File is excluded from beeing saved */
                     free_variable(meta->name);
                     meta = free_variable(meta);
                 }
@@ -742,6 +744,8 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
     if (main_struct != NULL && main_struct->opt != NULL && meta != NULL)
         {
 
+            print_debug(_("Processing small file: %s\n"), meta->name);
+
             if (meta->file_type == G_FILE_TYPE_REGULAR)
                 {
                     /* Calculates hashs and takes care of data */
@@ -929,6 +933,7 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
             my_clock = new_clock_t();
 
             /* Get data and meta_data for a file. */
+            /** @todo corrects the error in here by freeing meta here */
             meta = get_meta_data_from_fileinfo(directory, fileinfo, main_struct);
 
             /* We want to save all files that are not excluded (meta != NULL) */

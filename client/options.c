@@ -120,7 +120,7 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
             opt->exclude_list = read_list_from_file(keyfile, filename, GN_CLIENT, KN_EXC_LIST, _("Could not load exclude file list from file"));
 
             /* Reading blocksize */
-            opt->blocksize = read_int64_from_file(keyfile, filename, GN_CLIENT, KN_BLOCK_SIZE, _("Could not load blocksize from file"));
+            opt->blocksize = read_int64_from_file(keyfile, filename, GN_CLIENT, KN_BLOCK_SIZE, _("Could not load blocksize from file"), CLIENT_BLOCK_SIZE);
 
             /* Reading the cache directory if any */
             dircache = read_string_from_file(keyfile, filename, GN_CLIENT, KN_CACHE_DIR, _("Could not load directory name"));
@@ -134,7 +134,7 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
             opt->adaptive = read_boolean_from_file(keyfile, filename, GN_CLIENT, KN_ADAPTATIVE, _("Could not load adaptive configuration from file."));
 
             /* Buffer size to be used to send data to server */
-            opt->buffersize = read_int_from_file(keyfile, filename, GN_CLIENT, KN_BUFFER_SIZE, _("Could not load buffersize from file"));
+            opt->buffersize = read_int_from_file(keyfile, filename, GN_CLIENT, KN_BUFFER_SIZE, _("Could not load buffersize from file"), CLIENT_MIN_BUFFER);
         }
 
    read_debug_mode_from_file(keyfile, filename);
@@ -156,7 +156,7 @@ static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *fil
     if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVER) == TRUE)
         {
             /* Reading the port number if any */
-            port = read_int_from_file(keyfile, filename, GN_SERVER, KN_SERVER_PORT, _("Could not load server port number from file."));
+            port = read_int_from_file(keyfile, filename, GN_SERVER, KN_SERVER_PORT, _("Could not load server port number from file."), SERVER_PORT);
 
             if (port > 1024 && port < 65535)
                 {
@@ -188,7 +188,6 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                 {
                     free_variable(opt->configfile);
                 }
-            opt->configfile = g_strdup(filename);
 
             print_debug(_("Reading configuration from file %s\n"), filename);
 
@@ -196,6 +195,8 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
+                    opt->configfile = g_strdup(filename);
+
                     read_from_group_client(opt, keyfile, filename);
                     read_from_group_server(opt, keyfile, filename);
                 }
@@ -288,7 +289,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->dircache = g_strdup("/var/tmp/cdpfgl");
     opt->dbname = g_strdup("filecache.db");
     opt->ip = g_strdup("localhost");
-    opt->port = 5468;
+    opt->port = SERVER_PORT;
     opt->buffersize = -1;
     opt->adaptive = FALSE;
 
