@@ -133,8 +133,8 @@ gchar *read_string_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupnam
  */
 gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg, gint64 def_value)
 {
-    gint64 num = def_value;        /** Number to be read     */
-    GError *error = NULL;  /** Glib error handling   */
+    gint64 num = def_value; /** Number to be read     */
+    GError *error = NULL;   /** Glib error handling   */
 
      if (g_key_file_has_key(keyfile, groupname, keyname, &error) == TRUE)
         {
@@ -168,12 +168,13 @@ gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
  * @param groupname : the groupname where to look for the key
  * @param keyname : the key to read the gint from
  * @param errormsg : the error message to be displayed in case of an error
+ * @param def_value : the default value for the key.
  * @returns the gint read at the keyname in the groupname of keyfile
  *          file or 0;
  */
-gint read_int_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg)
+gint read_int_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gchar *keyname, gchar *errormsg, gint def_value)
 {
-    gint num = 0;          /** Number to be read     */
+    gint num = def_value;  /** Number to be read     */
     GError *error = NULL;  /** Glib error handling   */
 
     if (g_key_file_has_key(keyfile, groupname, keyname, &error) == TRUE)
