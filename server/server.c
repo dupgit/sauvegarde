@@ -523,7 +523,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
 {
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     int success = MHD_NO;
-
+    gboolean debug = FALSE;
     hash_data_t *hash_data = NULL;
     json_t *root = NULL;
     GList *hash_data_list = NULL;
@@ -567,14 +567,15 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
             hash_data_list = extract_glist_from_array(root, "data_array", FALSE);
             head = hash_data_list;
             json_decref(root);
+            debug = get_debug_mode();
 
             while (hash_data_list != NULL)
                 {
                     hash_data = hash_data_list->data;
 
-                    /* Only for debbugging ! */
-                    if (get_debug_mode() == TRUE)
+                    if (debug == TRUE)
                         {
+                            /* Only for debbugging ! */
                             print_received_data_for_hash(hash_data->hash, hash_data->read);
                         }
 
