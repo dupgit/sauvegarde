@@ -63,7 +63,7 @@ void end_clock(a_clock_t *my_clock, gchar *message)
             g_date_time_unref(my_clock->end);
             free_variable(my_clock);
 
-            print_debug(_("Elapsed time (%s): %d\n"), message, difference);
+            print_debug(_("Elapsed time (%s): %d µs\n"), message, difference);
         }
 }
 

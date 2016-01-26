@@ -253,6 +253,7 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
     return hash_data_list;
 }
 
+
 /**
  * Gets the attributes of a file
  * @param meta is the structure where to store meta data (attributes) of
@@ -809,7 +810,7 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
     GFile *a_file = NULL;
     gchar *answer = NULL;
     gint success = 0;      /** success returns a CURL Error status such as CURLE_OK for instance */
-
+    a_clock_t *mesure_time = NULL;
 
     if (main_struct != NULL && main_struct->opt != NULL && meta != NULL)
         {
@@ -818,14 +819,21 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
 
             if (meta->file_type == G_FILE_TYPE_REGULAR)
                 {
+                    mesure_time = new_clock_t();
+
                     /* Calculates hashs and takes care of data */
                     a_file = g_file_new_for_path(meta->name);
                     meta->hash_data_list = calculate_hash_data_list_for_file(a_file, meta->blocksize);
                     a_file = free_object(a_file);
+
+                    end_clock(mesure_time, "calculate_hash_data_list");
                 }
 
+            mesure_time = new_clock_t();
             answer = send_meta_data_to_server(main_struct, meta, FALSE);
+            end_clock(mesure_time, "send_meta_data_to_server");
 
+            mesure_time = new_clock_t();
             if (meta->size < meta->blocksize)
                 {
                     /* Only one block to send (size is less than blocksize's value) */
@@ -836,6 +844,7 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
                     /* A least 2 blocks to send */
                     send_all_data_to_server(main_struct, meta, answer);
                 }
+            end_clock(mesure_time, "send_(all)_data_to_server");
 
             free_variable(answer); /* Not used by now */
 
@@ -843,7 +852,9 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
                 {
                     /* Everything has been transmitted so we can save meta data into the local db cache */
                     /* This is usefull for file carving to avoid sending too much things to the server  */
+                    mesure_time = new_clock_t();
                     db_save_meta_data(main_struct->database, meta, TRUE);
+                    end_clock(mesure_time, "db_save_meta_data");
                 }
         }
 }
@@ -970,7 +981,9 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                         {   /** @todo may be we should check that answer is something that tells that everything went Ok. */
                             /* Everything has been transmitted so we can save meta data into the local db cache */
                             /* This is usefull for file carving to avoid sending too much things to the server  */
+                            elapsed = new_clock_t();
                             db_save_meta_data(main_struct->database, meta, TRUE);
+                            end_clock(elapsed, "db_save_meta_data");
                         }
 
                     a_file = free_object(a_file);

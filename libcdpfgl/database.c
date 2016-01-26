@@ -155,11 +155,15 @@ static void verify_if_tables_exists(db_t *database)
             /* Creation of buffers table that contains checksums and their associated data */
             exec_sql_cmd(database, "CREATE TABLE buffers (buffer_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, data TEXT);", _("(%d) Error while creating database table 'buffers': %s\n"));
 
-            /* Creation of transmited table that may contain id of transmited buffers  if any */
+            /* Creation of transmited table that may contain id of transmited buffers if any + creation of its indexes */
             exec_sql_cmd(database, "CREATE TABLE transmited (buffer_id INTEGER PRIMARY KEY);", _("(%d) Error while creating database table 'transmited': %s\n"));
+
+            exec_sql_cmd(database, "CREATE INDEX main.transmited_buffer_id ON transmited (buffer_id ASC)", _("(%d) Error while creating index 'transmited_buffer_id': %s\n"));
 
             /* Creation of files table that contains everything about a file */
             exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL, link TEXT);", _("(%d) Error while creating database table 'files': %s\n"));
+
+            exec_sql_cmd(database, "CREATE INDEX main.files_inodes ON files (inode ASC)", _("(%d) Error while creating index 'files_inodes': %s\n"));
         }
 
     free_variable(i);
