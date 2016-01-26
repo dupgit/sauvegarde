@@ -150,6 +150,10 @@ gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
             print_error(__FILE__, __LINE__, _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
             error = free_error(error);
         }
+    else
+        {
+            fprintf(stdout, _("Key '%s' in group '%s' of configuration file '%s' not found.\n"), keyname, groupname, filename);
+        }
 
     return num;
 }
@@ -186,6 +190,10 @@ gint read_int_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gc
             print_error(__FILE__, __LINE__,  _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
             error = free_error(error);
         }
+    else
+        {
+            fprintf(stdout, _("Key '%s' in group '%s' of configuration file '%s' not found.\n"), keyname, groupname, filename);
+        }
 
     return num;
 }
@@ -221,6 +229,10 @@ gboolean read_boolean_from_file(GKeyFile *keyfile, gchar *filename, gchar *group
         {
             print_error(__FILE__, __LINE__,  _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
             error = free_error(error);
+        }
+    else
+        {
+            fprintf(stdout, _("Key '%s' in group '%s' of configuration file '%s' not found.\n"), keyname, groupname, filename);
         }
 
     return bool;
@@ -299,6 +311,10 @@ GSList *read_list_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
         {
             print_error(__FILE__, __LINE__, _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
             error = free_error(error);
+        }
+    else
+        {
+            fprintf(stdout, _("Key '%s' in group '%s' of configuration file '%s' not found.\n"), keyname, groupname, filename);
         }
 
     return a_list;
