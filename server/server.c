@@ -486,6 +486,28 @@ static int answer_meta_json_post_request(server_struct_t *server_struct, struct 
 
 
 /**
+ * Prints a debug information about received data for a specific hash.
+ * @param hash is the binary representation of the hash obtained with
+ *        the read data
+ * @param read is the size of the data beeing read and leading to this
+ *        hash
+ */
+static void print_received_data_for_hash(guint8 *hash, gssize read)
+{
+    gchar *encoded_hash = NULL;
+    gchar *string_read = NULL;
+
+    encoded_hash = g_base64_encode(hash, HASH_LEN);
+    string_read = g_strdup_printf("%"G_GSSIZE_FORMAT, read);
+
+    print_debug(_("Received data for hash: \"%s\" (%s bytes)\n"), encoded_hash, string_read);
+
+    free_variable(string_read);
+    free_variable(encoded_hash);
+}
+
+
+/**
  * Function that process the received data from the POST command and
  * answers to the client.
  * Here we may do something with this data (we may want to store it
@@ -501,8 +523,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
 {
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     int success = MHD_NO;
-    gchar *encoded_hash = NULL;
-    gchar *string_read = NULL;
+
     hash_data_t *hash_data = NULL;
     json_t *root = NULL;
     GList *hash_data_list = NULL;
@@ -520,11 +541,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
 
             if (get_debug_mode() == TRUE)
                 {
-                    encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
-                    string_read = g_strdup_printf("%"G_GSSIZE_FORMAT, hash_data->read);
-                    print_debug(_("Received data for hash: \"%s\" (%s bytes)\n"), encoded_hash, string_read);
-                    free_variable(string_read);
-                    free_variable(encoded_hash);
+                    print_received_data_for_hash(hash_data->hash, hash_data->read);
                 }
 
             /**
@@ -558,11 +575,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
                     /* Only for debbugging ! */
                     if (get_debug_mode() == TRUE)
                         {
-                            encoded_hash = g_base64_encode(hash_data->hash, HASH_LEN);
-                            string_read = g_strdup_printf("%"G_GSSIZE_FORMAT, hash_data->read);
-                            print_debug(_("Received data for hash: \"%s\" (%s bytes)\n"), encoded_hash, string_read);
-                            free_variable(string_read);
-                            free_variable(encoded_hash);
+                            print_received_data_for_hash(hash_data->hash, hash_data->read);
                         }
 
                     /** Sending hash_data into the queue. */
