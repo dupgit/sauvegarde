@@ -126,6 +126,19 @@ typedef struct
 
 
 /**
+ * @struct filter_file_t
+ * @brief stores all necessary structures to filter files before sending
+ *        them to the server
+ */
+typedef struct
+{
+    db_t *database;               /**< Database structure that stores everything that is related to the database  */
+    GSList *regex_exclude_list;   /**< List of regular expressions used to exclude directories or files.          */
+    gboolean excluded;            /**< True if the file has been excluded, false otherwise                        */
+} filter_file_t;
+
+
+/**
  * @struct main_struct_t
  * @brief Structure that contains everything needed by the program.
  */
@@ -156,7 +169,7 @@ typedef struct
  * @param fileinfo is a glib structure that contains all meta data and
  *        more for a file.
  */
-extern void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *fileinfo);
+extern void save_one_file(main_struct_t *main_struct, file_event_t *file_event);
 
 
 /**

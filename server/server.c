@@ -534,6 +534,9 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
         {
             success = answer_meta_json_post_request(server_struct, connection, received_data);
         }
+    else if (g_strcmp0(url, "/Hash_Array.json") == 0 && received_data != NULL)
+        {
+        }
     else if (g_strcmp0(url, "/Data.json") == 0 && received_data != NULL)
         {
 

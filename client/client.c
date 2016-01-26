@@ -34,7 +34,7 @@ static GSList *make_regex_exclude_list(GSList *exclude_list);
 static gboolean exclude_file(GSList *regex_exclude_list, gchar *filename);
 static main_struct_t *init_main_structure(options_t *opt);
 static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize);
-static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, main_struct_t *main_struct);
+static meta_data_t *get_meta_data_from_fileinfo(file_event_t *file_event, filter_file_t *filter, options_t *opt);
 static gchar *send_meta_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent);
 static GList *find_hash_in_list(GList *hash_data_list, guint8 *hash);
 static void send_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
@@ -46,7 +46,7 @@ static gpointer save_one_file_threaded(gpointer data);
 static gpointer free_file_event_t(file_event_t *file_event);
 static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *array);
 static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta);
-static gint64 calculate_file_blocksize(main_struct_t *main_struct, gint64 size);
+static gint64 calculate_file_blocksize(options_t *opt, gint64 size);
 static gpointer reconnected(gpointer data);
 
 /**
@@ -257,20 +257,30 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
 /**
  * Gets all meta data for a file and returns a filled meta_data_t *
  * structure.
- * @param directory is the directory we are iterating over it is used
- *        here to build the filename name.
- * @param fileinfo is a glib structure that contains all meta data and
- *        more for a file.
- * @param database is the db_t * structure to access thhe local database
- *        cache in order to know if we already know this file (and thus
- *        not process it).
+ * @param file_event is the structure that contains directory and fileinfo
+ *        structures. directory is the directory we are iterating over. It
+ *        is used here to build the filename name. fileinfo is a glib
+ *        structure that contains all meta data and more for a file.
+ * @param filter is a structure containing all structures needed to filter
+ *        files as database, regex_exclude_list and contains a boolean
+ *        that is set to TRUE if the file has been filtered out and FALSE
+ *        otherwise.
+ * @param opt are the selected options for the program.
  * @returns a newly allocated and filled meta_data_t * structure.
  */
-static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fileinfo, main_struct_t *main_struct)
+static meta_data_t *get_meta_data_from_fileinfo(file_event_t *file_event, filter_file_t *filter, options_t *opt)
 {
     meta_data_t *meta = NULL;
+    gchar *directory = NULL;
+    GFileInfo *fileinfo = NULL;
 
-    if (directory != NULL && fileinfo != NULL &&  main_struct != NULL && main_struct->database != NULL)
+    if (file_event != NULL)
+        {
+            directory = file_event->directory;
+            fileinfo = file_event->fileinfo;
+        }
+
+    if (directory != NULL && fileinfo != NULL &&  filter != NULL && filter->database != NULL)
         {
             /* filling meta data for the file represented by fileinfo */
             meta = new_meta_data_t();
@@ -278,7 +288,7 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
             meta->file_type = g_file_info_get_file_type(fileinfo);
             meta->name = g_build_path(G_DIR_SEPARATOR_S, directory, g_file_info_get_name(fileinfo), NULL);
 
-            if (exclude_file(main_struct->regex_exclude_list, meta->name) == FALSE)
+            if (exclude_file(filter->regex_exclude_list, meta->name) == FALSE)
                 {
                     meta->inode = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_UNIX_INODE);
                     meta->owner = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_USER);
@@ -290,7 +300,8 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
                     meta->mtime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_MODIFIED);
                     meta->mode = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_MODE);
                     meta->size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
-                    meta->blocksize = calculate_file_blocksize(main_struct, meta->size);
+
+                    meta->blocksize = calculate_file_blocksize(opt, meta->size);
 
                      /* Do the right things with specific cases */
                     if (meta->file_type == G_FILE_TYPE_SYMBOLIC_LINK)
@@ -307,13 +318,12 @@ static meta_data_t *get_meta_data_from_fileinfo(gchar *directory, GFileInfo *fil
                      * This is usefull only when carving directories at the begining of the process as when called
                      * by m_fanotify we already know that the file was written and that something changed.
                      */
-                    meta->in_cache = is_file_in_cache(main_struct->database, meta);
+                    meta->in_cache = is_file_in_cache(filter->database, meta);
+                    filter->excluded = FALSE;
                 }
             else
                 {
-                    /* File is excluded from beeing saved */
-                    free_variable(meta->name);
-                    meta = free_variable(meta);
+                    filter->excluded = TRUE;
                 }
         }
 
@@ -617,8 +627,8 @@ static void send_data_to_server(main_struct_t *main_struct, meta_data_t *meta, g
 
 
 /**
- * @returns a newly alloacted file_event_t * structure that must be freed
- * when no longer needed
+ * @returns a newly allocated file_event_t * structure that must be freed
+ *          with free_file_event_t() when no longer needed
  * @param directory is the directory where the event occured
  * @param fileinfo is fileinfo of the file on which the event occured
  */
@@ -655,6 +665,48 @@ static gpointer free_file_event_t(file_event_t *file_event)
 
 
 /**
+ * @returns a newly allocated filter_file_t * structure that must be freed
+ *          with free_filter_t() when no longer needed.
+ * @param database is a pointer to the database.
+ * @param regex_exclude_list is the list of regular expressions used to
+ *        filter our files
+ * @param excluded is a gboolean that is used to say whether a file has
+ *        been excluded or not.
+ */
+static filter_file_t *new_filter_t(db_t *database, GSList *regex_exclude_list, gboolean excluded)
+{
+    filter_file_t *filter = NULL;
+
+
+    filter = (filter_file_t *) g_malloc(sizeof(filter_file_t));
+
+    filter->database = database;
+    filter->regex_exclude_list = regex_exclude_list;
+    filter->excluded = excluded;
+
+    return filter;
+}
+
+
+/**
+ * frees filter_file_t *filter's memory
+ * @param filter the filter to be freed
+ * @returns NULL
+ */
+static gpointer free_filter_file_t(filter_file_t *filter)
+{
+    /* Beware not to free database and regex_exclude_list that are
+     * used elsewhere in the program
+     */
+    if (filter != NULL)
+        {
+            g_free(filter);
+        }
+    return NULL;
+}
+
+
+/**
  * Threaded function that saves one file by getting it's meta-data and
  * it's data and sends them to the server in order to be saved.
  * @param data must be main_struct_t * pointer.
@@ -669,7 +721,7 @@ static gpointer save_one_file_threaded(gpointer data)
             while (1)
                 {
                     file_event = g_async_queue_pop(main_struct->save_queue);
-                    save_one_file(main_struct, file_event->directory, file_event->fileinfo);
+                    save_one_file(main_struct, file_event);
                     free_file_event_t(file_event);
                 }
         }
@@ -680,51 +732,55 @@ static gpointer save_one_file_threaded(gpointer data)
 
 /**
  * Calculates the block size to be used upon a file
- * @param main_struct : main structure of the program
+ * @param opt are the selected options for the program.
  * @param size is the size of the considered file.
  */
-static gint64 calculate_file_blocksize(main_struct_t *main_struct, gint64 size)
+static gint64 calculate_file_blocksize(options_t *opt, gint64 size)
 {
 
-    if (main_struct != NULL && main_struct->opt != NULL)
+    if (opt != NULL && opt->adaptive == TRUE)
         {
-            if (main_struct->opt->adaptive == TRUE)
+            if (size < 32768)            /* max 64 blocks       */
                 {
-                    if (size < 32768)            /* max 64 blocks       */
-                        {
-                            return 512;
-                        }
-                    else if (size < 262144)      /* max 128 blocks      */
-                        {
-                            return 2048;
-                        }
-                    else if (size < 1048576)     /* max 128 blocks      */
-                        {
-                            return 8192;
-                        }
-                    else if (size < 8388608)     /* max 512 blocks      */
-                        {
-                            return 16384;
-                        }
-                    else if (size < 67108864)    /* max 1024 blocks     */
-                        {
-                            return 65536;
-                        }
-                    else if (size < 134217728)   /* max 1024 blocks     */
-                        {
-                            main_struct->opt->buffersize = (CLIENT_MIN_BUFFER) * 2;
-                            return 131072;
-                        }
-                    else                         /* at least 512 blocks */
-                        {
-                            main_struct->opt->buffersize = (CLIENT_MIN_BUFFER) * 4;
-                            return 262144;
-                        }
+                    return 512;
+                }
+            else if (size < 262144)      /* max 128 blocks      */
+                {
+                    return 2048;
+                }
+            else if (size < 1048576)     /* max 128 blocks      */
+                {
+                    return 8192;
+                }
+            else if (size < 8388608)     /* max 512 blocks      */
+                {
+                    return 16384;
+                }
+            else if (size < 67108864)    /* max 1024 blocks     */
+                {
+                    return 65536;
+                }
+            else if (size < 134217728)   /* max 1024 blocks     */
+                {
+                    opt->buffersize = (CLIENT_MIN_BUFFER) * 2;
+                    return 131072;
+                }
+            else                         /* at least 512 blocks */
+                {
+                    opt->buffersize = (CLIENT_MIN_BUFFER) * 4;
+                    return 262144;
                 }
         }
-
-    /* default case */
-    return main_struct->opt->blocksize;
+    else if (opt != NULL)
+        {
+            /* default case */
+             return opt->blocksize;
+        }
+    else
+        {
+            /* default case */
+            return CLIENT_BLOCK_SIZE;
+        }
 }
 
 
@@ -920,28 +976,28 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
  * @note This function is not threadable as is. One may have problems
  *       when writing to the database for instance.
  */
-void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *fileinfo)
+void save_one_file(main_struct_t *main_struct, file_event_t *file_event)
 {
     meta_data_t *meta = NULL;
     a_clock_t *my_clock = NULL;
     gchar *message = NULL;
     gchar *another_dir = NULL;
+    filter_file_t *filter = NULL;
 
-    if (main_struct != NULL && main_struct->opt != NULL && directory != NULL && fileinfo != NULL)
+    if (main_struct != NULL && file_event != NULL)
         {
-
             my_clock = new_clock_t();
 
             /* Get data and meta_data for a file. */
-            /** @todo corrects the error in here by freeing meta here */
-            meta = get_meta_data_from_fileinfo(directory, fileinfo, main_struct);
+            filter = new_filter_t(main_struct->database, main_struct->regex_exclude_list, FALSE);
+            meta = get_meta_data_from_fileinfo(file_event, filter, main_struct->opt);
 
-            /* We want to save all files that are not excluded (meta != NULL) */
-            if (meta != NULL)
+            /* We want to save all files that are not excluded ie filter->excluded not TRUE */
+            if (meta != NULL && filter != NULL && filter->excluded == FALSE)
                 {
-                    /* File is not in cache thus unknown thus we need to save it */
                     if (meta->in_cache == FALSE)
                         {
+                             /* File is not in cache thus unknown thus we need to save it */
                             if (meta->size < CLIENT_SMALL_FILE_SIZE)
                                 {
                                     process_small_file_not_in_cache(main_struct, meta);
@@ -961,10 +1017,18 @@ void save_one_file(main_struct_t *main_struct, gchar *directory, GFileInfo *file
                         }
                     message = g_strdup_printf(_("processing file %s"), meta->name);
                     free_meta_data_t(meta, FALSE);
+                    free_filter_file_t(filter);
+                }
+            else if (meta != NULL && filter != NULL && filter->excluded == TRUE)
+                {
+                    message = g_strdup_printf(_("processing excluded file %s"), meta->name);
+                    free_meta_data_t(meta, FALSE);
+                    free_filter_file_t(filter);
                 }
             else
                 {
-                    message = g_strdup_printf(_("processing excluded file"));
+                    message = g_strdup_printf(_("Error with meta (%p) or filter (%p) structures\n"), meta, filter);
+                    print_error(__FILE__, __LINE__, message);
                 }
 
             end_clock(my_clock, message);
