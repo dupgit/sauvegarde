@@ -131,7 +131,7 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
             opt->dbname = read_string_from_file(keyfile, filename, GN_CLIENT, KN_DB_NAME, _("Could not load cache database name"));
 
             /* Adaptative mode for blocksize ? */
-            opt->adaptive = read_boolean_from_file(keyfile, filename, GN_CLIENT, KN_ADAPTATIVE, _("Could not load adaptive configuration from file."));
+            opt->adaptive = read_boolean_from_file(keyfile, filename, GN_CLIENT, KN_ADAPTIVE, _("Could not load adaptive configuration from file."));
 
             /* Buffer size to be used to send data to server */
             opt->buffersize = read_int_from_file(keyfile, filename, GN_CLIENT, KN_BUFFER_SIZE, _("Could not load buffersize from file"), CLIENT_MIN_BUFFER);

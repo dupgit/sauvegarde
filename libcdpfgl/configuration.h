@@ -81,11 +81,11 @@
 
 
 /**
- * @def KN_ADAPTATIVE
+ * @def KN_ADAPTIVE
  * Defines the key name for the adaptive option to determine blocksize
  * behavior (fixed or adaptive).
  */
-#define KN_ADAPTATIVE ("adaptive")
+#define KN_ADAPTIVE ("adaptive")
 
 
 /**
