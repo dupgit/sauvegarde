@@ -253,6 +253,40 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
     return hash_data_list;
 }
 
+/**
+ * Gets the attributes of a file
+ * @param meta is the structure where to store meta data (attributes) of
+ *        the file
+ * @param fileinfo is a glib structure that contains a lot of informations
+ *        about the file and from which we want to keep a few.
+ */
+static void get_file_attributes(meta_data_t *meta, GFileInfo *fileinfo)
+{
+    if (meta != NULL)
+        {
+            meta->inode = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_UNIX_INODE);
+            meta->owner = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_USER);
+            meta->group = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_GROUP);
+            meta->uid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_UID);
+            meta->gid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_GID);
+            meta->atime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_ACCESS);
+            meta->ctime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_CHANGED);
+            meta->mtime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+            meta->mode = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_MODE);
+            meta->size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
+
+             /* Do the right things with specific cases */
+            if (meta->file_type == G_FILE_TYPE_SYMBOLIC_LINK)
+                {
+                    meta->link = (gchar *) g_file_info_get_attribute_byte_string(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET);
+                }
+            else
+                {
+                    meta->link = g_strdup("");
+                }
+        }
+}
+
 
 /**
  * Gets all meta data for a file and returns a filled meta_data_t *
@@ -290,29 +324,9 @@ static meta_data_t *get_meta_data_from_fileinfo(file_event_t *file_event, filter
 
             if (exclude_file(filter->regex_exclude_list, meta->name) == FALSE)
                 {
-                    meta->inode = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_UNIX_INODE);
-                    meta->owner = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_USER);
-                    meta->group = g_file_info_get_attribute_as_string(fileinfo, G_FILE_ATTRIBUTE_OWNER_GROUP);
-                    meta->uid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_UID);
-                    meta->gid = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_GID);
-                    meta->atime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_ACCESS);
-                    meta->ctime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_CHANGED);
-                    meta->mtime = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_TIME_MODIFIED);
-                    meta->mode = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_MODE);
-                    meta->size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
-
+                    /* fills meta_data_t *meta structure */
+                    get_file_attributes(meta, fileinfo);
                     meta->blocksize = calculate_file_blocksize(opt, meta->size);
-
-                     /* Do the right things with specific cases */
-                    if (meta->file_type == G_FILE_TYPE_SYMBOLIC_LINK)
-                        {
-                            meta->link = (gchar *) g_file_info_get_attribute_byte_string(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SYMLINK_TARGET);
-                        }
-                    else
-                        {
-                            meta->link = g_strdup("");
-                        }
-
 
                     /* We need to determine if the file has already been saved by looking into the local database
                      * This is usefull only when carving directories at the begining of the process as when called
