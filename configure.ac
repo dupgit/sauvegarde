@@ -199,6 +199,7 @@ AC_ARG_ENABLE([gprof],
 if test x$gprof = xtrue
 then
  CFLAGS="-pg $CFLAGS"
+ LDFLAGS="-pg -lc $LDFLAGS"
 else
  CFLAGS="$CFLAGS"
 fi
