@@ -180,7 +180,8 @@ AC_ARG_ENABLE([gcov],
      esac],[gcov=false])
 if test x$gcov = xtrue
 then
- CFLAGS="-g -fprofile-arcs -ftest-coverage $CFLAGS "
+ CFLAGS="--coverage -g -fprofile-arcs -ftest-coverage $CFLAGS "
+ LDFLAGS="--coverage -g -fprofile-arcs -ftest-coverage $CFLAGS "
 else
  CFLAGS="$CFLAGS"
 fi
@@ -198,7 +199,7 @@ AC_ARG_ENABLE([gprof],
      esac],[gprof=false])
 if test x$gprof = xtrue
 then
- CFLAGS="-pg $CFLAGS"
+ CFLAGS="-pg  -lc $CFLAGS"
  LDFLAGS="-pg -lc $LDFLAGS"
 else
  CFLAGS="$CFLAGS"
