@@ -56,3 +56,7 @@ packaging/debian/sauvegarde*
 po/cdpfgl.pot
 packaging/debian/cdpfgl*
 coverage*
+.frama-c
+*.gcda
+*.gcno
+gmon.out
