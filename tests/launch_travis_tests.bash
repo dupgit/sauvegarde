@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  launch_tests.bash
+#  launch_travis_tests.bash
 #  Launches a set of tests for travis-ci.org architecture.
 #
 #  This file is part of "Sauvegarde" project.

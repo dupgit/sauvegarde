@@ -39,7 +39,7 @@ script:
     - ./autoclean.sh && ./autogen.sh && ./configure --prefix=$HOME/local --enable-debug --disable-silent && make && make install
     - make check && make dist
     - $HOME/local/bin/cdpfglclient --version && $HOME/local/bin/cdpfglserver --version && $HOME/local/bin/cdpfglrestore --version
-    - $HOME/build/dupgit/sauvegarde/tests/launch_tests.bash
+    - $HOME/build/dupgit/sauvegarde/tests/launch_travis_tests.bash
 
 # irc bot notification
 notifications:
