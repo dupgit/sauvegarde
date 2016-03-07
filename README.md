@@ -133,8 +133,10 @@ command line options are:
       -p, --port=NUMBER                Port NUMBER on which to listen.
       -x, --exclude=FILENAME           Exclude FILENAME from being saved.
 
--x (--exclude=FILENAME) can be used multiple times to exclude more than
-one file or directory.
+The latest option -x or --exclude=FILENAME can be used multiple times to
+exclude more than one file or directory. This option will add excluded
+directories to the list of excluded directory obtained from a specified
+configuration file if any.
 
 
 ### The restore program (the one that saves your life when needed)
