@@ -902,7 +902,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
 
                             read = g_input_stream_read((GInputStream *) stream, buffer, meta->blocksize, NULL, &error);
                             read_bytes = read_bytes + read;
-                            array = json_array();
+
 
                             while (read != 0 && error == NULL)
                                 {
@@ -911,12 +911,6 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
 
                                     /* Need to save data and read in hash_data_t structure */
                                     hash_data = new_hash_data_t(buffer, read, a_hash);
-
-                                    to_insert = convert_hash_data_t_to_json(hash_data);
-                                    json_array_append_new(array, to_insert);
-
-                                    /* Only keeping hashs in the list */
-                                    hash_data->data = free_variable(hash_data->data);
                                     hash_data_list = g_list_prepend(hash_data_list, hash_data);
 
                                     g_checksum_reset(checksum);
@@ -924,11 +918,17 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
 
                                     if (read_bytes >= main_struct->opt->buffersize)
                                         {
-                                            /* sending datas naïvely */
+
+                                            /* 1. Send an array of hashs to Hash_Array.json server url */
+
+                                            /* 2. Keep only hashs that are needed (answer from the server) */
+
+                                            /* 3 Construct a JSON array with needed hashs */
+
+                                            /* 4. Send the JSON array */
                                             elapsed = new_clock_t();
                                             print_debug(_("Sending data: %d bytes\n"), read_bytes);
                                             insert_array_in_root_and_send(main_struct, array);
-                                            array = json_array();
                                             read_bytes = 0;
                                             end_clock(elapsed, "insert_array_in_root_and_send");
                                         }
