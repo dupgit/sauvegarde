@@ -390,7 +390,7 @@ GList *make_hash_data_list_from_string(gchar *hash_string)
 
 
 /**
- * Tells wheter a hash (picking it in a hash_data_t structure is in the
+ * Tells wheter a hash (picking it in a hash_data_t structure) is in the
  * needed list of hash_data_t structures.
  * @param hash_data contains the hash that we are looking for into the
  *        needed list.
@@ -408,6 +408,7 @@ gboolean hash_data_is_in_list(hash_data_t *hash_data, GList *needed)
             while (needed != NULL && found == FALSE)
                 {
                     needed_hash_data = needed->data;
+
                     if (compare_two_hashs(hash_data->hash, needed_hash_data->hash) == 0)
                         {
                             found = TRUE;

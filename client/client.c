@@ -861,6 +861,54 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
 
 
 /**
+ * Makes an array with the hashs in the list and sends them to
+ * /Hash_Array.json URL of the server. The server must answer with a list
+ * of needed hashs
+ * @param comm a comm_t * structure that must contain an initialized
+ *        curl_handle (must not be NULL)
+ * @param hash_data_list : list of hash_data already processed that are
+ *        ready to be transmited to server (if needed)
+ * @returns a gchar * containing the JSON array of needed hashs
+ */
+static gchar *send_hash_array_to_server(comm_t *comm, GList *hash_data_list)
+{
+    json_t *array = NULL;
+    json_t *root = NULL;
+    gchar *whole_hash_list = NULL;
+    gchar *answer = NULL;
+    gboolean success = CURLE_FAILED_INIT;
+
+    if (comm != NULL && hash_data_list != NULL)
+        {
+            array = convert_hash_list_to_json(hash_data_list);
+            root = json_object();
+            insert_json_value_into_json_root(root, "hash_list", array);
+
+            whole_hash_list = json_dumps(root, 0);
+            json_decref(root);
+            comm->readbuffer = whole_hash_list;
+
+            success = post_url(comm, "/Hash_Array.json");
+
+            if (success == CURLE_OK)
+                {
+                    answer = g_strdup(comm->buffer);
+                    comm->buffer = free_variable(comm->buffer);
+                }
+            else
+                {
+                    answer = g_strdup(whole_hash_list);
+                }
+
+            free_variable(comm->readbuffer);
+        }
+
+   return answer;
+}
+
+
+
+/**
  * Process the file that is not already in our local cache
  * @param main_struct : main structure of the program
  * @param meta is the meta data of the file to be processed (it does
@@ -873,6 +921,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
     GFileInputStream *stream = NULL;
     GError *error = NULL;
     GList *hash_data_list = NULL;
+    GList *saved_list = NULL;
     hash_data_t *hash_data = NULL;
     gssize read = 0;
     guchar *buffer = NULL;
@@ -881,7 +930,6 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
     gsize digest_len = HASH_LEN;
     gsize read_bytes = 0;
     json_t *array = NULL;
-    json_t *to_insert = NULL;
     a_clock_t *elapsed = NULL;
 
     if (main_struct != NULL && main_struct->opt != NULL && meta != NULL)
@@ -918,15 +966,19 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
 
                                     if (read_bytes >= main_struct->opt->buffersize)
                                         {
+                                            elapsed = new_clock_t();
+                                            /* 0. Save the list in order to keep hashs for meta-data */
+                                            saved_list = g_list_concat(hash_data_list, saved_list);
 
                                             /* 1. Send an array of hashs to Hash_Array.json server url */
+                                            answer = send_hash_array_to_server(main_struct->comm, hash_data_list);
 
                                             /* 2. Keep only hashs that are needed (answer from the server) */
 
                                             /* 3 Construct a JSON array with needed hashs */
 
                                             /* 4. Send the JSON array */
-                                            elapsed = new_clock_t();
+
                                             print_debug(_("Sending data: %d bytes\n"), read_bytes);
                                             insert_array_in_root_and_send(main_struct, array);
                                             read_bytes = 0;
