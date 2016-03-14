@@ -38,7 +38,9 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
 static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url);
 static gchar *get_unformatted_answer(server_struct_t *server_struct, const char *url);
 static int process_get_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls);
+static json_t *find_needed_hashs(server_struct_t *server_struct, GList *hash_data_list);
 static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data);
+static int answer_hash_array_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data);
 static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, gchar *received_data);
 static int process_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size);
 static int print_out_key(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
@@ -417,6 +419,40 @@ static int process_get_request(server_struct_t *server_struct, struct MHD_Connec
 
 
 /**
+ * Selects hashs that are needed by invoking the backend function if it
+ * exists and returns a json array.
+ * @param server_struct is the main structure for the server.
+ * @param
+ * @returns a json_t * array of needed hashs that may be freed when no
+ *          longer needed.
+ */
+static json_t *find_needed_hashs(server_struct_t *server_struct, GList *hash_data_list)
+{
+    json_t *array = NULL;   /** json_t *array is the array that will receive base64 encoded needed hashs */
+    GList *needed = NULL;   /** GList that contains needed hashs as answered by the backend if any       */
+
+    /**
+     * Creating a json_t * array with the hashs that are needed. If
+     * the selected backend does not have a build_needed_hash_list
+     * function we are returning the whole hash_data_list !
+     */
+
+    if (server_struct != NULL && server_struct->backend != NULL && server_struct->backend->build_needed_hash_list != NULL)
+        {
+            needed = server_struct->backend->build_needed_hash_list(server_struct, hash_data_list);
+            array = convert_hash_list_to_json(needed);
+            g_list_free_full(needed, free_hdt_struct);
+        }
+    else
+        {
+            array = convert_hash_list_to_json(hash_data_list);
+        }
+
+    return array;
+}
+
+
+/**
  * Answers /Meta.json POST request by storing data and answering to the
  * client.
  * @param server_struct is the main structure for the server.
@@ -426,11 +462,10 @@ static int process_get_request(server_struct_t *server_struct, struct MHD_Connec
  */
 static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data)
 {
-    server_meta_data_t *smeta = NULL;
-    gchar *answer = NULL;       /** gchar *answer : Do not free answer variable as MHD will do it for us !  */
-    json_t *root = NULL;        /** json_t *root is the root that will contain all meta data json formatted */
-    json_t *array = NULL;       /** json_t *array is the array that will receive base64 encoded hashs       */
-    GList *needed = NULL;
+    server_meta_data_t *smeta = NULL; /** server_meta_data_t *smeta stores meta data along with hostname of the client */
+    gchar *answer = NULL;             /** gchar *answer : Do not free answer variable as MHD will do it for us !       */
+    json_t *root = NULL;              /** json_t *root is the root that will contain all meta data json formatted      */
+    json_t *array = NULL;             /** json_t *array is the array that will receive base64 encoded hashs            */
 
     smeta = convert_json_to_smeta_data(received_data);
 
@@ -441,22 +476,7 @@ static int answer_meta_json_post_request(server_struct_t *server_struct, struct 
 
             if (smeta->data_sent == FALSE)
                 {
-                    /**
-                     * Creating an answer and sending the hashs that are needed. If
-                     * the selected backend does not have a build_needed_hash_list
-                     * function we are returning the whole hash_list !
-                     */
-
-                    if (server_struct != NULL && server_struct->backend != NULL && server_struct->backend->build_needed_hash_list != NULL)
-                        {
-                            needed = server_struct->backend->build_needed_hash_list(server_struct, smeta->meta->hash_data_list);
-                            array = convert_hash_list_to_json(needed);
-                            g_list_free_full(needed, free_hdt_struct);
-                        }
-                    else
-                        {
-                            array = convert_hash_list_to_json(smeta->meta->hash_data_list);
-                        }
+                    array = find_needed_hashs(server_struct, smeta->meta->hash_data_list);
                 }
             else
                 {
@@ -483,6 +503,50 @@ static int answer_meta_json_post_request(server_struct_t *server_struct, struct 
 
     return create_MHD_response(connection, answer);
 }
+
+
+/**
+ * Answers /Hash_Array.json POST request by answering to the client needed
+ * hashs
+ * @param server_struct is the main structure for the server.
+ * @param connection is the connection in MHD
+ * @param received_data is a gchar * string to the data that was received
+ *        by the POST request.
+ */
+static int answer_hash_array_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data)
+{
+    gchar *answer = NULL;         /** gchar *answer : Do not free answer variable as MHD will do it for us !  */
+    json_t *root = NULL;          /** json_t *root is the root that will contain all meta data json formatted */
+    json_t *array = NULL;         /** json_t *array is the array that will receive base64 encoded hashs       */
+    GList *hash_data_list = NULL;
+
+
+    if (server_struct != NULL && connection != NULL && received_data != NULL)
+        {
+
+            root = load_json(received_data);
+            hash_data_list = extract_glist_from_array(root, "hash_list", TRUE);
+            json_decref(root);
+
+            print_debug(_("Received hash array of %zd bytes size\n"), strlen(received_data));
+
+            array = find_needed_hashs(server_struct, hash_data_list);
+
+            root = json_object();
+            insert_json_value_into_json_root(root, "hash_list", array);
+            answer = json_dumps(root, 0);
+            json_decref(root);
+            g_list_free_full(hash_data_list, free_hdt_struct);
+        }
+    else
+        {
+            answer = g_strdup_printf(_("Error: could not convert json to metadata\n"));
+        }
+
+    return create_MHD_response(connection, answer);
+}
+
+
 
 
 /**
@@ -536,6 +600,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
         }
     else if (g_strcmp0(url, "/Hash_Array.json") == 0 && received_data != NULL)
         {
+            success = answer_hash_array_post_request(server_struct, connection, received_data);
             /* Here we will try to answer which hashs are needed and then
              * send thoses hashs back in the answer
              */
