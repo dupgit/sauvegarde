@@ -974,6 +974,8 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                             answer = send_hash_array_to_server(main_struct->comm, hash_data_list);
 
                                             /* 2. Keep only hashs that are needed (answer from the server) */
+                                            /* See send_data_to_server() */
+
 
                                             /* 3 Construct a JSON array with needed hashs */
 
@@ -983,6 +985,8 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                             insert_array_in_root_and_send(main_struct, array);
                                             read_bytes = 0;
                                             end_clock(elapsed, "insert_array_in_root_and_send");
+
+                                            /* 5. NULLify hash_data_list */
                                         }
 
                                     buffer = (guchar *) g_malloc(meta->blocksize);
