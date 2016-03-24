@@ -41,6 +41,11 @@ script:
     - $HOME/local/bin/cdpfglclient --version && $HOME/local/bin/cdpfglserver --version && $HOME/local/bin/cdpfglrestore --version
     - $HOME/build/dupgit/sauvegarde/tests/launch_travis_tests.bash
 
+# Code coverage
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+
 # irc bot notification
 notifications:
   irc:
