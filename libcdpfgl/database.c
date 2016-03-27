@@ -311,8 +311,9 @@ static void free_file_row_t(file_row_t *row)
 /**
  * Insert file into cache. One should have verified that the file
  * does not already exists in the database.
- * @note insert_file_into_cache is fast but does not garantee that the
- *       data is on the disk !
+ * @todo Use statements to avoid bugs when dealing with strings from user
+ *       space and thus avoid sql injection a bit. See
+ *       https://sqlite.org/c3ref/prepare.html
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
  * @param meta is the file's metadata that we want to insert into the
