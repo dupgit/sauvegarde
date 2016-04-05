@@ -622,7 +622,11 @@ static void send_data_to_server(main_struct_t *main_struct, meta_data_t *meta, g
                             free_variable(main_struct->comm->readbuffer);
 
                             meta->hash_data_list = g_list_remove_link(meta->hash_data_list, iter);
-                            g_list_free_full(iter, free_hdt_struct);
+
+                            /* iter is now a single element list and we can delete
+                             * data in this element and then remove this single element list */
+                            free_hdt_struct(iter);
+                            g_list_free(iter);
 
                             main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
                             hash_list = g_list_next(hash_list);
@@ -907,7 +911,6 @@ static gchar *send_hash_array_to_server(comm_t *comm, GList *hash_data_list)
 }
 
 
-
 /**
  * Process the file that is not already in our local cache
  * @param main_struct : main structure of the program
@@ -957,7 +960,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                     g_checksum_update(checksum, buffer, read);
                                     g_checksum_get_digest(checksum, a_hash, &digest_len);
 
-                                    /* Need to save data and read in hash_data_t structure */
+                                    /* Need to save 'data', 'read' and digest hash in an hash_data_t structure */
                                     hash_data = new_hash_data_t(buffer, read, a_hash);
                                     hash_data_list = g_list_prepend(hash_data_list, hash_data);
 
@@ -977,6 +980,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                             /* See send_data_to_server() */
 
 
+
                                             /* 3 Construct a JSON array with needed hashs */
 
                                             /* 4. Send the JSON array */
@@ -986,7 +990,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                             read_bytes = 0;
                                             end_clock(elapsed, "insert_array_in_root_and_send");
 
-                                            /* 5. NULLify hash_data_list */
+                                            /* 5. NULLify datas in hash_data_list */
                                         }
 
                                     buffer = (guchar *) g_malloc(meta->blocksize);
