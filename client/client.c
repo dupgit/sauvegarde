@@ -37,8 +37,8 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
 static meta_data_t *get_meta_data_from_fileinfo(file_event_t *file_event, filter_file_t *filter, options_t *opt);
 static gchar *send_meta_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent);
 static GList *find_hash_in_list(GList *hash_data_list, guint8 *hash);
-static void send_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
-static void send_all_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gchar *answer);
+static GList *send_data_to_server(main_struct_t *main_struct, GList *hash_data_list, gchar *answer);
+static GList *send_all_data_to_server(main_struct_t *main_struct, GList *hash_data_list, gchar *answer);
 static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFileEnumerator *file_enum);
 static void carve_one_directory(gpointer data, gpointer user_data);
 static gpointer carve_all_directories(gpointer data);
@@ -481,14 +481,13 @@ static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *ar
 /**
  * Sends data as requested by the server 'cdpfglserver' in a buffered way.
  * @param main_struct : main structure of the program.
- * @param meta : meta is a pointer to meta_data_t strcuture that contains
- *               hash_data_list the list of hash_data_t * pointers
- *               containing all all the data to be saved.
+ * @param hash_data_list : list of hash_data_t * pointers containing
+ *                          all the data to be saved.
  * @param answer is the request sent back by server when we had send
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static void send_all_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
+static GList *send_all_data_to_server(main_struct_t *main_struct, GList *hash_data_list, gchar *answer)
 {
     json_t *root = NULL;
     json_t *array = NULL;
@@ -502,7 +501,7 @@ static void send_all_data_to_server(main_struct_t *main_struct, meta_data_t *met
     gint64 limit = 0;
     a_clock_t *elapsed = NULL;
 
-    if (answer != NULL && meta != NULL && meta->hash_data_list != NULL && main_struct != NULL && main_struct->opt != NULL)
+    if (answer != NULL && hash_data_list != NULL && main_struct != NULL && main_struct->opt != NULL)
         {
             root = load_json(answer);
 
@@ -523,7 +522,7 @@ static void send_all_data_to_server(main_struct_t *main_struct, meta_data_t *met
                             hash_data = hash_list->data;
                             /* hash_data_list contains all hashs and their associated data for the file
                              * being processed */
-                            iter = find_hash_in_list(meta->hash_data_list, hash_data->hash);
+                            iter = find_hash_in_list(hash_data_list, hash_data->hash);
                             found = iter->data;
 
                             to_insert = convert_hash_data_t_to_json(found);
@@ -531,8 +530,11 @@ static void send_all_data_to_server(main_struct_t *main_struct, meta_data_t *met
 
                             bytes = bytes + found->read;
 
-                            meta->hash_data_list = g_list_remove_link(meta->hash_data_list, iter);
-                            g_list_free_full(iter, free_hdt_struct);
+                            hash_data_list = g_list_remove_link(hash_data_list, iter);
+                            /* iter is now a single element list and we can delete
+                             * data in this element and then remove this single element list */
+                            free_hdt_struct(iter);
+                            g_list_free(iter);
 
                             if (bytes >= limit)
                                 {
@@ -570,6 +572,8 @@ static void send_all_data_to_server(main_struct_t *main_struct, meta_data_t *met
                     print_error(__FILE__, __LINE__, _("Error while loading JSON answer from server\n"));
                 }
         }
+
+    return hash_data_list;
 }
 
 
@@ -582,7 +586,7 @@ static void send_all_data_to_server(main_struct_t *main_struct, meta_data_t *met
  *        meta data.
  * @note using directly main_struct->comm->buffer -> not threadable as is.
  */
-static void send_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gchar *answer)
+static GList *send_data_to_server(main_struct_t *main_struct, GList *hash_data_list, gchar *answer)
 {
     json_t *root = NULL;
     GList *hash_list = NULL;         /** hash_list is local to this function */
@@ -592,7 +596,7 @@ static void send_data_to_server(main_struct_t *main_struct, meta_data_t *meta, g
     hash_data_t *found = NULL;
     hash_data_t *hash_data = NULL;
 
-    if (main_struct != NULL && main_struct->comm != NULL && answer != NULL &&  meta != NULL && meta->hash_data_list!= NULL)
+    if (main_struct != NULL && main_struct->comm != NULL && answer != NULL &&  hash_data_list!= NULL)
         {
             root = load_json(answer);
 
@@ -607,7 +611,7 @@ static void send_data_to_server(main_struct_t *main_struct, meta_data_t *meta, g
                         {
                             hash_data = hash_list->data;
                             /* hash_data_list contains all hashs and their associated data */
-                            iter = find_hash_in_list(meta->hash_data_list, hash_data->hash);
+                            iter = find_hash_in_list(hash_data_list, hash_data->hash);
                             found = iter->data;
 
                             /* readbuffer is the buffer sent to server  */
@@ -621,8 +625,7 @@ static void send_data_to_server(main_struct_t *main_struct, meta_data_t *meta, g
 
                             free_variable(main_struct->comm->readbuffer);
 
-                            meta->hash_data_list = g_list_remove_link(meta->hash_data_list, iter);
-
+                            hash_data_list = g_list_remove_link(hash_data_list, iter);
                             /* iter is now a single element list and we can delete
                              * data in this element and then remove this single element list */
                             free_hdt_struct(iter);
@@ -642,6 +645,9 @@ static void send_data_to_server(main_struct_t *main_struct, meta_data_t *meta, g
                     print_error(__FILE__, __LINE__, _("Error while loading JSON answer from server\n"));
                 }
         }
+
+    return hash_data_list;
+
 }
 
 
@@ -841,12 +847,12 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
             if (meta->size < meta->blocksize)
                 {
                     /* Only one block to send (size is less than blocksize's value) */
-                    send_data_to_server(main_struct, meta, answer);
+                     meta->hash_data_list = send_data_to_server(main_struct, meta->hash_data_list, answer);
                 }
             else
                 {
                     /* A least 2 blocks to send */
-                    send_all_data_to_server(main_struct, meta, answer);
+                    meta->hash_data_list = send_all_data_to_server(main_struct, meta->hash_data_list, answer);
                 }
             end_clock(mesure_time, "send_(all)_data_to_server");
 
