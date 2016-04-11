@@ -225,7 +225,6 @@ GList *file_build_needed_hash_list(server_struct_t *server_struct, GList *hash_d
     gchar *path = NULL;
     gchar *prefix = NULL;
     file_backend_t *file_backend = NULL;
-    guint8 *a_hash = NULL;
     hash_data_t *hash_data = NULL;
     hash_data_t *needed_hash_data = NULL;
 
@@ -250,11 +249,7 @@ GList *file_build_needed_hash_list(server_struct_t *server_struct, GList *hash_d
                             /* file does not exists and is not in the needed list so we need it!
                              * thus putting it it the needed list
                              */
-                            a_hash = (guint8 *) g_malloc(sizeof(guint8) * HASH_LEN);  /* No need to do g_malloc0 here as we store binary data */
-                            memcpy(a_hash, hash_data->hash, HASH_LEN);
-                            needed_hash_data = new_hash_data_t(NULL, 0, a_hash);
-
-                            /* needed_hash_data = copy_only_hash(hash_data, NULL); */
+                            needed_hash_data = copy_only_hash(hash_data, NULL);
                             needed = g_list_prepend(needed, needed_hash_data);
                         }
 
