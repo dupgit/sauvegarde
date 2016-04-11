@@ -422,3 +422,25 @@ gboolean hash_data_is_in_list(hash_data_t *hash_data, GList *needed)
 
     return found;
 }
+
+
+/**
+ * This function is an helper to be called by g_list_copy_deep. It copies
+ * only the hash and read variables of an hash_data_t *hash
+ * @param src is the source pointer it must be a hash_data_t * pointer.
+ * @param user_data is not used and may be NULL
+ * @returns A pointer to the copy
+ */
+gpointer copy_only_hash(gconstpointer src, gpointer user_data)
+{
+    hash_data_t *hash_data_src = (hash_data_t *) src;
+    hash_data_t *hash_data_dst = NULL;
+    guint8 *hash_dst = NULL;
+
+    hash_dst = (guint8 *) g_malloc(sizeof(guint8) * HASH_LEN);
+    hash_dst = memcpy(hash_dst, hash_data_src->hash, HASH_LEN);
+    hash_data_dst = new_hash_data_t(NULL, hash_data_src->read, hash_dst);
+
+    return hash_data_dst;
+}
+

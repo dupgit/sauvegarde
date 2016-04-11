@@ -253,6 +253,8 @@ GList *file_build_needed_hash_list(server_struct_t *server_struct, GList *hash_d
                             a_hash = (guint8 *) g_malloc(sizeof(guint8) * HASH_LEN);  /* No need to do g_malloc0 here as we store binary data */
                             memcpy(a_hash, hash_data->hash, HASH_LEN);
                             needed_hash_data = new_hash_data_t(NULL, 0, a_hash);
+
+                            /* needed_hash_data = copy_only_hash(hash_data, NULL); */
                             needed = g_list_prepend(needed, needed_hash_data);
                         }
 

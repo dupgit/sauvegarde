@@ -532,9 +532,9 @@ static GList *send_all_data_to_server(main_struct_t *main_struct, GList *hash_da
 
                             hash_data_list = g_list_remove_link(hash_data_list, iter);
                             /* iter is now a single element list and we can delete
-                             * data in this element and then remove this single element list */
-                            free_hdt_struct(iter);
-                            g_list_free(iter);
+                             * data in this element and then remove this single element list
+                             */
+                            g_list_free_full(iter, free_hdt_struct);
 
                             if (bytes >= limit)
                                 {
@@ -626,9 +626,9 @@ static GList *send_data_to_server(main_struct_t *main_struct, GList *hash_data_l
 
                             hash_data_list = g_list_remove_link(hash_data_list, iter);
                             /* iter is now a single element list and we can delete
-                             * data in this element and then remove this single element list */
-                            free_hdt_struct(iter);
-                            g_list_free(iter);
+                             * data in this element and then remove this single element list
+                             */
+                            g_list_free_full(iter, free_hdt_struct);
 
                             main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
                             hash_list = g_list_next(hash_list);
@@ -896,6 +896,8 @@ static gchar *send_hash_array_to_server(comm_t *comm, GList *hash_data_list)
             whole_hash_list = json_dumps(root, 0);
             json_decref(root);
             comm->readbuffer = whole_hash_list;
+            print_debug("Hash_Array: %s\n", whole_hash_list);
+
 
             success = post_url(comm, "/Hash_Array.json");
 
@@ -916,22 +918,7 @@ static gchar *send_hash_array_to_server(comm_t *comm, GList *hash_data_list)
 }
 
 
-/**
- * This function is an helper to be called by g_list_copy_deep. It copies
- * only the hash and read variables of an hash_data_t *hash
- * @param src is the source pointer it must be a hash_data_t * pointer.
- * @param user_data is not used and may be NULL
- * @returns A pointer to the copy
- */
-static gpointer copy_only_hashs(gconstpointer src, gpointer user_data)
-{
-    hash_data_t *hash_data_src = (hash_data_t *) src;
-    hash_data_t *hash_data_dst = NULL;
 
-    hash_data_dst = new_hash_data_t(NULL, hash_data_src->read, hash_data_src->hash);
-
-    return hash_data_dst;
-}
 
 
 /**
@@ -995,7 +982,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                             elapsed = new_clock_t();
                                             print_debug(_("Sending data: %d bytes\n"), read_bytes);
                                             /* 0. Save the list in order to keep hashs for meta-data */
-                                            hdl_copy = g_list_copy_deep(hash_data_list, copy_only_hashs, NULL);
+                                            hdl_copy = g_list_copy_deep(hash_data_list, copy_only_hash, NULL);
                                             saved_list = g_list_concat(hdl_copy, saved_list);
 
                                             /* 1. Send an array of hashs to Hash_Array.json server url */
@@ -1007,6 +994,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                             /* 3. free memory of this list if any is left */
                                             g_list_free_full(hash_data_list, free_hdt_struct);
                                             hash_data_list = NULL;
+                                            read_bytes = 0;
 
                                             end_clock(elapsed, "process_big_file_not_in_cache");
                                         }
@@ -1031,7 +1019,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                             elapsed = new_clock_t();
                                             print_debug(_("Sending data: %d bytes\n"), read_bytes);
                                                                                         /* 0. Save the list in order to keep hashs for meta-data */
-                                            hdl_copy = g_list_copy_deep(hash_data_list, copy_only_hashs, NULL);
+                                            hdl_copy = g_list_copy_deep(hash_data_list, copy_only_hash, NULL);
                                             saved_list = g_list_concat(hdl_copy, saved_list);
 
                                             /* 1. Send an array of hashs to Hash_Array.json server url */
@@ -1043,6 +1031,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                             /* 3. free memory of this list if any is left */
                                             g_list_free_full(hash_data_list, free_hdt_struct);
                                             hash_data_list = NULL;
+                                            read_bytes = 0;
 
                                             end_clock(elapsed, "process_big_file_not_in_cache");
                                         }

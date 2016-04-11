@@ -144,8 +144,17 @@ extern GList *make_hash_data_list_from_string(gchar *hash_string);
  *        contain one with the same hash than the one in hash_data
  * @returns TRUE if the hash is found, FALSE otherwise
  */
-gboolean hash_data_is_in_list(hash_data_t *hash_data, GList *needed);
+extern gboolean hash_data_is_in_list(hash_data_t *hash_data, GList *needed);
 
+
+/**
+ * This function is an helper to be called by g_list_copy_deep. It copies
+ * only the hash and read variables of an hash_data_t *hash
+ * @param src is the source pointer it must be a hash_data_t * pointer.
+ * @param user_data is not used and may be NULL
+ * @returns A pointer to the copy
+ */
+extern gpointer copy_only_hash(gconstpointer src, gpointer user_data);
 
 
 #endif /* #ifndef _HASHS_H_ */
