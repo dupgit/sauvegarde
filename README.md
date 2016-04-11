@@ -30,7 +30,7 @@ This project depends on the following projects (minimum version required is
 stated between () and recommended version between []):
 
 * `autotools`      (2.59)
-* `glib` and `gio` (2.30)
+* `glib` and `gio` (2.34)
 * `libmicrohttpd`  (0.9.5)  [0.9.46]
 * `libcurl`        (7.22.0)
 * `sqlite`         (3.7.15)
