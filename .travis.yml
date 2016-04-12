@@ -33,11 +33,8 @@ install:
     - (tar zxf sqlite-autoconf-3090100.tar.gz; cd sqlite-autoconf-3090100; ./configure --prefix=$HOME/local; make; make install; cd ..; rm -fr sqlite-autoconf-3090100)
 
     # glib newer version for travis-ci
-    - wget --quiet -c ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.38.tar.gz
-    - (tar zxf pcre-8.38.tar.gz; cd pcre-8.38; ./configure --prefix=$HOME/local --enable-utf8 --enable-pcre32 --enable-pcre16 --enable-newline-is-any  --enable-pcregrep-libz --enable-jit --enable-unicode-properties; make; make install; cd ..; rm -fr pcre-8.38)
-    - export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$HOME/local/lib/pkgconfig
-    - wget --quiet -c https://git.gnome.org/browse/glib/snapshot/glib-2.48.0.tar.xz
-    - (tar Jxf glib-2.48.0.tar.xz; cd glib-2.48.0; ./autogen.sh; ./configure --prefix=$HOME/local; make; make install; cd..; rm -fr glib-2.48.0)
+    - wget --quiet -c https://git.gnome.org/browse/glib/snapshot/glib-2.34.0.tar.xz
+    - (tar Jxf glib-2.34.0.tar.xz; cd glib-2.34.0; ./autogen.sh; ./configure --prefix=$HOME/local; make; make install; cd ..; rm -fr glib-2.34.0)
 
 # Building cdpfgl
 script:
