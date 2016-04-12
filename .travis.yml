@@ -19,9 +19,6 @@ addons:
     - libglib2.0-dev
     - libcurl4-openssl-dev
 
-before_install:
-  - pip install codecov
-
 install:
     # jansson (not found by travis's apt as of 24.08.2015)
     - git clone git://github.com/akheron/jansson.git
@@ -50,7 +47,7 @@ script:
 
 # Code coverage
 after_success:
-  - codecov
+  - bash <(curl -s https://codecov.io/bash)
 
 
 # irc bot notification
