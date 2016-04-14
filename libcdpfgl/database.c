@@ -61,10 +61,6 @@ static void print_db_error(sqlite3 *db, const char *format, ...)
     va_start(ap, format);
     vfprintf(stderr, format, ap);
     va_end(ap);
-
-  /*  sqlite3_close(db);
-      exit(EXIT_FAILURE);
-  */
 }
 
 
@@ -167,14 +163,6 @@ static void verify_if_tables_exists(db_t *database)
         }
 
     free_variable(i);
-
-    /**
-     * We are setting the asynchronous mode of SQLITE here. Tradeoff is that any
-     * powerloss is leading to a database corruption and data loss !
-     * @note This is NOT a good idea !
-     */
-    /* exec_sql_cmd(database, "PRAGMA synchronous = OFF;", _("Error while trying to set asynchronous mode.\n")); */
-
 }
 
 
