@@ -549,6 +549,37 @@ gboolean db_transmit_buffers(db_t *database, comm_t *comm)
         }
 }
 
+/**
+ * Creates a new stmt_t * strcuture
+ * @returns a new unfilled stmt_t * strcuture which can be freed when
+ *          no longer needed by calling free_stmts()
+ */
+static stmt_t *new_stmts(void)
+{
+    stmt_t *stmts = NULL;
+
+
+    stmts = (stmt_t *) g_malloc0(sizeof(stmt_t));
+
+    stmts->save_meta_stmt = NULL;
+
+    return stmts;
+}
+
+
+/**
+ * Frees a malloc'ed stmt_t * structure
+ * @param stmts stmts is the stmt_t * structure to be freed
+ */
+static void free_stmts(stmt_t *stmts)
+{
+
+    if (stmts != NULL)
+        {
+            g_free(stmts);
+        }
+}
+
 
 /**
  * Returns a database connexion or NULL.
@@ -578,6 +609,7 @@ db_t *open_database(gchar *database_name)
     else
         {
             database->db = db;
+            database->stmts = new_stmts();
             sqlite3_extended_result_codes(db, 1);
             verify_if_tables_exists(database);
 

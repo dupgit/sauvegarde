@@ -37,12 +37,22 @@
 
 
 /**
+ * @struct stmt_t
+ * @brief structure to hold all statements needed for the programs.
+ */
+ typedef struct
+ {
+    sqlite3_stmt *save_meta_stmt;
+ } stmt_t;
+
+/**
  * @struct db_t
  * @brief Structure to store everything that is needed for the database.
  */
 typedef struct
 {
     sqlite3 *db;  /**< database connexion  */
+    stmt_t *stmts;
 } db_t;
 
 
