@@ -537,19 +537,37 @@ gboolean db_transmit_buffers(db_t *database, comm_t *comm)
         }
 }
 
+
+/**
+ * Creates the statements that will be used to save file's meta data to
+ * the database
+ * @param db is an sqlite * pointer to an opened database.
+ * @returns the newly created statement.
+ */
+static sqlite3_stmt *create_save_meta_stmt(sqlite3 *db)
+{
+    sqlite3_stmt *stmt = NULL;
+
+    sqlite3_prepare_v2(db, "INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted, link) VALUES (:cache_time, :type, :inode, :file_user, :file_group, :uid, :gid, :atime, :ctime, :mtime, :size, :name, :transmitted, :link);", -1, &stmt, NULL);
+
+    return stmt;
+}
+
+
 /**
  * Creates a new stmt_t * strcuture
+ * @param db is an sqlite * pointer to an opened database.
  * @returns a new unfilled stmt_t * strcuture which can be freed when
  *          no longer needed by calling free_stmts()
  */
-static stmt_t *new_stmts(void)
+static stmt_t *new_stmts(sqlite3 *db)
 {
     stmt_t *stmts = NULL;
 
 
     stmts = (stmt_t *) g_malloc0(sizeof(stmt_t));
 
-    stmts->save_meta_stmt = NULL;
+    stmts->save_meta_stmt = create_save_meta_stmt(db);
 
     return stmts;
 }
@@ -597,7 +615,7 @@ db_t *open_database(gchar *database_name)
     else
         {
             database->db = db;
-            database->stmts = new_stmts();
+            database->stmts = new_stmts(db);
             sqlite3_extended_result_codes(db, 1);
             verify_if_tables_exists(database);
 
