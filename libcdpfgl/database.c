@@ -38,6 +38,8 @@ static int get_file_callback(void *a_row, int nb_col, char **data, char **name_c
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
 
 
+static sqlite3_stmt *bind_values_to_save_meta_data(sqlite3 *db, sqlite3_stmt *stmt, meta_data_t *meta, gboolean only_meta, guint64 cache_time);
+
 /**
  * @returns a string containing the version of the database used.
  */
@@ -61,6 +63,21 @@ static void print_db_error(sqlite3 *db, const char *format, ...)
     va_start(ap, format);
     vfprintf(stderr, format, ap);
     va_end(ap);
+}
+
+
+static void print_on_db_error(sqlite3 *db, int result, const gchar *infos)
+{
+    const char *message = NULL;
+    int errcode = 0;
+
+    if (result == SQLITE_ERROR)
+        {
+            errcode = sqlite3_extended_errcode(db);
+            /** @note sqlite3_errstr needs at least sqlite 3.7.15 */
+            message = sqlite3_errstr(errcode);
+            print_db_error(db, _("sqlite error (%d - %d) on %s: %s\n"), result, errcode, infos, message);
+        }
 }
 
 
@@ -314,6 +331,7 @@ void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
 {
     gchar *sql_command = NULL;     /** gchar *sql_command is the command to be executed */
     guint64 cache_time = 0;
+    int result = 0;
 
     if (meta != NULL && database != NULL)
         {
@@ -323,14 +341,21 @@ void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
             sql_begin(database);
 
             /* Inserting the file into the files table */
+            /*
             sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted, link) VALUES (%" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', '%s', %d, %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', %d, '%s');", cache_time, meta->file_type, meta->inode, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name, only_meta, meta->link);
 
             exec_sql_cmd(database, sql_command,  _("(%d) Error while inserting into the table 'files': %s\n"));
 
             free_variable(sql_command);
+            */
+
+            database->stmts->save_meta_stmt = bind_values_to_save_meta_data(database->db, database->stmts->save_meta_stmt, meta, only_meta, cache_time);
+            result = sqlite3_step(database->stmts->save_meta_stmt);
+            print_on_db_error(database->db, result, "sqlite3_step");
 
             /* ending the transaction here */
             sql_commit(database);
+            sqlite3_reset(database->stmts->save_meta_stmt);
         }
 }
 
@@ -538,6 +563,81 @@ gboolean db_transmit_buffers(db_t *database, comm_t *comm)
 }
 
 
+
+
+static sqlite3_stmt *bind_guint64_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, guint64 value)
+{
+    int index = 0;
+    int result = 0;
+
+    if (stmt != NULL && name != NULL)
+        {
+            index = sqlite3_bind_parameter_index(stmt, name);
+            result = sqlite3_bind_int64(stmt, index, value);
+            print_on_db_error(db, result, name);
+        }
+
+    return stmt;
+}
+
+
+static sqlite3_stmt *bind_guint_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, guint value)
+{
+    int index = 0;
+    int result = 0;
+
+    if (stmt != NULL && name != NULL)
+        {
+            index = sqlite3_bind_parameter_index(stmt, name);
+            result = sqlite3_bind_int(stmt, index, value);
+            print_on_db_error(db, result, name);
+        }
+
+    return stmt;
+}
+
+
+
+static sqlite3_stmt *bind_text_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, gchar *value)
+{
+    int index = 0;
+    int result = 0;
+
+    if (stmt != NULL && name != NULL)
+        {
+            index = sqlite3_bind_parameter_index(stmt, name);
+            result = sqlite3_bind_text(stmt, index, value, -1, NULL);
+            print_on_db_error(db, result, name);
+        }
+
+    return stmt;
+}
+
+
+
+static sqlite3_stmt *bind_values_to_save_meta_data(sqlite3 *db, sqlite3_stmt *stmt, meta_data_t *meta, gboolean only_meta, guint64 cache_time)
+{
+
+    bind_guint64_value(db, stmt, ":cache_time", cache_time);
+    stmt = bind_guint_value(db, stmt, ":type", meta->file_type);
+    stmt = bind_guint64_value(db, stmt, ":inode", meta->inode);
+    stmt = bind_text_value(db, stmt, ":file_user", meta->owner);
+    stmt = bind_text_value(db, stmt, ":file_group", meta->group);
+    stmt = bind_guint_value(db, stmt, ":uid", meta->uid);
+    stmt = bind_guint_value(db, stmt, ":gid", meta->gid);
+    stmt = bind_guint64_value(db, stmt, ":atime", meta->atime);
+    stmt = bind_guint64_value(db, stmt, ":ctime", meta->ctime);
+    stmt = bind_guint64_value(db, stmt, ":mtime", meta->mtime);
+    stmt = bind_guint_value(db, stmt, ":mode", meta->mode);
+    stmt = bind_guint64_value(db, stmt, ":size", meta->size);
+    stmt = bind_text_value(db, stmt, ":name", meta->name);
+    stmt = bind_guint_value(db, stmt, ":transmited", (guint) only_meta);
+    stmt = bind_text_value(db, stmt, ":link", meta->link);
+
+    return stmt;
+}
+
+
 /**
  * Creates the statements that will be used to save file's meta data to
  * the database
@@ -547,8 +647,11 @@ gboolean db_transmit_buffers(db_t *database, comm_t *comm)
 static sqlite3_stmt *create_save_meta_stmt(sqlite3 *db)
 {
     sqlite3_stmt *stmt = NULL;
+    int result = 0;
 
-    sqlite3_prepare_v2(db, "INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted, link) VALUES (:cache_time, :type, :inode, :file_user, :file_group, :uid, :gid, :atime, :ctime, :mtime, :size, :name, :transmitted, :link);", -1, &stmt, NULL);
+
+    result = sqlite3_prepare_v2(db, "INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted, link) VALUES (:cache_time, :type, :inode, :file_user, :file_group, :uid, :gid, :atime, :ctime, :mtime, :mode, :size, :name, :transmited, :link);", -1, &stmt, NULL);
+    print_on_db_error(db, result, "sqlite3_prepare_v2");
 
     return stmt;
 }
