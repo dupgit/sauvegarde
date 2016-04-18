@@ -29,6 +29,7 @@
 #include "libcdpfgl.h"
 
 static void print_db_error(sqlite3 *db, const char *format, ...);
+static void print_on_db_error(sqlite3 *db, int result, const gchar *infos);
 static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message);
 static int table_callback(void *num, int nbCol, char **data, char **nomCol);
 static void verify_if_tables_exists(db_t *database);
@@ -36,9 +37,13 @@ static file_row_t *new_file_row_t(void);
 static void free_file_row_t(file_row_t *row);
 static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col);
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
-
-
-static sqlite3_stmt *bind_values_to_save_meta_data(sqlite3 *db, sqlite3_stmt *stmt, meta_data_t *meta, gboolean only_meta, guint64 cache_time);
+static void bind_guint64_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, guint64 value);
+static void bind_guint_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, guint value);
+static void bind_text_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, gchar *value);
+static void bind_values_to_save_meta_data(sqlite3 *db, sqlite3_stmt *stmt, meta_data_t *meta, gboolean only_meta, guint64 cache_time);
+static sqlite3_stmt *create_save_meta_stmt(sqlite3 *db);
+static stmt_t *new_stmts(sqlite3 *db);
+static void free_stmts(stmt_t *stmts);
 
 /**
  * @returns a string containing the version of the database used.
@@ -66,6 +71,14 @@ static void print_db_error(sqlite3 *db, const char *format, ...)
 }
 
 
+/**
+ * Prints out an error message if an sqlite function just made one.
+ * @param db is the concerned sqlite database
+ * @param result is the result of the sqlite function
+ * @param infos is a gchar * containing some context to help understanding
+ *        the error.
+ * @note sqlite3_errstr needs at least sqlite 3.7.15
+ */
 static void print_on_db_error(sqlite3 *db, int result, const gchar *infos)
 {
     const char *message = NULL;
@@ -74,7 +87,6 @@ static void print_on_db_error(sqlite3 *db, int result, const gchar *infos)
     if (result == SQLITE_ERROR)
         {
             errcode = sqlite3_extended_errcode(db);
-            /** @note sqlite3_errstr needs at least sqlite 3.7.15 */
             message = sqlite3_errstr(errcode);
             print_db_error(db, _("sqlite error (%d - %d) on %s: %s\n"), result, errcode, infos, message);
         }
@@ -329,11 +341,11 @@ static void free_file_row_t(file_row_t *row)
  */
 void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
 {
-    gchar *sql_command = NULL;     /** gchar *sql_command is the command to be executed */
     guint64 cache_time = 0;
     int result = 0;
+    sqlite3_stmt *stmt = NULL;
 
-    if (meta != NULL && database != NULL)
+    if (meta != NULL && database != NULL && database->stmts != NULL && database->stmts->save_meta_stmt != NULL)
         {
             cache_time = g_get_real_time();
 
@@ -341,21 +353,15 @@ void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
             sql_begin(database);
 
             /* Inserting the file into the files table */
-            /*
-            sql_command = g_strdup_printf("INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted, link) VALUES (%" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', '%s', %d, %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", '%s', %d, '%s');", cache_time, meta->file_type, meta->inode, meta->owner, meta->group, meta->uid, meta->gid, meta->atime, meta->ctime, meta->mtime, meta->mode, meta->size, meta->name, only_meta, meta->link);
+            stmt = database->stmts->save_meta_stmt;
 
-            exec_sql_cmd(database, sql_command,  _("(%d) Error while inserting into the table 'files': %s\n"));
-
-            free_variable(sql_command);
-            */
-
-            database->stmts->save_meta_stmt = bind_values_to_save_meta_data(database->db, database->stmts->save_meta_stmt, meta, only_meta, cache_time);
-            result = sqlite3_step(database->stmts->save_meta_stmt);
+            bind_values_to_save_meta_data(database->db, stmt, meta, only_meta, cache_time);
+            result = sqlite3_step(stmt);
             print_on_db_error(database->db, result, "sqlite3_step");
 
             /* ending the transaction here */
             sql_commit(database);
-            sqlite3_reset(database->stmts->save_meta_stmt);
+            sqlite3_reset(stmt);
         }
 }
 
@@ -563,9 +569,21 @@ gboolean db_transmit_buffers(db_t *database, comm_t *comm)
 }
 
 
-
-
-static sqlite3_stmt *bind_guint64_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, guint64 value)
+/**
+ * Binds a guint64 value into the prepared statement.
+ * @note sqlite does not store unsigned 64 bits int but it does not matter
+ *       as it stores the 64 bits. When we'll read the value we will read
+ *       it to an unsigned 64 bits int recovering the exact value we saved.
+ * @param db is the database concerned by stmt statement. It is only used
+ *        here to print an error if any.
+ * @param stmt is the prepared statement in which we want to bind the guint64
+ *        'value' in 'name' parameter
+ * @param name represents the name of the parameter in the prepared statement
+ *        which we want to fill in with 'value'
+ * @param value is a guint64 integer to be filled in 'name' parameter in the
+ *        prepared statement.
+ */
+static void bind_guint64_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, guint64 value)
 {
     int index = 0;
     int result = 0;
@@ -576,12 +594,24 @@ static sqlite3_stmt *bind_guint64_value(sqlite3 *db, sqlite3_stmt *stmt, const g
             result = sqlite3_bind_int64(stmt, index, value);
             print_on_db_error(db, result, name);
         }
-
-    return stmt;
 }
 
 
-static sqlite3_stmt *bind_guint_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, guint value)
+/**
+ * Binds a guint value into the prepared statement.
+ * @note sqlite does not store unsigned int but it does not matter has
+ *       it stores the 32 bits. When we'll read the value we will read it
+ *       to an unsigned 32 bits int recovering the exact value we saved.
+ * @param db is the database concerned by stmt statement. It is only used
+ *        here to print an error if any.
+ * @param stmt is the prepared statement in which we want to bind the guint
+ *        'value' in 'name' parameter
+ * @param name represents the name of the parameter in the prepared statement
+ *        which we want to fill in with 'value'
+ * @param value is a guint integer to be filled in 'name' parameter in the
+ *        prepared statement.
+ */
+static void bind_guint_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, guint value)
 {
     int index = 0;
     int result = 0;
@@ -592,13 +622,21 @@ static sqlite3_stmt *bind_guint_value(sqlite3 *db, sqlite3_stmt *stmt, const gch
             result = sqlite3_bind_int(stmt, index, value);
             print_on_db_error(db, result, name);
         }
-
-    return stmt;
 }
 
 
-
-static sqlite3_stmt *bind_text_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, gchar *value)
+/**
+ * Binds a gchar *value into the prepared statement.
+ * @param db is the database concerned by stmt statement. It is only used
+ *        here to print an error if any.
+ * @param stmt is the prepared statement in which we want to bind the string
+ *        'value' in 'name' parameter
+ * @param name represents the name of the parameter in the prepared statement
+ *        which we want to fill in with 'value'
+ * @param value is a gchar * string to be filled in 'name' parameter in the
+ *        prepared statement.
+ */
+static void bind_text_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, gchar *value)
 {
     int index = 0;
     int result = 0;
@@ -609,32 +647,39 @@ static sqlite3_stmt *bind_text_value(sqlite3 *db, sqlite3_stmt *stmt, const gcha
             result = sqlite3_bind_text(stmt, index, value, -1, NULL);
             print_on_db_error(db, result, name);
         }
-
-    return stmt;
 }
 
 
-
-static sqlite3_stmt *bind_values_to_save_meta_data(sqlite3 *db, sqlite3_stmt *stmt, meta_data_t *meta, gboolean only_meta, guint64 cache_time)
+/**
+ * Binds values to the prepared statement
+ * @param db is the concerned database where to save meta data
+ * @param stmt is the prepared statement where we want to bind values
+ * @param meta is the meta_data_t structure containing all meta data
+ *        for one file. We want to bind those values into the prepared
+ *        statement
+ * @param only_meta : a gboolean that when set to TRUE only meta_data will
+ *        be saved and hashs data will not ! FALSE means that something
+ *        went wrong with server and that all data will be cached localy.
+ * @param cache_time is the time (calculatde from epoch) when the cache
+ *        has been created.
+ */
+static void bind_values_to_save_meta_data(sqlite3 *db, sqlite3_stmt *stmt, meta_data_t *meta, gboolean only_meta, guint64 cache_time)
 {
-
     bind_guint64_value(db, stmt, ":cache_time", cache_time);
-    stmt = bind_guint_value(db, stmt, ":type", meta->file_type);
-    stmt = bind_guint64_value(db, stmt, ":inode", meta->inode);
-    stmt = bind_text_value(db, stmt, ":file_user", meta->owner);
-    stmt = bind_text_value(db, stmt, ":file_group", meta->group);
-    stmt = bind_guint_value(db, stmt, ":uid", meta->uid);
-    stmt = bind_guint_value(db, stmt, ":gid", meta->gid);
-    stmt = bind_guint64_value(db, stmt, ":atime", meta->atime);
-    stmt = bind_guint64_value(db, stmt, ":ctime", meta->ctime);
-    stmt = bind_guint64_value(db, stmt, ":mtime", meta->mtime);
-    stmt = bind_guint_value(db, stmt, ":mode", meta->mode);
-    stmt = bind_guint64_value(db, stmt, ":size", meta->size);
-    stmt = bind_text_value(db, stmt, ":name", meta->name);
-    stmt = bind_guint_value(db, stmt, ":transmited", (guint) only_meta);
-    stmt = bind_text_value(db, stmt, ":link", meta->link);
-
-    return stmt;
+    bind_guint_value(db, stmt, ":type", meta->file_type);
+    bind_guint64_value(db, stmt, ":inode", meta->inode);
+    bind_text_value(db, stmt, ":file_user", meta->owner);
+    bind_text_value(db, stmt, ":file_group", meta->group);
+    bind_guint_value(db, stmt, ":uid", meta->uid);
+    bind_guint_value(db, stmt, ":gid", meta->gid);
+    bind_guint64_value(db, stmt, ":atime", meta->atime);
+    bind_guint64_value(db, stmt, ":ctime", meta->ctime);
+    bind_guint64_value(db, stmt, ":mtime", meta->mtime);
+    bind_guint_value(db, stmt, ":mode", meta->mode);
+    bind_guint64_value(db, stmt, ":size", meta->size);
+    bind_text_value(db, stmt, ":name", meta->name);
+    bind_guint_value(db, stmt, ":transmited", (guint) only_meta);
+    bind_text_value(db, stmt, ":link", meta->link);
 }
 
 
@@ -660,7 +705,7 @@ static sqlite3_stmt *create_save_meta_stmt(sqlite3 *db)
 /**
  * Creates a new stmt_t * strcuture
  * @param db is an sqlite * pointer to an opened database.
- * @returns a new unfilled stmt_t * strcuture which can be freed when
+ * @returns a new unfilled stmt_t * structure which can be freed when
  *          no longer needed by calling free_stmts()
  */
 static stmt_t *new_stmts(sqlite3 *db)
@@ -685,6 +730,7 @@ static void free_stmts(stmt_t *stmts)
 
     if (stmts != NULL)
         {
+            sqlite3_finalize(stmts->save_meta_stmt);
             g_free(stmts);
         }
 }
