@@ -35,13 +35,16 @@ static int table_callback(void *num, int nbCol, char **data, char **nomCol);
 static void verify_if_tables_exists(db_t *database);
 static file_row_t *new_file_row_t(void);
 static void free_file_row_t(file_row_t *row);
-static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col);
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
 static void bind_guint64_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, guint64 value);
 static void bind_guint_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, guint value);
 static void bind_text_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, gchar *value);
 static void bind_values_to_save_meta_data(sqlite3 *db, sqlite3_stmt *stmt, meta_data_t *meta, gboolean only_meta, guint64 cache_time);
+static void bind_values_to_save_buffer(sqlite3 *db, sqlite3_stmt *stmt, gchar *url, gchar *buffer);
+static void bind_values_to_get_file_id(sqlite3 *db, sqlite3_stmt *stmt, meta_data_t *meta);
 static sqlite3_stmt *create_save_meta_stmt(sqlite3 *db);
+static sqlite3_stmt *create_save_buffer_stmt(sqlite3 *db);
+static sqlite3_stmt *create_get_file_id_stmt(sqlite3 *db);
 static stmt_t *new_stmts(sqlite3 *db);
 static void free_stmts(stmt_t *stmts);
 
@@ -239,25 +242,6 @@ gboolean is_file_in_cache(db_t *database, meta_data_t *meta)
 
 
 /**
- * Gets file_ids from returned rows.
- * @param a_row is a file_row_t * structure
- * @param nb_col gives the number of columns in this row.
- * @param data contains the data of each column.
- * @param name_col contains the name of each column.
- * @returns always 0.
- */
-static int get_file_callback(void *a_row, int nb_col, char **data, char **name_col)
-{
-    file_row_t *row = (file_row_t *) a_row;
-
-    row->nb_row = row->nb_row + 1;
-    row->id_list = g_slist_append(row->id_list, g_strdup(data[0]));
-
-    return 0;
-}
-
-
-/**
  * Returns the file_id for the specified file.
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
@@ -269,28 +253,26 @@ static int get_file_callback(void *a_row, int nb_col, char **data, char **name_c
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta)
 {
     file_row_t *row = NULL;
-    char *error_message = NULL;
-    gchar *sql_command = NULL;
-    int db_result = 0;
+    sqlite3_stmt *stmt = NULL;
+    gint result = 0;
 
     row = new_file_row_t();
+    stmt = database->stmts->get_file_id_stmt;
 
-    sql_command = g_strdup_printf("SELECT file_id from files WHERE inode=%" G_GUINT64_FORMAT " AND name='%s' AND type=%d AND uid=%d AND gid=%d AND ctime=%" G_GUINT64_FORMAT " AND mtime=%" G_GUINT64_FORMAT " AND mode=%d AND size=%" G_GUINT64_FORMAT ";", meta->inode, meta->name, meta->file_type, meta->uid, meta->gid, meta->ctime, meta->mtime, meta->mode, meta->size);
+    bind_values_to_get_file_id(database->db, stmt, meta);
+    result = sqlite3_step(stmt);
 
-    db_result = sqlite3_exec(database->db, sql_command, get_file_callback, row, &error_message);
-
-    free_variable(sql_command);
-    /* exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n")); */
-
-    if (db_result == SQLITE_OK)
+    while (result == SQLITE_ROW)
         {
-           return row;
+            row->nb_row = row->nb_row + 1;
+            result = sqlite3_step(stmt);
         }
-    else
-        {
-            print_db_error(database->db, _("(%d) Error while searching into the table 'files': %s\n"), db_result, error_message);
-            return NULL; /* to avoid a compilation warning as we exited with failure in print_db_error */
-        }
+
+    print_on_db_error(database->db, result, "get_file_id");
+
+    sqlite3_reset(stmt);
+
+    return row;
 }
 
 
@@ -305,7 +287,6 @@ static file_row_t *new_file_row_t(void)
     row = (file_row_t *) g_malloc(sizeof(file_row_t));
 
     row->nb_row = 0;
-    row->id_list = NULL;
 
     return row;
 }
@@ -317,11 +298,7 @@ static file_row_t *new_file_row_t(void)
  */
 static void free_file_row_t(file_row_t *row)
 {
-    if (row != NULL)
-        {
-            g_slist_free_full(row->id_list, free_gchar_variable);
-            free_variable(row);
-        }
+    free_variable(row);
 }
 
 
@@ -342,7 +319,7 @@ static void free_file_row_t(file_row_t *row)
 void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
 {
     guint64 cache_time = 0;
-    int result = 0;
+    gint result = 0;
     sqlite3_stmt *stmt = NULL;
 
     if (meta != NULL && database != NULL && database->stmts != NULL && database->stmts->save_meta_stmt != NULL)
@@ -354,7 +331,6 @@ void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
 
             /* Inserting the file into the files table */
             stmt = database->stmts->save_meta_stmt;
-
             bind_values_to_save_meta_data(database->db, stmt, meta, only_meta, cache_time);
             result = sqlite3_step(stmt);
             print_on_db_error(database->db, result, "sqlite3_step");
@@ -376,17 +352,20 @@ void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
  */
 void db_save_buffer(db_t *database, gchar *url, gchar *buffer)
 {
-    gchar *sql_command = NULL;     /** gchar *sql_command is the command to be executed */
+    sqlite3_stmt *stmt = NULL;
+    gint result = 0;
 
     if (database != NULL && url != NULL && buffer != NULL)
         {
             sql_begin(database);
 
-            sql_command = g_strdup_printf("INSERT INTO buffers (url, data) VALUES ('%s', '%s');", url, buffer);
-            exec_sql_cmd(database, sql_command,  _("(%d) Error while inserting into the table 'buffers': %s\n"));
-            free_variable(sql_command);
+            stmt = database->stmts->save_buffer_stmt;
+            bind_values_to_save_buffer(database->db, stmt, url, buffer);
+            result = sqlite3_step(stmt);
+            print_on_db_error(database->db, result, "db_save_buffer");
 
             sql_commit(database);
+            sqlite3_reset(stmt);
         }
 }
 
@@ -694,9 +673,80 @@ static sqlite3_stmt *create_save_meta_stmt(sqlite3 *db)
     sqlite3_stmt *stmt = NULL;
     int result = 0;
 
-
     result = sqlite3_prepare_v2(db, "INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted, link) VALUES (:cache_time, :type, :inode, :file_user, :file_group, :uid, :gid, :atime, :ctime, :mtime, :mode, :size, :name, :transmited, :link);", -1, &stmt, NULL);
-    print_on_db_error(db, result, "sqlite3_prepare_v2");
+    print_on_db_error(db, result, "create_save_meta_stmt");
+
+    return stmt;
+}
+
+
+/**
+ * Binds values to the prepared statement
+ * @param db is the concerned database where to save meta data
+ * @param stmt is the prepared statement where we want to bind values
+ */
+static void bind_values_to_save_buffer(sqlite3 *db, sqlite3_stmt *stmt, gchar *url, gchar *buffer)
+{
+
+    bind_text_value(db, stmt, ":url", url);
+    bind_text_value(db, stmt, ":data", buffer);
+}
+
+
+
+/**
+ * Creates the statements that will be used to save buffer data and url
+ * that should have been sent to the server
+ * @param db is an sqlite * pointer to an opened database.
+ * @returns the newly created statement.
+ */
+static sqlite3_stmt *create_save_buffer_stmt(sqlite3 *db)
+{
+    sqlite3_stmt *stmt = NULL;
+    int result = 0;
+
+    result = sqlite3_prepare_v2(db, "INSERT INTO buffers (url, data) VALUES (:url, :data);", -1, &stmt, NULL);
+    print_on_db_error(db, result, "create_save_buffer_stmt");
+
+    return stmt;
+}
+
+
+/**
+ * Binds values to the prepared statement
+ * @param db is the concerned database where to save meta data
+ * @param stmt is the prepared statement where we want to bind values
+ * @param meta is the meta_data_t structure containing all meta data
+ *        for one file. We want to bind some of those values into the
+ *        prepared statement
+ */
+static void bind_values_to_get_file_id(sqlite3 *db, sqlite3_stmt *stmt, meta_data_t *meta)
+{
+    bind_guint64_value(db, stmt, ":inode", meta->inode);
+    bind_text_value(db, stmt, ":name", meta->name);
+    bind_guint_value(db, stmt, ":file_type", meta->file_type);
+    bind_guint_value(db, stmt, ":uid", meta->uid);
+    bind_guint_value(db, stmt, ":gid", meta->gid);
+    bind_guint64_value(db, stmt, ":ctime", meta->ctime);
+    bind_guint64_value(db, stmt, ":mtime", meta->mtime);
+    bind_guint_value(db, stmt, ":mode", meta->mode);
+    bind_guint64_value(db, stmt, ":size", meta->size);
+}
+
+
+/**
+ * Creates the statements that will be used to retrieve a file_id if it
+ * exist with the given parameters.
+ * @param db is an sqlite * pointer to an opened database.
+ * @returns the newly created statement.
+ */
+static sqlite3_stmt *create_get_file_id_stmt(sqlite3 *db)
+{
+    sqlite3_stmt *stmt = NULL;
+    int result = 0;
+
+    result = sqlite3_prepare_v2(db, "SELECT file_id from files WHERE inode=:inode AND name=:name AND type=:file_type AND uid=:uid AND gid=:gid AND ctime=:ctime AND mtime=:mtime AND mode=:mode AND size=:size;", -1, &stmt, NULL);
+    print_on_db_error(db, result, "create_save_buffer_stmt");
 
     return stmt;
 }
@@ -716,6 +766,8 @@ static stmt_t *new_stmts(sqlite3 *db)
     stmts = (stmt_t *) g_malloc0(sizeof(stmt_t));
 
     stmts->save_meta_stmt = create_save_meta_stmt(db);
+    stmts->save_buffer_stmt = create_save_buffer_stmt(db);
+    stmts->get_file_id_stmt = create_get_file_id_stmt(db);
 
     return stmts;
 }

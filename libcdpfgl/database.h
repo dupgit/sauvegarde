@@ -43,7 +43,10 @@
  typedef struct
  {
     sqlite3_stmt *save_meta_stmt;
+    sqlite3_stmt *save_buffer_stmt;
+    sqlite3_stmt *get_file_id_stmt;
  } stmt_t;
+
 
 /**
  * @struct db_t
@@ -63,7 +66,6 @@ typedef struct
 typedef struct
 {
     guint nb_row;        /**< number of row                       */
-    GSList *id_list;     /**< list of file_ids                    */
 } file_row_t;
 
 
