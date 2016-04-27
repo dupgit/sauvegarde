@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-27 21:11+0200\n"
+"POT-Creation-Date: 2016-04-27 21:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -284,13 +284,13 @@ msgstr ""
 msgid "BOOLEAN"
 msgstr ""
 
-#: ../client/options.c:247 ../restore/options.c:173 ../server/options.c:190
-msgid "Specify an alternative configuration file."
-msgstr ""
-
 #: ../client/options.c:247 ../client/options.c:252 ../client/options.c:255
 #: ../restore/options.c:173 ../server/options.c:190
 msgid "FILENAME"
+msgstr ""
+
+#: ../client/options.c:247 ../restore/options.c:173 ../server/options.c:190
+msgid "Specify an alternative configuration file."
 msgstr ""
 
 #: ../client/options.c:248
@@ -310,11 +310,11 @@ msgid "SIZE of the cache used to send data to server."
 msgstr ""
 
 #: ../client/options.c:251
-msgid "Directory DIRNAME where to cache files."
+msgid "DIRNAME"
 msgstr ""
 
 #: ../client/options.c:251
-msgid "DIRNAME"
+msgid "Directory DIRNAME where to cache files."
 msgstr ""
 
 #: ../client/options.c:252
@@ -325,12 +325,12 @@ msgstr ""
 msgid "IP address where server program is."
 msgstr ""
 
-#: ../client/options.c:254 ../server/options.c:191
-msgid "Port NUMBER on which to listen."
-msgstr ""
-
 #: ../client/options.c:254 ../restore/options.c:176 ../server/options.c:191
 msgid "NUMBER"
+msgstr ""
+
+#: ../client/options.c:254 ../server/options.c:191
+msgid "Port NUMBER on which to listen."
 msgstr ""
 
 #: ../client/options.c:255
@@ -607,11 +607,11 @@ msgid ""
 msgstr ""
 
 #: ../restore/options.c:174
-msgid "Specify a DIRECTORY where to restore a file."
+msgid "DIRECTORY"
 msgstr ""
 
 #: ../restore/options.c:174
-msgid "DIRECTORY"
+msgid "Specify a DIRECTORY where to restore a file."
 msgstr ""
 
 #: ../restore/options.c:176
