@@ -179,9 +179,6 @@ If you need more than the above hints, please have a look at the user
 I am coding on spare hours so I may not tell any release dates and you
 should consider that "It ships when its ready".
 
-* 0.0.8  restore the latest version of a file before a specific date.
-         Add a new post url such as (Hash_Array.json) to submit an array
-         of hashs to server that will say which hashs are needed.
 * 0.0.9  New GET url in order to get a bunch of hashs and their
          associated data to go quicker when restoring files. Restore all
          the versions of a file
@@ -211,6 +208,11 @@ should consider that "It ships when its ready".
                       unreachable. Change GSList hash_data_list from
                       meta_data_t structure to something that allows
                       deletion of elements while walking through it.
+* 0.0.8  [27 04 2016] restore the latest version of a file before a
+                      specific date. Add a new post url such as
+                      (Hash_Array.json) to submit an array of hashs to
+                      server that will say which hashs are needed.
+                      Avoids sql injection in sqlite queries.
 
 ## Code documentation
 
