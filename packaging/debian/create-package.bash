@@ -26,7 +26,7 @@
 # References :
 #  . https://wiki.debian.org/IntroDebianPackaging documentation
 #
-export version=0.0.7
+export version=0.0.8
 export distfiles="../../cdpfgl-${version}.tar.xz"
 
 cp $distfiles .
@@ -35,4 +35,4 @@ tar Jxf cdpfgl_${version}.orig.tar.xz
 cd cdpfgl-${version}
 cp -a ../debian .
 
-debuild -us -uc 
+debuild -us -uc
