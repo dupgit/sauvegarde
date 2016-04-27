@@ -15,7 +15,7 @@ use `cdpfglrestore` to restore a file.
 This is free software and real open source as GPLv3 is used for this
 collection of programs and Creative Commons Attribution-ShareAlike 4.0
 is used for the artwork. You'll find a LICENSE file in this directory
-for the programs (GPL v3) and one in the pixmaps file for the artwork
+for the programs (GPL v3) and one in the pixmaps directory for the artwork
 (CC-BY-SA 4.0).
 
 Feel free to contribute to cdpfgl's project and/or give help to the
