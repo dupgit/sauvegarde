@@ -111,3 +111,13 @@ and data fields must be base 64 encoded.
 Waits for a json string containing an array named "data_array". This array
 contains a suite of json strings (at least two) each of them containing
 "hash", "data" and "size" fields as for /Data.json.
+
+
+### /Hash_Array.json
+
+Waits for a json string containing an array named "hash_list". This array
+contains a suite of json strings that represents hashs of blocks to be
+transmited to the server. The server must answer to the client a json
+string containing an array named "hash_list" with a suite of hashs that
+are needed (server's unknown hashs).
+
