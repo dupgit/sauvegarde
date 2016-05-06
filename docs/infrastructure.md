@@ -116,8 +116,9 @@ For now Information is stored with the following scheme:
     --- files ----          -- buffers ---    - transmited -
     | file_id *  |          | buffer_id *|    | buffer_id *|
     | cache_time |          | url        |    --------------
-    | type       |          | data       |
-    | file_user  |          --------------
+    | inode      |          | data       |
+    | type       |          --------------
+    | file_user  |
     | file_group |
     | uid        |
     | gid        |
@@ -130,6 +131,10 @@ For now Information is stored with the following scheme:
     | transmitted|
     | link       |
     --------------
+
+Two indexes are created: transmited_buffer_id which indexes buffer_id
+from transmited table in ascending order and files_inodes which indexes
+inode from files table in ascending order.
 
 Buffer order has to be kept. In the programs (when we pass things into
 memory with C structure or into JSON formatted message) we keep buffer
