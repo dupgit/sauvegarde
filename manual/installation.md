@@ -48,23 +48,23 @@ When git is done you have to generate the configure script that we will use to i
 
 ## Downloading a tar.[xg]z
 
-Download the latest release version from http://cdpfgl.delhomme.org/download/releases/ for instance v0.0.4 and decompress it:
+Download the latest release version from http://cdpfgl.delhomme.org/download/releases/ for instance v0.0.8 and decompress it:
 
-    $ wget -c http://src.delhomme.org/download/sauvegarde/releases/sauvegarde-0.0.4.tar.xz
-    --2015-09-13 14:16:55--  http://src.delhomme.org/download/sauvegarde/releases/sauvegarde-0.0.4.tar.xz
-    Résolution de src.delhomme.org (src.delhomme.org)… 62.210.16.61
-    Connexion à src.delhomme.org (src.delhomme.org)|62.210.16.61|:80… connecté.
+    $ wget -c http://cdpfgl.delhomme.org/download/releases/cdpfgl-0.0.8.tar.xz
+    --2015-09-13 14:16:55--  http://cdpfgl.delhomme.org/download/releases/cdpfgl-0.0.8.tar.xz
+    Résolution de cdpfgl.delhomme.org (cdpfgl.delhomme.org)… 62.210.16.61
+    Connexion à cdpfgl.delhomme.org (cdpfgl.delhomme.org)|62.210.16.61|:80… connecté.
     requête HTTP transmise, en attente de la réponse… 200 OK
     Taille : 296280 (289K) [application/x-tar]
-    Sauvegarde en : « sauvegarde-0.0.4.tar.xz »
+    Sauvegarde en : « cdpfgl-0.0.8.tar.xz »
 
-    sauvegarde-0.0.4.tar.xz                                    100%[=========================================================================================================================================>] 289,34K   659KB/s   ds 0,4s
+    cdpfgl-0.0.8.tar.xz                                    100%[=========================================================================================================================================>] 289,34K   659KB/s   ds 0,4s
 
-    2015-09-13 14:16:55 (659 KB/s) — « sauvegarde-0.0.4.tar.xz » sauvegardé [296280/296280]
-    $ tar Jxf sauvegarde-0.0.4.tar.xz
-    $ cd sauvegarde-0.0.4
+    2015-09-13 14:16:55 (659 KB/s) — « cdpfgl-0.0.8.tar.xz » sauvegardé [296280/296280]
+    $ tar Jxf cdpfgl-0.0.8.tar.xz
+    $ cd cdpfgl-0.0.8
 
-Before using the configure script to install cdpfgl you'll have to install all dependencies. If you forgot a dependency the configure script will tell you!
+Before using the configure script to install cdpfgl you'll have to install all dependencies. If you forgot a dependency the configure script will tell you and fail!
 
 
 # Installing dependencies
@@ -82,7 +82,7 @@ You'll have to install the dependencies in order to be able to compile cdpfgl's 
 cdpfgl project uses:
 
  * jansson which is a C JSON library that provides the structure to send data and receive data (and meta data) from the other programs.
- * libmicrohttp provides the HTTP layer to cdpfglserver : when cdpfglserver is launched direct your favorite web browser to http://host_where_running:5468/Version or /Version.json 
+ * libmicrohttp provides the HTTP layer to cdpfglserver : when cdpfglserver is launched direct your favorite web browser to http://host_where_running:5468/Version or /Version.json
  * sqlite that helps cdpfglclient to keep what has been done in order to avoid doing thing more than once !
 
 
@@ -123,6 +123,6 @@ Go to the directory where you extracted cdpfgl (either from github or from a tar
     $ ./configure --prefix=/usr/local
     $ make
     $ sudo make install
- 
+
 Here you are. Now you should be able to invoke ```cdpfglclient --version``` or ```cdpfglrestore --help``` (those two options works also with cdpfglserver).
 
