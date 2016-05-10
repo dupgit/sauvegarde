@@ -62,7 +62,7 @@ cdpfgl successfully in a system that is not listed here.
 ## Download
 
 You can download the source code from github or a packed defined version
-at [http://src.delhomme.org/download/sauvegarde/releases/](http://src.delhomme.org/download/sauvegarde/releases/)
+at [http://cdpfgl.delhomme.org/download/releases/](http://cdpfgl.delhomme.org/download/releases/)
 
 
 ## Installation
