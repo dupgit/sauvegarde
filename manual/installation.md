@@ -1,14 +1,16 @@
-# Introduction
+# Installation
+
+## Introduction
 
 'cdpfgl' is a set of programs that will save your files while being created and written to your disks. It will save your files from a client machine (containing the files to be saved) to a server machine (that will contain all the saved files and informations about thoses files). It will allow you to restore the saved files at their latest version or at any older versions.
 
 
-# Getting cdpfgl
+## Getting cdpfgl
 
 You can get sauvegarde downloading a specific release from http://cdpfgl.delhomme.org/download/releases/ or by cloning the github repository.
 
 
-## Cloning from github
+### Cloning from github
 
 Use the following command to clone cdpfgl's git repository:
 
@@ -46,7 +48,7 @@ When git is done you have to generate the configure script that we will use to i
     You can now run ./configure
 
 
-## Downloading a tar.[xg]z
+### Downloading a tar.[xg]z
 
 Download the latest release version from http://cdpfgl.delhomme.org/download/releases/ for instance v0.0.8 and decompress it:
 
@@ -67,17 +69,17 @@ Download the latest release version from http://cdpfgl.delhomme.org/download/rel
 Before using the configure script to install cdpfgl you'll have to install all dependencies. If you forgot a dependency the configure script will tell you and fail!
 
 
-# Installing dependencies
+## Installing dependencies
 
 You'll have to install the dependencies in order to be able to compile cdpfgl's project. Some dependencies are fine to be installed with the system's package manager some are too old and needs to be installed manually. In this section we will install everything to /usr/local. Consider your own case to choose the right installation directory. Make sure that you already have installed make and gcc (on debian you can install build-essential package).
 
 
-## Install dependencies from the distribution (here with debian):
+### Install dependencies from the distribution (here with debian):
 
     $ sudo apt-get install gettext pkg-config libglib2.0-dev libcurl4-openssl-dev
 
 
-## Compile and install newer versions of jansson, libmicrohttpd and sqlite:
+### Compile and install newer versions of jansson, libmicrohttpd and sqlite:
 
 cdpfgl project uses:
 
@@ -86,7 +88,7 @@ cdpfgl project uses:
  * sqlite that helps cdpfglclient to keep what has been done in order to avoid doing thing more than once !
 
 
-### jansson
+#### jansson
 
     $ git clone git://github.com/akheron/jansson.git
     $ cd jansson
@@ -96,7 +98,7 @@ cdpfgl project uses:
     $ sudo make install
 
 
-### libmicrohttpd
+#### libmicrohttpd
 
     $ wget --quiet -c http://ftp.gnu.org/gnu/libmicrohttpd/libmicrohttpd-0.9.46.tar.gz
     $ tar zxf libmicrohttpd-0.9.46.tar.gz
@@ -106,7 +108,7 @@ cdpfgl project uses:
     $ sudo make install
 
 
-### sqlite
+#### sqlite
 
     $ wget --quiet -c https://www.sqlite.org/2015/sqlite-autoconf-3090100.tar.gz
     $ tar zxf sqlite-autoconf-3090100.tar.gz
@@ -116,7 +118,7 @@ cdpfgl project uses:
     $ sudo make install
 
 
-# Compiling and installing cdpfgl
+## Compiling and installing cdpfgl
 
 Go to the directory where you extracted cdpfgl (either from github or from a tar.xz file) and then use the configure script :
 
