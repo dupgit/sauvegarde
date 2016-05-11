@@ -92,8 +92,7 @@ gint compare_two_hashs(gconstpointer a, gconstpointer b)
  * Transforms a binary hashs into a printable string (gchar *)
  * @param a_hash is a hash in a binary form that we want to transform into
  *        a string.
- * @returns a string that conatins the hash in an hexadecimal form.
- * @todo manage memory concerns here !
+ * @returns a string that contains the hash in an hexadecimal form.
  */
 gchar *hash_to_string(guint8 *a_hash)
 {
@@ -104,7 +103,6 @@ gchar *hash_to_string(guint8 *a_hash)
     if (a_hash != NULL)
         {
             string = (gchar *) g_malloc0(HASH_LEN*2 + 1); /* two char per bytes */
-            /* octet = (gchar *) g_malloc(3); */
 
             for(i = 0; i < HASH_LEN; i++)
                 {
@@ -114,7 +112,6 @@ gchar *hash_to_string(guint8 *a_hash)
                 }
         }
 
-    /* free_variable(octet); */
     return string;
 }
 
@@ -185,8 +182,8 @@ static guint int_value(gchar value)
 
 
 /**
- * Transforms a binary hashs into a printable string (gchar *)
- * @param str_hash a string (gchar *) that conatins the hash in an
+ * Transforms an hash in an hexadecimal string into a binary hashs
+ * @param str_hash a string (gchar *) that contains the hash in an
  *        hexadecimal form.
  * @returns a hash in a binary form (guint8 *).
  */
