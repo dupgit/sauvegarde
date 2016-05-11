@@ -198,6 +198,10 @@ gint get_url(comm_t *comm, gchar *url, gchar *header)
             curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
 
             /* Setting header options */
+            /* This test does not work here because url has options
+             * after '?' and the end of the string is the end of an option
+             * and is not '.json' string!
+             */
             if (g_str_has_suffix(url, ".json"))
                 {
                     chunk = curl_slist_append(chunk, "Content-Type: application/json");
