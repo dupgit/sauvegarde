@@ -285,6 +285,10 @@ static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connect
         {
             answer = get_a_list_of_files(server_struct, connection);
         }
+    else if (g_str_has_prefix(url, "/Data/Hash_Array.json"))
+        {
+            /* To be written */
+        }
     else if (g_str_has_prefix(url, "/Data/"))
         {
             hash = g_strndup((const gchar *) url + 6, HASH_LEN*2);  /* HASH_LEN is expressed when hash is in binary form  */

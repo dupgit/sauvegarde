@@ -218,7 +218,7 @@ static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query)
             request = add_on_field_to_request(request, "beforedate", query->beforedate);
 
             print_debug(_("Query is: %s\n"), request);
-            res = get_url(res_struct->comm, request);
+            res = get_url(res_struct->comm, request, NULL);
 
             if (res == CURLE_OK && res_struct->comm->buffer != NULL)
                 {
@@ -296,7 +296,7 @@ static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *
                     print_debug(_("Query is: %s\n"), request);
 
                     /* This call fills res_struct->comm->buffer */
-                    res = get_url(res_struct->comm, request);
+                    res = get_url(res_struct->comm, request, NULL);
 
                     if (res == CURLE_OK)
                         {

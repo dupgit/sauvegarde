@@ -169,16 +169,20 @@ static size_t read_data(char *buffer, size_t size, size_t nitems, void *userp)
  * @param url a gchar * url where to send the command to. It must NOT
  *        contain the http://ip:port string. And must contain the first '/'
  *        ie to get 'http://127.0.0.1:5468/Version' url must be '/Version'.
+ * @param header may be a gchar * string containing an HTTP header that
+ *        we want to pass into the HTTP GET request. If NULL no header
+ *        will be added.
  * @returns a CURLcode (http://curl.haxx.se/libcurl/c/libcurl-errors.html)
  *          CURLE_OK upon success, any other error code in any other
  *          situation. When CURLE_OK is returned, the data that the server
  *          sent is in the comm->buffer gchar * string.
  */
-gint get_url(comm_t *comm, gchar *url)
+gint get_url(comm_t *comm, gchar *url, gchar *header)
 {
     gint success = CURLE_FAILED_INIT;
     gchar *real_url = NULL;
     gchar *error_buf = NULL;
+    struct curl_slist *chunk = NULL;
 
     if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL)
         {
@@ -193,9 +197,26 @@ gint get_url(comm_t *comm, gchar *url)
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
             curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
 
-            success = curl_easy_perform(comm->curl_handle);
+            /* Setting header options */
+            if (g_str_has_suffix(url, ".json"))
+                {
+                    chunk = curl_slist_append(chunk, "Content-Type: application/json");
+                }
+            else
+                {
+                    chunk = curl_slist_append(chunk, "Content-Type: text/plain");
+                }
 
-            real_url = free_variable(real_url);
+            if (header != NULL)
+                {
+                    chunk = curl_slist_append(chunk, header);
+                }
+
+            curl_easy_setopt(comm->curl_handle, CURLOPT_HTTPHEADER, chunk);
+
+            /* Performing the HTTP GET request */
+            success = curl_easy_perform(comm->curl_handle);
+            curl_slist_free_all(chunk);
 
             if (success == CURLE_OK && comm->buffer != NULL)
                 {
@@ -206,6 +227,7 @@ gint get_url(comm_t *comm, gchar *url)
                     print_error(__FILE__, __LINE__, _("Error while sending GET command and receiving data: %s\n"), error_buf);
                 }
 
+            real_url = free_variable(real_url);
             free_variable(error_buf);
         }
 
@@ -302,7 +324,7 @@ gboolean is_server_alive(comm_t *comm)
     gint success = CURLE_FAILED_INIT;
     gchar *version = NULL;
 
-    success = get_url(comm, "/Version.json");
+    success = get_url(comm, "/Version.json", NULL);
     version = get_json_version(comm->buffer);
 
     free_variable(comm->buffer);

@@ -83,13 +83,18 @@ extern comm_t *init_comm_struct(gchar *conn);
  * Uses curl to send a GET command to the http url
  * @param comm a comm_t * structure that must contain an initialized
  *        curl_handle (must not be NULL)
- * @param url a gchar * url where to send the command to (must not be NULL)
+ * @param url a gchar * url where to send the command to. It must NOT
+ *        contain the http://ip:port string. And must contain the first '/'
+ *        ie to get 'http://127.0.0.1:5468/Version' url must be '/Version'.
+ * @param header may be a gchar * string containing an HTTP header that
+ *        we want to pass into the HTTP GET request. If NULL no header
+ *        will be added.
  * @returns a CURLcode (http://curl.haxx.se/libcurl/c/libcurl-errors.html)
  *          CURLE_OK upon success, any other error code in any other
  *          situation. When CURLE_OK is returned, the data that the server
  *          sent is in the comm->buffer gchar * string.
  */
-extern gint get_url(comm_t *comm, gchar *url);
+extern gint get_url(comm_t *comm, gchar *url, gchar *header);
 
 
 /**
