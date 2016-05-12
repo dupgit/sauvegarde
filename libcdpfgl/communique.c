@@ -34,6 +34,7 @@
 static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
 static size_t read_data(char *buffer, size_t size, size_t nitems, void *userp);
 static gboolean does_url_end_with_json(gchar *url);
+static struct curl_slist *append_content_type_to_header(struct curl_slist *chunk, gchar *url);
 
 /**
  * Gets the version for the communication library
@@ -164,7 +165,7 @@ static size_t read_data(char *buffer, size_t size, size_t nitems, void *userp)
 
 
 /**
- * @param url is the url to be checked
+ * @param url is the url to be checked (must not be NULL)
  * @returns true if the given url finishes with .json (before parameters)
  * and false otherwise
  */
@@ -186,6 +187,26 @@ static gboolean does_url_end_with_json(gchar *url)
         }
 }
 
+/**
+ * @param chunk is the list of chunk headers as defined by libcurl
+ * @param url is the url to be checked must not be NULL
+ * @returns the appended list containing a 'Content-Type' header that
+ *          is application/json if the URL ends with .json and
+ *          is text/plain otherwise
+ */
+static struct curl_slist *append_content_type_to_header(struct curl_slist *chunk, gchar *url)
+{
+    if (does_url_end_with_json(url))
+        {
+            chunk = curl_slist_append(chunk, "Content-Type: application/json");
+        }
+    else
+        {
+            chunk = curl_slist_append(chunk, "Content-Type: text/plain");
+        }
+
+    return chunk;
+}
 
 
 /**
@@ -224,24 +245,11 @@ gint get_url(comm_t *comm, gchar *url, gchar *header)
             curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
 
             /* Setting header options */
-            /* This test does not work here because url has options
-             * after '?' and the end of the string is the end of an option
-             * and is not '.json' string!
-             */
-            if (does_url_end_with_json(url))
-                {
-                    chunk = curl_slist_append(chunk, "Content-Type: application/json");
-                }
-            else
-                {
-                    chunk = curl_slist_append(chunk, "Content-Type: text/plain");
-                }
-
+            chunk = append_content_type_to_header(chunk, url);
             if (header != NULL)
                 {
                     chunk = curl_slist_append(chunk, header);
                 }
-
             curl_easy_setopt(comm->curl_handle, CURLOPT_HTTPHEADER, chunk);
 
             /* Performing the HTTP GET request */
@@ -305,20 +313,12 @@ gint post_url(comm_t *comm, gchar *url)
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
             curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
             /* curl_easy_setopt(comm->curl_handle, CURLOPT_VERBOSE, 1L); */
-            chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
 
+            /* Setting header options */
+            chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
             len = g_strdup_printf("Content-Length: %zd", comm->length);
             chunk = curl_slist_append(chunk, len);
-
-            if (g_str_has_suffix(url, ".json"))
-                {
-                    chunk = curl_slist_append(chunk, "Content-Type: application/json");
-                }
-            else
-                {
-                    chunk = curl_slist_append(chunk, "Content-Type: text/plain");
-                }
-
+            chunk = append_content_type_to_header(chunk, url);
             curl_easy_setopt(comm->curl_handle, CURLOPT_HTTPHEADER, chunk);
 
             success = curl_easy_perform(comm->curl_handle);
