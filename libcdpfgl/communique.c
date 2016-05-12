@@ -163,6 +163,30 @@ static size_t read_data(char *buffer, size_t size, size_t nitems, void *userp)
 
 
 /**
+ * @param url is the url to be checked
+ * @returns true if the given url finishes with .json (before parameters)
+ * and false otherwise
+ */
+static gboolean does_url_end_with_json(gchar *url)
+{
+    gchar **strings = NULL;
+
+    strings = g_strsplit(url, "?", 2);
+
+    if (g_str_has_suffix(strings[0], ".json"))
+        {
+            g_strfreev(strings);
+            return TRUE;
+        }
+    else
+        {
+            g_strfreev(strings);
+            return FALSE;
+        }
+}
+
+
+/**
  * Uses curl to send a GET command to the http url
  * @param comm a comm_t * structure that must contain an initialized
  *        curl_handle (must not be NULL)
@@ -202,7 +226,7 @@ gint get_url(comm_t *comm, gchar *url, gchar *header)
              * after '?' and the end of the string is the end of an option
              * and is not '.json' string!
              */
-            if (g_str_has_suffix(url, ".json"))
+            if (does_url_end_with_json(url))
                 {
                     chunk = curl_slist_append(chunk, "Content-Type: application/json");
                 }
