@@ -32,7 +32,8 @@
 #include "libcdpfgl.h"
 
 static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp);
-
+static size_t read_data(char *buffer, size_t size, size_t nitems, void *userp);
+static gboolean does_url_end_with_json(gchar *url);
 
 /**
  * Gets the version for the communication library
@@ -184,6 +185,7 @@ static gboolean does_url_end_with_json(gchar *url)
             return FALSE;
         }
 }
+
 
 
 /**
