@@ -260,4 +260,14 @@ extern void make_symbolic_link(GFile *file, gchar *points_to);
  *          the normalized path or the path itself;
  */
 extern gchar *normalize_directory(gchar *path);
+
+
+/**
+ * @param size is the size of the considered file.
+ * @returns the maximum number of hashs that may be asked for into a
+ *          single GET HTTP request.
+ */
+extern gint64 calculate_max_number_of_hashs(gint64 size);
+
+
 #endif /* #ifndef _FILES_H_ */

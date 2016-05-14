@@ -29,6 +29,15 @@
 #ifndef _COMMUNIQUE_H_
 #define _COMMUNIQUE_H_
 
+
+/**
+ * @def X_GET_HASH_ARRAY
+ * Defines header name string that will be inserted into the get request
+ * in order to get a concatened array of hashs.
+ */
+#define X_GET_HASH_ARRAY ("X-Get-Hash-Array:")
+
+
 /**
  * @struct comm_t
  * @brief Structure that will contain everything needed to the

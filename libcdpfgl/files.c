@@ -562,3 +562,42 @@ gchar *normalize_directory(gchar *path)
 
     return dircache;
 }
+
+
+/**
+ * @param size is the size of the considered file.
+ * @returns the maximum number of hashs that may be asked for into a
+ *          single GET HTTP request.
+ */
+gint64 calculate_max_number_of_hashs(gint64 size)
+{
+
+    if (size < 32768)
+        {
+            return 64;
+        }
+    else if (size < 262144)
+        {
+            return 128;
+        }
+    else if (size < 1048576)
+        {
+            return 128;
+        }
+    else if (size < 8388608)
+        {
+            return 128;
+        }
+    else if (size < 67108864)
+        {
+            return 64;
+        }
+    else if (size < 134217728)
+        {
+            return 32;
+        }
+    else
+        {
+            return 16;
+        }
+}
