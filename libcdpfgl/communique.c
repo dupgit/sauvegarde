@@ -363,11 +363,11 @@ gboolean is_server_alive(comm_t *comm)
         {
             if (comm->conn != NULL)
                 {
-                    print_debug("Server (version %s) is alive at %s.\n", version, comm->conn);
+                    print_debug(_("Server (version %s) is alive at %s.\n"), version, comm->conn);
                 }
             else
                 {
-                    print_debug("Server (version %s) is alive.\n", version);
+                    print_debug(_("Server (version %s) is alive.\n"), version);
                 }
 
             free_variable(version);
@@ -377,11 +377,11 @@ gboolean is_server_alive(comm_t *comm)
         {
             if (comm->conn != NULL)
                 {
-                    print_debug("Server is not alive (%s).\n", comm->conn);
+                    print_debug(_("Server is not alive (%s).\n"), comm->conn);
                 }
             else
                 {
-                    print_debug("Server is not alive.\n");
+                    print_debug(_("Server is not alive.\n"));
                 }
 
             free_variable(version);
