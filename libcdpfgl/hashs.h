@@ -138,7 +138,7 @@ extern gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level);
 /**
  * makes a GSList of hash_data_t * element where 'hash' field is base64
  * decoded hashs from a string containning base64 * encoded hashs that
- * must be separated by comas.
+ * must be separated by commas.
  * @param the string containing base64 encoded hashs such as : *
  *        "cCoCVkt/AABf04jn2+rfDmqJaln6P2A9uKolBjEFJV4=", "0G8MaPZ/AADNyaPW7ZP2s0BI4hAdZZIE2xO1EwdOzhE="
  *        for instance.

@@ -261,6 +261,67 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
 
 
 /**
+ *
+ */
+static gchar *get_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Connection *connection)
+{
+    const char *header = NULL;
+    gchar *answer = NULL;
+    gchar *hash = NULL;
+    guint8 *binary = NULL;
+    guchar *data;
+    GList *head = NULL;
+    GList *header_hdl = NULL;
+    GList *hash_data_list = NULL;
+    hash_data_t *header_hd = NULL;
+    hash_data_t *hash_data = NULL;
+    backend_t *backend = server_struct->backend;
+    guint size = 0;
+    guint pos = 0;
+
+    header = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "X-Get-Hash-Array");
+    header_hdl = make_hash_data_list_from_string((gchar *)header);
+
+    head = header_hdl;
+    while (header_hdl != NULL)
+        {
+            header_hd = header_hdl->data;
+            hash = hash_to_string(header_hd->hash);
+            hash_data = backend->retrieve_data(server_struct, hash);
+            free_variable(hash);
+            size = size + hash_data->read;
+            hash_data_list = g_list_prepend(hash_data_list, hash_data);
+            header_hdl = g_list_next(header_hdl);
+        }
+
+    g_list_free_full(head, free_hdt_struct);
+    hash_data_list = g_list_reverse(hash_data_list);
+
+    data = (guchar *) g_malloc(size);
+
+    head = hash_data_list;
+    pos = 0;
+    while (hash_data_list != NULL)
+        {
+            hash_data = hash_data_list->data;
+            memcpy(data + pos, hash_data->data, hash_data->read);
+            pos = pos + hash_data->read;
+            hash_data_list = g_list_next(hash_data_list);
+        }
+
+    g_list_free_full(head, free_hdt_struct);
+
+    /* We need a fake hash here in order to be able to make the json string */
+    binary = (guint8 *) g_malloc(HASH_LEN);
+    hash_data = new_hash_data_t(data, size, binary);
+    answer = convert_hash_data_t_to_string(hash_data);
+    free_hash_data_t(hash_data); /* binary is freed here */
+
+    return answer;
+}
+
+
+/**
  * Function to answer to get requests in a json way. This mode should be
  * prefered.
  * @param server_struct is the main structure for the server.
@@ -288,7 +349,7 @@ static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connect
     else if (g_str_has_prefix(url, "/Data/Hash_Array.json"))
         {
             /* To be written */
-            answer = g_strdup_printf("{\"Invalid url\": %s}", url);
+            answer = get_a_list_of_hashs(server_struct, connection);
         }
     else if (g_str_has_prefix(url, "/Data/"))
         {
