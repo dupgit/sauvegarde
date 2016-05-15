@@ -187,9 +187,8 @@ extern hash_extract_t *new_hash_extract_t(void);
  *        hashs, base64 encoded and comma separated.
  * @param max is a gint that represents the maximum number of hashs to
  *        convert.
- * @returns a correctly filled hash_extract_t structure that may be
- *          used again to call this function.
+ * @returns a correctly filled gchar *string
  */
-extern hash_extract_t *convert_max_hashs_from_hash_list_to_gchar(hash_extract_t *hash_extract, gint max);
+gchar *convert_max_hashs_from_hash_list_to_gchar(hash_extract_t *hash_extract, gint max);
 
 #endif /* #ifndef _HASHS_H_ */

@@ -325,10 +325,9 @@ hash_extract_t *new_hash_extract_t(void)
  *        hashs, base64 encoded and comma separated.
  * @param max is a gint that represents the maximum number of hashs to
  *        convert.
- * @returns a correctly filled hash_extract_t structure that may be
- *          used again to call this function.
+ * @returns a correctly filled gchar *string
  */
-hash_extract_t *convert_max_hashs_from_hash_list_to_gchar(hash_extract_t *hash_extract, gint max)
+gchar *convert_max_hashs_from_hash_list_to_gchar(hash_extract_t *hash_extract, gint max)
 {
     GList *head = hash_extract->hash_list;
     gchar *base64 = NULL;
@@ -365,7 +364,7 @@ hash_extract_t *convert_max_hashs_from_hash_list_to_gchar(hash_extract_t *hash_e
     hash_extract->hash_list = head;
     hash_extract->hash_string = hash_string;
 
-    return hash_extract;
+    return hash_string;
 }
 
 

@@ -288,6 +288,7 @@ static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connect
     else if (g_str_has_prefix(url, "/Data/Hash_Array.json"))
         {
             /* To be written */
+            answer = g_strdup_printf("{\"Invalid url\": %s}", url);
         }
     else if (g_str_has_prefix(url, "/Data/"))
         {

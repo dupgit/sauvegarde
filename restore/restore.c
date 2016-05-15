@@ -34,7 +34,7 @@ static gchar *add_on_field_to_request(gchar *request, gchar *field, gchar *value
 static gchar *make_base_request(query_t *query);
 static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query);
 static void print_all_files(res_struct_t *res_struct, query_t *query);
-static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GList *hash_list);
+static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GList *hash_list, gint max);
 static void create_file(res_struct_t *res_struct, meta_data_t *meta);
 static void restore_last_file(res_struct_t *res_struct, query_t *query);
 static void free_res_struct_t(res_struct_t *res_struct);
@@ -275,28 +275,31 @@ static void print_all_files(res_struct_t *res_struct, query_t *query)
  * @param stream is the stream where we are writing data (MUST be opened
  *        and not NULL)
  * @param hash_list list of hashs of the file to be restored
+ * @param max is the maximum number of hashs to include into the header
  * @todo error management.
  */
-static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GList *hash_list)
+static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GList *hash_list, gint max)
 {
     gchar *hash = NULL;
     hash_data_t *hash_data = NULL;
+    hash_extract_t *hash_extract = NULL;
     GError *error = NULL;
     gchar *request = NULL;
+    gchar *header = NULL;
     gint res = CURLE_FAILED_INIT;
 
     if (stream != NULL)
         {
-            while (hash_list != NULL)
+            hash_extract = new_hash_extract_t();
+            hash_extract->hash_list = hash_list;
+
+            while (hash_extract->hash_list != NULL)
                 {
-                    hash_data = hash_list->data;
-                    hash = hash_to_string(hash_data->hash);
-                    request = g_strdup_printf("/Data/%s.json", hash);
 
-                    print_debug(_("Query is: %s\n"), request);
-
-                    /* This call fills res_struct->comm->buffer */
-                    res = get_url(res_struct->comm, request, NULL);
+                    header = create_x_get_hash_array_http_header(hash_extract, max);
+                    request = g_strdup_printf("/Data/Hash_Array.json");
+                    print_debug(_("Query is: %s with header %s\n"), request, header);
+                    res = get_url(res_struct->comm, request, header);
 
                     if (res == CURLE_OK)
                         {
@@ -309,7 +312,6 @@ static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *
                                     if (hash_data != NULL)
                                         {
                                             g_output_stream_write((GOutputStream *) stream, hash_data->data, hash_data->read, NULL, &error);
-
                                             free_hash_data_t(hash_data);
                                         }
                                     else
@@ -323,9 +325,8 @@ static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *
                             print_error(__FILE__, __LINE__, _("Error while getting hash %s"), hash);
                         }
 
-                    hash_list = g_list_next(hash_list);
                     free_variable(request);
-                    free_variable(hash);
+                    free_variable(header);
                 }
         }
 }
@@ -347,6 +348,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
     GFileOutputStream *stream =  NULL;
     GError *error = NULL;
     options_t *opt = NULL;
+    gint max = 0;
 
     if (res_struct != NULL && meta != NULL)
         {
@@ -376,8 +378,8 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 
                     if (stream != NULL)
                         {
-                            restore_data_to_stream(res_struct, stream, meta->hash_data_list);
-
+                            max = calculate_max_number_of_hashs(meta->size);
+                            restore_data_to_stream(res_struct, stream, meta->hash_data_list, max);
                             g_output_stream_close((GOutputStream *) stream, NULL, &error);
                             free_object(stream);
                         }
