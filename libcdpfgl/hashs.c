@@ -299,6 +299,77 @@ gchar *convert_hash_data_list_to_gchar(GList *hash_list)
 
 
 /**
+ * Creates a new hash_extract_t * empty structure that may be freed when
+ * no longer neeeded
+ * @returns a newlly allocated hash_extract_t * empty structure that may
+ *          be freed when no longer neeeded
+ */
+hash_extract_t *new_hash_extract_t(void)
+{
+    hash_extract_t *hash_extract = NULL;
+
+    hash_extract = (hash_extract_t *) g_malloc(sizeof(hash_extract_t));
+
+    hash_extract->hash_list = NULL;
+    hash_extract->hash_string = NULL;
+
+    return hash_extract;
+}
+
+
+/**
+ * Converts at max hashs from hash_extract->hash_list into a gchar *
+ * string that are comma separated.
+ * @param hash_extract contains one pointer to a GList og guint8 * binary
+ *        hashs and one pointer to a gchar * string that contains thoses
+ *        hashs, base64 encoded and comma separated.
+ * @param max is a gint that represents the maximum number of hashs to
+ *        convert.
+ * @returns a correctly filled hash_extract_t structure that may be
+ *          used again to call this function.
+ */
+hash_extract_t *convert_max_hashs_from_hash_list_to_gchar(hash_extract_t *hash_extract, gint max)
+{
+    GList *head = hash_extract->hash_list;
+    gchar *base64 = NULL;
+    gchar *hash_string = NULL;
+    gchar *old_list = NULL;
+    hash_data_t *hash_data = NULL;
+    gint i = 0;
+
+    while (head != NULL && i < max)
+        {
+            hash_data = head->data;
+            base64 = g_base64_encode(hash_data->hash, HASH_LEN);
+
+            if (old_list == NULL)
+                {
+                    hash_string = g_strdup_printf("\"%s\"", base64);
+                    old_list = hash_string;
+                }
+            else
+                {
+                    hash_string = g_strdup_printf("%s, \"%s\"", old_list, base64);
+                    free_variable(old_list);
+                    old_list = hash_string;
+                }
+
+            free_variable(base64);
+
+            i = i + 1;
+            head = g_list_next(head);
+        }
+
+    hash_string = old_list;
+
+    hash_extract->hash_list = head;
+    hash_extract->hash_string = hash_string;
+
+    return hash_extract;
+}
+
+
+/**
  * Makes a path from a binary hash : 0E/39/AF for level 3 with hash (in hex)
  * begining by 0E39AF.
  * @param path is a gchar * prefix for the path (ie /var/tmp/cdpfgl for

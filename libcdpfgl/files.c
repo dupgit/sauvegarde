@@ -569,7 +569,7 @@ gchar *normalize_directory(gchar *path)
  * @returns the maximum number of hashs that may be asked for into a
  *          single GET HTTP request.
  */
-gint64 calculate_max_number_of_hashs(gint64 size)
+gint calculate_max_number_of_hashs(guint64 size)
 {
 
     if (size < 32768)

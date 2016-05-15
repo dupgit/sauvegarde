@@ -430,3 +430,30 @@ void free_comm_t(comm_t *comm)
             free_variable(comm);
         }
 }
+
+
+/**
+ * Creates X-Get-Hash-Array HTTP header with the hash list
+ * @param hash_extract is an hash_extract_t structure pointer that
+ *        contains a pointer to the begining of the list and a gchar *
+ *        hash_string that is a comma separated hash list string. Both
+ *        values are [in,out] parameters for this function.
+ * @param max is a gint that represents the maximum number of hashs to
+ *        convert.
+ * @returns the header
+ */
+gchar *create_x_get_hash_array_http_header(hash_extract_t *hash_extract, guint max)
+{
+    gchar *header = NULL;
+
+    if (hash_extract != NULL)
+        {
+            header = g_strconcat(X_GET_HASH_ARRAY, convert_max_hashs_from_hash_list_to_gchar(hash_extract, max), NULL);
+        }
+    else
+        {
+            header = g_strconcat(X_GET_HASH_ARRAY, NULL);
+        }
+
+    return header;
+}

@@ -47,6 +47,19 @@ typedef struct
 
 
 /**
+ * @struct hash_extract_t
+ * @brief helps to extract hashs strings from a GList hash_list. hash_list
+ *        is a pointer to a GList of guint8 * hashs. hash_string should be
+ *        a gchar * comma separated list of those hashs (base64 encoded).
+ */
+typedef struct
+{
+    GList *hash_list;
+    gchar *hash_string;
+} hash_extract_t;
+
+
+/**
  * Comparison function used to compare two hashs (binary form) mainly
  * used to sort hashs properly.
  * @returns a negative value if a < b, zero if a = b and a positive value
@@ -156,5 +169,27 @@ extern gboolean hash_data_is_in_list(hash_data_t *hash_data, GList *needed);
  */
 extern gpointer copy_only_hash(gconstpointer src, gpointer user_data);
 
+
+/**
+ * Creates a new hash_extract_t * empty structure that may be freed when
+ * no longer neeeded
+ * @returns a newlly allocated hash_extract_t * empty structure that may
+ *          be freed when no longer neeeded
+ */
+extern hash_extract_t *new_hash_extract_t(void);
+
+
+/**
+ * Converts at max hashs from hash_extract->hash_list into a gchar *
+ * string that are comma separated.
+ * @param hash_extract contains one pointer to a GList og guint8 * binary
+ *        hashs and one pointer to a gchar * string that contains thoses
+ *        hashs, base64 encoded and comma separated.
+ * @param max is a gint that represents the maximum number of hashs to
+ *        convert.
+ * @returns a correctly filled hash_extract_t structure that may be
+ *          used again to call this function.
+ */
+extern hash_extract_t *convert_max_hashs_from_hash_list_to_gchar(hash_extract_t *hash_extract, gint max);
 
 #endif /* #ifndef _HASHS_H_ */

@@ -35,7 +35,7 @@
  * Defines header name string that will be inserted into the get request
  * in order to get a concatened array of hashs.
  */
-#define X_GET_HASH_ARRAY ("X-Get-Hash-Array:")
+#define X_GET_HASH_ARRAY ("X-Get-Hash-Array: ")
 
 
 /**
@@ -137,5 +137,18 @@ extern gboolean is_server_alive(comm_t *comm);
  * @param comm a comm_t * structure to be freed
  */
 extern void free_comm_t(comm_t *comm);
+
+
+/**
+ * Creates X-Get-Hash-Array HTTP header with the hash list
+ * @param hash_extract is an hash_extract_t structure pointer that
+ *        contains a pointer to the begining of the list and a gchar *
+ *        hash_string that is a comma separated hash list string. Both
+ *        values are [in,out] parameters for this function.
+ * @param max is a gint that represents the maximum number of hashs to
+ *        convert.
+ * @returns the header
+ */
+extern gchar *create_x_get_hash_array_http_header(hash_extract_t *hash_extract, guint max);
 
 #endif /* #ifndef _COMMUNIQUE_H_ */
