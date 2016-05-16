@@ -35,13 +35,18 @@ static server_struct_t *init_server_main_structure(int argc, char **argv);
 static gchar *get_data_from_a_specific_hash(server_struct_t *server_struct, gchar *hash);
 static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key, gboolean encoded);
 static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Connection *connection);
+static hash_data_t *create_one_hash_data_t_from_hash_data_list(GList *hash_data_list, guint size);
+static gchar *get_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Connection *connection);
 static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url);
 static gchar *get_unformatted_answer(server_struct_t *server_struct, const char *url);
+static int create_MHD_response(struct MHD_Connection *connection, gchar *answer);
 static int process_get_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls);
 static json_t *find_needed_hashs(server_struct_t *server_struct, GList *hash_data_list);
 static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data);
 static int answer_hash_array_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data);
+static void print_received_data_for_hash(guint8 *hash, gssize read);
 static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, gchar *received_data);
+static guint64 get_content_length(struct MHD_Connection *connection);
 static int process_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size);
 static int print_out_key(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
 static void print_headers(struct MHD_Connection *connection);
@@ -261,6 +266,44 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
 
 
 /**
+ * @param hash_data_list
+ * @param size
+ * @returns a newlly allocated hash_data_t structure filled with data
+ *          from all data fields of the list and read is the sum of all
+ *          read fields of the list.
+ */
+static hash_data_t *create_one_hash_data_t_from_hash_data_list(GList *hash_data_list, guint size)
+{
+    guchar *data = NULL;
+    hash_data_t *hash_data = NULL;
+    guint8 *binary = NULL;
+    guint pos = 0;
+
+    data = (guchar *) g_malloc(size);
+
+    pos = 0;
+    while (hash_data_list != NULL)
+        {
+            hash_data = hash_data_list->data;
+
+            memcpy(data + pos, hash_data->data, hash_data->read);
+            pos = pos + hash_data->read;
+
+            hash_data_list = g_list_next(hash_data_list);
+        }
+
+    /**
+     * We need a fake hash here in order to be able to make the json string
+     * @todo may be we can manage to have the real hashs from the data
+     */
+    binary = (guint8 *) g_malloc(HASH_LEN);
+    hash_data = new_hash_data_t(data, size, binary);
+
+    return hash_data;
+}
+
+
+/**
  *
  */
 static gchar *get_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Connection *connection)
@@ -268,8 +311,6 @@ static gchar *get_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Con
     const char *header = NULL;
     gchar *answer = NULL;
     gchar *hash = NULL;
-    guint8 *binary = NULL;
-    guchar *data;
     GList *head = NULL;
     GList *header_hdl = NULL;
     GList *hash_data_list = NULL;
@@ -277,7 +318,7 @@ static gchar *get_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Con
     hash_data_t *hash_data = NULL;
     backend_t *backend = server_struct->backend;
     guint size = 0;
-    guint pos = 0;
+
 
     header = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "X-Get-Hash-Array");
     header_hdl = make_hash_data_list_from_string((gchar *)header);
@@ -297,25 +338,15 @@ static gchar *get_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Con
     g_list_free_full(head, free_hdt_struct);
     hash_data_list = g_list_reverse(hash_data_list);
 
-    data = (guchar *) g_malloc(size);
-
     head = hash_data_list;
-    pos = 0;
-    while (hash_data_list != NULL)
-        {
-            hash_data = hash_data_list->data;
-            memcpy(data + pos, hash_data->data, hash_data->read);
-            pos = pos + hash_data->read;
-            hash_data_list = g_list_next(hash_data_list);
-        }
+
+    hash_data = create_one_hash_data_t_from_hash_data_list(hash_data_list, size);
 
     g_list_free_full(head, free_hdt_struct);
 
-    /* We need a fake hash here in order to be able to make the json string */
-    binary = (guint8 *) g_malloc(HASH_LEN);
-    hash_data = new_hash_data_t(data, size, binary);
     answer = convert_hash_data_t_to_string(hash_data);
-    free_hash_data_t(hash_data); /* binary is freed here */
+
+    free_hash_data_t(hash_data);
 
     return answer;
 }
