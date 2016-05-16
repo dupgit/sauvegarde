@@ -258,7 +258,7 @@ gint get_url(comm_t *comm, gchar *url, gchar *header)
 
             if (success == CURLE_OK && comm->buffer != NULL)
                 {
-                    print_debug(_("Answer is: \"%s\"\n"), comm->buffer);
+                    print_debug(_("Answer length: %d\n"), strlen(comm->buffer));
                 }
             else
                 {
