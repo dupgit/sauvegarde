@@ -36,7 +36,7 @@ static gchar *get_data_from_a_specific_hash(server_struct_t *server_struct, gcha
 static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key, gboolean encoded);
 static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Connection *connection);
 static hash_data_t *create_one_hash_data_t_from_hash_data_list(GList *hash_data_list, guint size);
-static gchar *get_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Connection *connection);
+static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Connection *connection);
 static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url);
 static gchar *get_unformatted_answer(server_struct_t *server_struct, const char *url);
 static int create_MHD_response(struct MHD_Connection *connection, gchar *answer);
@@ -266,8 +266,10 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
 
 
 /**
- * @param hash_data_list
- * @param size
+ * @param hash_data_list is a GList of hash_data_t structure.
+ * @param size is a guint number that represents the sum of all 'read'
+ *        fields in the hash_data_list. It will be the 'read' field
+ *        of the returned hash_data_t.
  * @returns a newlly allocated hash_data_t structure filled with data
  *          from all data fields of the list and read is the sum of all
  *          read fields of the list.
@@ -304,9 +306,15 @@ static hash_data_t *create_one_hash_data_t_from_hash_data_list(GList *hash_data_
 
 
 /**
- *
+ * Gets all data from a list of hash obtained from X-Get-Hash-Array HTTP
+ * header.
+ * @param server_struct is the main structure for the server.
+ * @param connection is the connection in MHD
+ * @returns a newlly allocated gchar * string that contains the anwser to be
+ *          sent back to the client (hopefully a json string containing
+ *          a hash (that is a fake one here), data and size of the data.
  */
-static gchar *get_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Connection *connection)
+static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Connection *connection)
 {
     const char *header = NULL;
     gchar *answer = NULL;
@@ -379,8 +387,7 @@ static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connect
         }
     else if (g_str_has_prefix(url, "/Data/Hash_Array.json"))
         {
-            /* To be written */
-            answer = get_a_list_of_hashs(server_struct, connection);
+            answer = get_data_from_a_list_of_hashs(server_struct, connection);
         }
     else if (g_str_has_prefix(url, "/Data/"))
         {
