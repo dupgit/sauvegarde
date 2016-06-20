@@ -326,11 +326,15 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
     hash_data_t *hash_data = NULL;
     backend_t *backend = server_struct->backend;
     guint size = 0;
+    a_clock_t *a_clock = NULL;
 
 
+    a_clock = new_clock_t();
     header = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "X-Get-Hash-Array");
     header_hdl = make_hash_data_list_from_string((gchar *)header);
+    end_clock(a_clock, "X-Get-Hash-Array retrieved in");
 
+    a_clock = new_clock_t();
     head = header_hdl;
     while (header_hdl != NULL)
         {
@@ -342,7 +346,9 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
             hash_data_list = g_list_prepend(hash_data_list, hash_data);
             header_hdl = g_list_next(header_hdl);
         }
+    end_clock(a_clock, "Read all files");
 
+    a_clock = new_clock_t();
     g_list_free_full(head, free_hdt_struct);
     hash_data_list = g_list_reverse(hash_data_list);
 
@@ -351,10 +357,12 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
     hash_data = create_one_hash_data_t_from_hash_data_list(hash_data_list, size);
 
     g_list_free_full(head, free_hdt_struct);
+    end_clock(a_clock, "Concatenated all data");
 
+    a_clock = new_clock_t();
     answer = convert_hash_data_t_to_string(hash_data);
-
     free_hash_data_t(hash_data);
+    end_clock(a_clock, "Transformed into a JSON string");
 
     return answer;
 }
