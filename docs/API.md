@@ -69,6 +69,17 @@ Gets the associated data of the hash that has to be transmitted in
 hexadecimal format.
 
 
+### /Data/Hash_Array.json
+
+Gets the associated data of the hash list that MUST be transmitted into
+the GET command ```X-Get-Hash-Array``` header that must contain a comma
+separated base64 encoded hash list. Associated data is a JSON string with
+three fields, hash, data and size. hash field contains a random base64
+encoded hash that is not reliable. data is all hash corresponding blocks
+data concatenated and base64 encoded. size is the real size of the data
+(not encoded).
+
+
 ## POST
 
 ### /Meta.json
