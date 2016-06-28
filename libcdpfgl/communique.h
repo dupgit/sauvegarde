@@ -39,6 +39,17 @@
 
 
 /**
+ * @def CT_JSON
+ * Defines the Content-Type HTTP header for JSON requests / answers
+ *
+ * @def CT_PLAIN
+ * Defines the Content-Type HTTP header for plain text requests / answers
+ */
+#define CT_JSON ("application/json; charset=utf-8")
+#define CT_PLAIN ("text/plain; charset=utf-8")
+
+
+/**
  * @struct comm_t
  * @brief Structure that will contain everything needed to the
  *        communication layer.

@@ -39,7 +39,7 @@ static hash_data_t *create_one_hash_data_t_from_hash_data_list(GList *hash_data_
 static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Connection *connection);
 static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url);
 static gchar *get_unformatted_answer(server_struct_t *server_struct, const char *url);
-static int create_MHD_response(struct MHD_Connection *connection, gchar *answer);
+static int create_MHD_response(struct MHD_Connection *connection, gchar *answer, gchar *content_type);
 static int process_get_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls);
 static json_t *find_needed_hashs(server_struct_t *server_struct, GList *hash_data_list);
 static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data);
@@ -465,13 +465,18 @@ static gchar *get_unformatted_answer(server_struct_t *server_struct, const char 
  * Creates a response sent to the client via MHD_queue_response
  * @param connection is the MHD_Connection connection
  * @param answer is the gchar * string to be sent.
+ * @param content_type is a gchar * string that represents the content
+ *        type of the answer. It should be "text/plain; charset=utf-8"
+ *        when answering to normal urls (not ending with .json) and
+ *        "application/json; charset=utf-8" otherwise
  */
-static int create_MHD_response(struct MHD_Connection *connection, gchar *answer)
+static int create_MHD_response(struct MHD_Connection *connection, gchar *answer, gchar *content_type)
 {
     struct MHD_Response *response = NULL;
     int success = MHD_NO;
 
     response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
+    MHD_add_response_header(response, "Content-Type", "text/plain; charset=utf-8");
     success = MHD_queue_response(connection, MHD_HTTP_OK, response);
     MHD_destroy_response(response);
 
@@ -492,6 +497,7 @@ static int process_get_request(server_struct_t *server_struct, struct MHD_Connec
     static int aptr = 0;
     int success = MHD_NO;
     gchar *answer = NULL;
+    gchar *content_type;
 
 
     if (&aptr != *con_cls)
@@ -512,17 +518,19 @@ static int process_get_request(server_struct_t *server_struct, struct MHD_Connec
             if (g_str_has_suffix(url, ".json"))
                 { /* A json format answer was requested */
                     answer = get_json_answer(server_struct, connection, url);
+                    content_type = CT_JSON;
                 }
             else
                 { /* An "unformatted" answer was requested */
                     answer = get_unformatted_answer(server_struct, url);
+                    content_type = CT_PLAIN;
                 }
 
                 /* reset when done */
                 *con_cls = NULL;
 
                 /* Do not free answer variable as MHD will do it for us ! */
-                success = create_MHD_response(connection, answer);
+                success = create_MHD_response(connection, answer, content_type);
         }
 
     return success;
@@ -613,7 +621,7 @@ static int answer_meta_json_post_request(server_struct_t *server_struct, struct 
             answer = g_strdup_printf(_("Error: could not convert json to metadata\n"));
         }
 
-    return create_MHD_response(connection, answer);
+    return create_MHD_response(connection, answer, CT_JSON);
 }
 
 
@@ -631,7 +639,7 @@ static int answer_hash_array_post_request(server_struct_t *server_struct, struct
     json_t *root = NULL;          /** json_t *root is the root that will contain all meta data json formatted */
     json_t *array = NULL;         /** json_t *array is the array that will receive base64 encoded hashs       */
     GList *hash_data_list = NULL;
-
+    gchar *content_type = NULL;
 
     if (server_struct != NULL && connection != NULL && received_data != NULL)
         {
@@ -649,13 +657,15 @@ static int answer_hash_array_post_request(server_struct_t *server_struct, struct
             answer = json_dumps(root, 0);
             json_decref(root);
             g_list_free_full(hash_data_list, free_hdt_struct);
+            content_type = CT_JSON;
         }
     else
         {
             answer = g_strdup_printf(_("Error: could not convert json to metadata\n"));
+            content_type = CT_PLAIN;
         }
 
-    return create_MHD_response(connection, answer);
+    return create_MHD_response(connection, answer, content_type);
 }
 
 
@@ -739,7 +749,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
              * creating an answer for the client to say that everything went Ok!
              */
             answer = g_strdup_printf(_("Ok!"));
-            success = create_MHD_response(connection, answer);
+            success = create_MHD_response(connection, answer, CT_PLAIN);
         }
     else if (g_strcmp0(url, "/Data_Array.json") == 0 && received_data != NULL)
         {
@@ -774,14 +784,14 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
              */
 
             answer = g_strdup_printf(_("Ok!"));
-            success = create_MHD_response(connection, answer);
+            success = create_MHD_response(connection, answer, CT_PLAIN);
         }
     else
         {
             /* The url is unknown to the server and we can not process the request ! */
             print_error(__FILE__, __LINE__, "Error: invalid url: %s\n", url);
             answer = g_strdup_printf(_("Error: invalid url!\n"));
-            success = create_MHD_response(connection, answer);
+            success = create_MHD_response(connection, answer, CT_PLAIN);
         }
 
     return success;

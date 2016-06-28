@@ -196,14 +196,20 @@ static gboolean does_url_end_with_json(gchar *url)
  */
 static struct curl_slist *append_content_type_to_header(struct curl_slist *chunk, gchar *url)
 {
+    gchar *content_type = NULL;
+
     if (does_url_end_with_json(url))
         {
-            chunk = curl_slist_append(chunk, "Content-Type: application/json");
+            content_type = g_strconcat("Content-Type: ", CT_JSON, NULL);
+            chunk = curl_slist_append(chunk, content_type);
         }
     else
         {
-            chunk = curl_slist_append(chunk, "Content-Type: text/plain");
+            content_type = g_strconcat("Content-Type: ", CT_PLAIN, NULL);
+            chunk = curl_slist_append(chunk, content_type);
         }
+
+    free_variable(content_type);
 
     return chunk;
 }
