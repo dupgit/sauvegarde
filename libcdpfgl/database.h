@@ -65,7 +65,7 @@ typedef struct
  */
 typedef struct
 {
-    guint nb_row;        /**< number of row                       */
+    guint nb_row;        /**< number of row */
 } file_row_t;
 
 

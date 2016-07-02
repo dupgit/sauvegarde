@@ -2,7 +2,7 @@
 
 This page is cdpfgl's doxygen's @mainpage.
 
-[![Build Status](https://travis-ci.org/dupgit/sauvegarde.png?branch=master)](https://travis-ci.org/dupgit/sauvegarde)
+[![Build Status](https://travis-ci.org/dupgit/sauvegarde.svg?branch=master)](https://travis-ci.org/dupgit/sauvegarde)
 [![Gitter](https://badges.gitter.im/dupgit/sauvegarde.svg)](https://gitter.im/dupgit/sauvegarde?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 With this code you can backup and restore files in a live and continuous
