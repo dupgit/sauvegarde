@@ -2,6 +2,7 @@
 
 This page is cdpfgl's doxygen's @mainpage.
 
+[![cdpfgl Version](https://badge.fury.io/gh/dupgit%2Fsauvegarde.svg)](https://badge.fury.io/gh/dupgit%2Fsauvegarde)
 [![Build Status](https://travis-ci.org/dupgit/sauvegarde.svg?branch=master)](https://travis-ci.org/dupgit/sauvegarde)
 [![Gitter](https://badges.gitter.im/dupgit/sauvegarde.svg)](https://gitter.im/dupgit/sauvegarde?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
