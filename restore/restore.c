@@ -94,15 +94,7 @@ static gchar *encode_to_base64(gchar *string)
 
 
 
-/**
- * Gets all user infos and fills a query_t * structure accordingly.
- * @param hostname the hostname where the program is run
- * @param filename is the name of the file we want to restore.
- * @param opt is the option structure that contains all options.
- * @return a pointer to a newly allocated query_t structure that may be
- *         freed when no longer needed.
- */
-static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
+static query_t *prepare_query(gchar *hostname)
 {
     uid_t uid;
     struct passwd *pass = NULL;
@@ -112,10 +104,6 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
     gchar *the_gid = NULL;
     gchar *owner = NULL;
     gchar *group = NULL;
-    gchar *encoded_date = NULL;
-    gchar *encoded_filename = NULL;
-    gchar *encoded_afterdate = NULL;
-    gchar *encoded_beforedate = NULL;
 
     uid = geteuid();
     pass = getpwuid(uid);
@@ -128,17 +116,79 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
             the_uid = g_strdup_printf("%d", uid);
             the_gid = g_strdup_printf("%d", pass->pw_gid);
 
+            query = init_query_t(hostname, the_uid, the_gid, owner, group, NULL, NULL, NULL, NULL);
+            print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n"), hostname, the_uid, the_gid, owner, group);
+        }
+
+    return query;
+
+}
+
+
+/**
+ * Ends the query by adding filename, date, beforedate and afterdate to the query
+ * @param query an already prepared query to be filled with dates and filename
+ * @param encoded_date may be the specific date at which we want to restore a file
+ * @param encoded_filename is the filename we may want to restore
+ * @param encoded_afterdate is the minimal date of the file to be restored
+ * @param encoded_beforedate is the maximal date of the file to be restored
+ * @returns a completely filled query_t structure
+ */
+static query_t *finish_query(query_t *query, gchar *encoded_date, gchar *encoded_filename, gchar *encoded_afterdate,gchar *encoded_beforedate)
+{
+    if (query != NULL)
+        {
+            query->filename = encoded_filename;
+            query->date = encoded_date;
+            query->afterdate = encoded_afterdate;
+            query->beforedate = encoded_beforedate;
+        }
+
+    return query;
+}
+
+
+/**
+ * Gets all user infos and fills a query_t * structure accordingly.
+ * @param hostname the hostname where the program is run
+ * @param filename is the name of the file we want to restore.
+ * @param opt is the option structure that contains all options.
+ * @return a pointer to a newly allocated query_t structure that may be
+ *         freed when no longer needed.
+ */
+static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
+{
+    gchar *encoded_date = NULL;
+    gchar *encoded_filename = NULL;
+    gchar *encoded_afterdate = NULL;
+    gchar *encoded_beforedate = NULL;
+    query_t *query = NULL;
+
+    query = prepare_query(hostname);
+
+    if (query != NULL)
+        {
             encoded_filename = encode_to_base64(filename);
             encoded_date = encode_to_base64(opt->date);
             encoded_afterdate = encode_to_base64(opt->afterdate);
             encoded_beforedate = encode_to_base64(opt->beforedate);
 
-            query = init_query_t(hostname, the_uid, the_gid, owner, group, encoded_filename, encoded_date, encoded_afterdate, encoded_beforedate);
-            print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n"), hostname, the_uid, the_gid, owner, group);
+            query = finish_query(query, encoded_filename, encoded_date, encoded_afterdate, encoded_beforedate);
         }
 
     return query;
 }
+
+
+static query_t *new_query_from_meta(gchar *hostname, meta_data_t *meta)
+{
+    query_t *query = NULL;
+
+    query = prepare_query(hostname);
+
+    return query;
+}
+
 
 
 /**
