@@ -417,6 +417,39 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 
 
 /**
+ * Prints all file information based on its meta data if debug mode is
+ * turned on
+ * @param meta is the meta_data_t * structure that contains all file
+ *             meta data that we may want to print to screen.
+ */
+ static void print_debug_file_info(meta_data_t *meta)
+ {
+    gchar *string_inode = NULL;
+    gchar *string_atime = NULL;
+    gchar *string_ctime = NULL;
+    gchar *string_mtime = NULL;
+    gchar *string_size = NULL;
+
+    if (get_debug_mode() == TRUE)
+        {
+            string_inode = g_strdup_printf("%"G_GUINT64_FORMAT, meta->inode);
+            string_atime = g_strdup_printf("%"G_GUINT64_FORMAT, meta->atime);
+            string_ctime = g_strdup_printf("%"G_GUINT64_FORMAT, meta->ctime);
+            string_mtime = g_strdup_printf("%"G_GUINT64_FORMAT, meta->mtime);
+            string_size = g_strdup_printf("%"G_GUINT64_FORMAT, meta->size);
+
+            print_debug(_("File to be restored: type %d, inode: %s, mode: %d, atime: %s, ctime: %s, mtime: %s, size: %s, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, string_inode, meta->mode, string_atime, string_ctime, string_mtime, string_size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
+
+            free_variable(string_inode);
+            free_variable(string_atime);
+            free_variable(string_ctime);
+            free_variable(string_mtime);
+            free_variable(string_size);
+        }
+ }
+
+
+/**
  * Restores the last file that the fetched list contains.
  * @param res_struct is the main structure for cdpfglrestore program.
  * @param query is the structure that contains everything needed to
@@ -428,11 +461,7 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
     GSList *last = NULL;      /** last element of the list                 */
     server_meta_data_t *smeta = NULL;
     meta_data_t *meta = NULL;
-    gchar *string_inode = NULL;
-    gchar *string_atime = NULL;
-    gchar *string_ctime = NULL;
-    gchar *string_mtime = NULL;
-    gchar *string_size = NULL;
+
 
     if (res_struct != NULL && query != NULL)
         {
@@ -444,22 +473,7 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
                     smeta = (server_meta_data_t *) last->data;
                     meta = smeta->meta;
 
-                    if (get_debug_mode() == TRUE)
-                        {
-                            string_inode = g_strdup_printf("%"G_GUINT64_FORMAT, meta->inode);
-                            string_atime = g_strdup_printf("%"G_GUINT64_FORMAT, meta->atime);
-                            string_ctime = g_strdup_printf("%"G_GUINT64_FORMAT, meta->ctime);
-                            string_mtime = g_strdup_printf("%"G_GUINT64_FORMAT, meta->mtime);
-                            string_size = g_strdup_printf("%"G_GUINT64_FORMAT, meta->size);
-
-                            print_debug(_("File to be restored: type %d, inode: %s, mode: %d, atime: %s, ctime: %s, mtime: %s, size: %s, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"), meta->file_type, string_inode, meta->mode, string_atime, string_ctime, string_mtime, string_size, meta->name, meta->owner, meta->group, meta->uid, meta->gid);
-
-                            free_variable(string_inode);
-                            free_variable(string_atime);
-                            free_variable(string_ctime);
-                            free_variable(string_mtime);
-                            free_variable(string_size);
-                        }
+                    print_debug_file_info(meta);
 
                     create_file(res_struct, meta);
                 }
