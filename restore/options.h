@@ -42,16 +42,17 @@
  */
 typedef struct
 {
-    gboolean version;   /**< TRUE if we have to display program's version                                               */
-    gchar *list;        /**< Should contain a filename to be searched into saved files filename's list                  */
-    gchar *restore;     /**< Must contain a filename or a directory name to be restored (latest version by default      */
-    gchar *date;        /**< Should contain a date in the correct format to filter only files at that specific date     */
-    gchar *afterdate;   /**< Should contain a date in the correct format to filter only files after that specific date  */
-    gchar *beforedate;  /**< Should contain a date in the correct format to filter only files before that specific date */
-    gchar *configfile;  /**< Filename for the configuration file specified on the command line                          */
-    gchar *ip;          /**< A string representing the IP address where server is located (may be a hotsname)           */
-    gint port;          /**< Port number on which to send things to cdpfglserver's server (on which it must listen)     */
-    gchar *where;       /**< where is a string that should contain a directory where to restore a file / dirtectory     */
+    gboolean version;       /**< TRUE if we have to display program's version                                               */
+    gchar *list;            /**< Should contain a filename to be searched into saved files filename's list                  */
+    gchar *restore;         /**< Must contain a filename or a directory name to be restored (latest version by default      */
+    gchar *date;            /**< Should contain a date in the correct format to filter only files at that specific date     */
+    gchar *afterdate;       /**< Should contain a date in the correct format to filter only files after that specific date  */
+    gchar *beforedate;      /**< Should contain a date in the correct format to filter only files before that specific date */
+    gchar *configfile;      /**< Filename for the configuration file specified on the command line                          */
+    gchar *ip;              /**< A string representing the IP address where server is located (may be a hotsname)           */
+    gint port;              /**< Port number on which to send things to cdpfglserver's server (on which it must listen)     */
+    gchar *where;           /**< where is a string that should contain a directory where to restore a file / dirtectory     */
+    gboolean all_versions;  /**< all_versions says whether we should restore all versions of a file (TRUE) or not (FALSE)   */
 } options_t;
 
 

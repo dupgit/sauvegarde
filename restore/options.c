@@ -149,17 +149,18 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
  */
 static options_t *manage_command_line_options(int argc, char **argv)
 {
-    gboolean version = FALSE;      /** True if -v was selected on the command line                                */
-    gint debug = -4;               /** 0 == FALSE and other values == TRUE                                        */
-    gchar *configfile = NULL;      /** filename for the configuration file if any                                 */
-    gchar *ip =  NULL;             /** IP address where is located server's program                               */
-    gint port = 0;                 /** Port number on which to send things to the server                          */
-    gchar *list = NULL;            /** Should contain a filename or a directory to filter out                     */
-    gchar *restore = NULL;         /** Must contain a filename or a directory name to be restored                 */
-    gchar *date = NULL;            /** date at which we want to restore a file or directory                       */
-    gchar *where = NULL;           /** Contains the directory where to restore a file / directory                 */
-    gchar *afterdate = NULL;       /** afterdate: we want to restore a file that has its mtime after this date    */
-    gchar *beforedate = NULL;      /** beforedate:  we want to restore a file that has its mtime before this date */
+    gboolean version = FALSE;      /** True if -v was selected on the command line                                   */
+    gint debug = -4;               /** 0 == FALSE and other values == TRUE                                           */
+    gchar *configfile = NULL;      /** filename for the configuration file if any                                    */
+    gchar *ip =  NULL;             /** IP address where is located server's program                                  */
+    gint port = 0;                 /** Port number on which to send things to the server                             */
+    gchar *list = NULL;            /** Should contain a filename or a directory to filter out                        */
+    gchar *restore = NULL;         /** Must contain a filename or a directory name to be restored                    */
+    gchar *date = NULL;            /** date at which we want to restore a file or directory                          */
+    gchar *where = NULL;           /** Contains the directory where to restore a file / directory                    */
+    gchar *afterdate = NULL;       /** afterdate: we want to restore a file that has its mtime after this date       */
+    gchar *beforedate = NULL;      /** beforedate:  we want to restore a file that has its mtime before this date    */
+    gboolean all_versions = FALSE; /** all_version: True if we want to restore all version FALSE otherwise (default) */
 
     GOptionEntry entries[] =
     {
@@ -172,6 +173,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
         { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode."), N_("BOOLEAN")},
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
         { "where", 'w', 0, G_OPTION_ARG_STRING, &where, N_("Specify a DIRECTORY where to restore a file."), N_("DIRECTORY")},
+        { "all-versions", 'e', 0, G_OPTION_ARG_NONE, &all_versions, N_("List or restore all versions of a file."), NULL},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where server program is."), "IP"},
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which server program is listening."), N_("NUMBER")},
         { NULL }
@@ -233,6 +235,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
      */
     set_debug_mode_upon_cmdl(debug);
     opt->version = version; /* only TRUE if -v or --version was invoked */
+    opt->all_versions = all_versions; /* only TRUE if -e or --all-versions was invoked */
 
     if (date != NULL)
         {
