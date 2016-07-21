@@ -239,6 +239,26 @@ static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query)
 
 
 /**
+ * Prints all files of the list and their associated meta data to the
+ * screen
+ * @param list is a GSList of smeta structures
+ */
+static void print_list_of_smeta(GSList *list)
+{
+    server_meta_data_t *smeta = NULL;
+
+
+    while (list != NULL)
+        {
+            smeta = (server_meta_data_t *) list->data;
+            print_smeta_to_screen(smeta);
+
+            list = g_slist_next(list);
+        }
+}
+
+
+/**
  * Prints all saved files
  * @param res_struct is the main structure for cdpfglrestore program.
  * @param query is the structure that contains everything needed to
@@ -247,24 +267,15 @@ static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query)
 static void print_all_files(res_struct_t *res_struct, query_t *query)
 {
     GSList *list = NULL;   /** List of server_meta_data_t * */
-    GSList *head = NULL;   /** head of the list to be freed  */
-    server_meta_data_t *smeta = NULL;
+
 
     if (res_struct != NULL && query != NULL)
         {
             list = get_files_from_server(res_struct, query);
-            head = list;
 
-            while (list != NULL)
-                {
-                    smeta = (server_meta_data_t *) list->data;
-                    print_smeta_to_screen(smeta);
-                    free_smeta_data_t(smeta);
+            print_list_of_smeta(list);
 
-                    list = g_slist_next(list);
-                }
-
-            g_slist_free(head);
+            g_slist_free_full(list, gslist_free_smeta);
         }
 }
 
