@@ -43,7 +43,8 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta);
 static void print_debug_file_info(meta_data_t *meta);
 static void restore_last_file(res_struct_t *res_struct, query_t *query);
 static void free_res_struct_t(res_struct_t *res_struct);
-
+static void list_files(res_struct_t *res_struct);
+static void restore_files(res_struct_t *res_struct);
 
 /**
  * Inits a res_struct_t * structure. Manages the command line options.
