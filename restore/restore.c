@@ -29,13 +29,18 @@
 
 static res_struct_t *init_res_struct(int argc, char **argv);
 static gchar *encode_to_base64(gchar *string);
+static query_t *prepare_query(gchar *hostname);
+static query_t *finish_query(query_t *query, gchar *encoded_date, gchar *encoded_filename, gchar *encoded_afterdate,gchar *encoded_beforedate);
 static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt);
+static query_t *new_query_from_filename(gchar *hostname, gchar *filename);
 static gchar *add_on_field_to_request(gchar *request, gchar *field, gchar *value);
 static gchar *make_base_request(query_t *query);
 static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query);
+static void print_list_of_smeta(GSList *list);
 static void print_all_files(res_struct_t *res_struct, query_t *query);
 static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GList *hash_list, gint max);
 static void create_file(res_struct_t *res_struct, meta_data_t *meta);
+static void print_debug_file_info(meta_data_t *meta);
 static void restore_last_file(res_struct_t *res_struct, query_t *query);
 static void free_res_struct_t(res_struct_t *res_struct);
 
@@ -93,7 +98,11 @@ static gchar *encode_to_base64(gchar *string)
 }
 
 
-
+/**
+ * Begins a query with basic common information to all queries
+ * @param hostname is the name of the host where the program is running
+ * @returns a prepared empty query
+ */
 static query_t *prepare_query(gchar *hostname)
 {
     uid_t uid;
@@ -150,7 +159,7 @@ static query_t *finish_query(query_t *query, gchar *encoded_date, gchar *encoded
 
 /**
  * Gets all user infos and fills a query_t * structure accordingly.
- * @param hostname the hostname where the program is run
+ * @param hostname the hostname where the program is running
  * @param filename is the name of the file we want to restore.
  * @param opt is the option structure that contains all options.
  * @return a pointer to a newly allocated query_t structure that may be
@@ -163,6 +172,7 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
     gchar *encoded_afterdate = NULL;
     gchar *encoded_beforedate = NULL;
     query_t *query = NULL;
+
 
     query = prepare_query(hostname);
 
@@ -180,15 +190,29 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
 }
 
 
-static query_t *new_query_from_meta(gchar *hostname, meta_data_t *meta)
+/**
+ * Creates a new query with only the filename and no other information
+ * @param hostname is the hostname where the program is running
+ * @param filename is a gchar * containing the filename we want to look
+ *        for.
+ * @returns a query for a file named as 'filename'
+ */
+static query_t *new_query_from_filename(gchar *hostname, gchar *filename)
 {
     query_t *query = NULL;
+    gchar *encoded_filename = NULL;
+
 
     query = prepare_query(hostname);
 
+    if (query != NULL && filename != NULL)
+        {
+            encoded_filename = encode_to_base64(filename);
+            query = finish_query(query, encoded_filename, NULL, NULL, NULL);
+        }
+
     return query;
 }
-
 
 
 /**
@@ -215,7 +239,6 @@ static gchar *add_on_field_to_request(gchar *request, gchar *field, gchar *value
         }
 
     free_variable(request);
-    request = new_request;
 
     return new_request;
 }
@@ -472,7 +495,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
  * @param meta is the meta_data_t * structure that contains all file
  *             meta data that we may want to print to screen.
  */
- static void print_debug_file_info(meta_data_t *meta)
+static void print_debug_file_info(meta_data_t *meta)
  {
     gchar *string_inode = NULL;
     gchar *string_atime = NULL;
@@ -550,6 +573,52 @@ static void free_res_struct_t(res_struct_t *res_struct)
 
 
 /**
+ * Lists files as requested
+ * @param res_struct res_struct is the main structure for this program
+ */
+static void list_files(res_struct_t *res_struct)
+{
+    query_t *query =  NULL;
+
+    query = get_user_infos(res_struct->hostname, res_struct->opt->list, res_struct->opt);
+
+    if (res_struct->opt->all_versions == TRUE)
+        {
+            /* We want to print all versions of query's last found file */
+        }
+    else
+        {
+            print_all_files(res_struct, query);
+        }
+
+    free_query_t(query);
+}
+
+
+/**
+ * restore files as requested
+ * @param res_struct res_struct is the main structure for this program
+ */
+static void restore_files(res_struct_t *res_struct)
+{
+    query_t *query =  NULL;
+
+    query = get_user_infos(res_struct->hostname, res_struct->opt->restore, res_struct->opt);
+
+    if (res_struct->opt->all_versions == TRUE)
+        {
+            /* We want to restore all versions of query's last found file */
+        }
+    else
+        {
+            restore_last_file(res_struct, query);
+        }
+
+    free_query_t(query);
+}
+
+
+/**
  * Main function
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
@@ -558,8 +627,6 @@ static void free_res_struct_t(res_struct_t *res_struct)
 int main(int argc, char **argv)
 {
     res_struct_t *res_struct = NULL;
-    query_t *query =  NULL;
-
 
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
@@ -574,16 +641,12 @@ int main(int argc, char **argv)
 
             if (res_struct->opt->list != NULL)
                 {
-                    query = get_user_infos(res_struct->hostname, res_struct->opt->list, res_struct->opt);
-                    print_all_files(res_struct, query);
-                    free_query_t(query);
+                    list_files(res_struct);
                 }
 
             if (res_struct->opt->restore != NULL)
                 {
-                    query = get_user_infos(res_struct->hostname, res_struct->opt->restore, res_struct->opt);
-                    restore_last_file(res_struct, query);
-                    free_query_t(query);
+                    restore_files(res_struct);
                 }
 
             free_res_struct_t(res_struct);
