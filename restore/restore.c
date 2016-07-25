@@ -30,7 +30,7 @@
 static res_struct_t *init_res_struct(int argc, char **argv);
 static gchar *encode_to_base64(gchar *string);
 static query_t *prepare_query(gchar *hostname);
-static query_t *finish_query(query_t *query, gchar *encoded_date, gchar *encoded_filename, gchar *encoded_afterdate,gchar *encoded_beforedate);
+static query_t *finish_query(query_t *query, gchar *encoded_filename, gchar *encoded_date, gchar *encoded_afterdate,gchar *encoded_beforedate);
 static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt);
 static query_t *new_query_from_filename(gchar *hostname, gchar *filename);
 static gchar *add_on_field_to_request(gchar *request, gchar *field, gchar *value);
@@ -139,13 +139,13 @@ static query_t *prepare_query(gchar *hostname)
 /**
  * Ends the query by adding filename, date, beforedate and afterdate to the query
  * @param query an already prepared query to be filled with dates and filename
- * @param encoded_date may be the specific date at which we want to restore a file
  * @param encoded_filename is the filename we may want to restore
+ * @param encoded_date may be the specific date at which we want to restore a file
  * @param encoded_afterdate is the minimal date of the file to be restored
  * @param encoded_beforedate is the maximal date of the file to be restored
  * @returns a completely filled query_t structure
  */
-static query_t *finish_query(query_t *query, gchar *encoded_date, gchar *encoded_filename, gchar *encoded_afterdate,gchar *encoded_beforedate)
+static query_t *finish_query(query_t *query, gchar *encoded_filename, gchar *encoded_date, gchar *encoded_afterdate, gchar *encoded_beforedate)
 {
     if (query != NULL)
         {
@@ -174,7 +174,6 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
     gchar *encoded_afterdate = NULL;
     gchar *encoded_beforedate = NULL;
     query_t *query = NULL;
-
 
     query = prepare_query(hostname);
 
@@ -342,7 +341,6 @@ static void print_list_of_smeta(GSList *list)
 static void print_all_files(res_struct_t *res_struct, query_t *query)
 {
     GSList *list = NULL;   /** List of server_meta_data_t * */
-
 
     if (res_struct != NULL && query != NULL)
         {

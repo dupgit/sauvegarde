@@ -48,7 +48,7 @@ query_t *init_query_t(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gch
 {
     query_t *query = NULL;
 
-    query = (query_t *) g_malloc0(sizeof(query_t));
+    query = (query_t *) g_malloc(sizeof(query_t));
 
     query->hostname = hostname;
     query->uid = uid;
