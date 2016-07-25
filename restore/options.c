@@ -165,15 +165,15 @@ static options_t *manage_command_line_options(int argc, char **argv)
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version."), NULL},
+        { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode."), N_("BOOLEAN")},
+        { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
         { "list", 'l', 0, G_OPTION_ARG_FILENAME, &list, N_("Gives a list of saved files that correspond to the given REGEX."), "REGEX"},
         { "restore", 'r', 0, G_OPTION_ARG_FILENAME, &restore, N_("Restores requested filename (REGEX) (by default latest version)."), "REGEX"},
         { "date", 't', 0, G_OPTION_ARG_STRING, &date, N_("Restores the selected file at that specific DATE (YYYY-MM-DD HH:MM:SS format)."), "DATE"},
         { "after", 'a', 0, G_OPTION_ARG_STRING, &afterdate, N_("Restores the selected file with mtime after DATE (YYYY-MM-DD HH:MM:SS format)."), "DATE"},
         { "before", 'b', 0, G_OPTION_ARG_STRING, &beforedate, N_("Restores the selected file with mtime before DATE (YYYY-MM-DD HH:MM:SS format)."), "DATE"},
-        { "debug", 'd', 0,  G_OPTION_ARG_INT, &debug, N_("Activates (1) or desactivates (0) debug mode."), N_("BOOLEAN")},
-        { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
-        { "where", 'w', 0, G_OPTION_ARG_STRING, &where, N_("Specify a DIRECTORY where to restore a file."), N_("DIRECTORY")},
         { "all-versions", 'e', 0, G_OPTION_ARG_NONE, &all_versions, N_("List or restore all versions of a file."), NULL},
+        { "where", 'w', 0, G_OPTION_ARG_STRING, &where, N_("Specify a DIRECTORY where to restore a file."), N_("DIRECTORY")},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where server program is."), "IP"},
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which server program is listening."), N_("NUMBER")},
         { NULL }
