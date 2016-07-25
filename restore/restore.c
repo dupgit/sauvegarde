@@ -38,6 +38,7 @@ static gchar *make_base_request(query_t *query);
 static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query);
 static void print_list_of_smeta(GSList *list);
 static void print_all_files(res_struct_t *res_struct, query_t *query);
+static void print_all_versions(res_struct_t *res_struct, query_t *query);
 static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GList *hash_list, gint max);
 static void create_file(res_struct_t *res_struct, meta_data_t *meta);
 static void print_debug_file_info(meta_data_t *meta);
@@ -355,6 +356,70 @@ static void print_all_files(res_struct_t *res_struct, query_t *query)
 
 
 /**
+ * Gets the meta_data_t * pointer associated to the smeta_data_t *
+ * structure that is stored into the list
+ * @param list is an element of a list of smeta_data_t * structures.
+ * @returns the meta_data_t * structure pointer from that list element
+ *          ie : list->data->meta if it exists or NULL otherwise.
+ */
+static meta_data_t *get_meta_data_from_smeta_list(GSList *list)
+{
+    server_meta_data_t *smeta = NULL;
+    meta_data_t *meta = NULL;
+
+    if (list != NULL)
+        {
+            smeta = (server_meta_data_t *) list->data;
+
+            if (smeta != NULL)
+                {
+                    meta = smeta->meta;
+                }
+
+        }
+
+    return meta;
+}
+
+
+/**
+ * Prints all versions of the latest file found by query
+ * @param res_struct is the main structure for cdpfglrestore program.
+ * @param query is the structure that contains everything needed to
+ *        query the server (and filter a bit). It must not be NULL.
+ */
+static void print_all_versions(res_struct_t *res_struct, query_t *query)
+{
+    GSList *list = NULL;   /** List of server_meta_data_t * */
+    GSList *last = NULL;   /** last item of the above list  */
+    GSList *new_list = NULL;
+    meta_data_t *meta = NULL;
+    query_t *query_last = NULL;
+
+    if (res_struct != NULL && query != NULL)
+        {
+            list = get_files_from_server(res_struct, query);
+            last = g_slist_last(list);
+
+            meta = get_meta_data_from_smeta_list(last);
+
+            if (meta != NULL)
+                {
+                    query_last = new_query_from_filename(res_struct->hostname, meta->name);
+
+                    new_list = get_files_from_server(res_struct, query_last);
+                    print_list_of_smeta(new_list);
+
+                    g_slist_free_full(new_list, gslist_free_smeta);
+                }
+
+            g_slist_free_full(list, gslist_free_smeta);
+
+        }
+}
+
+
+/**
  * Writes data obtained from the server with the hash_list hashs
  * to the stream.
  * @param stream is the stream where we are writing data (MUST be opened
@@ -533,7 +598,6 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
 {
     GSList *list = NULL;      /** List of server_meta_data_t *             */
     GSList *last = NULL;      /** last element of the list                 */
-    server_meta_data_t *smeta = NULL;
     meta_data_t *meta = NULL;
 
 
@@ -542,15 +606,11 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
             list = get_files_from_server(res_struct, query);
             last = g_slist_last(list);
 
-            if (last != NULL)
-                {
-                    smeta = (server_meta_data_t *) last->data;
-                    meta = smeta->meta;
+            meta = get_meta_data_from_smeta_list(last);
 
-                    print_debug_file_info(meta);
+            print_debug_file_info(meta);
 
-                    create_file(res_struct, meta);
-                }
+            create_file(res_struct, meta);
 
             g_slist_free_full(list, gslist_free_smeta);
         }
@@ -585,7 +645,7 @@ static void list_files(res_struct_t *res_struct)
 
     if (res_struct->opt->all_versions == TRUE)
         {
-            /* We want to print all versions of query's last found file */
+            print_all_versions(res_struct, query);
         }
     else
         {
