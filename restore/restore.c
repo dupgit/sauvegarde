@@ -391,6 +391,7 @@ static void print_all_versions(res_struct_t *res_struct, query_t *query)
     GSList *list = NULL;   /** List of server_meta_data_t * */
     GSList *last = NULL;   /** last item of the above list  */
     GSList *new_list = NULL;
+    gchar *filename = NULL;
     meta_data_t *meta = NULL;
     query_t *query_last = NULL;
 
@@ -403,12 +404,14 @@ static void print_all_versions(res_struct_t *res_struct, query_t *query)
 
             if (meta != NULL)
                 {
-                    query_last = new_query_from_filename(res_struct->hostname, meta->name);
+                    filename = g_strdup_printf("^%s$", meta->name);
+                    query_last = new_query_from_filename(res_struct->hostname, filename);
 
                     new_list = get_files_from_server(res_struct, query_last);
                     print_list_of_smeta(new_list);
 
                     g_slist_free_full(new_list, gslist_free_smeta);
+                    free_variable(filename);
                 }
 
             g_slist_free_full(list, gslist_free_smeta);
