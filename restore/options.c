@@ -329,11 +329,15 @@ void free_options_t(options_t *opt)
 {
     if (opt != NULL)
         {
+            /* list, restore, date, ip, configfile, afterdate, beforedate and where are 'gchar *' strings */
             free_variable(opt->list);
             free_variable(opt->restore);
             free_variable(opt->date);
             free_variable(opt->configfile);
             free_variable(opt->ip);
+            free_variable(opt->afterdate);
+            free_variable(opt->beforedate);
+            free_variable(opt->where);
             free_variable(opt);
         }
 }
