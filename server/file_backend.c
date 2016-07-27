@@ -40,6 +40,7 @@ static void read_one_buffer(buffer_t *a_buffer);
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer);
 static guint64 get_guint64_from_string(gchar *string);
 static uint get_uint_from_string(gchar *string);
+static gchar *get_substring_from_string(gchar *string);
 static gboolean compare_mtime_to_date(guint64 mtime, gchar *date);
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query);
 
@@ -522,6 +523,9 @@ static void read_one_buffer(buffer_t *a_buffer)
  *                and the actual position
  * @returns a gchar * representing a whole line that may be freed when no
  *          longer needed.
+ * @warning this function does not work properly (it will not handle ", \n
+ *          and , charaters in file names or link names: @todo rewrite
+ *          something new that may handle this correctly.
  */
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
 {
@@ -529,16 +533,22 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
     gchar *a_line = NULL;
     gchar *whole_line = NULL;
     gssize i = 0;
+    gint comma = 0;
+    gboolean end = FALSE;
 
     if (a_buffer != NULL && a_buffer->buf != NULL)
         {
             i = a_buffer->pos;
 
-            while (a_buffer->buf[i] != '\n' && a_buffer->size != 0)
+            while (end != TRUE && a_buffer->size != 0)
                 {
                     if (i < a_buffer->size)
                         {
                             i++;
+                            if (a_buffer->buf[i] == ',')
+                                {
+                                    comma++;
+                                }
                         }
                     else
                         {
@@ -562,6 +572,22 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
 
                             read_one_buffer(a_buffer);
                             i = 0;
+                        }
+
+                    if (a_buffer->buf[i] == '\n')
+                        {
+                            /**
+                             * This trick makes sure that the \n read is not in the filename
+                             * It will not work with link names containing a \n in it
+                             */
+                            if (comma >= 12)
+                                {
+                                    end = TRUE;
+                                }
+                            else
+                                {
+                                    i++;
+                                }
                         }
                 }
 
@@ -621,6 +647,26 @@ static uint get_uint_from_string(gchar *string)
 
     return guess;
 }
+
+
+/**
+ * @param string is a gchar * string containing another string
+ * @returns a newly allocated substring from caracter 3 to the very last
+ *          one of the string parameter.
+ */
+static gchar *get_substring_from_string(gchar *string)
+{
+    gchar *new_string = NULL;
+
+    if (string != NULL)
+        {
+            /* we have a leading space before " and a trailing space after " so begins at + 2 and length is - 3 less */
+            new_string = g_strndup(string + 2, strlen(string) - 3);
+        }
+
+    return new_string;
+}
+
 
 
 /**
@@ -799,11 +845,12 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
              */
 
             params = g_strsplit(line, ",", 14);
-            /* we have a leading space before " and a trailing space after " so begins at + 2 and length is - 3 less */
-            filename = g_strndup(params[11]+2, strlen(params[11])-3);
+
+            filename = get_substring_from_string(params[11]);
 
             if (g_regex_match(a_regex, filename, 0, NULL))
                 {
+                    print_debug("%s\n", line);
                     meta = new_meta_data_t();
 
                     meta->name = filename;
@@ -837,9 +884,9 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
                             meta->size = get_guint64_from_string(params[6]);
 
-                            meta->owner = g_strndup(params[7]+2, strlen(params[7])-3);
-                            meta->group = g_strndup(params[8]+2, strlen(params[8])-3);
-                            meta->link = g_strndup(params[12]+2, strlen(params[12])-3);
+                            meta->owner = get_substring_from_string(params[7]);
+                            meta->group = get_substring_from_string(params[8]);
+                            meta->link =  get_substring_from_string(params[12]);
 
                             meta->uid = get_uint_from_string(params[9]);
                             meta->gid = get_uint_from_string(params[10]);
