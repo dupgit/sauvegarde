@@ -535,6 +535,7 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
     gssize i = 0;
     gint comma = 0;
     gboolean end = FALSE;
+    gboolean in_string = FALSE;
 
     if (a_buffer != NULL && a_buffer->buf != NULL)
         {
@@ -545,7 +546,13 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
                     if (i < a_buffer->size)
                         {
                             i++;
-                            if (a_buffer->buf[i] == ',')
+
+                            if (a_buffer->buf[i] == '"')
+                                {
+                                    in_string = !in_string;
+                                }
+
+                            if (a_buffer->buf[i] == ',' && in_string == FALSE)
                                 {
                                     comma++;
                                 }
@@ -580,7 +587,7 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
                              * This trick makes sure that the \n read is not in the filename
                              * It will not work with link names containing a \n in it
                              */
-                            if (comma >= 12)
+                            if (comma >= 12 && in_string == FALSE)
                                 {
                                     end = TRUE;
                                 }
@@ -850,7 +857,8 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
             if (g_regex_match(a_regex, filename, 0, NULL))
                 {
-                    print_debug("%s\n", line);
+                    print_debug("file_backend: --> params[13] = %s\n", params[13]);
+
                     meta = new_meta_data_t();
 
                     meta->name = filename;
@@ -881,7 +889,6 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
                     if (res == TRUE)
                         {
-
                             meta->size = get_guint64_from_string(params[6]);
 
                             meta->owner = get_substring_from_string(params[7]);
