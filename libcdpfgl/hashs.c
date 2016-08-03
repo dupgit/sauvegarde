@@ -422,7 +422,7 @@ gchar *make_path_from_hash(gchar *path, guint8 *hash, guint level)
  */
 GList *make_hash_data_list_from_string(gchar *hash_string)
 {
-    uint i = 0;
+    guint i = 0;
     gchar **hashs = NULL;
     gchar *a_hash = NULL;
     hash_data_t *hash_data = NULL;

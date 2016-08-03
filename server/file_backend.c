@@ -545,8 +545,6 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
                 {
                     if (i < a_buffer->size)
                         {
-                            i++;
-
                             if (a_buffer->buf[i] == '"')
                                 {
                                     in_string = !in_string;
@@ -556,6 +554,13 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
                                 {
                                     comma++;
                                 }
+
+                            if (a_buffer->buf[i] == '\n' && in_string == FALSE && comma >=12)
+                                {
+                                    end = TRUE;
+                                }
+
+                            i++;
                         }
                     else
                         {
@@ -580,24 +585,7 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
                             read_one_buffer(a_buffer);
                             i = 0;
                         }
-
-                    if (a_buffer->buf[i] == '\n')
-                        {
-                            /**
-                             * This trick makes sure that the \n read is not in the filename
-                             * It will not work with link names containing a \n in it
-                             */
-                            if (comma >= 12 && in_string == FALSE)
-                                {
-                                    end = TRUE;
-                                }
-                            else
-                                {
-                                    i++;
-                                }
-                        }
                 }
-
 
             line = g_strndup(a_buffer->buf + a_buffer->pos, i - a_buffer->pos);
             a_buffer->pos = i + 1; /* the new position is right next '\n' ! */
@@ -857,8 +845,6 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
             if (g_regex_match(a_regex, filename, 0, NULL))
                 {
-                    print_debug("file_backend: --> params[13] = %s\n", params[13]);
-
                     meta = new_meta_data_t();
 
                     meta->name = filename;
