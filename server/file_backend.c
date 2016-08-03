@@ -559,8 +559,10 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
                                 {
                                     end = TRUE;
                                 }
-
-                            i++;
+                            else
+                                {
+                                    i++;
+                                }
                         }
                     else
                         {
