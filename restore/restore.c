@@ -497,6 +497,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 {
     GFile *file = NULL;
     gchar *basename = NULL;    /** basename for the file to be restored     */
+    gchar *newname = NULL;     /** Effective name that the file will have   */
     gchar *where = NULL;       /** directory where to restore the file      */
     gchar *filename = NULL;    /** filename of the restored file            */
     GFileOutputStream *stream =  NULL;
@@ -504,6 +505,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
     options_t *opt = NULL;
     gint max = 0;
     gchar *the_date = NULL;
+    guint i = 0;
 
     if (res_struct != NULL && meta != NULL)
         {
@@ -526,11 +528,34 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
             if (opt != NULL && opt->all_versions == TRUE)
                 {
                     the_date = transform_date_to_string(meta->mtime, TRUE);
-                    basename = g_strconcat(the_date, "_", basename, NULL);
-                    free_variable(the_date);
+                    newname = g_strdup_printf("%s_%s", the_date, basename);
+                }
+            else
+                {
+                    newname = g_strdup(basename);
                 }
 
-            filename = g_build_filename(where, basename, NULL);
+            filename = g_build_filename(where, newname, NULL);
+
+            while (file_exists(filename))
+                {
+
+                    free_variable(filename);
+
+                    if (opt != NULL && opt->all_versions == TRUE)
+                        {
+                            free_variable(newname);
+                            newname = g_strdup_printf("%s-%d_%s", the_date, i, basename);
+                        }
+                    else
+                        {
+                            newname = g_strdup_printf("%d-%s", i, basename);
+                        }
+
+                    filename = g_build_filename(where, newname, NULL);
+                    i++;
+                }
+
             print_debug(_("filename to restore: %s\n"), filename);
             file = g_file_new_for_path(filename);
 
@@ -563,6 +588,8 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
             free_variable(where);
             free_variable(basename);
             free_variable(filename);
+            free_variable(newname);
+            free_variable(the_date);
         }
 }
 
