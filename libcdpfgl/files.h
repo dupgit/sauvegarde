@@ -226,6 +226,15 @@ extern gint compare_filenames(gconstpointer a, gconstpointer b);
 
 
 /**
+ * Gets the date into a string with a specific format
+ * @param nanosec is a number that represents nanoseconds since epoch
+ * @param escaped is a boolean that may be TRUE if we need a date string
+ *        escaped and filesystems compliant.
+ */
+extern gchar *transform_date_to_string(guint64 nanosec, gboolean escaped);
+
+
+/**
  * Prints a file ands its meta data to the screen
  * @param smeta is the server meta data of the file to be printed on the
  *        screen

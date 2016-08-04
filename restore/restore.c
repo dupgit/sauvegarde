@@ -43,6 +43,8 @@ static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *
 static void create_file(res_struct_t *res_struct, meta_data_t *meta);
 static void print_debug_file_info(meta_data_t *meta);
 static void restore_last_file(res_struct_t *res_struct, query_t *query);
+static void restore_list_of_smeta(res_struct_t *res_struct, GSList *list);
+static void restore_all_versions(res_struct_t *res_struct, query_t *query);
 static void free_res_struct_t(res_struct_t *res_struct);
 static void list_files(res_struct_t *res_struct);
 static void restore_files(res_struct_t *res_struct);
@@ -315,7 +317,8 @@ static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query)
 /**
  * Prints all files of the list and their associated meta data to the
  * screen
- * @param list is a GSList of smeta structures
+ * @param list is a GSList of smeta structures representing files to be
+ *        printed to screen
  */
 static void print_list_of_smeta(GSList *list)
 {
@@ -500,6 +503,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
     GError *error = NULL;
     options_t *opt = NULL;
     gint max = 0;
+    gchar *the_date = NULL;
 
     if (res_struct != NULL && meta != NULL)
         {
@@ -517,6 +521,13 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                 {
                     /* Fall back to get the current directory to make the file to be restored in it */
                     where = g_get_current_dir();
+                }
+
+            if (opt != NULL && opt->all_versions == TRUE)
+                {
+                    the_date = transform_date_to_string(meta->mtime, TRUE);
+                    basename = g_strconcat(the_date, "_", basename, NULL);
+                    free_variable(the_date);
                 }
 
             filename = g_build_filename(where, basename, NULL);
@@ -619,6 +630,70 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
 
 
 /**
+ * Retores each file of the list
+ * @param res_struct is the main structure for cdpfglrestore program. It
+ *         is needed by create_file function called here in order to know
+ *         what to do upon command line's options
+ * @param list is a GSList of smeta structures representing files to be
+ *        restored
+ */
+static void restore_list_of_smeta(res_struct_t *res_struct, GSList *list)
+{
+    meta_data_t *meta = NULL;
+
+    while (list != NULL)
+        {
+            meta = get_meta_data_from_smeta_list(list);
+
+            print_debug_file_info(meta);
+
+            create_file(res_struct, meta);
+
+            list = g_slist_next(list);
+        }
+}
+
+
+/**
+ * Restores all versions of the last file that the fetched list contains.
+ * @param res_struct is the main structure for cdpfglrestore program.
+ * @param query is the structure that contains everything needed to
+ *        query the server (and filter a bit). It must not be NULL.
+ */
+static void restore_all_versions(res_struct_t *res_struct, query_t *query)
+{
+    GSList *list = NULL;      /** List of server_meta_data_t *             */
+    GSList *last = NULL;      /** last element of the list                 */
+    meta_data_t *meta = NULL;
+    gchar *filename = NULL;
+    query_t *query_last = NULL;
+    GSList *new_list = NULL;
+
+    if (res_struct != NULL && query != NULL)
+        {
+            list = get_files_from_server(res_struct, query);
+            last = g_slist_last(list);
+
+            meta = get_meta_data_from_smeta_list(last);
+
+            if (meta != NULL)
+                {
+                    filename = g_strdup_printf("^%s$", meta->name);
+                    query_last = new_query_from_filename(res_struct->hostname, filename);
+
+                    new_list = get_files_from_server(res_struct, query_last);
+                    restore_list_of_smeta(res_struct, new_list);
+
+                    g_slist_free_full(new_list, gslist_free_smeta);
+                    free_variable(filename);
+                }
+
+            g_slist_free_full(list, gslist_free_smeta);
+        }
+}
+
+
+/**
  * Frees a previously allocated res_struct_t * structure.
  * @param res_struct is the res_struct_t * structure to be freed.
  */
@@ -670,6 +745,7 @@ static void restore_files(res_struct_t *res_struct)
     if (res_struct->opt->all_versions == TRUE)
         {
             /* We want to restore all versions of query's last found file */
+            restore_all_versions(res_struct, query);
         }
     else
         {

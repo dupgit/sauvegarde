@@ -431,6 +431,35 @@ gint compare_filenames(gconstpointer a, gconstpointer b)
 
 
 /**
+ * Gets the date into a string with a specific format
+ * @param nanosec is a number that represents nanoseconds since epoch
+ * @param escaped is a boolean that may be TRUE if we need a date string
+ *        escaped and filesystems compliant.
+ */
+gchar *transform_date_to_string(guint64 nanosec, gboolean escaped)
+{
+    GDateTime *la_date = NULL;
+    gchar *the_date = NULL;
+
+    la_date = g_date_time_new_from_unix_local(nanosec);
+
+    if (escaped == TRUE)
+        {
+            /** @note Not including the time zone here. Should we ? */
+            the_date = g_date_time_format(la_date, "%F-%H-%M-%S");
+        }
+    else
+        {
+            the_date = g_date_time_format(la_date, "%F %T %z");
+        }
+
+    g_date_time_unref(la_date);
+
+    return the_date;
+}
+
+
+/**
  * Prints a file ands its meta data to the screen
  * @param smeta is the server meta data of the file to be printed on the
  *        screen
@@ -438,7 +467,6 @@ gint compare_filenames(gconstpointer a, gconstpointer b)
 void print_smeta_to_screen(server_meta_data_t *smeta)
 {
     meta_data_t *meta = NULL;   /**< helper to access smeta->meta structure do not free ! */
-    GDateTime *la_date = NULL;
     gchar *the_date = NULL;
 
     if (smeta !=  NULL && smeta->meta != NULL)
@@ -461,17 +489,12 @@ void print_smeta_to_screen(server_meta_data_t *smeta)
                     break;
                 }
 
-            la_date = g_date_time_new_from_unix_local(meta->mtime);
-            the_date = g_date_time_format(la_date, "%F %T %z");
+            the_date = transform_date_to_string(meta->mtime, FALSE);
 
-            fprintf(stdout, "%s ", the_date);
-
-            fprintf(stdout, "%s\n", meta->name);
+            fprintf(stdout, "%s %s\n", the_date, meta->name);
 
             free_variable(the_date);
-            g_date_time_unref(la_date);
         }
-
 }
 
 
