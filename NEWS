@@ -1,14 +1,28 @@
-[dontknowyet] v0.0.9
+[??-08-2016] v0.0.9
 'sauvegarde' project is also known as Continuous Data Protection For GNU/Linux (cdpfgl). It is a set of programs: 'cdpfglserver', 'cdpfglclient' and 'cdpfglrestore' as of now. They will saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server 'cdpfglserver' is stateless and achieves deduplication at the block level (optionally with adaptive block size). As a result it does not use much memory and may run on small machines (for instance I run one cdpfglserver on a 1Gb bananapi).
 
-This is v0.0.9 release of this project and some major features were added and some bugs corrected:
+This is v0.0.9 release of this project and some features were added and some bugs corrected:
 
     * Documentation has been reviewed and improved
     * Some code refactoring was done in some parts of the programs
     * Corrected bugs that crashed the programs (cdpfglserver or cdpfglclient) when a file was containing a ',' or a '\n' character.
     * New url /Data/Hash_Array.json has been added in cdpfglserver. It answers GET request with extra header X-Get-Hash-Array that must contain a comma separated base64 encoded hash list.
-    * New option -e, --all-versions is now available in cdpfglrestore to list or restore all versions of a file.
+    * New option -e, --all-versions is now available in cdpfglrestore to list or restore all versions of a file. Restoring all versions of a file prepends each filename with it's backup date (it adds a number files have the same date).
+    * 1100+ commits !
 
+Contributors to this version:
+
+    * Olivier Delhomme
+
+Links:
+
+    * Sauvegarde's project: https://github.com/dupgit/sauvegarde
+    * Sauvegarde's gitter: https://gitter.im/dupgit/sauvegarde
+    * Sauvegarde's openhub: https://openhub.net/p/sauvegarde
+    * Sauvegarde release v0.0.9: http://cdpfgl.delhomme.org/download/releases/cdpfgl-0.0.9.tar.xz
+    * travis continuous integration status: https://travis-ci.org/dupgit/sauvegarde
+    * sauvegarde's frescode: http://freshcode.club/projects/sauvegarde
+    * voidlinux distribution: http://www.voidlinux.eu/
 
 
 
@@ -37,7 +51,6 @@ Contributors to this version:
     * Olivier Delhomme
     * Pierre Bourgin
 
-
 Links:
 
     * Sauvegarde's project: https://github.com/dupgit/sauvegarde
@@ -46,6 +59,7 @@ Links:
     * travis continuous integration status: https://travis-ci.org/dupgit/sauvegarde
     * sauvegarde's frescode: http://freshcode.club/projects/sauvegarde
     * voidlinux distribution: http://www.voidlinux.eu/
+
 
 
 [02-11-2015] v0.0.6
@@ -61,6 +75,7 @@ This is v0.0.6 release of this project and some major features were added:
     * Memory allocation strategy has been reviewed at some points: when it's possible, avoid allocating memory at all, when we must allocate see if g_malloc() is usable else use g_malloc0() which is 1000 times slower than g_malloc.
 
 Contributors to this version:
+
     * Olivier Delhomme
 
 Links:
@@ -88,6 +103,7 @@ This is v0.0.5 release of this project. Some improvements were made as all what 
     * Corrected 2 major mistakes that prevented client to be efficient when processing files (to avoid processing them when already processed). As a result client in v0.0.5 is slower than in v0.0.4 but saves a lot of IO and CPU on its running machine.
 
 Contributors to this version:
+
     * Olivier Delhomme
 
 Links:
@@ -113,6 +129,7 @@ This is the fourth release of this project. Some improvements were made. Let's s
     * TODO file has been reworked and contains new ideas that I might put in the roadmap.
 
 Contributors to this version:
+
     * Olivier Delhomme
     * Sébastien Tricaud
 
