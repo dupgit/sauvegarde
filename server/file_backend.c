@@ -845,6 +845,8 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
             filename = get_substring_from_string(params[11]);
 
+            print_debug("file_backend.c: filename is %s\n", filename);
+
             if (g_regex_match(a_regex, filename, 0, NULL))
                 {
                     meta = new_meta_data_t();
