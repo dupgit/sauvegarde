@@ -152,22 +152,25 @@ options are:
 
     This program is restoring files from cdpfglserver's server.
 
-
     Help Options:
       -h, --help                       Show help options
 
     Application Options:
       -v, --version                    Prints program version.
+      -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
+      -c, --configuration=FILENAME     Specify an alternative configuration file.
       -l, --list=REGEX                 Gives a list of saved files that correspond to the given REGEX.
       -r, --restore=REGEX              Restores requested filename (REGEX) (by default latest version).
       -t, --date=DATE                  Restores the selected file at that specific DATE (YYYY-MM-DD HH:MM:SS format).
       -a, --after=DATE                 Restores the selected file with mtime after DATE (YYYY-MM-DD HH:MM:SS format).
       -b, --before=DATE                Restores the selected file with mtime before DATE (YYYY-MM-DD HH:MM:SS format).
-      -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
-      -c, --configuration=FILENAME     Specify an alternative configuration file.
+      -e, --all-versions               List or restore all versions of a file.
       -w, --where=DIRECTORY            Specify a DIRECTORY where to restore a file.
       -i, --ip=IP                      IP address where server program is.
       -p, --port=NUMBER                Port NUMBER on which server program is listening.
+
+    Please report bugs to: Olivier DELHOMME <olivier.delhomme@free.fr>
+
 
 
 ## Manual
