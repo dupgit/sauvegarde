@@ -187,7 +187,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     gchar *defaultconfigfilename = NULL;
 
     bugreport = g_strconcat(_("Please report bugs to: "), PACKAGE_BUGREPORT, NULL);
-    summary = g_strdup(_("This program is restoring files from cdpfglserver's server.\n"));
+    summary = g_strdup(_("This program is restoring files from cdpfglserver's server."));
     context = g_option_context_new("");
 
     set_debug_mode(ENABLE_DEBUG);
