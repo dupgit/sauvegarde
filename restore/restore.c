@@ -300,7 +300,7 @@ static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query)
                 {
                     root = load_json(res_struct->comm->buffer);
 
-                    list = extract_smeta_gslist_from_file_list(root);
+                    list = extract_smeta_gslist_from_json_array(root);
                     list = g_slist_sort(list, compare_filenames);
 
                     json_decref(root);

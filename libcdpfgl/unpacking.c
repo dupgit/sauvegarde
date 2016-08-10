@@ -373,7 +373,7 @@ static server_meta_data_t *fills_server_meta_data_t_from_json_t(json_t *root)
  * @returns a GSList that may be composed of 0 element (ie NULL). Elements
  *          are of type server_meta_data_t *.
  */
-GSList *extract_smeta_gslist_from_file_list(json_t *root)
+GSList *extract_smeta_gslist_from_json_array(json_t *root)
 {
     json_t *array =  NULL;   /** json_t *array is the retrieved array used to iter over to fill the list     */
     size_t index = 0;        /** size_t index is the iterator to iter over the array                         */

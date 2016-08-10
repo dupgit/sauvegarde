@@ -195,7 +195,7 @@ GList *extract_glist_from_array(json_t *root, gchar *name, gboolean only_hash);
  * @returns a GSList that may be composed of 0 element (ie NULL). Elements
  *          are of type server_meta_data_t *.
  */
-extern GSList *extract_smeta_gslist_from_file_list(json_t *root);
+extern GSList *extract_smeta_gslist_from_json_array(json_t *root);
 
 
 /**

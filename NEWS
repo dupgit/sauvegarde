@@ -1,3 +1,17 @@
+[dontknowyet] v0.0.9
+'sauvegarde' project is also known as Continuous Data Protection For GNU/Linux (cdpfgl). It is a set of programs: 'cdpfglserver', 'cdpfglclient' and 'cdpfglrestore' as of now. They will saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server 'cdpfglserver' is stateless and achieves deduplication at the block level (optionally with adaptive block size). As a result it does not use much memory and may run on small machines (for instance I run one cdpfglserver on a 1Gb bananapi).
+
+This is v0.0.9 release of this project and some major features were added and some bugs corrected:
+
+    * Documentation has been reviewed and improved
+    * Some code refactoring was done in some parts of the programs
+    * Corrected bugs that crashed the programs (cdpfglserver or cdpfglclient) when a file was containing a ',' or a '\n' character.
+    * New url /Data/Hash_Array.json has been added in cdpfglserver. It answers GET request with extra header X-Get-Hash-Array that must contain a comma separated base64 encoded hash list.
+    * New option -e, --all-versions is now available in cdpfglrestore to list or restore all versions of a file.
+
+
+
+
 [03-01-2016] v0.0.7
 'sauvegarde' project is also known as Continuous Data Protection For GNU/Linux (cdpfgl). It is a set of programs: 'cdpfglserver', 'cdpfglclient' and 'cdpfglrestore' as of now. They will saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server 'cdpfglserver' is stateless and achieves deduplication at the block level. As a result it does not use much memory and may run on small machines (for instance I run one cdpfglserver on a 1Gb bananapi).
 
