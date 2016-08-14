@@ -8,7 +8,7 @@ This is v0.0.9 release of this project and some features were added and some bug
     * Corrected bugs that crashed the programs (cdpfglserver or cdpfglclient) when a file was containing a ',' or a '\n' character.
     * New url /Data/Hash_Array.json has been added in cdpfglserver. It answers GET request with extra header X-Get-Hash-Array that must contain a comma separated base64 encoded hash list.
     * New option -e, --all-versions is now available in cdpfglrestore to list or restore all versions of a file. Restoring all versions of a file prepends each filename with it's backup date (it adds a number files have the same date).
-    * 1100+ commits !
+    * 1100+ commits reached !
 
 Contributors to this version:
 

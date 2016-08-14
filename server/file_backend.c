@@ -40,7 +40,7 @@ static void read_one_buffer(buffer_t *a_buffer);
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer);
 static guint64 get_guint64_from_string(gchar *string);
 static uint get_uint_from_string(gchar *string);
-static gchar *get_substring_from_string(gchar *string);
+static gchar *get_substring_from_string(gchar *string, gboolean decodeit);
 static gboolean compare_mtime_to_date(guint64 mtime, gchar *date);
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query);
 
@@ -72,6 +72,8 @@ void file_store_smeta(server_struct_t *server_struct, server_meta_data_t *smeta)
     meta_data_t *meta = NULL;
     gchar *prefix = NULL;
     file_backend_t *file_backend = NULL;
+    gchar *name64 = NULL;
+    gchar *link64 = NULL;
 
 
     if (server_struct != NULL && server_struct->backend != NULL && server_struct->backend->user_data != NULL && smeta != NULL)
@@ -92,15 +94,31 @@ void file_store_smeta(server_struct_t *server_struct, server_meta_data_t *smeta)
                         {
                             hash_list = convert_hash_data_list_to_gchar(meta->hash_data_list);
 
+                            name64 = encode_to_base64(meta->name);
+                            link64 = encode_to_base64(meta->link);
+
+                            if (name64 == NULL)
+                                {
+                                    name64 = g_strdup("");
+                                }
+
+                            if (link64 == NULL)
+                                {
+                                    link64 = g_strdup("");
+                                }
+
                             if (hash_list != NULL)
                                 {
-                                    buffer = g_strdup_printf("%d, %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", \"%s\", \"%s\", %d, %d, \"%s\", \"%s\", %s\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name, meta->link, hash_list);
+                                    buffer = g_strdup_printf("%d, %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", \"%s\", \"%s\", %d, %d, \"%s\", \"%s\", %s\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, name64, link64, hash_list);
                                     free_variable(hash_list);
                                 }
                             else
                                 {
-                                    buffer = g_strdup_printf("%d, %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", \"%s\", \"%s\", %d, %d, \"%s\", \"%s\"\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, meta->name, meta->link);
+                                    buffer = g_strdup_printf("%d, %" G_GUINT64_FORMAT ", %d, %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", %" G_GUINT64_FORMAT ", \"%s\", \"%s\", %d, %d, \"%s\", \"%s\"\n", meta->file_type, meta->inode, meta->mode, meta->atime, meta->ctime, meta->mtime, meta->size, meta->owner, meta->group, meta->uid, meta->gid, name64, link64);
                                 }
+
+                            free_variable(name64);
+                            free_variable(link64);
 
                             count = strlen(buffer);
                             written = g_output_stream_write((GOutputStream *) stream, buffer, count, NULL, &error);
@@ -549,8 +567,7 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
                                 {
                                     in_string = !in_string;
                                 }
-
-                            if (a_buffer->buf[i] == ',' && in_string == FALSE)
+                            else if (a_buffer->buf[i] == ',' && in_string == FALSE)
                                 {
                                     comma++;
                                 }
@@ -567,7 +584,6 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
                     else
                         {
                             /* The line is stored in more than one buffer */
-
                             line = g_strndup(a_buffer->buf + a_buffer->pos, i - a_buffer->pos);
 
                             if (whole_line != NULL)
@@ -648,17 +664,32 @@ static uint get_uint_from_string(gchar *string)
 
 /**
  * @param string is a gchar * string containing another string
+ * @param decodeit is a boolean. When set to TRUE it will base64 decode
+ *        the string, if FALSE it will return the string as is.
  * @returns a newly allocated substring from caracter 3 to the very last
  *          one of the string parameter.
  */
-static gchar *get_substring_from_string(gchar *string)
+static gchar *get_substring_from_string(gchar *string, gboolean decodeit)
 {
     gchar *new_string = NULL;
+    gchar *base64 = NULL;
+    gsize len = 0;
 
     if (string != NULL)
         {
             /* we have a leading space before " and a trailing space after " so begins at + 2 and length is - 3 less */
-            new_string = g_strndup(string + 2, strlen(string) - 3);
+            base64 = g_strndup(string + 2, strlen(string) - 3);
+
+            if (decodeit == TRUE)
+                {
+                    new_string = (gchar *) g_base64_decode(base64, &len);
+                    free_variable(base64);
+                }
+            else
+                {
+                    new_string = base64;
+                }
+
         }
 
     return new_string;
@@ -831,7 +862,6 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
     meta_data_t *meta = NULL;
     guint32 q_uid = 0;
     guint32 q_gid = 0;
-
     gboolean res = FALSE;
 
     if (line != NULL && strlen(line) > 16)
@@ -843,9 +873,9 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
             params = g_strsplit(line, ",", 14);
 
-            filename = get_substring_from_string(params[11]);
+            filename = get_substring_from_string(params[11], TRUE);
 
-            print_debug("file_backend.c: filename is %s\n", filename);
+            /* print_debug("file_backend.c: filename is %s\n", filename); */
 
             if (g_regex_match(a_regex, filename, 0, NULL))
                 {
@@ -881,9 +911,9 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
                         {
                             meta->size = get_guint64_from_string(params[6]);
 
-                            meta->owner = get_substring_from_string(params[7]);
-                            meta->group = get_substring_from_string(params[8]);
-                            meta->link =  get_substring_from_string(params[12]);
+                            meta->owner = get_substring_from_string(params[7], FALSE);
+                            meta->group = get_substring_from_string(params[8], FALSE);
+                            meta->link =  get_substring_from_string(params[12], TRUE);
 
                             meta->uid = get_uint_from_string(params[9]);
                             meta->gid = get_uint_from_string(params[10]);

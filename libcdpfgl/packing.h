@@ -340,4 +340,14 @@ extern gchar *get_json_version(gchar *json_str);
  *          freed when no longer needed.
  */
 extern gchar *convert_version_to_json(gchar *name, gchar *date, gchar *version, gchar *authors, gchar *license);
+
+
+/**
+ * Encodes a gchar string into a base64 formated gchar * string.
+ * @param string is the gchar string to be encoded (MUST be 0 terminated).
+ * @returns a newly allocated gchar * string in base64 or NULL.
+ */
+extern gchar *encode_to_base64(gchar *string);
+
+
 #endif /* #ifndef _PACKING_H_ */

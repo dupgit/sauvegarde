@@ -28,7 +28,6 @@
 #include "restore.h"
 
 static res_struct_t *init_res_struct(int argc, char **argv);
-static gchar *encode_to_base64(gchar *string);
 static query_t *prepare_query(gchar *hostname);
 static query_t *finish_query(query_t *query, gchar *encoded_filename, gchar *encoded_date, gchar *encoded_afterdate,gchar *encoded_beforedate);
 static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt);
@@ -81,24 +80,6 @@ static res_struct_t *init_res_struct(int argc, char **argv)
         }
 
     return res_struct;
-}
-
-
-/**
- * Encodes a gchar string into a base64 formated gchar * string.
- * @param string is the gchar string to be encoded (MUST be 0 terminated).
- * @returns a newly allocated gchar * string in base64 or NULL.
- */
-static gchar *encode_to_base64(gchar *string)
-{
-    gchar *encoded_string = NULL;
-
-    if (string != NULL)
-        {
-            encoded_string = g_base64_encode((const guchar *) string, strlen(string));
-        }
-
-    return encoded_string;
 }
 
 

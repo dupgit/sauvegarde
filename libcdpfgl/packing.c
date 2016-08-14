@@ -505,3 +505,20 @@ capsule_t *encapsulate_end(void)
 }
 
 
+
+/**
+ * Encodes a gchar string into a base64 formated gchar * string.
+ * @param string is the gchar string to be encoded (MUST be 0 terminated).
+ * @returns a newly allocated gchar * string in base64 or NULL.
+ */
+gchar *encode_to_base64(gchar *string)
+{
+    gchar *encoded_string = NULL;
+
+    if (string != NULL)
+        {
+            encoded_string = g_base64_encode((const guchar *) string, strlen(string));
+        }
+
+    return encoded_string;
+}
