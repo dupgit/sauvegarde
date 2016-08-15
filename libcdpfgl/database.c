@@ -783,7 +783,25 @@ static void free_stmts(stmt_t *stmts)
     if (stmts != NULL)
         {
             sqlite3_finalize(stmts->save_meta_stmt);
+            sqlite3_finalize(stmts->save_buffer_stmt);
+            sqlite3_finalize(stmts->get_file_id_stmt);
             g_free(stmts);
+        }
+}
+
+
+/**
+ * Frees and closes the database connection.
+ * @param database is a db_t * structure with an already openned connection
+ *        that we want to close.
+ */
+void close_database(db_t *database)
+{
+    if (database != NULL)
+        {
+            print_debug(_("Closing database.\n"));
+            free_stmts(database->stmts);
+            sqlite3_close(database->db);
         }
 }
 

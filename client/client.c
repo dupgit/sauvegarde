@@ -1326,6 +1326,12 @@ int main(int argc, char **argv)
              */
             fanotify_loop(main_struct);
 
+
+            if (main_struct != NULL)
+                {
+                    close_database(main_struct->database);
+                }
+
             free_options_t(main_struct->opt);
         }
 

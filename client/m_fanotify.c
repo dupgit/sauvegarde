@@ -474,6 +474,7 @@ void fanotify_loop(main_struct_t *main_struct)
                             /* Break loop if we got SIGINT or SIGTERM */
                             if (fdsi.ssi_signo == SIGINT || fdsi.ssi_signo == SIGTERM)
                                 {
+                                    print_debug(_("Stopping notification.\n"));
                                     stop_fanotify(main_struct->opt, main_struct->fanotify_fd);
                                     free_list(dir_list_utf8);
                                     break;

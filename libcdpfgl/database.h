@@ -154,4 +154,12 @@ extern void db_save_buffer(db_t *database, gchar *url, gchar *buffer);
 extern gboolean db_transmit_buffers(db_t *database, comm_t *comm);
 
 
+/**
+ * Frees and closes the database connection.
+ * @param database is a db_t * structure with an already openned connection
+ *        that we want to close.
+ */
+extern void close_database(db_t *database);
+
+
 #endif /* #ifndef _DATABASE_H_ */
