@@ -197,7 +197,7 @@ should consider that "It ships when its ready".
 
 ### Releases
 
-* 0.0.1  [08 07 2015] First usable version
+* 0.0.1  [08.07.2015] First usable version
 * 0.0.2  [15.08.2015] client redesigned
 * 0.0.3  [21.08.2015] saves and restores links
 * 0.0.4  [06.09.2015] new server url to post a bunch of hashs and
@@ -205,15 +205,15 @@ should consider that "It ships when its ready".
                       hashs to avoid having duplicated hashs into it.
 * 0.0.5  [04.10.2015] fanotify's code reviewed. Avoid having one entire
                       file in memory.
-* 0.0.6  [02 11 2015] restore to some specific place. client adaptive
+* 0.0.6  [02.11.2015] restore to some specific place. client adaptive
                       blocksize with option to choose fixed or adaptive.
                       Add options to choose CLIENT_MIN_BUFFER.
-* 0.0.7  [03 01 2016] Ability to exclude some files by extension or path.
+* 0.0.7  [03.01.2016] Ability to exclude some files by extension or path.
                       Caching mechanism in client in case the server is
                       unreachable. Change GSList hash_data_list from
                       meta_data_t structure to something that allows
                       deletion of elements while walking through it.
-* 0.0.8  [27 04 2016] restore the latest version of a file before a
+* 0.0.8  [27.04.2016] restore the latest version of a file before a
                       specific date. Add a new post url such as
                       (Hash_Array.json) to submit an array of hashs to
                       server that will say which hashs are needed.
