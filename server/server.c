@@ -53,6 +53,7 @@ static void print_headers(struct MHD_Connection *connection);
 static int ahc(void *cls, struct MHD_Connection *connection, const char *url, const char *method, const char *version, const char *upload_data, size_t *upload_data_size, void **con_cls);
 static gpointer meta_data_thread(gpointer user_data);
 static gpointer data_thread(gpointer user_data);
+static void install_server_signal_traps(server_struct_t *server_struct);
 
 
 /**
@@ -753,7 +754,6 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
         }
     else if (g_strcmp0(url, "/Data_Array.json") == 0 && received_data != NULL)
         {
-            /* print_debug("/Data_Array.json: %s\n", received_data); */
             elapsed = new_clock_t();
             root = load_json(received_data);
             end_clock(elapsed, "load_json");
@@ -970,7 +970,7 @@ static gpointer meta_data_thread(gpointer user_data)
 
                             if (smeta != NULL && smeta->meta != NULL)
                                 {
-                                    print_debug("meta_data_thread: received from %s meta for file %s\n", smeta->hostname, smeta->meta->name);
+                                    print_debug(_("meta_data_thread: received from %s meta for file %s\n"), smeta->hostname, smeta->meta->name);
                                     server_struct->backend->store_smeta(server_struct, smeta);
                                     free_smeta_data_t(smeta);
                                 }
@@ -1036,6 +1036,31 @@ static gpointer data_thread(gpointer user_data)
 
 
 /**
+ * Installs signals traps in order to be able to close the program as
+ * as cleanly as we can.
+ * @param main_struct is the main structure of the program it must not
+ *        be NULL;
+ */
+static void install_server_signal_traps(server_struct_t *server_struct)
+{
+    guint id_int = 0;
+    guint id_term = 0;
+
+    if (server_struct != NULL)
+        {
+            id_int = g_unix_signal_add(SIGINT, int_signal_handler, server_struct);
+            id_term = g_unix_signal_add(SIGTERM, int_signal_handler, server_struct);
+
+            if (id_int <= 0 || id_term <= 0)
+                {
+                    print_error(__FILE__, __LINE__, _("Unable to add signal handlers\n"));
+                }
+        }
+}
+
+
+
+/**
  * Main function
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
@@ -1044,8 +1069,7 @@ static gpointer data_thread(gpointer user_data)
 int main(int argc, char **argv)
 {
     server_struct_t *server_struct = NULL;  /** main structure for 'server' program.           */
-    guint id_int = 0;
-    guint id_term = 0;
+
 
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
@@ -1060,13 +1084,8 @@ int main(int argc, char **argv)
     if (server_struct != NULL && server_struct->opt != NULL && server_struct->backend != NULL)
         {
             server_struct->loop = g_main_loop_new(g_main_context_default(), FALSE);
-            id_int = g_unix_signal_add(SIGINT, int_signal_handler, server_struct);
-            id_term = g_unix_signal_add(SIGTERM, int_signal_handler, server_struct);
 
-            if (id_int <= 0 || id_term <= 0)
-                {
-                    print_error(__FILE__, __LINE__, _("Unable to add signal handler\n"));
-                }
+            install_server_signal_traps(server_struct);
 
             /* Initializing the choosen backend by calling it's function */
             if (server_struct->backend->init_backend != NULL)

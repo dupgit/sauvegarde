@@ -40,43 +40,6 @@ static void event_process(main_struct_t *main_struct, struct fanotify_event_meta
 
 
 /**
- * Stops signal handling
- */
-void  stop_signals(int signal_fd)
-{
-    close(signal_fd);
-}
-
-
-/**
- * Starts signal handling
- */
-gint start_signals(void)
-{
-    gint signal_fd = -1;
-    sigset_t sigmask;
-
-      /* We want to handle SIGINT and SIGTERM in the signal_fd, so we block them. */
-    sigemptyset(&sigmask);
-    sigaddset(&sigmask, SIGINT);
-    sigaddset(&sigmask, SIGTERM);
-
-    if (sigprocmask(SIG_BLOCK, &sigmask, NULL) < 0)
-        {
-            print_error(__FILE__, __LINE__, _("Couldn't block signals: %s\n"), strerror(errno));
-        }
-
-      /* Get new FD to read signals from it */
-    if ((signal_fd = signalfd(-1, &sigmask, 0)) < 0)
-        {
-            print_error(__FILE__, __LINE__, _("Couldn't setup signal FD: %s\n"), strerror(errno));
-        }
-
-  return signal_fd;
-}
-
-
-/**
  * Inits and starts fanotify notifications
  * @param opt : a filled options_t * structure that contains all options
  *        by default, read into the file or selected in the command line.
@@ -431,25 +394,19 @@ static GSList *transform_to_utf8_casefold(GSList *dir_list)
 void fanotify_loop(main_struct_t *main_struct)
 {
     struct pollfd fds[FD_POLL_MAX];
-    struct signalfd_siginfo fdsi;
     char buffer[FANOTIFY_BUFFER_SIZE];
     ssize_t length = 0;
     struct fanotify_event_metadata *fe_mdata = NULL;
     GSList *dir_list_utf8 = NULL;
-
-
-    gint signal_fd = 0;
     gint fanotify_fd = 0;
+
 
     if (main_struct != NULL)
         {
-            signal_fd = main_struct->signal_fd;
             fanotify_fd = main_struct->fanotify_fd;
 
 
             /* Setup polling */
-            fds[FD_POLL_SIGNAL].fd = signal_fd;
-            fds[FD_POLL_SIGNAL].events = POLLIN;
             fds[FD_POLL_FANOTIFY].fd = fanotify_fd;
             fds[FD_POLL_FANOTIFY].events = POLLIN;
 
@@ -462,27 +419,6 @@ void fanotify_loop(main_struct_t *main_struct)
                         {
                             print_error(__FILE__, __LINE__, _("Couldn't poll(): '%s'\n"), strerror(errno));
                         }
-
-                    /* Signal received ? */
-                    if (fds[FD_POLL_SIGNAL].revents & POLLIN)
-                        {
-                            if (read(fds[FD_POLL_SIGNAL].fd, &fdsi, sizeof(fdsi)) != sizeof(fdsi))
-                                {
-                                    print_error(__FILE__, __LINE__, _("Couldn't read signal, wrong size read\n"));
-                                }
-
-                            /* Break loop if we got SIGINT or SIGTERM */
-                            if (fdsi.ssi_signo == SIGINT || fdsi.ssi_signo == SIGTERM)
-                                {
-                                    print_debug(_("Stopping notification.\n"));
-                                    stop_fanotify(main_struct->opt, main_struct->fanotify_fd);
-                                    free_list(dir_list_utf8);
-                                    break;
-                                }
-
-                            print_error(__FILE__, __LINE__, _("Received unexpected signal\n"));
-                        }
-
 
                     /* fanotify event received ? */
                     if (fds[FD_POLL_FANOTIFY].revents & POLLIN)
@@ -507,9 +443,7 @@ void fanotify_loop(main_struct_t *main_struct)
                                 }
                         }
                 }
-
         }
-
 }
 
 

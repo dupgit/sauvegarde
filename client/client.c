@@ -48,6 +48,10 @@ static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *ar
 static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta);
 static gint64 calculate_file_blocksize(options_t *opt, gint64 size);
 static gpointer reconnected(gpointer data);
+static gboolean client_signal_handler(gpointer user_data);
+static gpointer fanotify_loop_thread(gpointer data);
+static void install_client_signal_traps(main_struct_t *main_struct);
+
 
 /**
  * Make a list of precompiled GRegex to be used to filter out directories
@@ -145,7 +149,6 @@ static main_struct_t *init_main_structure(options_t *opt)
                     main_struct->comm = NULL;
                 }
 
-            main_struct->signal_fd = start_signals();
             main_struct->fanotify_fd = start_fanotify(opt);
 
             /* inits the queue that will wait for events on files */
@@ -157,6 +160,10 @@ static main_struct_t *init_main_structure(options_t *opt)
             main_struct->save_one_file = g_thread_new("save_one_file", save_one_file_threaded, main_struct);
             main_struct->carve_all_directories = g_thread_new("carve_all_directories", carve_all_directories, main_struct);
             main_struct->reconn_thread = g_thread_new("reconnected", reconnected, main_struct);
+            main_struct->fanotify_loop = g_thread_new("fanotify-loop", fanotify_loop_thread, main_struct);
+
+            /* Main loop creation (used to trap signals into main loop run) */
+            main_struct->loop = g_main_loop_new(g_main_context_default(), FALSE);
 
             print_debug(_("Main structure initialized !\n"));
 
@@ -898,7 +905,6 @@ static gchar *send_hash_array_to_server(comm_t *comm, GList *hash_data_list)
             comm->readbuffer = whole_hash_list;
             print_debug("Hash_Array: %s\n", whole_hash_list);
 
-
             success = post_url(comm, "/Hash_Array.json");
 
             if (success == CURLE_OK)
@@ -1284,6 +1290,86 @@ static gpointer reconnected(gpointer data)
 }
 
 
+/**
+ * Signal handler function called when SIGTERM and SIGKILL are received
+ * @param user_data is a gpointer that MUST be a pointer to the
+ *        main_struct_t *
+ * @returns FALSE if user_data is NULL and frees memory and exits if TRUE.
+ */
+static gboolean client_signal_handler(gpointer user_data)
+{
+    main_struct_t *main_struct = (main_struct_t *) user_data;
+
+    if (main_struct != NULL)
+        {
+
+            print_debug(_("\nEnding the program:\n"));
+
+            stop_fanotify(main_struct->opt, main_struct->fanotify_fd);
+            print_debug(_("\tNotification stopped.\n"));
+
+            g_main_loop_quit(main_struct->loop);
+            print_debug(_("\tMain loop exited.\n"));
+
+            close_database(main_struct->database);
+            print_debug(_("\tDatabase closed.\n"));
+
+            free_options_t(main_struct->opt);
+        }
+
+    /** we can remove the handler as we are exiting the program anyway */
+    return FALSE;
+}
+
+
+/**
+ * Thread helper for fanotify's loop
+ * @param data must be main_struct_t * pointer.
+ * @returns NULL.
+ */
+static gpointer fanotify_loop_thread(gpointer data)
+{
+    main_struct_t *main_struct = (main_struct_t *) data;
+
+    if (main_struct != NULL)
+        {
+            /** Launching an infinite loop to get modifications done on
+             * the filesystem (on directories we watch).
+             * @note fanotify's kernel interface does not provide the events
+             * needed to know if a file has been deleted or it's attributes
+             * changed. Enabling this feature even if we know that files
+             * will never get deleted in our database.
+             */
+            fanotify_loop(main_struct);
+        }
+
+    return NULL;
+}
+
+
+/**
+ * Installs signals traps in order to be able to close the program as
+ * as cleanly as we can.
+ * @param main_struct is the main structure of the program it must not
+ *        be NULL;
+ */
+static void install_client_signal_traps(main_struct_t *main_struct)
+{
+    guint id_int = 0;
+    guint id_term = 0;
+
+    if (main_struct != NULL)
+        {
+            id_int = g_unix_signal_add(SIGINT, client_signal_handler, main_struct);
+            id_term = g_unix_signal_add(SIGTERM, client_signal_handler, main_struct);
+
+            if (id_int <= 0 || id_term <= 0)
+                {
+                    print_error(__FILE__, __LINE__, _("Unable to add signal handlers\n"));
+                }
+        }
+}
+
 
 /**
  * Main function
@@ -1295,6 +1381,8 @@ int main(int argc, char **argv)
 {
     options_t *opt = NULL;  /** Structure to manage options from the command line can be freed when no longer needed */
     main_struct_t *main_struct = NULL;
+
+
 
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
@@ -1317,22 +1405,9 @@ int main(int argc, char **argv)
              */
             main_struct = init_main_structure(opt);
 
-            /** Launching an infinite loop to get modifications done on
-             * the filesystem (on directories we watch).
-             * @note fanotify's kernel interface does not provide the events
-             * needed to know if a file has been deleted or it's attributes
-             * changed. Enabling this feature even if we know that files
-             * will never get deleted in our database.
-             */
-            fanotify_loop(main_struct);
+            install_client_signal_traps(main_struct);
 
-
-            if (main_struct != NULL)
-                {
-                    close_database(main_struct->database);
-                }
-
-            free_options_t(main_struct->opt);
+            g_main_loop_run(main_struct->loop);
         }
 
     return 0;

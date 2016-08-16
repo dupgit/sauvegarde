@@ -799,7 +799,7 @@ void close_database(db_t *database)
 {
     if (database != NULL)
         {
-            print_debug(_("Closing database.\n"));
+            print_debug(_("\tClosing database.\n"));
             free_stmts(database->stmts);
             sqlite3_close(database->db);
         }
