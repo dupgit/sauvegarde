@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Sauvegarde 0.0.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-08-20 20:43+0200\n"
-"PO-Revision-Date: 2016-04-27 21:39+0100\n"
+"PO-Revision-Date: 2016-08-23 22:51+0100\n"
 "Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
 "Language: fr\n"
@@ -99,9 +99,8 @@ msgstr ""
 "Terminaison du programme :\n"
 
 #: ../client/client.c:1309
-#, fuzzy
 msgid "\tNotification stopped.\n"
-msgstr "\tdémon MHD arrêté.\n"
+msgstr "\tNotification arrêtée.\n"
 
 #: ../client/client.c:1312 ../server/server.c:98
 msgid "\tMain loop exited.\n"
@@ -109,10 +108,9 @@ msgstr "\tboucle principale terminée.\n"
 
 #: ../client/client.c:1315
 msgid "\tDatabase closed.\n"
-msgstr ""
+msgstr "\tBase de données fermée.\n"
 
 #: ../client/client.c:1368 ../server/server.c:1056
-#, fuzzy
 msgid "Unable to add signal handlers\n"
 msgstr "Impossible d'ajouter une fonction pour traiter les signaux\n"
 
@@ -379,9 +377,9 @@ msgid "\t. LIBCURL version: %s\n"
 msgstr "\t. LIBCURL version : %s\n"
 
 #: ../libcdpfgl/communique.c:267
-#, fuzzy, c-format
+#, c-format
 msgid "Answer length: %d\n"
-msgstr "La réponse est : \"%s\"\n"
+msgstr "La taille de la réponse est : %d\n"
 
 #: ../libcdpfgl/communique.c:271
 #, c-format
@@ -403,21 +401,21 @@ msgstr "La réponse est : \"%s\"\n"
 #: ../libcdpfgl/communique.c:372
 #, c-format
 msgid "Server (version %s) is alive at %s.\n"
-msgstr ""
+msgstr "Serveur (version %s) en fonctionnement à %s.\n"
 
 #: ../libcdpfgl/communique.c:376
 #, c-format
 msgid "Server (version %s) is alive.\n"
-msgstr ""
+msgstr "Serveur (version %s) en fonctionnement.\n"
 
 #: ../libcdpfgl/communique.c:386
-#, fuzzy, c-format
+#, c-format
 msgid "Server is not alive (%s).\n"
-msgstr "Adresse IP du serveur : %s\n"
+msgstr "Le serveur n'est pas en fonctionnement (%s).\n"
 
 #: ../libcdpfgl/communique.c:390
 msgid "Server is not alive.\n"
-msgstr ""
+msgstr "Le serveur n'est pas en fonctionnement.\n"
 
 #: ../libcdpfgl/configuration.c:114 ../libcdpfgl/configuration.c:151
 #: ../libcdpfgl/configuration.c:192 ../libcdpfgl/configuration.c:232
@@ -514,7 +512,7 @@ msgstr "(%d) Erreur lors de la destruction dans la table 'buffers' : %s\n"
 
 #: ../libcdpfgl/database.c:802
 msgid "\tClosing database.\n"
-msgstr ""
+msgstr "\tFermeture de la base de données.\n"
 
 #: ../libcdpfgl/database.c:828
 #, c-format
@@ -689,7 +687,7 @@ msgstr ""
 
 #: ../restore/options.c:175
 msgid "List or restore all versions of a file."
-msgstr ""
+msgstr "Liste ou restaure toutes les version d'un fichier."
 
 #: ../restore/options.c:176
 msgid "DIRECTORY"
@@ -704,9 +702,8 @@ msgid "Port NUMBER on which server program is listening."
 msgstr "NUMÉRO du port sur lequel le programme serveur est à l'écoute."
 
 #: ../restore/options.c:190
-#, fuzzy
 msgid "This program is restoring files from cdpfglserver's server."
-msgstr "Ce programme restaure les fichiers depuis le serveur cdpfglserver.\n"
+msgstr "Ce programme restaure les fichiers depuis le serveur cdpfglserver."
 
 #: ../restore/restore.c:114
 #, c-format
@@ -719,9 +716,9 @@ msgid "Query is: %s\n"
 msgstr "La requête est : %s\n"
 
 #: ../restore/restore.c:436
-#, fuzzy, c-format
+#, c-format
 msgid "Query is: %s with header %s\n"
-msgstr "La requête est : %s\n"
+msgstr "La requête est : %s avec l'en-tête %s\n"
 
 #: ../restore/restore.c:454
 #, c-format
@@ -988,9 +985,9 @@ msgid "Headers for this connection are:\n"
 msgstr "Les en-têtes de cette connexion sont :\n"
 
 #: ../server/server.c:973
-#, fuzzy, c-format
+#, c-format
 msgid "meta_data_thread: received from %s meta for file %s\n"
-msgstr "Méta données reçues pour le fichier %s\n"
+msgstr "meta_data_thread: Méta données reçues de %s pour le fichier %s\n"
 
 #: ../server/server.c:979
 msgid "Error: received a NULL pointer.\n"
