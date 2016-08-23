@@ -104,7 +104,7 @@ msgstr "\tNotification arrêtée.\n"
 
 #: ../client/client.c:1312 ../server/server.c:98
 msgid "\tMain loop exited.\n"
-msgstr "\tboucle principale terminée.\n"
+msgstr "\tBoucle principale terminée.\n"
 
 #: ../client/client.c:1315
 msgid "\tDatabase closed.\n"
