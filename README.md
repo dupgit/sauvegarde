@@ -184,9 +184,6 @@ If you need more than the above hints, please have a look at the user
 I am coding on spare hours so I may not tell any release dates and you
 should consider that "It ships when its ready".
 
-* 0.0.9  New GET url in order to get a bunch of hashs and their
-         associated data to go quicker when restoring files. Restore all
-         the versions of a file
 * 0.0.10 restore a directory and it's subfiles and directories at a
          specific date. Write a man page for each programs.
 * 0.0.11 have some statistics with the server.
@@ -218,6 +215,11 @@ should consider that "It ships when its ready".
                       (Hash_Array.json) to submit an array of hashs to
                       server that will say which hashs are needed.
                       Avoids sql injection in sqlite queries.
+* 0.0.9  [24.08.2016] New GET url in order to get a bunch of hashs and
+                      their associated data to go quicker when restoring
+                      files. Restore all the versions of a file. Now
+                      cdpfglclient handles signals and should close its
+                      database connection cleanly.
 
 ## Code documentation
 

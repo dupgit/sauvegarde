@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-20 20:43+0200\n"
+"POT-Creation-Date: 2016-08-24 18:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -112,7 +112,7 @@ msgid "Unable to add signal handlers\n"
 msgstr ""
 
 #: ../client/client.h:75 ../restore/restore.h:80 ../server/server.h:75
-msgid "04 28 2016"
+msgid "08 24 2016"
 msgstr ""
 
 #: ../client/client.h:76 ../restore/restore.h:81 ../server/server.h:76
@@ -120,7 +120,7 @@ msgid "GPL v3 or later"
 msgstr ""
 
 #: ../client/client.h:77 ../restore/restore.h:82 ../server/server.h:77
-msgid "0.0.8"
+msgid "0.0.9"
 msgstr ""
 
 #: ../client/m_fanotify.c:66

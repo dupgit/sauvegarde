@@ -72,9 +72,9 @@
  * Defines the main program name for this part (client)
  */
 #define CLIENT_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
-#define CLIENT_DATE _("04 28 2016")
+#define CLIENT_DATE _("08 24 2016")
 #define CLIENT_LICENSE _("GPL v3 or later")
-#define CLIENT_VERSION _("0.0.8")
+#define CLIENT_VERSION _("0.0.9")
 #define PROGRAM_NAME ("client")
 
 

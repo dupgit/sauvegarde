@@ -3,13 +3,13 @@
 
 This is v0.0.9 release of this project and some features were added and some major bugs corrected:
 
-    * Documentation has been reviewed and improved
-    * Some code refactoring was done in some parts of the programs
-    * Corrected bugs that crashed the programs (cdpfglserver or cdpfglclient) when a file was containing a ',' or a '\n' character. Correction of this bug affects the way file names and link names are stored by file_backend of server program. Thus older version of sauvegarde will not work with a flat meta file from 0.0.9 and 0.0.9 will not work with a flat meta file from 0.0.8. Getting an older flat meta file to work for 0.0.9 is a matter of base64 encoding file name and link name. Upon demand I can code a tool for this.
-    * New way of trapping signals in client now make it able to close client program as cleanly as we can especially the local sqlite database connection.
-    * New url /Data/Hash_Array.json has been added in cdpfglserver. It answers GET request with an extra header X-Get-Hash-Array that must contain a comma separated base64 encoded hash list.
-    * New option -e, --all-versions is now available in cdpfglrestore to list or restore all versions of a file. Restoring all versions of a file prepends each filename with it's backup date (it adds a number if files have the same date).
-    * 1100+ commits reached !
+    * Documentation has been reviewed and improved,
+    * Some code refactoring was done in some parts of the programs,
+    * Corrected bugs that crashed the programs (cdpfglserver or cdpfglclient) when a file was containing a ',' or a '\n' character. Correction of this bug affects the way file names and link names are stored by file_backend of server program. Thus older version of sauvegarde will not work with a flat meta file from 0.0.9 and 0.0.9 will not work with a flat meta file from 0.0.8. Getting an older flat meta file to work for 0.0.9 is a matter of base64 encoding file name and link name. Upon demand I can code a tool for this,
+    * New way of trapping signals in client now make it able to close client program as cleanly as we can especially the local sqlite database connection,
+    * New url /Data/Hash_Array.json has been added in cdpfglserver. It answers GET request with an extra header X-Get-Hash-Array that must contain a comma separated base64 encoded hash list,
+    * New option -e, --all-versions is now available in cdpfglrestore to list or restore all versions of a file. Restoring all versions of a file prepends each filename with it's backup date (it adds a number if files have the same date),
+    * 1110+ commits reached !
 
 Contributors to this version:
 

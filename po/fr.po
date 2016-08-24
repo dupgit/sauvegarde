@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sauvegarde 0.0.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-08-20 20:43+0200\n"
-"PO-Revision-Date: 2016-08-23 22:51+0100\n"
+"POT-Creation-Date: 2016-08-24 18:57+0200\n"
+"PO-Revision-Date: 2016-08-24 18:57+0100\n"
 "Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
 "Language: fr\n"
@@ -115,16 +115,16 @@ msgid "Unable to add signal handlers\n"
 msgstr "Impossible d'ajouter une fonction pour traiter les signaux\n"
 
 #: ../client/client.h:75 ../restore/restore.h:80 ../server/server.h:75
-msgid "04 28 2016"
-msgstr "28 04 2016"
+msgid "08 24 2016"
+msgstr "24 08 2016"
 
 #: ../client/client.h:76 ../restore/restore.h:81 ../server/server.h:76
 msgid "GPL v3 or later"
 msgstr "GPL v3 ou plus récente."
 
 #: ../client/client.h:77 ../restore/restore.h:82 ../server/server.h:77
-msgid "0.0.8"
-msgstr "0.0.8"
+msgid "0.0.9"
+msgstr "0.0.9"
 
 #: ../client/m_fanotify.c:66
 #, c-format
