@@ -29,8 +29,8 @@ install:
     - (tar zxf libmicrohttpd-0.9.46.tar.gz; cd libmicrohttpd-0.9.46; ./configure --prefix=$HOME/local; make; make install; cd ..; rm -fr libmicrohttpd-0.9.46)
 
     # sqlite newer version
-    - wget --quiet -c https://www.sqlite.org/2015/sqlite-autoconf-3090100.tar.gz
-    - (tar zxf sqlite-autoconf-3090100.tar.gz; cd sqlite-autoconf-3090100; ./configure --prefix=$HOME/local; make; make install; cd ..; rm -fr sqlite-autoconf-3090100)
+    - wget --quiet -c https://www.sqlite.org/2016/sqlite-autoconf-3140100.tar.gz
+    - (tar zxf sqlite-autoconf-3140100.tar.gz; cd sqlite-autoconf-3140100; ./configure --prefix=$HOME/local; make; make install; cd ..; rm -fr sqlite-autoconf-3140100)
 
     # glib newer version for travis-ci
     - wget --quiet -c https://git.gnome.org/browse/glib/snapshot/glib-2.34.0.tar.xz
