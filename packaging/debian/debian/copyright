@@ -1,7 +1,7 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: cdpfgl
 Upstream-Contact: Olivier Delhomme <olivier.delhomme@free.fr>
-Source: http://cdpfgl.delhomme.org/download/releases/cdpfgl-0.0.8.tar.xz
+Source: http://cdpfgl.delhomme.org/download/releases/cdpfgl-0.0.9.tar.xz
 
 Files: *
 Copyright: 2014-2016 Olivier Delhomme
