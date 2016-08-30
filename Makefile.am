@@ -1,4 +1,4 @@
-SUBDIRS = libcdpfgl server client restore pixmaps po
+SUBDIRS = libcdpfgl server client restore pixmaps po man
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -9,7 +9,6 @@ cdpfglconf_DATA = client.conf    \
 
 EXTRA_DIST = $(cdpfglconf_DATA)            \
 			 libcdpfgl/libcdpfgl.pc.in     \
-			 man/cdpfglclient.1			   \
 			 manual/installation.md        \
 			 docs/coding_in_cdpfgl.md      \
 			 docs/API.md                   \
@@ -17,3 +16,5 @@ EXTRA_DIST = $(cdpfglconf_DATA)            \
 			 docs/cdpfgl.doxygen		   \
 			 autogen.sh					   \
 			 LICENSE
+
+

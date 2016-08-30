@@ -1,1 +1,3 @@
-cdpfglclient_MANS = cdpfglclient.1
+
+
+dist_man_MANS = cdpfglclient.1
