@@ -60,3 +60,4 @@ coverage*
 *.gcda
 *.gcno
 gmon.out
+man/*.1
