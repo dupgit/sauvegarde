@@ -234,6 +234,7 @@ client/Makefile
 server/Makefile
 restore/Makefile
 po/Makefile.in
+man/Makefile
 libcdpfgl/libcdpfgl.pc
 pixmaps/Makefile
 pixmaps/hicolor/Makefile
