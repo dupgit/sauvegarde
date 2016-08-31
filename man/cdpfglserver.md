@@ -14,7 +14,7 @@ cdpfglserver will wait for cdpfglclient to send files to save and cdpfglrestore 
 
 # SEE ALSO
 
-**cdpfglrestore**(1), **cdpfglserver**(1)
+**cdpfglrestore**(1), **cdpfglclient**(1)
 
 # COMMAND-LINE OPTIONS
 
