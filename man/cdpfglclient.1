@@ -1,5 +1,33 @@
-.TH "cdpfglclient" "1" "" "cdpfglclient user manual" "Version 0.0.9"
+.TH "cdpfglclient" "1" "" "cdpfglclient user manual" "version 0.0.9"
 .SH NAME
 .PP
-cdpfglclient will save your files to a cdpfglserver while being modified
-or created
+\f[B]cdpfglclient\f[] \- saves your files to a cdpfglserver while being
+modified or created
+.SH SYNOPSIS
+.PP
+\f[B]cdpfglclient\f[] [options]
+.SH DESCRIPTION
+.PP
+cdpfglclient will monitor the filesystem for file creation or changes
+and will save them to a cdpfglserver that might be up and working.
+.SH SEE ALSO
+.PP
+\f[B]cdpfglrestore\f[](1), \f[B]cdpfglserver\f[](1)
+.SH COMMAND\-LINE OPTIONS
+.SH FILES
+.PP
+/etc/cdpfgl/client.conf
+.SH BUGS
+.PP
+Please report bugs by either filling a pull request at
+(http://example.com/ <https://github.com/dupgit/sauvegarde/pulls> or by
+sending a mail to Olivier Delhomme <olivier.delhomme@free.fr>
+.SH AUTHORS
+.PP
+Authors in alphabetical order are :
+.IP \[bu] 2
+Pierre Bourgin <pierre.bourgin@free.fr>
+.IP \[bu] 2
+Olivier Delhomme <olivier.delhomme@free.fr>
+.IP \[bu] 2
+Sebastien Tricaud <sebastien@honeynet.org>
