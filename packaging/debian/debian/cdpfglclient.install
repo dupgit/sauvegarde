@@ -2,3 +2,5 @@ usr/bin/cdpfglclient
 usr/bin/cdpfglrestore
 etc/cdpfgl/restore.conf
 etc/cdpfgl/client.conf
+share/man/man1/cdpfglclient.1
+share/man/man1/cdpfglrestore.1

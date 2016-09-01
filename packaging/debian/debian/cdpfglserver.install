@@ -1,2 +1,3 @@
 usr/bin/cdpfglserver
 etc/cdpfgl/server.conf
+share/man/man1/cdpfglserver.1
