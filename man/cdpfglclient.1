@@ -10,13 +10,28 @@ modified or created
 .PP
 cdpfglclient will monitor the filesystem for file creation or changes
 and will save them to a cdpfglserver that might be up and working.
+.SH COMMAND\-LINE OPTIONS
+.PP
+\-h, \-\-help Gives some basic help about program invocation and its
+options.
+.PD 0
+.P
+.PD
+\-v, \-\-version Gives compiled version of cdpfgclient plus some
+informations about libraries that were compiled with it and also some
+configuration informations as the program has loaded them.
+.PD 0
+.P
+.PD
+\-c, \-\-configuration=FILENAME Specify an alternative configuration
+file.
+This file is read instead of the default one.
 .SH SEE ALSO
 .PP
 \f[B]cdpfglrestore\f[](1), \f[B]cdpfglserver\f[](1)
-.SH COMMAND\-LINE OPTIONS
 .SH FILES
 .PP
-/etc/cdpfgl/client.conf
+/etc/cdpfgl/client.conf Default configuration file.
 .SH BUGS
 .PP
 Please report bugs by either filling a pull request at
@@ -27,7 +42,13 @@ sending a mail to Olivier Delhomme <olivier.delhomme@free.fr>
 Authors in alphabetical order are :
 .IP \[bu] 2
 Pierre Bourgin <pierre.bourgin@free.fr>
+.PD 0
+.P
+.PD
 .IP \[bu] 2
 Olivier Delhomme <olivier.delhomme@free.fr>
+.PD 0
+.P
+.PD
 .IP \[bu] 2
 Sebastien Tricaud <sebastien@honeynet.org>
