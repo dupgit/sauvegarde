@@ -465,7 +465,7 @@ void create_directory(gchar *directory)
 
 /**
  * A signal catcher that does nothing for SIGPIPE (needed by libmicrohttpd
- * in order to be portable.
+ * in order to be portable).
  */
 static void catcher(int sig)
 {
