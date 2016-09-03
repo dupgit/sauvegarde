@@ -10,10 +10,29 @@ cdpfglserver to your local filesystem.
 .PP
 cdpfglrestore will restore already saved files from a cdpfglserver to
 your local filesystem.
+.SH COMMAND\-LINE OPTIONS
+.PP
+\-h, \-\-help Gives some basic help about program invocation and its
+options.
+.PD 0
+.P
+.PD
+\-d, \-\-debug=0|1 When invoked with 0 debug mode is turned off.
+Debug mode is turned on when invoked with 1.
+When on this mode is really verbose and may slow down the program.
+You should not use this option in daily normal use.
+\-v, \-\-version Gives compiled version of cdpfglrestore plus some
+informations about libraries that were compiled with it and also some
+configuration informations as the program has loaded them.
+.PD 0
+.P
+.PD
+\-c, \-\-configuration=FILENAME Specify an alternative configuration
+file.
+This file is read instead of the default one.
 .SH SEE ALSO
 .PP
 \f[B]cdpfglclient\f[](1), \f[B]cdpfglserver\f[](1)
-.SH COMMAND\-LINE OPTIONS
 .SH FILES
 .PP
 /etc/cdpfgl/restore.conf
@@ -27,7 +46,13 @@ sending a mail to Olivier Delhomme <olivier.delhomme@free.fr>
 Authors in alphabetical order are :
 .IP \[bu] 2
 Pierre Bourgin <pierre.bourgin@free.fr>
+.PD 0
+.P
+.PD
 .IP \[bu] 2
 Olivier Delhomme <olivier.delhomme@free.fr>
+.PD 0
+.P
+.PD
 .IP \[bu] 2
 Sebastien Tricaud <sebastien@honeynet.org>
