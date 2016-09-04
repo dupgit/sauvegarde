@@ -53,6 +53,10 @@ cdpfglclient will monitor the filesystem for file creation or changes and will s
     Exclude FILENAME from being saved. You can specify more than once this option to exclude more files or directories.
 ```
 
+# CONFIGURATION FILE
+
+By default the configuration file is named ```/etc/cdpfgl/client.conf```. It is organised in sections [Example section] (section names begins with a capital). Sections contains some key=value definitions.
+
 
 # SEE ALSO
 
