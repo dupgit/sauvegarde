@@ -55,7 +55,7 @@ cdpfglclient will monitor the file system for file creation or changes and will 
 
 **-i**, **--ip=IP**:
 
-   IP address where server program is waiting for the client to send POST ang GET commands.
+   IP address where server program is waiting for the client to send POST and GET commands.
 
 **-p**, **--port=NUMBER**:
 
@@ -68,7 +68,7 @@ cdpfglclient will monitor the file system for file creation or changes and will 
 
 # CONFIGURATION FILE
 
-By default the configuration file is named ```/etc/cdpfgl/client.conf```. It is organised in sections [Example section] (section names begins with a capital). Sections contains some key=value definitions.
+By default the configuration file is named ```/etc/cdpfgl/client.conf```. It is organised in sections [Example section]. By convention section names begins with a capital. Sections contains some key=value definitions.
 
 
 # SEE ALSO
@@ -83,7 +83,7 @@ By default the configuration file is named ```/etc/cdpfgl/client.conf```. It is 
 
 # BUGS
 
-Please report bugs by either filling a pull request at (http://example.com/ [https://github.com/dupgit/sauvegarde/pulls](https://github.com/dupgit/sauvegarde/pulls "Github") or by sending a mail to Olivier Delhomme <olivier.delhomme@free.fr>
+Please report bugs by either filling a pull request at [https://github.com/dupgit/sauvegarde/pulls](https://github.com/dupgit/sauvegarde/pulls "Github") or by sending a mail to Olivier Delhomme <olivier.delhomme@free.fr>
 
 
 # AUTHORS
