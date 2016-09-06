@@ -8,49 +8,74 @@ modified or created
 \f[B]cdpfglclient\f[] [options]
 .SH DESCRIPTION
 .PP
-cdpfglclient will monitor the filesystem for file creation or changes
+cdpfglclient will monitor the file system for file creation or changes
 and will save them to a cdpfglserver that might be up and working.
-.SH COMMAND\-LINE OPTIONS
-.IP
-.nf
-\f[C]
-\-h,\ \-\-help\ \ 
-\ \ \ \ Gives\ some\ basic\ help\ about\ program\ invocation\ and\ its\ options.
-
-\-d,\ \-\-debug=0|1\ \ 
-\ \ \ \ When\ invoked\ with\ 0\ debug\ mode\ is\ turned\ off.\ Debug\ mode\ is\ turned\ on\ when\ invoked\ with\ 1.\ When\ on\ this\ mode\ is\ really\ verbose\ and\ may\ slow\ down\ the\ program.\ You\ should\ not\ use\ this\ option\ in\ daily\ normal\ use.
-
-\-v,\ \-\-version\ 
-\ \ \ \ Gives\ compiled\ version\ of\ cdpfglclient\ plus\ some\ informations\ about\ libraries\ that\ were\ compiled\ with\ it\ and\ also\ some\ configuration\ informations\ as\ the\ program\ has\ loaded\ them.
-
-\-c,\ \-\-configuration=FILENAME
-\ \ \ \ Specify\ an\ alternative\ configuration\ file.\ This\ file\ is\ read\ instead\ of\ the\ default\ one.
-
-\-b,\ \-\-blocksize=SIZE
-\ \ \ \ Fixed\ block\ SIZE\ used\ to\ compute\ hashs\ (default\ is\ 16384).\ This\ option\ is\ not\ taken\ into\ account\ when\ adaptive\ blocksize\ option\ is\ set\ to\ 1.
-
-\-a,\ \-\-adaptive=BOOLEAN
-\ \ \ \ Adapative\ block\ size\ used\ to\ compute\ hashs.\ Blocks\ have\ sizes\ that\ depends\ on\ their\ file\ size.
-
-\-s,\ \-\-buffersize=SIZE
-\ \ \ \ SIZE\ of\ the\ cache\ used\ to\ send\ data\ to\ server.\ For\ correct\ operations\ SIZE\ value\ should\ not\ be\ less\ than\ 1048576\ (the\ default\ size).
-
-\-r,\ \-\-dircache=DIRNAME\ \ \ \ \ \ \ \ \ \ \ 
-\ \ \ \ Directory\ DIRNAME\ where\ to\ cache\ files.\ DIRNAME\ default\ is\ ```/var/tmp/cdpfgl```.\ In\ that\ directory\ will\ be\ saved\ an\ sqlite\ file\ cache\ used\ to\ cache\ things\ for\ the\ client.
-
-\-f,\ \-\-dbname=FILENAME
-\ \ \ \ Database\ FILENAME,\ the\ cache\ file\ (default\ is\ ```filecache.db```).
-
-\-i,\ \-\-ip=IP\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
-\ \ \ \ IP\ address\ where\ server\ program\ is\ waiting\ for\ the\ client\ to\ send\ POST\ ang\ GET\ commands.
-
-\-p,\ \-\-port=NUMBER\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
-\ \ \ \ Port\ NUMBER\ on\ which\ to\ listen\ (default\ is\ 5468).
-
-\-x,\ \-\-exclude=FILENAME\ \ \ \ \ \ \ \ \ \ \ 
-\ \ \ \ Exclude\ FILENAME\ from\ being\ saved.\ You\ can\ specify\ more\ than\ once\ this\ option\ to\ exclude\ more\ files\ or\ directories.
-\f[]
-.fi
+.SH COMMAND LINE OPTIONS
+.PP
+\f[B]\-h\f[], \f[B]\-\-help\f[]:
+.PP
+Gives some basic help about program invocation and its options.
+.PP
+\f[B]\-d\f[], \f[B]\-\-debug=0|1\f[]:
+.PP
+When invoked with 0 debug mode is turned off.
+Debug mode is turned on when invoked with 1.
+When on this mode is really verbose and may slow down the program.
+You should not use this option in daily normal use.
+.PP
+\f[B]\-v\f[], \f[B]\-\-version\f[]
+.PP
+Gives compiled version of cdpfglclient plus some informations about
+libraries that were compiled with it and also some configuration
+informations as the program has loaded them.
+.PP
+\f[B]\-c\f[], \f[B]\-\-configuration=FILENAME\f[]
+.PP
+Specify an alternative configuration file.
+This file is read instead of the default one.
+.PP
+\f[B]\-b\f[], \f[B]\-\-blocksize=SIZE\f[]
+.PP
+Fixed block SIZE used to compute hashs (default is 16384).
+This option is not taken into account when adaptive blocksize option is
+set to 1.
+.PP
+\f[B]\-a\f[], \f[B]\-\-adaptive=BOOLEAN\f[]
+.PP
+Adaptive block size used to compute hashs.
+Blocks have sizes that depends on their file size.
+.PP
+\f[B]\-s\f[], \f[B]\-\-buffersize=SIZE\f[]
+.PP
+SIZE of the cache used to send data to server.
+For correct operations SIZE value should not be less than 1048576 (the
+default size).
+.PP
+\f[B]\-r\f[], \f[B]\-\-dircache=DIRNAME\f[]
+.PP
+Directory DIRNAME where to cache files.
+DIRNAME default is \f[C]/var/tmp/cdpfgl\f[].
+In that directory will be saved an sqlite file cache used to cache
+things for the client.
+.PP
+\f[B]\-f\f[], \f[B]\-\-dbname=FILENAME\f[]
+.PP
+Database FILENAME, the cache file (default is \f[C]filecache.db\f[]).
+.PP
+\f[B]\-i\f[], \f[B]\-\-ip=IP\f[]
+.PP
+IP address where server program is waiting for the client to send POST
+ang GET commands.
+.PP
+\f[B]\-p\f[], \f[B]\-\-port=NUMBER\f[]
+.PP
+Port NUMBER on which to listen (default is 5468).
+.PP
+\f[B]\-x\f[], \f[B]\-\-exclude=FILENAME\f[]
+.PP
+Exclude FILENAME from being saved.
+You can specify more than once this option to exclude more files or
+directories.
 .SH CONFIGURATION FILE
 .PP
 By default the configuration file is named

@@ -10,48 +10,59 @@
 
 # DESCRIPTION
 
-cdpfglclient will monitor the filesystem for file creation or changes and will save them to a cdpfglserver that might be up and working.
+cdpfglclient will monitor the file system for file creation or changes and will save them to a cdpfglserver that might be up and working.
 
 
-# COMMAND-LINE OPTIONS
+# COMMAND LINE OPTIONS
 
-```
--h, --help  
-    Gives some basic help about program invocation and its options.
+**-h**, **--help**:
 
--d, --debug=0|1  
-    When invoked with 0 debug mode is turned off. Debug mode is turned on when invoked with 1. When on this mode is really verbose and may slow down the program. You should not use this option in daily normal use.
+   Gives some basic help about program invocation and its options.
 
--v, --version 
-    Gives compiled version of cdpfglclient plus some informations about libraries that were compiled with it and also some configuration informations as the program has loaded them.
+**-d**, **--debug=0|1**:
 
--c, --configuration=FILENAME
-    Specify an alternative configuration file. This file is read instead of the default one.
+   When invoked with 0 debug mode is turned off. Debug mode is turned on when invoked with 1. When on this mode is really verbose and may slow down the program. You should not use this option in daily normal use.
 
--b, --blocksize=SIZE
-    Fixed block SIZE used to compute hashs (default is 16384). This option is not taken into account when adaptive blocksize option is set to 1.
+**-v**, **--version**
 
--a, --adaptive=BOOLEAN
-    Adapative block size used to compute hashs. Blocks have sizes that depends on their file size.
+   Gives compiled version of cdpfglclient plus some informations about libraries that were compiled with it and also some configuration informations as the program has loaded them.
 
--s, --buffersize=SIZE
-    SIZE of the cache used to send data to server. For correct operations SIZE value should not be less than 1048576 (the default size).
+**-c**, **--configuration=FILENAME**
 
--r, --dircache=DIRNAME           
-    Directory DIRNAME where to cache files. DIRNAME default is ```/var/tmp/cdpfgl```. In that directory will be saved an sqlite file cache used to cache things for the client.
+   Specify an alternative configuration file. This file is read instead of the default one.
 
--f, --dbname=FILENAME
-    Database FILENAME, the cache file (default is ```filecache.db```).
+**-b**, **--blocksize=SIZE**
 
--i, --ip=IP                      
-    IP address where server program is waiting for the client to send POST ang GET commands.
+   Fixed block SIZE used to compute hashs (default is 16384). This option is not taken into account when adaptive blocksize option is set to 1.
 
--p, --port=NUMBER                
-    Port NUMBER on which to listen (default is 5468).
+**-a**, **--adaptive=BOOLEAN**
 
--x, --exclude=FILENAME           
-    Exclude FILENAME from being saved. You can specify more than once this option to exclude more files or directories.
-```
+   Adaptive block size used to compute hashs. Blocks have sizes that depends on their file size.
+
+**-s**, **--buffersize=SIZE**
+
+   SIZE of the cache used to send data to server. For correct operations SIZE value should not be less than 1048576 (the default size).
+
+**-r**, **--dircache=DIRNAME**
+
+   Directory DIRNAME where to cache files. DIRNAME default is ```/var/tmp/cdpfgl```. In that directory will be saved an sqlite file cache used to cache things for the client.
+
+**-f**, **--dbname=FILENAME**
+
+   Database FILENAME, the cache file (default is ```filecache.db```).
+
+**-i**, **--ip=IP**
+
+   IP address where server program is waiting for the client to send POST ang GET commands.
+
+**-p**, **--port=NUMBER**
+
+   Port NUMBER on which to listen (default is 5468).
+
+**-x**, **--exclude=FILENAME**
+
+   Exclude FILENAME from being saved. You can specify more than once this option to exclude more files or directories.
+
 
 # CONFIGURATION FILE
 
