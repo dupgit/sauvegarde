@@ -10,35 +10,81 @@ cdpfglserver to your local filesystem.
 .PP
 cdpfglrestore will restore already saved files from a cdpfglserver to
 your local filesystem.
-.SH COMMAND\-LINE OPTIONS
+cdpfglrestore will not overwrite an existing file, in that case it will
+create a backup file before restoring over it.
+.SH COMMAND LINE OPTIONS
 .PP
-\-h, \-\-help Gives some basic help about program invocation and its
-options.
-.PD 0
-.P
-.PD
-\-d, \-\-debug=0|1 When invoked with 0 debug mode is turned off.
+\f[B]\-h\f[], \f[B]\-\-help\f[]:
+.PP
+Gives some basic help about program invocation and its options.
+.PP
+\f[B]\-d\f[], \f[B]\-\-debug=0|1\f[]:
+.PP
+When invoked with 0 debug mode is turned off.
 Debug mode is turned on when invoked with 1.
 When on this mode is really verbose and may slow down the program.
 You should not use this option in daily normal use.
-.PD 0
-.P
-.PD
-\-v, \-\-version Gives compiled version of cdpfglrestore plus some
-informations about libraries that were compiled with it and also some
-configuration informations as the program has loaded them.
-.PD 0
-.P
-.PD
-\-c, \-\-configuration=FILENAME Specify an alternative configuration
-file.
+.PP
+\f[B]\-v\f[], \f[B]\-\-version\f[]:
+.PP
+Gives compiled version of cdpfglrestore plus some informations about
+libraries that were compiled with it and also some configuration
+informations as the program has loaded them.
+.PP
+\f[B]\-c\f[], \f[B]\-\-configuration=FILENAME\f[]:
+.PP
+Specify an alternative configuration file.
 This file is read instead of the default one.
+.PP
+\f[B]\-l\f[], \f[B]\-\-list=REGEX\f[]:
+.PP
+Gives a list of saved files that correspond to the given REGEX.
+For instance one may use \-\-list=.mp3$ to list all files ending with
+\[aq].mp3\[aq] or \-l ^/home/me/tmp to list all files from the
+\[aq]/home/me/tmp\[aq] directory.
+.PP
+\f[B]\-r\f[], \f[B]\-\-restore=REGEX\f[]:
+.PP
+Restores requested filename (REGEX).
+It restores the latest file in the returned list with \-l option.
+.PP
+\f[B]\-t\f[], \f[B]\-\-date=DATE\f[]:
+.PP
+Lists or restores the selected file at that specific DATE (YYYY\-MM\-DD
+HH:MM:SS format).
+.PP
+\f[B]\-a\f[], \f[B]\-\-after=DATE\f[]:
+.PP
+Lists or restores the selected file with mtime after DATE (YYYY\-MM\-DD
+HH:MM:SS format).
+.PP
+\f[B]\-b\f[], \f[B]\-\-before=DATE\f[]:
+.PP
+Lists or restores the selected file with mtime before DATE (YYYY\-MM\-DD
+HH:MM:SS format).
+.PP
+\f[B]\-e\f[], \f[B]\-\-all\-versions\f[]:
+.PP
+Lists or restores all versions of a file.
+.PP
+\f[B]\-w\f[], \f[B]\-\-where=DIRECTORY\f[]:
+.PP
+Specify a DIRECTORY where to restore a file.
+.PP
+\f[B]\-i\f[], \f[B]\-\-ip=IP\f[]:
+.PP
+IP address where server program is waiting for the restore program to
+send POST and GET commands.
+.PP
+\f[B]\-p\f[], \f[B]\-\-port=NUMBER\f[]:
+.PP
+Port NUMBER on which to listen (default is 5468).
 .SH SEE ALSO
 .PP
 \f[B]cdpfglclient\f[](1), \f[B]cdpfglserver\f[](1)
 .SH FILES
 .PP
-/etc/cdpfgl/restore.conf
+\f[C]/etc/cdpfgl/restore.conf\f[]
 .SH BUGS
 .PP
 Please report bugs by either filling a pull request at
