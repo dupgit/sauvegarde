@@ -89,88 +89,22 @@ also have a look at the [installation manual](manual/installation.md).
 
 First you need to run the program `cdpflgserver` on a machine that will act as
 a server. You can configure options in `server.conf` (located by default
-in `{prefix}/etc/cdpfgl/`) or use the command's line options:
-
-    Usage:
-      cdpfglserver [OPTION...]
-
-    This program is monitoring file changes in the filesystem and is hashing
-    files with SHA256 algorithms from Glib.
-
-    Help Options:
-      -h, --help                       Show help options
-
-    Application Options:
-      -v, --version                    Prints program version.
-      -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
-      -c, --configuration=FILENAME     Specify an alternative configuration file.
-      -p, --port=NUMBER                Port NUMBER on which to listen.
+in `{prefix}/etc/cdpfgl/`) or use the command's line options as shown in
+[cdpfglserver man page](man/cdpfglserver.md).
 
 
 ### The client (the one that saves your files).
 
 Then you may use `cdpfglclient` program to report modified files to the server
 and save them accordingly. Configuration file is named `client.conf` and
-command line options are:
-
-    Usage:
-      cdpfglclient [OPTION...]
-
-    This program is monitoring file changes in the filesystem and is hashing
-    files with SHA256 algorithms from Glib.
-
-    Help Options:
-      -h, --help                       Show help options
-
-    Application Options:
-      -v, --version                    Prints program version
-      -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
-      -c, --configuration=FILENAME     Specify an alternative configuration file.
-      -b, --blocksize=SIZE             Block SIZE used to compute hashs.
-      -a, --adaptive=BOOLEAN         Adapative block size used to compute hashs.
-      -s, --buffersize=SIZE            SIZE of the cache used to send data to server.
-      -r, --dircache=DIRNAME           Directory DIRNAME where to cache files.
-      -f, --dbname=FILENAME            Database FILENAME.
-      -i, --ip=IP                      IP address where server program is.
-      -p, --port=NUMBER                Port NUMBER on which to listen.
-      -x, --exclude=FILENAME           Exclude FILENAME from being saved.
-
-The latest option -x or --exclude=FILENAME can be used multiple times to
-exclude more than one file or directory. This option will add excluded
-directories to the list of excluded directory obtained from a specified
-configuration file if any.
+command line options are documented in [cdpfglclient man page](man/cdpfglclient.md).
 
 
 ### The restore program (the one that saves your life when needed)
 
 At a time you may need to restore a file then you'll have to use `cdpfglrestore`
 program. Configuration file is named `restore.conf` and command line
-options are:
-
-    Usage:
-      cdpfglrestore [OPTION...]
-
-    This program is restoring files from cdpfglserver's server.
-
-    Help Options:
-      -h, --help                       Show help options
-
-    Application Options:
-      -v, --version                    Prints program version.
-      -d, --debug=BOOLEAN              Activates (1) or desactivates (0) debug mode.
-      -c, --configuration=FILENAME     Specify an alternative configuration file.
-      -l, --list=REGEX                 Gives a list of saved files that correspond to the given REGEX.
-      -r, --restore=REGEX              Restores requested filename (REGEX) (by default latest version).
-      -t, --date=DATE                  Restores the selected file at that specific DATE (YYYY-MM-DD HH:MM:SS format).
-      -a, --after=DATE                 Restores the selected file with mtime after DATE (YYYY-MM-DD HH:MM:SS format).
-      -b, --before=DATE                Restores the selected file with mtime before DATE (YYYY-MM-DD HH:MM:SS format).
-      -e, --all-versions               List or restore all versions of a file.
-      -w, --where=DIRECTORY            Specify a DIRECTORY where to restore a file.
-      -i, --ip=IP                      IP address where server program is.
-      -p, --port=NUMBER                Port NUMBER on which server program is listening.
-
-    Please report bugs to: Olivier DELHOMME <olivier.delhomme@free.fr>
-
+options are documented in [cdpfglrestore man page](man/cdpfglrestore.md).
 
 
 ## Manual
