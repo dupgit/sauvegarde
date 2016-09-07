@@ -126,5 +126,5 @@ Go to the directory where you extracted cdpfgl (either from github or from a tar
     $ make
     $ sudo make install
 
-Here you are. Now you should be able to invoke ```cdpfglclient --version``` or ```cdpfglrestore --help``` (those two options works also with cdpfglserver).
+Here you are. Now you should be able to invoke `cdpfglclient --version` or `cdpfglrestore --help` (those two options works also with cdpfglserver).
 
