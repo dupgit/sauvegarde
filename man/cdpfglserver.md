@@ -20,19 +20,19 @@ cdpfglserver will wait for cdpfglclient to send files to save and cdpfglrestore 
    Default options configuration values may be replaced by values read from a configuration file (the default one for instance) and those one may be replaced by options read from the command line.
 
 
-**-h**, **--help **:
+**-h**, **--help**:
 
    Gives some basic help about program invocation and its options.
 
-**-d**, **--debug=0|1 **:
+**-d**, **--debug=0|1**:
 
    When invoked with 0 debug mode is turned off. Debug mode is turned on when invoked with 1. When on this mode is really verbose and may slow down the program. You should not use this option in daily normal use.  
 
-**-v**, **--version **:
+**-v**, **--version**:
 
    Gives compiled version of cdpfglserver plus some informations about libraries that were compiled with it and also some configuration informations as the program has loaded them.
 
-**-c**, **--configuration=FILENAME **:
+**-c**, **--configuration=FILENAME**:
 
    Specify an alternative configuration file. This file is read instead of the default one.
 
