@@ -53,6 +53,7 @@ typedef struct
     gint port;              /**< Port number on which to send things to cdpfglserver's server (on which it must listen)     */
     gchar *where;           /**< where is a string that should contain a directory where to restore a file / dirtectory     */
     gboolean all_versions;  /**< all_versions says whether we should restore all versions of a file (TRUE) or not (FALSE)   */
+    gboolean all_files;     /**< all_files is true if we want to restore all files found by REGEX with -r or -l options     */
 } options_t;
 
 

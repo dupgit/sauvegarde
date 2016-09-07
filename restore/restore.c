@@ -41,12 +41,14 @@ static void print_all_versions(res_struct_t *res_struct, query_t *query);
 static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *stream, GList *hash_list, gint max);
 static void create_file(res_struct_t *res_struct, meta_data_t *meta);
 static void print_debug_file_info(meta_data_t *meta);
+static void restore_one_file(res_struct_t *res_struct, GSList *elem);
 static void restore_last_file(res_struct_t *res_struct, query_t *query);
 static void restore_list_of_smeta(res_struct_t *res_struct, GSList *list);
 static void restore_all_versions(res_struct_t *res_struct, query_t *query);
 static void free_res_struct_t(res_struct_t *res_struct);
 static void list_files(res_struct_t *res_struct);
 static void restore_files(res_struct_t *res_struct);
+static void restore_all_files(res_struct_t *res_struct, query_t *query);
 
 /**
  * Inits a res_struct_t * structure. Manages the command line options.
@@ -609,6 +611,26 @@ static void print_debug_file_info(meta_data_t *meta)
 
 
 /**
+ * Restores one file at a time.
+ * @param res_struct is the main structure for cdpfglrestore program.
+ * @param elem is the list element to be restored.
+ */
+static void restore_one_file(res_struct_t *res_struct, GSList *elem)
+{
+    meta_data_t *meta = NULL;
+
+    if (elem != NULL)
+        {   
+            meta = get_meta_data_from_smeta_list(elem);
+
+            print_debug_file_info(meta);
+
+            create_file(res_struct, meta);
+        }
+}
+
+
+/**
  * Restores the last file that the fetched list contains.
  * @param res_struct is the main structure for cdpfglrestore program.
  * @param query is the structure that contains everything needed to
@@ -618,19 +640,14 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
 {
     GSList *list = NULL;      /** List of server_meta_data_t *             */
     GSList *last = NULL;      /** last element of the list                 */
-    meta_data_t *meta = NULL;
 
 
     if (res_struct != NULL && query != NULL)
         {
             list = get_files_from_server(res_struct, query);
             last = g_slist_last(list);
-
-            meta = get_meta_data_from_smeta_list(last);
-
-            print_debug_file_info(meta);
-
-            create_file(res_struct, meta);
+            
+            restore_one_file(res_struct, last);
 
             g_slist_free_full(list, gslist_free_smeta);
         }
@@ -647,16 +664,9 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
  */
 static void restore_list_of_smeta(res_struct_t *res_struct, GSList *list)
 {
-    meta_data_t *meta = NULL;
-
     while (list != NULL)
         {
-            meta = get_meta_data_from_smeta_list(list);
-
-            print_debug_file_info(meta);
-
-            create_file(res_struct, meta);
-
+            restore_one_file(res_struct, list);   
             list = g_slist_next(list);
         }
 }
@@ -718,6 +728,27 @@ static void free_res_struct_t(res_struct_t *res_struct)
 
 
 /**
+ * Restores all files that the fetched list contains.
+ * @param res_struct is the main structure for cdpfglrestore program.
+ * @param query is the structure that contains everything needed to
+ *        query the server (and filter a bit). It must not be NULL.
+ */
+static void restore_all_files(res_struct_t *res_struct, query_t *query)
+{
+    GSList *list = NULL;      /** List of server_meta_data_t *        */
+
+    if (res_struct != NULL && query != NULL)
+        {
+            list = get_files_from_server(res_struct, query);
+            
+            restore_list_of_smeta(res_struct, list);
+            
+            g_slist_free_full(list, gslist_free_smeta);
+        }
+}
+
+
+/**
  * Lists files as requested
  * @param res_struct res_struct is the main structure for this program
  */
@@ -754,6 +785,10 @@ static void restore_files(res_struct_t *res_struct)
         {
             /* We want to restore all versions of query's last found file */
             restore_all_versions(res_struct, query);
+        }
+    else if (res_struct->opt->all_files == TRUE)
+        {
+            restore_all_files(res_struct, query);
         }
     else
         {
