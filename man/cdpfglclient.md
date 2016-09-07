@@ -17,6 +17,9 @@ cdpfglclient will monitor the file system for file creation or changes and will 
 
 # COMMAND LINE OPTIONS
 
+   Default options configuration values may be replaced by values read from a configuration file (the default one for instance) and those one may be replaced by options read from the command line.
+
+
 **-h**, **--help**:
 
    Gives some basic help about program invocation and its options.
@@ -47,11 +50,11 @@ cdpfglclient will monitor the file system for file creation or changes and will 
 
 **-r**, **--dircache=DIRNAME**:
 
-   Directory DIRNAME where to cache files. DIRNAME default is ```/var/tmp/cdpfgl```. In that directory will be saved an sqlite file cache used to cache things for the client.
+   Directory DIRNAME where to cache files. DIRNAME default is `/var/tmp/cdpfgl`. In that directory will be saved an sqlite file cache used to cache things for the client.
 
 **-f**, **--dbname=FILENAME**:
 
-   Database FILENAME, the cache file (default is ```filecache.db```).
+   Database FILENAME, the cache file (default is `filecache.db`).
 
 **-i**, **--ip=IP**:
 
@@ -68,7 +71,7 @@ cdpfglclient will monitor the file system for file creation or changes and will 
 
 # CONFIGURATION FILE
 
-By default the configuration file is named ```/etc/cdpfgl/client.conf```. It is organised in sections [Example section]. By convention section names begins with a capital. Sections contains some key=value definitions.
+By default the configuration file is named `/etc/cdpfgl/client.conf`. It is organised in sections [Example section]. By convention section names begins with a capital. Sections contains some key=value definitions.
 
 
 # SEE ALSO
@@ -78,7 +81,7 @@ By default the configuration file is named ```/etc/cdpfgl/client.conf```. It is 
 
 # FILES
 
-/etc/cdpfgl/client.conf Default configuration file.
+`/etc/cdpfgl/client.conf` is the default configuration file.
 
 
 # BUGS

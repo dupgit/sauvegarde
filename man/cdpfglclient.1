@@ -12,6 +12,10 @@ cdpfglclient will monitor the file system for file creation or changes
 and will save them to a cdpfglserver that might be up and working.
 .SH COMMAND LINE OPTIONS
 .PP
+Default options configuration values may be replaced by values read from
+a configuration file (the default one for instance) and those one may be
+replaced by options read from the command line.
+.PP
 \f[B]\-h\f[], \f[B]\-\-help\f[]:
 .PP
 Gives some basic help about program invocation and its options.
@@ -90,7 +94,7 @@ Sections contains some key=value definitions.
 \f[B]cdpfglrestore\f[](1), \f[B]cdpfglserver\f[](1)
 .SH FILES
 .PP
-/etc/cdpfgl/client.conf Default configuration file.
+\f[C]/etc/cdpfgl/client.conf\f[] is the default configuration file.
 .SH BUGS
 .PP
 Please report bugs by either filling a pull request at

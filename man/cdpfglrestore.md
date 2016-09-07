@@ -17,6 +17,9 @@ cdpfglrestore will restore already saved files from a cdpfglserver to your local
 
 # COMMAND LINE OPTIONS
 
+   Default options configuration values may be replaced by values read from a configuration file (the default one for instance) and those one may be replaced by options read from the command line.
+
+
 **-h**, **--help**:
 
    Gives some basic help about program invocation and its options.
@@ -77,7 +80,7 @@ cdpfglrestore will restore already saved files from a cdpfglserver to your local
 
 # FILES
 
-```/etc/cdpfgl/restore.conf```
+`/etc/cdpfgl/restore.conf` is the default configuration file.
 
 
 # BUGS
