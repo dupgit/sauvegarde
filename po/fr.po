@@ -687,7 +687,7 @@ msgstr ""
 
 #: ../restore/options.c:175
 msgid "List or restore all versions of a file."
-msgstr "Liste ou restaure toutes les version d'un fichier."
+msgstr "Liste ou restaure toutes les versions d'un fichier."
 
 #: ../restore/options.c:176
 msgid "DIRECTORY"
