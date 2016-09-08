@@ -384,6 +384,49 @@ gboolean file_exists(gchar *filename)
 
 
 /**
+ * Searchs for a filename that doesn't exists yet
+ * @param all_versions is true when we want to save all versions of a
+ *        single file.
+ * @param basename is the basename of the file ie without it directory 
+ *        location.
+ * @param where is the directory location where the filename should be
+ *        create.
+ * @param newname is the original basename or the original basename 
+ *        slightly modified
+ * @param the_date is a string representing the last modification date
+ *        of the file.
+ */
+gchar *get_unique_filename(gboolean all_versions, gchar *basename, gchar *where, gchar *newname, gchar *the_date)
+{
+    gchar *filename = NULL;
+    guint i = 0;
+
+    i = 0;
+    filename = g_build_filename(where, newname, NULL);
+
+    while (file_exists(filename))
+        {
+            free_variable(filename);
+            free_variable(newname);
+
+            if (all_versions == TRUE)
+                {
+                    newname = g_strdup_printf("%s-%d_%s", the_date, i, basename);
+                }
+            else
+                {
+                    newname = g_strdup_printf("%d-%s", i, basename);
+                }
+
+            filename = g_build_filename(where, newname, NULL);
+            i++;
+        }
+
+    return filename;
+}
+
+
+/**
  * Comparison function to be used when sorting filenames. First filenames
  * are compared and when an equality is found then the modified time is
  * compared (as a second sorting criteria)

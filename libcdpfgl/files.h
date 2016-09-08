@@ -214,6 +214,20 @@ extern void gslist_free_smeta(gpointer data);
  */
 extern gboolean file_exists(gchar *filename);
 
+/**
+ * Searchs for a filename that doesn't exists yet
+ * @param all_versions is true when we want to save all versions of a
+ *        single file.
+ * @param basename is the basename of the file ie without it directory 
+ *        location.
+ * @param where is the directory location where the filename should be
+ *        create.
+ * @param newname is the original basename or the original basename 
+ *        slightly modified
+ * @param the_date is a string representing the last modification date
+ *        of the file.
+ */
+extern gchar *get_unique_filename(gboolean all_versions, gchar *basename, gchar *where, gchar *newname, gchar *the_date);
 
 /**
  * Comparison function to be used when sorting filenames
