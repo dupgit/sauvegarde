@@ -60,3 +60,4 @@ coverage*
 *.gcda
 *.gcno
 gmon.out
+*.swp
