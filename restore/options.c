@@ -31,6 +31,8 @@
 static void print_selected_options(options_t *opt);
 static void read_from_group_all(GKeyFile *keyfile, gchar *filename);
 static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename);
+static void parse_command_line(int argc, char **argv, GOptionEntry entries[]);
+static gchar *set_option_str(gchar *cmdline, gchar *option_str);
 static options_t *manage_command_line_options(int argc, char **argv);
 
 
@@ -165,6 +167,23 @@ static void parse_command_line(int argc, char **argv, GOptionEntry entries[])
 }
 
 
+/**
+ * @cmdline is a string from the command line (if any)
+ * @option_str is the string already in the options_t * structure.
+ * @returns cmdline if it exists, option_str otherwise.
+ */
+static gchar *set_option_str(gchar *cmdline, gchar *option_str)
+{
+    if (cmdline != NULL)
+        {
+            return g_strdup(cmdline);
+        }
+    else
+        {
+            return option_str;
+        }
+}
+
 
 /**
  * This function parses command line options. It sets the options in this
@@ -258,30 +277,12 @@ static options_t *manage_command_line_options(int argc, char **argv)
     opt->all_versions = all_versions; /* only TRUE if -e or --all-versions was invoked */
     opt->all_files = all_files;       /* only TRUE if -f or --all-files was invoked    */
 
-    if (date != NULL)
-        {
-            opt->date = g_strdup(date);
-        }
-
-    if (afterdate != NULL)
-        {
-            opt->afterdate = g_strdup(afterdate);
-        }
-
-    if (beforedate != NULL)
-        {
-            opt->beforedate = g_strdup(beforedate);
-        }
-
-    if (list != NULL)
-        {
-            opt->list = g_strdup(list);
-        }
-
-    if (restore != NULL)
-        {
-            opt->restore = g_strdup(restore);
-        }
+    opt->date = set_option_str(date, opt->date);
+    opt->afterdate = set_option_str(afterdate, opt->afterdate);
+    opt->beforedate = set_option_str(beforedate, opt->beforedate);
+    opt->list = set_option_str(list, opt->list);
+    opt->restore = set_option_str(restore, opt->restore);
+    opt->where = set_option_str(where, opt->where);
 
     if (ip != NULL)
         {
@@ -292,11 +293,6 @@ static options_t *manage_command_line_options(int argc, char **argv)
     if (port > 1024 && port < 65535)
         {
             opt->port = port;
-        }
-
-    if (where != NULL)
-        {
-            opt->where = g_strdup(where);
         }
 
     free_variable(ip);
