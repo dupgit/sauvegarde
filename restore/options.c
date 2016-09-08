@@ -134,6 +134,39 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
 
 /**
+ * Parses command line options
+ * @param argc : number of arguments given on the command line.
+ * @param argv : an array of strings that contains command line arguments.
+ * @param entries is an array describing options and where to put their values
+ */
+static void parse_command_line(int argc, char **argv, GOptionEntry entries[])
+{
+    GError *error = NULL;
+    GOptionContext *context;
+    gchar *bugreport = NULL;  /** Bug Report message                               */
+    gchar *summary = NULL;    /** Abstract for the program                         */
+
+
+    bugreport = g_strconcat(_("Please report bugs to: "), PACKAGE_BUGREPORT, NULL);
+    summary = g_strdup(_("This program is restoring files from cdpfglserver's server."));
+    context = g_option_context_new("");
+
+    set_option_context_options(context, entries, TRUE, bugreport, summary);
+
+    if (!g_option_context_parse(context, &argc, &argv, &error))
+        {
+            g_print(_("Option parsing failed: %s\n"), error->message);
+            exit(EXIT_FAILURE);
+        }
+
+    g_option_context_free(context);
+    free_variable(bugreport);
+    free_variable(summary);
+}
+
+
+
+/**
  * This function parses command line options. It sets the options in this
  * order. It means that the value used for an option is the one set in the
  * latest step.
@@ -149,6 +182,9 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
  */
 static options_t *manage_command_line_options(int argc, char **argv)
 {
+    options_t *opt = NULL;         /** Structure to manage program's options                                             */
+    gchar *defaultconfigfilename = NULL;
+
     gboolean version = FALSE;      /** True if -v was selected on the command line                                       */
     gint debug = -4;               /** 0 == FALSE and other values == TRUE                                               */
     gchar *configfile = NULL;      /** filename for the configuration file if any                                        */
@@ -162,7 +198,6 @@ static options_t *manage_command_line_options(int argc, char **argv)
     gchar *beforedate = NULL;      /** beforedate:  we want to restore a file that has its mtime before this date        */
     gboolean all_versions = FALSE; /** all_version: True if we want to restore all version FALSE otherwise (default)     */
     gboolean all_files = FALSE;    /** all_files: True if we want to restore all files found by REGEX (-r or -l options) */
-
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version."), NULL},
@@ -181,26 +216,9 @@ static options_t *manage_command_line_options(int argc, char **argv)
         { NULL }
     };
 
-    GError *error = NULL;
-    GOptionContext *context;
-    options_t *opt = NULL;    /** Structure to manage program's options            */
-    gchar *bugreport = NULL;  /** Bug Report message                               */
-    gchar *summary = NULL;    /** Abstract for the program                         */
-    gchar *defaultconfigfilename = NULL;
-
-    bugreport = g_strconcat(_("Please report bugs to: "), PACKAGE_BUGREPORT, NULL);
-    summary = g_strdup(_("This program is restoring files from cdpfglserver's server."));
-    context = g_option_context_new("");
-
     set_debug_mode(ENABLE_DEBUG);
 
-    set_option_context_options(context, entries, TRUE, bugreport, summary);
-
-    if (!g_option_context_parse(context, &argc, &argv, &error))
-        {
-            g_print(_("Option parsing failed: %s\n"), error->message);
-            exit(EXIT_FAILURE);
-        }
+    parse_command_line(argc, argv, entries);
 
     /* 0) Setting default values */
 
@@ -281,10 +299,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
             opt->where = g_strdup(where);
         }
 
-    g_option_context_free(context);
     free_variable(ip);
-    free_variable(bugreport);
-    free_variable(summary);
     free_variable(list);
     free_variable(restore);
     free_variable(date);
