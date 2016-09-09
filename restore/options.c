@@ -31,8 +31,6 @@
 static void print_selected_options(options_t *opt);
 static void read_from_group_all(GKeyFile *keyfile, gchar *filename);
 static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename);
-static void parse_command_line(int argc, char **argv, GOptionEntry entries[]);
-static gchar *set_option_str(gchar *cmdline, gchar *option_str);
 static options_t *manage_command_line_options(int argc, char **argv);
 
 
@@ -135,55 +133,6 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 }
 
 
-/**
- * Parses command line options
- * @param argc : number of arguments given on the command line.
- * @param argv : an array of strings that contains command line arguments.
- * @param entries is an array describing options and where to put their values
- */
-static void parse_command_line(int argc, char **argv, GOptionEntry entries[])
-{
-    GError *error = NULL;
-    GOptionContext *context;
-    gchar *bugreport = NULL;  /** Bug Report message                               */
-    gchar *summary = NULL;    /** Abstract for the program                         */
-
-
-    bugreport = g_strconcat(_("Please report bugs to: "), PACKAGE_BUGREPORT, NULL);
-    summary = g_strdup(_("This program is restoring files from cdpfglserver's server."));
-    context = g_option_context_new("");
-
-    set_option_context_options(context, entries, TRUE, bugreport, summary);
-
-    if (!g_option_context_parse(context, &argc, &argv, &error))
-        {
-            g_print(_("Option parsing failed: %s\n"), error->message);
-            exit(EXIT_FAILURE);
-        }
-
-    g_option_context_free(context);
-    free_variable(bugreport);
-    free_variable(summary);
-}
-
-
-/**
- * @cmdline is a string from the command line (if any)
- * @option_str is the string already in the options_t * structure.
- * @returns cmdline if it exists, option_str otherwise.
- */
-static gchar *set_option_str(gchar *cmdline, gchar *option_str)
-{
-    if (cmdline != NULL)
-        {
-            return g_strdup(cmdline);
-        }
-    else
-        {
-            return option_str;
-        }
-}
-
 
 /**
  * This function parses command line options. It sets the options in this
@@ -203,6 +152,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
 {
     options_t *opt = NULL;         /** Structure to manage program's options                                             */
     gchar *defaultconfigfilename = NULL;
+    gchar *summary = NULL;         /** Abstract for the program                                                          */
 
     gboolean version = FALSE;      /** True if -v was selected on the command line                                       */
     gint debug = -4;               /** 0 == FALSE and other values == TRUE                                               */
@@ -237,7 +187,8 @@ static options_t *manage_command_line_options(int argc, char **argv)
 
     set_debug_mode(ENABLE_DEBUG);
 
-    parse_command_line(argc, argv, entries);
+    summary = g_strdup(_("This program is restoring files from cdpfglserver's server."));
+    parse_command_line(argc, argv, entries, summary);
 
     /* 0) Setting default values */
 
@@ -295,6 +246,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
             opt->port = port;
         }
 
+    free_variable(summary);
     free_variable(ip);
     free_variable(list);
     free_variable(restore);

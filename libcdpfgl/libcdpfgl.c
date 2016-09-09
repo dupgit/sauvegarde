@@ -299,6 +299,52 @@ void set_option_context_options(GOptionContext *context, GOptionEntry entries[],
         }
 }
 
+/**
+ * Parses command line options
+ * @param argc : number of arguments given on the command line.
+ * @param argv : an array of strings that contains command line arguments.
+ * @param entries is an array describing options and where to put their values
+ */
+void parse_command_line(int argc, char **argv, GOptionEntry entries[], gchar *summary)
+{
+    GError *error = NULL;
+    GOptionContext *context;
+    gchar *bugreport = NULL;  /** Bug Report message                               */
+
+    bugreport = g_strconcat(_("Please report bugs to: "), PACKAGE_BUGREPORT, NULL);
+    context = g_option_context_new("");
+
+    set_option_context_options(context, entries, TRUE, bugreport, summary);
+
+    if (!g_option_context_parse(context, &argc, &argv, &error))
+        {
+            g_print(_("Option parsing failed: %s\n"), error->message);
+            exit(EXIT_FAILURE);
+        }
+
+    g_option_context_free(context);
+    free_variable(bugreport);
+}
+
+
+/**
+ * @cmdline is a string from the command line (if any)
+ * @option_str is the string already in the options_t * structure.
+ * @returns cmdline if it exists, option_str otherwise.
+ */
+gchar *set_option_str(gchar *cmdline, gchar *option_str)
+{
+    if (cmdline != NULL)
+        {
+            return g_strdup(cmdline);
+        }
+    else
+        {
+            return option_str;
+        }
+}
+
+
 
 /**
  * Frees a pointer if it is not NULL and returns NULL

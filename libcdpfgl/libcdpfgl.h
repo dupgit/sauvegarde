@@ -159,6 +159,23 @@ extern void set_option_context_options(GOptionContext *context, GOptionEntry ent
 
 
 /**
+ * Parses command line options
+ * @param argc : number of arguments given on the command line.
+ * @param argv : an array of strings that contains command line arguments.
+ * @param entries is an array describing options and where to put their values
+ */
+extern void parse_command_line(int argc, char **argv, GOptionEntry entries[], gchar *summary);
+
+
+/**
+ * @cmdline is a string from the command line (if any)
+ * @option_str is the string already in the options_t * structure.
+ * @returns cmdline if it exists, option_str otherwise.
+ */
+extern gchar *set_option_str(gchar *cmdline, gchar *option_str);
+
+
+/**
  * Frees a pointer if it is not NULL and returns NULL
  * @param to_free is the pointer to be freed (must have been malloc with
  *         g_malloc* functions).
