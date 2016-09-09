@@ -330,12 +330,14 @@ void parse_command_line(int argc, char **argv, GOptionEntry entries[], gchar *su
 /**
  * @cmdline is a string from the command line (if any)
  * @option_str is the string already in the options_t * structure.
- * @returns cmdline if it exists, option_str otherwise.
+ * @returns cmdline if it exists and frees option_stror return option_str 
+ *          if cmdline does not exist.
  */
 gchar *set_option_str(gchar *cmdline, gchar *option_str)
 {
     if (cmdline != NULL)
         {
+            free_variable(option_str);
             return g_strdup(cmdline);
         }
     else

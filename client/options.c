@@ -227,6 +227,10 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
  */
 options_t *manage_command_line_options(int argc, char **argv)
 {
+    options_t *opt = NULL;    /** Structure to manage program's options            */
+    gchar *summary = NULL;    /** Abstract for the program                         */
+    gchar *defaultconfigfilename = NULL;
+
     gboolean version = FALSE;      /** True if -v was selected on the command line           */
     gint debug = -4;               /** 0 == FALSE and other values == TRUE                   */
     gint adaptive = -1;          /** 0 == FALSE and other positive values == TRUE          */
@@ -257,26 +261,10 @@ options_t *manage_command_line_options(int argc, char **argv)
         { NULL }
     };
 
-    GError *error = NULL;
-    GOptionContext *context;
-    options_t *opt = NULL;    /** Structure to manage program's options            */
-    gchar *bugreport = NULL;  /** Bug Report message                               */
-    gchar *summary = NULL;    /** Abstract for the program                         */
-    gchar *defaultconfigfilename = NULL;
-
-    bugreport = g_strconcat(_("Please report bugs to: "), PACKAGE_BUGREPORT, NULL);
     summary = g_strdup(_("This program is monitoring file changes in the filesystem and is hashing\nfiles with SHA256 algorithms from Glib."));
-    context = g_option_context_new("");
+    parse_command_line(argc, argv, entries, summary);
 
     set_debug_mode(ENABLE_DEBUG);
-
-    set_option_context_options(context, entries, TRUE, bugreport, summary);
-
-    if (!g_option_context_parse(context, &argc, &argv, &error))
-        {
-            g_print(_("Option parsing failed: %s\n"), error->message);
-            exit(EXIT_FAILURE);
-        }
 
     /* 0) Setting default values */
 
@@ -368,11 +356,9 @@ options_t *manage_command_line_options(int argc, char **argv)
             opt->buffersize = CLIENT_MIN_BUFFER;
         }
 
-    g_option_context_free(context);
     free_variable(ip);
     free_variable(dbname);
     free_variable(dircache);
-    free_variable(bugreport);
     free_variable(summary);
 
     return opt;
