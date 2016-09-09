@@ -60,6 +60,10 @@ cdpfglrestore will restore already saved files from a cdpfglserver to your local
 
    Lists or restores all versions of a file.
 
+**-f**, **--all-files**:
+
+   Restores all files found by -r REGEX or -l REGEX. This option only works in conjunction with -r.
+
 **-w**, **--where=DIRECTORY**:
 
    Specify a DIRECTORY where to restore a file.
