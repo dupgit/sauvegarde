@@ -234,12 +234,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     opt->list = set_option_str(list, opt->list);
     opt->restore = set_option_str(restore, opt->restore);
     opt->where = set_option_str(where, opt->where);
-
-    if (ip != NULL)
-        {
-            free_variable(opt->ip);
-            opt->ip = g_strdup(ip);
-        }
+    opt->ip = set_option_str(ip, opt->ip);
 
     if (port > 1024 && port < 65535)
         {

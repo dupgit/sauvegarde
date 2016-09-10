@@ -315,23 +315,9 @@ options_t *manage_command_line_options(int argc, char **argv)
             opt->blocksize = blocksize;
         }
 
-    if (dircache != NULL)
-        {
-            free_variable(opt->dircache);
-            opt->dircache = g_strdup(dircache);
-        }
-
-    if (dbname != NULL)
-        {
-            free_variable(opt->dbname);
-            opt->dbname = g_strdup(dbname);
-        }
-
-    if (ip != NULL)
-        {
-            free_variable(opt->ip);
-            opt->ip = g_strdup(ip);
-        }
+    opt->dircache = set_option_str(dircache, opt->dircache);
+    opt->ip = set_option_str(ip, opt->ip);
+    opt->dbname = set_option_str(dbname, opt->dbname);
 
     if (port > 1024 && port < 65535)
         {
