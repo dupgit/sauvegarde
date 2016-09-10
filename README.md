@@ -58,7 +58,8 @@ cdpfgl successfully in a system that is not listed here.
 * `gource`  (0.43) is used to generate the video about project's life in
             git
 * `pandoc`  (1.12.4.2) is used to generate a .tex and then a .pdf from
-            .md manual files.
+            .md manual files. It is also used to generate man pages from
+            .md files in 'man' directory.
 
 
 ## Download
