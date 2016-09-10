@@ -802,13 +802,11 @@ int main(int argc, char **argv)
 
     if (res_struct != NULL && res_struct->opt != NULL && res_struct->comm != NULL)
         {
-
             if (res_struct->opt->list != NULL)
                 {
                     list_files(res_struct);
                 }
-
-            if (res_struct->opt->restore != NULL)
+            else if (res_struct->opt->restore != NULL)
                 {
                     restore_files(res_struct);
                 }
