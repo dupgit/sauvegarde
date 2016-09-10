@@ -169,8 +169,11 @@ extern void parse_command_line(int argc, char **argv, GOptionEntry entries[], gc
 
 /**
  * @cmdline is a string from the command line (if any)
- * @option_str is the string already in the options_t * structure.
- * @returns cmdline if it exists, option_str otherwise.
+ * @option_str is the string already in the options_t * structure is it
+ *             freed when cmdline is returned because option_str is the
+ *             one we want to feed with the returned value.
+ * @returns cmdline if it exists and frees option_stror return option_str 
+ *          if cmdline does not exist.
  */
 extern gchar *set_option_str(gchar *cmdline, gchar *option_str);
 
