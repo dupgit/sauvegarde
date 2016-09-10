@@ -47,7 +47,8 @@ typedef struct
     gchar *ip;            /**< A string representing the IP address where server is located (may be a hotsname)       */
     gint port;            /**< Port number on which to send things to server's server (on which it must listen)       */
     gint buffersize;      /**< buffersize is an option to choose how many bytes we may accumulate before sending them */
-    gboolean adaptive;  /**< adaptive will make client compute hashs with an adaptive blocksize if TRUE         */
+    gboolean adaptive;    /**< adaptive will make client compute hashs with an adaptive blocksize if TRUE             */
+    gboolean noscan;      /**< noscan will avoid the first directory scan when set to TRUE. default = FALSE           */
 } options_t;
 
 

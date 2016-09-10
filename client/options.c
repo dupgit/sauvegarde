@@ -231,18 +231,19 @@ options_t *manage_command_line_options(int argc, char **argv)
     gchar *summary = NULL;    /** Abstract for the program                         */
     gchar *defaultconfigfilename = NULL;
 
-    gboolean version = FALSE;      /** True if -v was selected on the command line           */
-    gint debug = -4;               /** 0 == FALSE and other values == TRUE                   */
-    gint adaptive = -1;          /** 0 == FALSE and other positive values == TRUE          */
-    gchar **dirname_array = NULL;  /** array of dirnames left on the command line            */
-    gchar **exclude_array = NULL;  /** array of dirnames and filenames to be excluded        */
-    gchar *configfile = NULL;      /** filename for the configuration file if any            */
-    gint64 blocksize = 0;          /** computed block size in bytes                          */
-    gint buffersize = 0;           /** buffer size used to send data to server               */
-    gchar *dircache = NULL;        /** Directory used to store cache files                   */
-    gchar *dbname = NULL;          /** Database filename where data and meta data are cached */
-    gchar *ip =  NULL;             /** IP address where is located server's program          */
-    gint port = 0;                 /** Port number on which to send things to the server     */
+    gboolean version = FALSE;      /** True if -v was selected on the command line            */
+    gint debug = -4;               /** 0 == FALSE and other values == TRUE                    */
+    gint adaptive = -1;            /** 0 == FALSE and other positive values == TRUE           */
+    gchar **dirname_array = NULL;  /** array of dirnames left on the command line             */
+    gchar **exclude_array = NULL;  /** array of dirnames and filenames to be excluded         */
+    gchar *configfile = NULL;      /** filename for the configuration file if any             */
+    gint64 blocksize = 0;          /** computed block size in bytes                           */
+    gint buffersize = 0;           /** buffer size used to send data to server                */
+    gchar *dircache = NULL;        /** Directory used to store cache files                    */
+    gchar *dbname = NULL;          /** Database filename where data and meta data are cached  */
+    gchar *ip =  NULL;             /** IP address where is located server's program           */
+    gint port = 0;                 /** Port number on which to send things to the server      */
+    gboolean noscan = FALSE;       /** If set to TRUE then do not do the first directory scan */
 
     GOptionEntry entries[] =
     {
@@ -257,6 +258,7 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where server program is."), "IP"},
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which to listen."), N_("NUMBER")},
         { "exclude", 'x', 0, G_OPTION_ARG_FILENAME_ARRAY, &exclude_array, N_("Exclude FILENAME from being saved."), N_("FILENAME")},
+        { "no-scan", 'n', 0, G_OPTION_ARG_NONE, &noscan, N_("Does not do the first directory scan."), NULL},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
@@ -287,6 +289,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     defaultconfigfilename = free_variable(defaultconfigfilename);
 
     opt->version = version; /* only TRUE if -v or --version was invoked */
+    opt->noscan = noscan;   /* only TRUE if -n or --no-scan was invoked */
 
 
     /* 2) Reading the configuration from the configuration file specified

@@ -1233,7 +1233,7 @@ static gpointer carve_all_directories(gpointer data)
     main_struct_t *main_struct = (main_struct_t *) data;
     gchar *directory = NULL;
 
-    if (main_struct != NULL && main_struct->opt != NULL)
+    if (main_struct != NULL && main_struct->opt != NULL && main_struct->opt->noscan == FALSE)
         {
             g_slist_foreach(main_struct->opt->dirname_list, carve_one_directory, main_struct);
 
