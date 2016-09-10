@@ -68,6 +68,10 @@ cdpfglclient will monitor the file system for file creation or changes and will 
 
    Exclude FILENAME from being saved. You can specify more than once this option to exclude more files or directories. This option will add excluded directories to the list of excluded directory obtained from a specified configuration file if any.
 
+**-n**, **--no-scan**:
+
+   Does not do the first directory scan.
+
 
 # CONFIGURATION FILE
 
