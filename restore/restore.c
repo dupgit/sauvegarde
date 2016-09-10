@@ -488,16 +488,15 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
     options_t *opt = NULL;
     gint max = 0;
     gchar *the_date = NULL;    /** String containing file's last modified date */
-    gboolean all_versions = FALSE;
 
-    if (res_struct != NULL && meta != NULL)
+    if (res_struct != NULL && meta != NULL && res_struct->opt != NULL)
         {
             /* get the basename of the file to be restored */
             basename = g_path_get_basename(meta->name);
 
             opt = res_struct->opt;
 
-            if (opt != NULL && opt->where != NULL && g_file_test(opt->where, G_FILE_TEST_IS_DIR))
+            if (opt->where != NULL && g_file_test(opt->where, G_FILE_TEST_IS_DIR))
                 {
                     where = g_strdup(opt->where);
                 }
@@ -508,19 +507,17 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                     where = g_get_current_dir();
                 }
 
-            if (opt != NULL && opt->all_versions == TRUE)
+            if (opt->all_versions == TRUE)
                 {
                     the_date = transform_date_to_string(meta->mtime, TRUE);
                     newname = g_strdup_printf("%s_%s", the_date, basename);
-                    all_versions = TRUE;
                 }
             else
                 {
                     newname = g_strdup(basename);
-                    all_versions = FALSE;
                 }
 
-            filename = get_unique_filename(all_versions, basename, where, newname, the_date);
+            filename = get_unique_filename(opt->all_versions, basename, where, newname, the_date);
             
             print_debug(_("filename to restore: %s\n"), filename);
             file = g_file_new_for_path(filename);
