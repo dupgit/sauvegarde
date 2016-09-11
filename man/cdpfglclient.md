@@ -75,7 +75,7 @@ cdpfglclient will monitor the file system for file creation or changes and will 
 
 # CONFIGURATION FILE
 
-By default the configuration file is named `/etc/cdpfgl/client.conf`. It is organised in sections [Example section]. By convention section names begins with a capital. Sections contains some key=value definitions.
+By default the configuration file is named `/etc/cdpfgl/client.conf`. It is organised in sections [Example section]. By convention section names begins with a capital. Sections contains some key=value definitions. It is strongly recommended to modify and adapt client.conf file as it contains only example values that will not fit your needs.
 
 
 # SEE ALSO
