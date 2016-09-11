@@ -87,6 +87,12 @@
  */
 #define KN_ADAPTIVE ("adaptive")
 
+/**
+ * @def KN_NOSCAN
+ * Defines the key name for the no-scan option that prevent the first
+ * scan to occur if set to TRUE (FALSE is the default)
+ */
+# define KN_NOSCAN ("no-scan")
 
 /**
  * @def KN_BUFFER_SIZE

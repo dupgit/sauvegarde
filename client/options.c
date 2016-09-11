@@ -133,6 +133,9 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
             /* Adaptative mode for blocksize ? */
             opt->adaptive = read_boolean_from_file(keyfile, filename, GN_CLIENT, KN_ADAPTIVE, _("Could not load adaptive configuration from file."));
 
+            /* Scanning option */
+            opt->noscan = read_boolean_from_file(keyfile, filename, GN_CLIENT, KN_NOSCAN, _("Could not load scan configuration from file."));
+
             /* Buffer size to be used to send data to server */
             opt->buffersize = read_int_from_file(keyfile, filename, GN_CLIENT, KN_BUFFER_SIZE, _("Could not load buffersize from file"), CLIENT_MIN_BUFFER);
         }

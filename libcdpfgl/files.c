@@ -503,7 +503,7 @@ gchar *transform_date_to_string(guint64 nanosec, gboolean escaped)
 
 
 /**
- * Prints a file ands its meta data to the screen
+ * Prints a file and its meta data to the screen
  * @param smeta is the server meta data of the file to be printed on the
  *        screen
  */
