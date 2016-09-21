@@ -518,7 +518,7 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                 }
 
             filename = get_unique_filename(opt->all_versions, basename, where, newname, the_date);
-            
+
             print_debug(_("filename to restore: %s\n"), filename);
             file = g_file_new_for_path(filename);
 
@@ -600,7 +600,7 @@ static void restore_one_file(res_struct_t *res_struct, GSList *elem)
     meta_data_t *meta = NULL;
 
     if (elem != NULL)
-        {   
+        {
             meta = get_meta_data_from_smeta_list(elem);
 
             print_debug_file_info(meta);
@@ -626,7 +626,7 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
         {
             list = get_files_from_server(res_struct, query);
             last = g_slist_last(list);
-            
+
             restore_one_file(res_struct, last);
 
             g_slist_free_full(list, gslist_free_smeta);
@@ -646,7 +646,7 @@ static void restore_list_of_smeta(res_struct_t *res_struct, GSList *list)
 {
     while (list != NULL)
         {
-            restore_one_file(res_struct, list);   
+            restore_one_file(res_struct, list);
             list = g_slist_next(list);
         }
 }
@@ -720,9 +720,9 @@ static void restore_all_files(res_struct_t *res_struct, query_t *query)
     if (res_struct != NULL && query != NULL)
         {
             list = get_files_from_server(res_struct, query);
-            
+
             restore_list_of_smeta(res_struct, list);
-            
+
             g_slist_free_full(list, gslist_free_smeta);
         }
 }
@@ -797,7 +797,7 @@ int main(int argc, char **argv)
 
     res_struct = init_res_struct(argc, argv);
 
-    if (res_struct != NULL && res_struct->opt != NULL && res_struct->comm != NULL)
+    if (res_struct != NULL && res_struct->opt != NULL)
         {
             if (res_struct->opt->list != NULL)
                 {
