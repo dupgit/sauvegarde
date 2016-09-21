@@ -54,6 +54,7 @@ typedef struct
     gchar *where;           /**< where is a string that should contain a directory where to restore a file / dirtectory     */
     gboolean all_versions;  /**< all_versions says whether we should restore all versions of a file (TRUE) or not (FALSE)   */
     gboolean all_files;     /**< all_files is true if we want to restore all files found by REGEX with -r or -l options     */
+    gboolean latest;        /**< latest is true if we want ot get only the latest version of a file. Defaults is false      */
 } options_t;
 
 

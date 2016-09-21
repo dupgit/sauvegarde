@@ -29,10 +29,11 @@
 
 static res_struct_t *init_res_struct(int argc, char **argv);
 static query_t *prepare_query(gchar *hostname);
-static query_t *finish_query(query_t *query, gchar *encoded_filename, gchar *encoded_date, gchar *encoded_afterdate,gchar *encoded_beforedate);
+static query_t *finish_query(query_t *query, gchar *encoded_filename, gchar *encoded_date, gchar *encoded_afterdate,gchar *encoded_beforedate, gboolean latest);
 static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt);
 static query_t *new_query_from_filename(gchar *hostname, gchar *filename);
 static gchar *add_on_field_to_request(gchar *request, gchar *field, gchar *value);
+static gchar *add_on_boolean_field_to_request(gchar *request, gchar *field, gboolean value);
 static gchar *make_base_request(query_t *query);
 static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query);
 static void print_list_of_smeta(GSList *list);
@@ -112,7 +113,7 @@ static query_t *prepare_query(gchar *hostname)
             the_uid = g_strdup_printf("%d", uid);
             the_gid = g_strdup_printf("%d", pass->pw_gid);
 
-            query = init_query_t(hostname, the_uid, the_gid, owner, group, NULL, NULL, NULL, NULL);
+            query = init_query_t(hostname, the_uid, the_gid, owner, group, NULL, NULL, NULL, NULL, FALSE);
             print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s\n"), hostname, the_uid, the_gid, owner, group);
         }
 
@@ -130,7 +131,7 @@ static query_t *prepare_query(gchar *hostname)
  * @param encoded_beforedate is the maximal date of the file to be restored
  * @returns a completely filled query_t structure
  */
-static query_t *finish_query(query_t *query, gchar *encoded_filename, gchar *encoded_date, gchar *encoded_afterdate, gchar *encoded_beforedate)
+static query_t *finish_query(query_t *query, gchar *encoded_filename, gchar *encoded_date, gchar *encoded_afterdate, gchar *encoded_beforedate, gboolean latest)
 {
     if (query != NULL)
         {
@@ -138,6 +139,7 @@ static query_t *finish_query(query_t *query, gchar *encoded_filename, gchar *enc
             query->date = encoded_date;
             query->afterdate = encoded_afterdate;
             query->beforedate = encoded_beforedate;
+            query->latest = latest;
         }
 
     return query;
@@ -162,14 +164,14 @@ static query_t *get_user_infos(gchar *hostname, gchar *filename, options_t *opt)
 
     query = prepare_query(hostname);
 
-    if (query != NULL)
+    if (query != NULL && opt != NULL)
         {
             encoded_filename = encode_to_base64(filename);
             encoded_date = encode_to_base64(opt->date);
             encoded_afterdate = encode_to_base64(opt->afterdate);
             encoded_beforedate = encode_to_base64(opt->beforedate);
 
-            query = finish_query(query, encoded_filename, encoded_date, encoded_afterdate, encoded_beforedate);
+            query = finish_query(query, encoded_filename, encoded_date, encoded_afterdate, encoded_beforedate, opt->latest);
         }
 
     return query;
@@ -194,7 +196,7 @@ static query_t *new_query_from_filename(gchar *hostname, gchar *filename)
     if (query != NULL && filename != NULL)
         {
             encoded_filename = encode_to_base64(filename);
-            query = finish_query(query, encoded_filename, NULL, NULL, NULL);
+            query = finish_query(query, encoded_filename, NULL, NULL, NULL, FALSE);
         }
 
     return query;
@@ -227,6 +229,31 @@ static gchar *add_on_field_to_request(gchar *request, gchar *field, gchar *value
     free_variable(request);
 
     return new_request;
+}
+
+
+/**
+ * transform the boolean value to a string one an adds the field and its 
+ * value to the request.
+ * @param request is the request where to add the field and its value.
+ *        This variable is freed here. Do not use its pointer after this
+ *        call !
+ * @param field is the field to be added to the request
+ * @value is the boolean value to be transformed into a string one.
+ * @returns a newly allocated gchar * request that may be freed when no
+ *          longer needed.
+ */
+static gchar *add_on_boolean_field_to_request(gchar *request, gchar *field, gboolean value)
+{
+
+    if (value == TRUE)
+        {
+            return add_on_field_to_request(request, field, "True");
+        }
+    else
+        {
+            return add_on_field_to_request(request, field, "False");
+        }
 }
 
 
@@ -275,6 +302,7 @@ static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query)
             request = add_on_field_to_request(request, "date", query->date);
             request = add_on_field_to_request(request, "afterdate", query->afterdate);
             request = add_on_field_to_request(request, "beforedate", query->beforedate);
+            request = add_on_boolean_field_to_request(request, "latest",  query->latest);
 
             print_debug(_("Query is: %s\n"), request);
             res = get_url(res_struct->comm, request, NULL);

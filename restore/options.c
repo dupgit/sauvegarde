@@ -167,6 +167,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     gchar *beforedate = NULL;      /** beforedate:  we want to restore a file that has its mtime before this date        */
     gboolean all_versions = FALSE; /** all_version: True if we want to restore all version FALSE otherwise (default)     */
     gboolean all_files = FALSE;    /** all_files: True if we want to restore all files found by REGEX (-r or -l options) */
+    gboolean latest = FALSE;       /** latest: True if we only want to get the latest version of a file                  */
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version."), NULL},
@@ -179,6 +180,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
         { "before", 'b', 0, G_OPTION_ARG_STRING, &beforedate, N_("Restores the selected file with mtime before DATE (YYYY-MM-DD HH:MM:SS format)."), "DATE"},
         { "all-versions", 'e', 0, G_OPTION_ARG_NONE, &all_versions, N_("List or restore all versions of a file."), NULL},
         { "all-files", 'f', 0, G_OPTION_ARG_NONE, &all_files, N_("Restores all files found by -r REGEX"), NULL},
+        { "latest", 'g', 0, G_OPTION_ARG_NONE, &latest, N_("Selects only latest version per file."), NULL},
         { "where", 'w', 0, G_OPTION_ARG_STRING, &where, N_("Specify a DIRECTORY where to restore a file."), N_("DIRECTORY")},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where server program is."), "IP"},
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which server program is listening."), N_("NUMBER")},
@@ -227,6 +229,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     opt->version = version;           /* only TRUE if -v or --version was invoked      */
     opt->all_versions = all_versions; /* only TRUE if -e or --all-versions was invoked */
     opt->all_files = all_files;       /* only TRUE if -f or --all-files was invoked    */
+    opt->latest = latest;             /* only TRUE if -r or --latest was invoked       */
 
     opt->date = set_option_str(date, opt->date);
     opt->afterdate = set_option_str(afterdate, opt->afterdate);

@@ -228,7 +228,7 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
 
             if (backend->get_list_of_files != NULL)
                 {
-                    query = init_query_t(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+                    query = init_query_t(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FALSE);
 
                     query->hostname = get_argument_value_from_key(connection, "hostname", FALSE);
                     query->uid = get_argument_value_from_key(connection, "uid", FALSE);

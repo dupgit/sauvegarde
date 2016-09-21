@@ -43,6 +43,7 @@ typedef struct
     gchar *date;
     gchar *afterdate;
     gchar *beforedate;
+    gboolean latest;    /**< latest: True if we only want to get the latest entries found */
 } query_t;
 
 
@@ -60,7 +61,7 @@ typedef struct
  * @returns a newly allocated query_t * structure filled  with the
  *          corresponding data that may be freed when no longer needed.
  */
-extern query_t *init_query_t(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group, gchar *filename, gchar *date, gchar *afterdate, gchar *beforedate);
+extern query_t *init_query_t(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gchar *group, gchar *filename, gchar *date, gchar *afterdate, gchar *beforedate, gboolean latest);
 
 
 /**
