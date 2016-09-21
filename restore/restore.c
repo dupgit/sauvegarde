@@ -768,10 +768,12 @@ static void restore_files(res_struct_t *res_struct)
         }
     else if (res_struct->opt->all_files == TRUE)
         {
+            /* Restores all files found by the query */
             restore_all_files(res_struct, query);
         }
     else
         {
+            /* Restores only the last one in the list */
             restore_last_file(res_struct, query);
         }
 
