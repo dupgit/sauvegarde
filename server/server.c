@@ -214,7 +214,7 @@ static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gch
  * url (from connection)
  * @param connection is the connection in MHD
  * @param key the key to look for into the url
- * @returns a gboolean that is TRUE if the Value contains 'True' and FALSE 
+ * @returns a gboolean that is TRUE if the Value contains 'True' and FALSE
  *          otherwise.
  */
 static gboolean get_boolean_argument_value_from_key(struct MHD_Connection *connection, gchar *key)
