@@ -498,7 +498,7 @@ static GList *send_all_data_to_server(main_struct_t *main_struct, GList *hash_da
 {
     json_t *root = NULL;
     json_t *array = NULL;
-    GList *hash_list = NULL;      /** hash_list is local to this function and contains the needed hashs as answer by server */
+    GList *hash_list = NULL;      /** hash_list is local to this function and contains the needed hashs as answered by server */
     GList *head = NULL;
     GList *iter = NULL;
     hash_data_t *found = NULL;
