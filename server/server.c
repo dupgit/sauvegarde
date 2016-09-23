@@ -34,6 +34,7 @@ static gboolean int_signal_handler(gpointer user_data);
 static server_struct_t *init_server_main_structure(int argc, char **argv);
 static gchar *get_data_from_a_specific_hash(server_struct_t *server_struct, gchar *hash);
 static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key, gboolean encoded);
+static gboolean get_boolean_argument_value_from_key(struct MHD_Connection *connection, gchar *key);
 static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Connection *connection);
 static hash_data_t *create_one_hash_data_t_from_hash_data_list(GList *hash_data_list, guint size);
 static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Connection *connection);
@@ -209,6 +210,33 @@ static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gch
 
 
 /**
+ * Function that gets a boolean argument corresponding to the key 'key' in the
+ * url (from connection)
+ * @param connection is the connection in MHD
+ * @param key the key to look for into the url
+ * @returns a gboolean that is TRUE if the Value contains 'True' and FALSE 
+ *          otherwise.
+ */
+static gboolean get_boolean_argument_value_from_key(struct MHD_Connection *connection, gchar *key)
+{
+    gchar *value = NULL;
+
+    value = get_argument_value_from_key(connection, key, FALSE);
+
+    if (g_strcmp0(value, "True") == 0)
+        {
+            free_variable(value);
+            return TRUE;
+        }
+    else
+        {
+            free_variable(value);
+            return FALSE;
+        }
+}
+
+
+/**
  * Function to get a list of saved files.
  * @param server_struct is the main structure for the server.
  * @param connection is the connection in MHD
@@ -239,10 +267,11 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
                     query->date = get_argument_value_from_key(connection, "date", TRUE);
                     query->afterdate = get_argument_value_from_key(connection, "afterdate", TRUE);
                     query->beforedate = get_argument_value_from_key(connection, "beforedate", TRUE);
+                    query->latest = get_boolean_argument_value_from_key(connection, "latest");
 
-                    print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s && %s && %s && %s \n"), \
+                    print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s && %s && %s && %s && %d\n"), \
                                    query->hostname, query->uid, query->gid, query->owner, query->group,                     \
-                                   query->filename, query->date, query->afterdate, query->beforedate);
+                                   query->filename, query->date, query->afterdate, query->beforedate, query->latest);
 
                     if (query->hostname != NULL && query-> uid != NULL && query->gid != NULL && query->owner != NULL && query->group != NULL)
                         {
