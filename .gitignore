@@ -61,3 +61,4 @@ coverage*
 *.gcno
 gmon.out
 *.swp
+TAGS
