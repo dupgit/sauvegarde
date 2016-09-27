@@ -71,9 +71,9 @@ void free_server_struct_t(server_struct_t *server_struct)
             free_variable(server_struct->backend); /** we need a backend function to be called to free th backend structure */
             print_debug(_("\tbackend variable freed.\n"));
             g_thread_unref(server_struct->data_thread);
-            print_debug(_("\tdata thread unrefed.\n"));
+            print_debug(_("\tdata thread unreferenced.\n"));
             g_thread_unref(server_struct->meta_thread);
-            print_debug(_("\tmeta thread unrefed.\n"));
+            print_debug(_("\tmeta thread unreferenced.\n"));
             free_options_t(server_struct->opt);
             print_debug(_("\toption structure freed.\n"));
             free_variable(server_struct);
