@@ -222,7 +222,7 @@ extern gpointer free_smeta_data_t(server_meta_data_t *smeta);
  * the pointer to the data to be freed
  * @param the pointer to the data to be freed by free_smeta_data_t call.
  */
-extern void gslist_free_smeta(gpointer data);
+extern void free_gslist_smeta(gpointer data);
 
 
 /**

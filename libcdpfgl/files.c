@@ -159,10 +159,9 @@ gpointer free_smeta_data_t(server_meta_data_t *smeta)
 
 /**
  * Wrapper for the g_slist_free_full function
- * the pointer to the data to be freed
  * @param data the pointer to the data to be freed by free_smeta_data_t call.
  */
-void gslist_free_smeta(gpointer data)
+void free_gslist_smeta(gpointer data)
 {
     free_smeta_data_t((server_meta_data_t *)data);
 }

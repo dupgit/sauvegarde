@@ -233,7 +233,7 @@ static gchar *add_on_field_to_request(gchar *request, gchar *field, gchar *value
 
 
 /**
- * transform the boolean value to a string one an adds the field and its 
+ * transform the boolean value to a string one an adds the field and its
  * value to the request.
  * @param request is the request where to add the field and its value.
  *        This variable is freed here. Do not use its pointer after this
@@ -362,7 +362,7 @@ static void print_all_files(res_struct_t *res_struct, query_t *query)
 
             print_list_of_smeta(list);
 
-            g_slist_free_full(list, gslist_free_smeta);
+            g_slist_free_full(list, free_gslist_smeta);
         }
 }
 
@@ -424,11 +424,11 @@ static void print_all_versions(res_struct_t *res_struct, query_t *query)
                     new_list = get_files_from_server(res_struct, query_last);
                     print_list_of_smeta(new_list);
 
-                    g_slist_free_full(new_list, gslist_free_smeta);
+                    g_slist_free_full(new_list, free_gslist_smeta);
                     free_variable(filename);
                 }
 
-            g_slist_free_full(list, gslist_free_smeta);
+            g_slist_free_full(list, free_gslist_smeta);
 
         }
 }
@@ -657,7 +657,7 @@ static void restore_last_file(res_struct_t *res_struct, query_t *query)
 
             restore_one_file(res_struct, last);
 
-            g_slist_free_full(list, gslist_free_smeta);
+            g_slist_free_full(list, free_gslist_smeta);
         }
 }
 
@@ -710,11 +710,11 @@ static void restore_all_versions(res_struct_t *res_struct, query_t *query)
                     new_list = get_files_from_server(res_struct, query_last);
                     restore_list_of_smeta(res_struct, new_list);
 
-                    g_slist_free_full(new_list, gslist_free_smeta);
+                    g_slist_free_full(new_list, free_gslist_smeta);
                     free_variable(filename);
                 }
 
-            g_slist_free_full(list, gslist_free_smeta);
+            g_slist_free_full(list, free_gslist_smeta);
         }
 }
 
@@ -751,7 +751,7 @@ static void restore_all_files(res_struct_t *res_struct, query_t *query)
 
             restore_list_of_smeta(res_struct, list);
 
-            g_slist_free_full(list, gslist_free_smeta);
+            g_slist_free_full(list, free_gslist_smeta);
         }
 }
 
