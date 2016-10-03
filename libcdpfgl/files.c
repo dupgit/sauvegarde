@@ -706,6 +706,21 @@ gchar *normalize_directory(gchar *path)
 
 
 /**
+ * Creates sub_dir subdirectory into save_dir path
+ * @param save_dir prefix directory where to create sub_dir
+ * @param sub_dir name of the sub directory to be created under save_dir
+ */
+void file_create_directory(gchar *save_dir, gchar *sub_dir)
+{
+    gchar *a_directory = NULL;
+
+    a_directory = g_build_filename(save_dir, sub_dir, NULL);
+    create_directory(a_directory);
+    free_variable(a_directory);
+}
+
+
+/**
  * @param size is the size of the considered file.
  * @returns the maximum number of hashs that may be asked for into a
  *          single GET HTTP request.

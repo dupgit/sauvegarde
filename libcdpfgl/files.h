@@ -226,6 +226,14 @@ extern void free_gslist_smeta(gpointer data);
 
 
 /**
+ * Creates sub_dir subdirectory into save_dir path
+ * @param save_dir prefix directory where to create sub_dir
+ * @param sub_dir name of the sub directory to be created under save_dir
+ */
+extern void file_create_directory(gchar *save_dir, gchar *sub_dir);
+
+
+/**
  * Checks if a filename exists or not.
  * @param filename that we want to check.
  * @returns TRUE if filename exists and FALSE if not.

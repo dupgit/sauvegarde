@@ -32,7 +32,6 @@
 #include "server.h"
 
 
-static void file_create_directory(gchar *save_dir, gchar *sub_dir);
 static void make_all_subdirectories(file_backend_t *file_backend);
 static buffer_t *init_buffer_structure(GFileInputStream *stream);
 static void free_buffer_t(buffer_t *a_buffer);
@@ -288,19 +287,6 @@ GList *file_build_needed_hash_list(server_struct_t *server_struct, GList *hash_d
 }
 
 
-/**
- * Creates sub_dir subdirectory into save_dir path
- * @param save_dir prefix directory where to create sub_dir
- * @param sub_dir name of the sub directory to be created under save_dir
- */
-static void file_create_directory(gchar *save_dir, gchar *sub_dir)
-{
-    gchar *a_directory = NULL;
-
-    a_directory = g_build_filename(save_dir, sub_dir, NULL);
-    create_directory(a_directory);
-    free_variable(a_directory);
-}
 
 
 /**
