@@ -287,4 +287,15 @@ extern gchar *make_MHD_version(void);
  *          one of the string parameter.
  */
 extern gchar *get_substring_from_string(gchar *string, gboolean decodeit);
+
+
+/**
+ * Reads an uint from a string.
+ * @param string a gchar * string containing a number that should be
+ *        32 bits at most.
+ * @returns a uint from the gchar * string that may contain such a number.
+ */
+extern uint get_uint_from_string(gchar *string);
+
+
 #endif /* #ifndef _LIBCDPFGL_H_ */

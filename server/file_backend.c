@@ -38,7 +38,6 @@ static void free_buffer_t(buffer_t *a_buffer);
 static void read_one_buffer(buffer_t *a_buffer);
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer);
 static guint64 get_guint64_from_string(gchar *string);
-static uint get_uint_from_string(gchar *string);
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query);
 
 
@@ -625,24 +624,6 @@ static guint64 get_guint64_from_string(gchar *string)
         }
 
     return guess_64;
-}
-
-
-/**
- * @param string a gchar * string containing a number that should be
- *        32 bits at most.
- * @returns a uint from the gchar * string that may contain such a number.
- */
-static uint get_uint_from_string(gchar *string)
-{
-    uint guess = 0;
-
-    if (string != NULL)
-        {
-            sscanf(string, "%d", &guess);
-        }
-
-    return guess;
 }
 
 

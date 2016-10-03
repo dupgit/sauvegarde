@@ -603,3 +603,23 @@ gchar *get_substring_from_string(gchar *string, gboolean decodeit)
 
     return new_string;
 }
+
+
+/**
+ * Reads an uint from a string.
+ * @param string a gchar * string containing a number that should be
+ *        32 bits at most.
+ * @returns a uint from the gchar * string that may contain such a number.
+ */
+uint get_uint_from_string(gchar *string)
+{
+    uint guess = 0;
+
+    if (string != NULL)
+        {
+            sscanf(string, "%d", &guess);
+        }
+
+    return guess;
+}
+
