@@ -43,7 +43,6 @@ static uint get_uint_from_string(gchar *string);
 static gchar *get_substring_from_string(gchar *string, gboolean decodeit);
 static gboolean compare_mtime_to_date(guint64 mtime, gchar *date);
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query);
-static GList *insert_meta_data_t_in_list(GList *list, meta_data_t *meta);
 
 
 /**
@@ -945,20 +944,6 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
         }
 
     return meta;
-}
-
-
-/**
- * Inserts a meta_data_t structure into a GList
- * @param list is the list where we want to insert the meta_data_t structure
- * @param meta is the meta_data_t structure we want to insert
- * @returns a new list with meta_data inserted.
- */
-GList *insert_meta_data_t_in_list(GList *list, meta_data_t *meta)
-{
-    list = g_list_insert_sorted(list, meta, compare_meta_data_t);
-
-    return list;
 }
 
 

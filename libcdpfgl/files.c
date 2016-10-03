@@ -126,6 +126,20 @@ void free_glist_meta_data_t(gpointer data)
 
 
 /**
+ * Inserts a meta_data_t structure into a GList
+ * @param list is the list where we want to insert the meta_data_t structure
+ * @param meta is the meta_data_t structure we want to insert
+ * @returns a new list with meta_data inserted.
+ */
+GList *insert_meta_data_t_in_list(GList *list, meta_data_t *meta)
+{
+    list = g_list_insert_sorted(list, meta, compare_meta_data_t);
+
+    return list;
+}
+
+
+/**
  * Frees the server_meta_data_t * structure
  * @param smeta is a meta_data_t * structure to be freed
  * @returns always NULL
