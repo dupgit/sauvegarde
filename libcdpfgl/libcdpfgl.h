@@ -49,6 +49,7 @@
 #include <sqlite3.h>
 #include <jansson.h>
 #include <curl/curl.h>
+#include <ctype.h>
 
 #include "configuration.h"
 #include "files.h"
@@ -297,5 +298,25 @@ extern gchar *get_substring_from_string(gchar *string, gboolean decodeit);
  */
 extern uint get_uint_from_string(gchar *string);
 
+
+/**
+ * @param string a gchar * string containing a number coded at most in 64
+ *        bits.
+ * @returns a guint64 from the gchar * string that may contain such a
+ *          number.
+ */
+extern guint64 get_guint64_from_string(gchar *string);
+
+
+/**
+ * Gets digit values at a given place into a gchar YYYY-MM-DD HH:MM:SS
+ * formatted string
+ * @param date the string to be parsed
+ * @param i the offset where to start
+ * @param size the size to be parsed
+ * @returns a gint that is supposed to be the value read into 'date' at
+ *          'i' position ('size' long).
+ */
+extern gint get_digit_value(gchar *date, guint i, guint size);
 
 #endif /* #ifndef _LIBCDPFGL_H_ */

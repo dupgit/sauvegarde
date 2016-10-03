@@ -623,3 +623,59 @@ uint get_uint_from_string(gchar *string)
     return guess;
 }
 
+/**
+ * @param string a gchar * string containing a number coded at most in 64
+ *        bits.
+ * @returns a guint64 from the gchar * string that may contain such a
+ *          number.
+ */
+guint64 get_guint64_from_string(gchar *string)
+{
+    guint64 guess_64 = 0;
+
+    if (string != NULL)
+        {
+            sscanf(string, "%" G_GUINT64_FORMAT "", &guess_64);
+        }
+
+    return guess_64;
+}
+
+
+/**
+ * Gets digit values at a given place into a gchar YYYY-MM-DD HH:MM:SS
+ * formatted string
+ * @param date the string to be parsed
+ * @param i the offset where to start
+ * @param size the size to be parsed
+ * @returns a gint that is supposed to be the value read into 'date' at
+ *          'i' position ('size' long).
+ */
+gint get_digit_value(gchar *date, guint i, guint size)
+{
+    gchar *value = NULL;
+    gint digit_value = NULL;
+    guint j = 0;
+    gint ret = 0;
+
+    value = (gchar *) g_malloc0(size + 1);
+
+    while (isdigit(date[i]) && j < size)
+        {
+            value[j] = date[i];
+            i++;
+            j++;
+        }
+
+    ret = sscanf(value, "%d", &digit_value);
+
+    if (ret != 1)
+        {
+            digit_value = 0;
+        }
+
+    free_variable(value);
+
+    return digit_value;
+}
+

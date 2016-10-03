@@ -322,6 +322,89 @@ gboolean compare_mtime_to_date(guint64 mtime, gchar *date)
 
 
 /**
+ * Compares mtime to a YYYY-MM-DD HH:MM:SS gchar * string formated date
+ * @param mtime the time in unix time
+ * @param date the date in YYYY-MM-DD HH:MM:SS format - it may lack
+ *        things from the end ie: YYYY-MM-DD HH: for instance.
+ * @returns -1, 0 or 1 if mtime is less than, equal to or greater than
+ *          'date'.
+ */
+gint compare_mtime_to_gchar_date(guint64 mtime, gchar *date)
+{
+    GDateTime *mtime_date = NULL;
+    GDateTime *date_date = NULL;
+    gint result = 0;
+
+    date_date = convert_gchar_date_to_gdatetime(date);
+    mtime_date = g_date_time_new_from_unix_local(mtime);
+
+    result = g_date_time_compare(mtime_date, date_date);
+
+    g_date_time_unref(mtime_date);
+    g_date_time_unref(date_date);
+
+    return result;
+}
+
+
+/**
+ * Returns true or false
+ * @param mtime the time in unix time
+ * @param date the date in YYYY-MM-DD HH:MM:SS format - it may lack
+ *        things from the end ie: YYYY-MM-DD HH: for instance.
+ * @param after is TRUE if we are to compare an 'after' date and false
+ *        if its a 'before' date.
+ */
+gboolean compare_after_before_date(guint64 mtime, gchar *date, gboolean after)
+{
+    gint cmp_date = 0;
+
+    cmp_date = compare_mtime_to_gchar_date(mtime, date);
+
+    if (cmp_date >= 0)
+        {
+            return after;
+        }
+    else
+        {
+            return !after;
+        }
+}
+
+
+/**
+ * Analyses a gchar string that may contain YYYY-MM-DD HH:MM:SS
+ * @param date is the gchar * string that may contain a date at the given
+ *        format.
+ * @returns a GDateTime * that may represents the date.
+ */
+GDateTime *convert_gchar_date_to_gdatetime(gchar *date)
+{
+    gint year = 0;
+    gint month = 0;
+    gint day = 0;
+    gint hour = 0;
+    gint minute = 0;
+    gint second = 0;
+    GDateTime *datetime = NULL;
+    GTimeZone *tz = NULL;
+
+    year = get_digit_value(date, 0, 4);
+    month = get_digit_value(date, 5, 2);
+    day = get_digit_value(date, 8, 2);
+    hour = get_digit_value(date, 11, 2);
+    minute = get_digit_value(date, 14, 2);
+    second = get_digit_value(date, 17, 2);
+
+    tz = g_time_zone_new_local();
+    datetime = g_date_time_new(tz, year, month, day, hour, minute, second);
+    g_time_zone_unref(tz);
+
+    return datetime;
+}
+
+
+/**
  * Get unix mode of a file
  * @param fileinfo : a GFileInfo pointer obtained from an opened file
  *        (GFile *)

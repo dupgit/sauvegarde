@@ -134,6 +134,36 @@ extern void set_dates_to_gfile(GFileInfo *fileinfo, meta_data_t *meta);
  */
 extern gboolean compare_mtime_to_date(guint64 mtime, gchar *date);
 
+/**
+ * Compares mtime to a YYYY-MM-DD HH:MM:SS gchar * string formated date
+ * @param mtime the time in unix time
+ * @param date the date in YYYY-MM-DD HH:MM:SS format - it may lack
+ *        things from the end ie: YYYY-MM-DD HH: for instance.
+ * @returns -1, 0 or 1 if mtime is less than, equal to or greater than
+ *          'date'.
+ */
+extern gint compare_mtime_to_gchar_date(guint64 mtime, gchar *date);
+
+
+/**
+ * Returns true or false
+ * @param mtime the time in unix time
+ * @param date the date in YYYY-MM-DD HH:MM:SS format - it may lack
+ *        things from the end ie: YYYY-MM-DD HH: for instance.
+ * @param after is TRUE if we are to compare an 'after' date and false
+ *        if its a 'before' date.
+ */
+extern gboolean compare_after_before_date(guint64 mtime, gchar *date, gboolean after);
+
+
+/**
+ * Analyses a gchar string that may contain YYYY-MM-DD HH:MM:SS
+ * @param date is the gchar * string that may contain a date at the given
+ *        format.
+ * @returns a GDateTime * that may represents the date.
+ */
+extern GDateTime *convert_gchar_date_to_gdatetime(gchar *date);
+
 
 /**
  * Get unix mode of a file
