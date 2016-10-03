@@ -333,7 +333,7 @@ void parse_command_line(int argc, char **argv, GOptionEntry entries[], gchar *su
  * @option_str is the string already in the options_t * structure is it
  *             freed when cmdline is returned because option_str is the
  *             one we want to feed with the returned value.
- * @returns cmdline if it exists and frees option_stror return option_str 
+ * @returns cmdline if it exists and frees option_stror return option_str
  *          if cmdline does not exist.
  */
 gchar *set_option_str(gchar *cmdline, gchar *option_str)
@@ -571,3 +571,35 @@ void wait_for_queue_to_flush(GAsyncQueue *queue, guint nbelem, useconds_t usecs)
 }
 
 
+/**
+ * @param string is a gchar * string containing another string
+ * @param decodeit is a boolean. When set to TRUE it will base64 decode
+ *        the string, if FALSE it will return the string as is.
+ * @returns a newly allocated substring from caracter 3 to the very last
+ *          one of the string parameter.
+ */
+gchar *get_substring_from_string(gchar *string, gboolean decodeit)
+{
+    gchar *new_string = NULL;
+    gchar *base64 = NULL;
+    gsize len = 0;
+
+    if (string != NULL)
+        {
+            /* we have a leading space before " and a trailing space after " so begins at + 2 and length is - 3 less */
+            base64 = g_strndup(string + 2, strlen(string) - 3);
+
+            if (decodeit == TRUE)
+                {
+                    new_string = (gchar *) g_base64_decode(base64, &len);
+                    free_variable(base64);
+                }
+            else
+                {
+                    new_string = base64;
+                }
+
+        }
+
+    return new_string;
+}

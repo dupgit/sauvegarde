@@ -172,7 +172,7 @@ extern void parse_command_line(int argc, char **argv, GOptionEntry entries[], gc
  * @option_str is the string already in the options_t * structure is it
  *             freed when cmdline is returned because option_str is the
  *             one we want to feed with the returned value.
- * @returns cmdline if it exists and frees option_stror return option_str 
+ * @returns cmdline if it exists and frees option_stror return option_str
  *          if cmdline does not exist.
  */
 extern gchar *set_option_str(gchar *cmdline, gchar *option_str);
@@ -279,4 +279,12 @@ extern void wait_for_queue_to_flush(GAsyncQueue *queue, guint nbelem, useconds_t
 extern gchar *make_MHD_version(void);
 
 
+/**
+ * @param string is a gchar * string containing another string
+ * @param decodeit is a boolean. When set to TRUE it will base64 decode
+ *        the string, if FALSE it will return the string as is.
+ * @returns a newly allocated substring from caracter 3 to the very last
+ *          one of the string parameter.
+ */
+extern gchar *get_substring_from_string(gchar *string, gboolean decodeit);
 #endif /* #ifndef _LIBCDPFGL_H_ */

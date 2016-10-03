@@ -39,7 +39,6 @@ static void read_one_buffer(buffer_t *a_buffer);
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer);
 static guint64 get_guint64_from_string(gchar *string);
 static uint get_uint_from_string(gchar *string);
-static gchar *get_substring_from_string(gchar *string, gboolean decodeit);
 static gboolean compare_mtime_to_date(guint64 mtime, gchar *date);
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query);
 
@@ -648,38 +647,6 @@ static uint get_uint_from_string(gchar *string)
 }
 
 
-/**
- * @param string is a gchar * string containing another string
- * @param decodeit is a boolean. When set to TRUE it will base64 decode
- *        the string, if FALSE it will return the string as is.
- * @returns a newly allocated substring from caracter 3 to the very last
- *          one of the string parameter.
- */
-static gchar *get_substring_from_string(gchar *string, gboolean decodeit)
-{
-    gchar *new_string = NULL;
-    gchar *base64 = NULL;
-    gsize len = 0;
-
-    if (string != NULL)
-        {
-            /* we have a leading space before " and a trailing space after " so begins at + 2 and length is - 3 less */
-            base64 = g_strndup(string + 2, strlen(string) - 3);
-
-            if (decodeit == TRUE)
-                {
-                    new_string = (gchar *) g_base64_decode(base64, &len);
-                    free_variable(base64);
-                }
-            else
-                {
-                    new_string = base64;
-                }
-
-        }
-
-    return new_string;
-}
 
 
 
