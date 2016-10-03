@@ -294,6 +294,34 @@ void set_dates_to_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 
 
 /**
+ * Compares mtime to a YYYY-MM-DD HH:MM:SS gchar * string formated date
+ * @param mtime the time in unix time
+ * @param date the date in YYYY-MM-DD HH:MM:SS format - it may lack
+ *        things from the end ie: YYYY-MM-DD HH: for instance.
+ * @returns TRUE if 'mtime' has 'date' as prefix and TRUE if 'date' is NULL
+ */
+gboolean compare_mtime_to_date(guint64 mtime, gchar *date)
+{
+    GDateTime *la_date = NULL;
+    gchar *the_date = NULL;
+    gboolean result = TRUE;
+
+    if (date != NULL)
+        {
+            la_date = g_date_time_new_from_unix_local(mtime);
+            the_date = g_date_time_format(la_date, "%F %T %z");
+
+            result = g_str_has_prefix(the_date, date);
+
+            free_variable(the_date);
+            g_date_time_unref(la_date);
+        }
+
+    return result;
+}
+
+
+/**
  * Get unix mode of a file
  * @param fileinfo : a GFileInfo pointer obtained from an opened file
  *        (GFile *)

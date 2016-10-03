@@ -126,6 +126,16 @@ extern void set_dates_to_gfile(GFileInfo *fileinfo, meta_data_t *meta);
 
 
 /**
+ * Compares mtime to a YYYY-MM-DD HH:MM:SS gchar * string formated date
+ * @param mtime the time in unix time
+ * @param date the date in YYYY-MM-DD HH:MM:SS format - it may lack
+ *        things from the end ie: YYYY-MM-DD HH: for instance.
+ * @returns TRUE if 'mtime' has 'date' as prefix and TRUE if 'date' is NULL
+ */
+extern gboolean compare_mtime_to_date(guint64 mtime, gchar *date);
+
+
+/**
  * Get unix mode of a file
  * @param fileinfo : a GFileInfo pointer obtained from an opened file
  *        (GFile *)
