@@ -113,6 +113,19 @@ gpointer free_meta_data_t(meta_data_t *meta, gboolean free_link)
 
 
 /**
+ * Wrapper for free_meta_data_t() function to be used
+ * with g_list_free_full(). Links are freed by this
+ * function.
+ * @param data is the pointer to the meta_data_t * structure
+ *        to be freed
+ */
+void free_glist_meta_data_t(gpointer data)
+{
+    free_meta_data_t((meta_data_t *) data, TRUE);
+}
+
+
+/**
  * Frees the server_meta_data_t * structure
  * @param smeta is a meta_data_t * structure to be freed
  * @returns always NULL
@@ -133,7 +146,7 @@ gpointer free_smeta_data_t(server_meta_data_t *smeta)
 /**
  * Wrapper for the g_slist_free_full function
  * the pointer to the data to be freed
- * @param the pointer to the data to be freed by free_smeta_data_t call.
+ * @param data the pointer to the data to be freed by free_smeta_data_t call.
  */
 void gslist_free_smeta(gpointer data)
 {
@@ -387,11 +400,11 @@ gboolean file_exists(gchar *filename)
  * Searchs for a filename that doesn't exists yet
  * @param all_versions is true when we want to save all versions of a
  *        single file.
- * @param basename is the basename of the file ie without it directory 
+ * @param basename is the basename of the file ie without it directory
  *        location.
  * @param where is the directory location where the filename should be
  *        create.
- * @param newname is the original basename or the original basename 
+ * @param newname is the original basename or the original basename
  *        slightly modified
  * @param the_date is a string representing the last modification date
  *        of the file.
@@ -427,6 +440,68 @@ gchar *get_unique_filename(gboolean all_versions, gchar *basename, gchar *where,
 
 
 /**
+ * Comparison function to be used to sort meta_data_t into
+ * a list.
+ * @param a meta_data_t * containing meta data of a file 'a'
+ * @param b meta_data_t * containing meta data ofa file 'b' to be compared
+ *          with 'a'
+ * @returns a negative integer if the a comes before b, 0 if they are
+ *          equal, or a positive integer if the a comes after b.
+ */
+gint compare_meta_data_t(gconstpointer a, gconstpointer b)
+{
+    meta_data_t *meta_a = (meta_data_t *) a;
+    meta_data_t *meta_b = (meta_data_t *) b;
+    gchar *key_a = NULL;
+    gchar *key_b = NULL;
+    gint value = 0;
+
+
+    if (meta_a != NULL && meta_b != NULL)
+        {
+
+            key_a = g_utf8_collate_key_for_filename(meta_a->name, -1);
+            key_b = g_utf8_collate_key_for_filename(meta_b->name, -1);
+
+            value = strcmp(key_a, key_b);
+
+            if (value == 0)
+                { /* second sorting criteria : modification time */
+                    if (meta_a->mtime < meta_b->mtime)
+                        {
+                            value = -1;
+                        }
+                    else if (meta_a->mtime > meta_b->mtime)
+                        {
+                            value = 1;
+                        }
+                    else
+                        {
+                            value = 0;
+                        }
+                }
+
+            free_variable(key_a);
+            free_variable(key_b);
+        }
+    else if (meta_a == NULL && meta_b == NULL)
+        {
+            value = 0;
+        }
+    else if (meta_a == NULL)
+        {
+            value = 1;
+        }
+    else
+        {
+            value = -1;
+        }
+
+    return value;
+}
+
+
+/**
  * Comparison function to be used when sorting filenames. First filenames
  * are compared and when an equality is found then the modified time is
  * compared (as a second sorting criteria)
@@ -438,38 +513,25 @@ gchar *get_unique_filename(gboolean all_versions, gchar *basename, gchar *where,
  */
 gint compare_filenames(gconstpointer a, gconstpointer b)
 {
-    gchar *key_a = NULL;
-    gchar *key_b = NULL;
-    gint value = 0;
     server_meta_data_t *sa = (server_meta_data_t *) a;
     server_meta_data_t *sb = (server_meta_data_t *) b;
 
-
-    key_a = g_utf8_collate_key_for_filename(sa->meta->name, -1);
-    key_b = g_utf8_collate_key_for_filename(sb->meta->name, -1);
-
-    value = strcmp(key_a, key_b);
-
-    if (value == 0)
-        { /* second sorting criteria : modification time */
-            if (sa->meta->mtime < sb->meta->mtime)
-                {
-                    value = -1;
-                }
-            else if (sa->meta->mtime > sb->meta->mtime)
-                {
-                    value = 1;
-                }
-            else
-                {
-                    value = 0;
-                }
+    if (sa != NULL && sb != NULL)
+        {
+            return  compare_meta_data_t(sa->meta, sb->meta);
         }
-
-    free_variable(key_a);
-    free_variable(key_b);
-
-    return value;
+    else if (sa == NULL && sb == NULL)
+        {
+            return 0;
+        }
+    else if (sa == NULL)
+        {
+            return 1;
+        }
+    else
+        {
+            return -1;
+        }
 }
 
 

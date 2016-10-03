@@ -393,6 +393,34 @@ gchar *convert_meta_data_to_json_string(meta_data_t *meta, const gchar *hostname
 
 
 /**
+ * Converts meta_data_t list to json array
+ * @param list is a GList * of meta_data_t to be converted
+ * @param hostname is the name of the host onw hich we are running and that
+ *        we want to include into the json string.
+ * @param data_sent is a boolean that is TRUE when data has already been
+ *        sent to server, FALSE otherwise.
+ * @returns a json array
+ */
+json_t *convert_meta_data_list_to_json_array(GList *list, gchar *hostname, gboolean data_sent)
+{
+    GList *head = list;
+    json_t *array = NULL;
+    json_t *meta_json = NULL;
+
+    array = json_array();
+
+    while (head != NULL)
+        {
+            meta_json = convert_meta_data_to_json((meta_data_t *) head->data, hostname, data_sent);
+            json_array_append_new(array, meta_json);
+            head = g_list_next(head);
+        }
+
+    return array;
+}
+
+
+/**
  * Converts to a json gchar * string. Used only by server's program
  * @param name : name of the program of which we want to print the version.
  * @param date : publication date of this version

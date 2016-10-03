@@ -176,6 +176,18 @@ extern gchar *convert_file_list_to_json_string(GSList *file_list);
 
 
 /**
+ * Converts meta_data_t list to json array
+ * @param list is a GList * of meta_data_t to be converted
+ * @param hostname is the name of the host onw hich we are running and that
+ *        we want to include into the json string.
+ * @param data_sent is a boolean that is TRUE when data has already been
+ *        sent to server, FALSE otherwise.
+ * @returns a json array
+ */
+extern json_t *convert_meta_data_list_to_json_array(GList *list, gchar *hostname, gboolean data_sent);
+
+
+/**
  * This function returns a list of hash_data_t * from an json array
  * @param root is the root json string that may contain an array named "name"
  * @param name is the name of the array to look for into

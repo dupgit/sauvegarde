@@ -192,6 +192,16 @@ extern gpointer free_meta_data_t(meta_data_t *meta, gboolean free_link);
 
 
 /**
+ * Wrapper for free_meta_data_t() function to be used
+ * with g_list_free_full(). Links are freed by this
+ * function.
+ * @param data is the pointer to the meta_data_t * structure
+ *        to be freed
+ */
+extern void free_glist_meta_data_t(gpointer data);
+
+
+/**
  * Frees the server_meta_data_t * structure
  * @param smeta is a meta_data_t * structure to be freed
  * @returns always NULL
@@ -218,16 +228,28 @@ extern gboolean file_exists(gchar *filename);
  * Searchs for a filename that doesn't exists yet
  * @param all_versions is true when we want to save all versions of a
  *        single file.
- * @param basename is the basename of the file ie without it directory 
+ * @param basename is the basename of the file ie without it directory
  *        location.
  * @param where is the directory location where the filename should be
  *        create.
- * @param newname is the original basename or the original basename 
+ * @param newname is the original basename or the original basename
  *        slightly modified
  * @param the_date is a string representing the last modification date
  *        of the file.
  */
 extern gchar *get_unique_filename(gboolean all_versions, gchar *basename, gchar *where, gchar *newname, gchar *the_date);
+
+/**
+ * Comparison function to be used to sort meta_data_t into
+ * a list.
+ * @param a meta_data_t * containing meta data of a file 'a'
+ * @param b meta_data_t * containing meta data ofa file 'b' to be compared
+ *          with 'a'
+ * @returns a negative integer if the a comes before b, 0 if they are
+ *          equal, or a positive integer if the a comes after b.
+ */
+extern gint compare_meta_data_t(gconstpointer a, gconstpointer b);
+
 
 /**
  * Comparison function to be used when sorting filenames

@@ -43,6 +43,7 @@ static uint get_uint_from_string(gchar *string);
 static gchar *get_substring_from_string(gchar *string, gboolean decodeit);
 static gboolean compare_mtime_to_date(guint64 mtime, gchar *date);
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query);
+static GList *insert_meta_data_t_in_list(GList *list, meta_data_t *meta);
 
 
 /**
@@ -948,6 +949,20 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
 
 /**
+ * Inserts a meta_data_t structure into a GList
+ * @param list is the list where we want to insert the meta_data_t structure
+ * @param meta is the meta_data_t structure we want to insert
+ * @returns a new list with meta_data inserted.
+ */
+GList *insert_meta_data_t_in_list(GList *list, meta_data_t *meta)
+{
+    list = g_list_insert_sorted(list, meta, compare_meta_data_t);
+
+    return list;
+}
+
+
+/**
  * Gets the list of all saved files.
  * @param server_struct is the structure that contains all data for the
  *        server.
@@ -971,10 +986,8 @@ gchar *file_get_list_of_files(server_struct_t *server_struct, query_t *query)
     gchar *json_string = NULL;
     GRegex *a_regex = NULL;
     meta_data_t *meta = NULL;
-    json_t *meta_json = NULL;
+    GList *file_list = NULL;
 
-
-    array = json_array();
 
     if (server_struct != NULL && server_struct->backend != NULL &&  server_struct->backend->user_data != NULL && query != NULL)
         {
@@ -1001,23 +1014,28 @@ gchar *file_get_list_of_files(server_struct_t *server_struct, query_t *query)
                                 {
                                     meta = extract_from_line(line, a_regex, query);
 
-                                    if (meta != NULL && meta->name != NULL)
+                                    if (meta != NULL)
                                         {
-                                            meta_json = convert_meta_data_to_json(meta, query->hostname, FALSE);
-                                            json_array_append_new(array, meta_json);
+                                            file_list = insert_meta_data_t_in_list(file_list, meta);
                                         }
-
-                                    free_meta_data_t(meta, TRUE);
                                 }
 
                             free_variable(line);
-
                         }
                     while (a_buffer->size != 0);
 
                     g_input_stream_close((GInputStream *) stream, NULL, &error);
 
                     free_buffer_t(a_buffer);
+
+                    /* Filtering  */
+
+
+                    /* Converting */
+                    array = convert_meta_data_list_to_json_array(file_list, query->hostname, FALSE);
+
+                    /* Freeing    */
+                    g_list_free_full(file_list, free_glist_meta_data_t);
                 }
             else
                 {
