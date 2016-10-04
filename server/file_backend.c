@@ -765,7 +765,7 @@ gchar *file_get_list_of_files(server_struct_t *server_struct, query_t *query)
 
                                     if (meta != NULL)
                                         {
-                                            file_list = insert_meta_data_t_in_list(file_list, meta);
+                                            file_list = g_list_prepend(file_list, meta);
                                         }
                                 }
 
@@ -776,6 +776,12 @@ gchar *file_get_list_of_files(server_struct_t *server_struct, query_t *query)
                     g_input_stream_close((GInputStream *) stream, NULL, &error);
 
                     free_buffer_t(a_buffer);
+
+                    /* Sorting the list. As expalined in Glib doc, it may be
+                     * quicker to add elements to the list by prepending them
+                     * and then sorting the list once. */
+                    file_list = g_list_sort(file_list, compare_meta_data_t);
+
 
                     /* Filtering  */
 
