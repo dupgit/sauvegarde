@@ -38,6 +38,7 @@ static void free_buffer_t(buffer_t *a_buffer);
 static void read_one_buffer(buffer_t *a_buffer);
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer);
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query);
+static GList *get_file_list_from_regex_and_query(GFileInputStream *stream, GRegex *a_regex, query_t *query);
 
 
 /**
@@ -486,7 +487,6 @@ static buffer_t *init_buffer_structure(GFileInputStream *stream)
 static void free_buffer_t(buffer_t *a_buffer)
 {
     free_variable(a_buffer->buf);
-    g_object_unref(a_buffer->stream);
     free_variable(a_buffer);
 }
 
@@ -712,6 +712,47 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
 
 
 /**
+ * @param stream is an opened file stream of a plain meta data flat file.
+ * @param a_regex is a GRegex * regular expression.
+ * @param query is the structure that contains everything about the user
+ *        requested query.
+ * @returns the list of files from the flat file containing all meta data.
+ */
+static GList *get_file_list_from_regex_and_query(GFileInputStream *stream, GRegex *a_regex, query_t *query)
+{
+    buffer_t *a_buffer = NULL;
+    gchar *line = NULL;
+    meta_data_t *meta = NULL;
+    GList *file_list = NULL;
+
+    a_buffer = init_buffer_structure(stream);
+    read_one_buffer(a_buffer);
+
+    do
+        {
+            line = extract_one_line_from_buffer(a_buffer);
+
+            if (a_buffer->size != 0)
+                {
+                    meta = extract_from_line(line, a_regex, query);
+
+                    if (meta != NULL)
+                        {
+                            file_list = g_list_prepend(file_list, meta);
+                        }
+                }
+
+            free_variable(line);
+        }
+    while (a_buffer->size != 0);
+
+    free_buffer_t(a_buffer);
+
+    return file_list;
+}
+
+
+/**
  * Gets the list of all saved files.
  * @param server_struct is the structure that contains all data for the
  *        server.
@@ -728,20 +769,16 @@ gchar *file_get_list_of_files(server_struct_t *server_struct, query_t *query)
     GFile *the_file = NULL;
     GFileInputStream *stream = NULL;
     GError *error = NULL;
-    buffer_t *a_buffer = NULL;
-    gchar *line = NULL;
     json_t *array = NULL;
     json_t *root = NULL;
     gchar *json_string = NULL;
     GRegex *a_regex = NULL;
-    meta_data_t *meta = NULL;
     GList *file_list = NULL;
 
 
     if (server_struct != NULL && server_struct->backend != NULL &&  server_struct->backend->user_data != NULL && query != NULL)
         {
-            print_debug(_("file_backend: filter is: %s && %s && %s && %s\n"), \
-                           query->filename, query->date, query->afterdate, query->beforedate);
+            print_debug(_("file_backend: filter is: %s && %s && %s && %s\n"), query->filename, query->date, query->afterdate, query->beforedate);
 
             a_regex = g_regex_new(query->filename, G_REGEX_CASELESS, 0, &error);
 
@@ -749,39 +786,22 @@ gchar *file_get_list_of_files(server_struct_t *server_struct, query_t *query)
             filename =  g_build_filename(file_backend->prefix, "meta", query->hostname, NULL);
             the_file = g_file_new_for_path(filename);
 
+            print_debug(_("file_backend: Reading in %s\n"), filename);
+
             stream = g_file_read(the_file, NULL, &error);
 
             if (stream != NULL)
                 {
-                    a_buffer = init_buffer_structure(stream);
-                    read_one_buffer(a_buffer);
-                    do
-                        {
-                            line = extract_one_line_from_buffer(a_buffer);
+                    /* Requesting a list of files corresponding to a_regex and query */
+                    file_list = get_file_list_from_regex_and_query(stream, a_regex, query);
 
-                            if (a_buffer->size != 0)
-                                {
-                                    meta = extract_from_line(line, a_regex, query);
-
-                                    if (meta != NULL)
-                                        {
-                                            file_list = g_list_prepend(file_list, meta);
-                                        }
-                                }
-
-                            free_variable(line);
-                        }
-                    while (a_buffer->size != 0);
-
+                    /* Closing file input stream */
                     g_input_stream_close((GInputStream *) stream, NULL, &error);
 
-                    free_buffer_t(a_buffer);
-
-                    /* Sorting the list. As expalined in Glib doc, it may be
+                    /* Sorting the list. As explained in Glib doc, it may be
                      * quicker to add elements to the list by prepending them
                      * and then sorting the list once. */
                     file_list = g_list_sort(file_list, compare_meta_data_t);
-
 
                     /* Filtering  */
 
