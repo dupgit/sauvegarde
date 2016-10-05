@@ -62,7 +62,11 @@ cdpfglrestore will restore already saved files from a cdpfglserver to your local
 
 **-f**, **--all-files**:
 
-   Restores all files found by -r REGEX or -l REGEX. This option only works in conjunction with -r.
+   Restores all files found by -r REGEX (or -l REGEX). This option has no real effect with -l option and only works when restoring in conjunction with -r option.
+
+**-g**, **--latest**:
+
+   Filters out all versions of a file to keep only the latest one.
 
 **-w**, **--where=DIRECTORY**:
 

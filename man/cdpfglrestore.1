@@ -73,8 +73,13 @@ Lists or restores all versions of a file.
 .PP
 \f[B]\-f\f[], \f[B]\-\-all\-files\f[]:
 .PP
-Restores all files found by \-r REGEX or \-l REGEX.
-This option only works in conjunction with \-r.
+Restores all files found by \-r REGEX (or \-l REGEX).
+This option has no real effect with \-l option and only works when
+restoring in conjunction with \-r option.
+.PP
+\f[B]\-g\f[], \f[B]\-\-latest\f[]:
+.PP
+Filters out all versions of a file to keep only the latest one.
 .PP
 \f[B]\-w\f[], \f[B]\-\-where=DIRECTORY\f[]:
 .PP
