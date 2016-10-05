@@ -140,6 +140,82 @@ GList *insert_meta_data_t_in_list(GList *list, meta_data_t *meta)
 
 
 /**
+ * Deletes every list element that is the same than the next one but
+ * is older.
+ * @param file_list is an ordered by name and then by date as a second
+ *        criteria GList * of meta_data_t * structures.
+ * @returns the list expurged of its older meta_data_t. Each file
+ *          should only appear once in the returned list.
+ * @note keep in mind that g_list_remove_link() does take care
+ *       of links next and prev of each element and that the
+ *       removed element is in fact a single list element.
+ */
+GList *keep_latests_meta_data_t_in_list(GList *file_list)
+{
+    GList *head = file_list;
+    GList *next = NULL;
+    GList *unused = NULL;
+    meta_data_t *meta_a = NULL;
+    meta_data_t *meta_b = NULL;
+    gchar *key_a = NULL;
+    gchar *key_b = NULL;
+
+
+    while (file_list != NULL)
+        {
+            meta_a = (meta_data_t *) file_list->data;
+            next = file_list->next;
+
+            if (next != NULL)
+                {
+                    meta_b = (meta_data_t *) next->data;
+
+                    key_a = g_utf8_collate_key_for_filename(meta_a->name, -1);
+                    key_b = g_utf8_collate_key_for_filename(meta_b->name, -1);
+
+                    if (strcmp(key_a, key_b) == 0)
+                        {
+                            if (meta_a->mtime < meta_b->mtime)
+                                {
+                                    /* removing file_list (the first one) */
+                                    if (file_list == head)
+                                        {
+                                            /* Keeps the head if we are removing it */
+                                            head = g_list_remove_link(file_list, file_list);
+                                        }
+                                    else
+                                        {
+                                            unused = g_list_remove_link(file_list, file_list);
+                                        }
+                                    g_list_free_full(file_list, free_glist_meta_data_t);
+                                    file_list = next;
+                                }
+                            else
+                                {
+                                    /* removing next (the second one) */
+                                    unused = g_list_remove_link(file_list, next);
+                                    g_list_free_full(next, free_glist_meta_data_t);
+                                }
+                        }
+                    else
+                        {
+                            file_list = g_list_next(file_list);
+                        }
+
+                    free_variable(key_a);
+                    free_variable(key_b);
+                }
+            else
+                {
+                    file_list = g_list_next(file_list);
+                }
+        }
+
+    return head;
+}
+
+
+/**
  * Frees the server_meta_data_t * structure
  * @param smeta is a meta_data_t * structure to be freed
  * @returns always NULL

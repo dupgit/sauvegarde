@@ -249,6 +249,21 @@ extern void free_glist_meta_data_t(gpointer data);
  */
 extern GList *insert_meta_data_t_in_list(GList *list, meta_data_t *meta);
 
+
+/**
+ * Deletes every list element that is the same than the next one but
+ * is older.
+ * @param file_list is an ordered by name and then by date as a second
+ *        criteria GList * of meta_data_t * structures.
+ * @returns the list expurged of its older meta_data_t. Each file
+ *          should only appear once in the returned list.
+ * @note keep in mind that g_list_remove_link() does take care
+ *       of links next and prev of each element and that the
+ *       removed element is in fact a single list element.
+ */
+extern GList *keep_latests_meta_data_t_in_list(GList *file_list);
+
+
 /**
  * Frees the server_meta_data_t * structure
  * @param smeta is a meta_data_t * structure to be freed

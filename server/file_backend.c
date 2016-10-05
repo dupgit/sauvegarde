@@ -481,7 +481,7 @@ static buffer_t *init_buffer_structure(GFileInputStream *stream)
 
 
 /**
- * Frees the buffer structrure
+ * Frees the buffer structure
  * @param a_buffer is the buffer structure to be freed
  */
 static void free_buffer_t(buffer_t *a_buffer)
@@ -804,12 +804,15 @@ gchar *file_get_list_of_files(server_struct_t *server_struct, query_t *query)
                     file_list = g_list_sort(file_list, compare_meta_data_t);
 
                     /* Filtering  */
+                    if (query->latest == TRUE)
+                        {
+                            file_list = keep_latests_meta_data_t_in_list(file_list);
+                        }
 
-
-                    /* Converting */
+                    /* Converting list into JSON array */
                     array = convert_meta_data_list_to_json_array(file_list, query->hostname, FALSE);
 
-                    /* Freeing    */
+                    /* Freeing memory */
                     g_list_free_full(file_list, free_glist_meta_data_t);
                 }
             else
