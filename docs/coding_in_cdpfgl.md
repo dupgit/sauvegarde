@@ -103,3 +103,4 @@ following this link: [https://github.com/terryyin/lizard](https://github.com/ter
 * JOSE:
  * [https://securityblog.redhat.com/2015/04/01/jose-json-object-signing-and-encryption/](https://securityblog.redhat.com/2015/04/01/jose-json-object-signing-and-encryption/)
  * [https://www.iana.org/assignments/jose/jose.xhtml](https://www.iana.org/assignments/jose/jose.xhtml)
+* S3 server        : [https://github.com/scality/s3](https://github.com/scality/s3)
