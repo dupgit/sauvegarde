@@ -67,7 +67,7 @@ typedef struct
  * Defines restore's main authors
  *
  * @def RESTORE_LICENSE
- * Defines restore's license (at least GPL v2)
+ * Defines restore's license (at least GPL v3)
  *
  * @def RESTORE_VERSION
  * Defines restore's version (which may be different of Sauvegarde's whole

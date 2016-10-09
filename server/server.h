@@ -60,7 +60,7 @@
  * Defines server's main authors
  *
  * @def SERVER_LICENSE
- * Defines server's license (at least GPL v2)
+ * Defines server's license (at least GPL v3)
  *
  * @def SERVER_VERSION
  * Defines server's version (which may be different of Sauvegarde's whole

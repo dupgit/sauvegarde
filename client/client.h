@@ -62,7 +62,7 @@
  * Defines client's main authors
  *
  * @def CLIENT_LICENSE
- * Defines client's license (at least GPL v2)
+ * Defines client's license (at least GPL v3)
  *
  * @def CLIENT_VERSION
  * Defines client's version (which may be different of Sauvegarde's whole
