@@ -970,7 +970,6 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                             read = g_input_stream_read((GInputStream *) stream, buffer, meta->blocksize, NULL, &error);
                             read_bytes = read_bytes + read;
 
-
                             while (read != 0 && error == NULL)
                                 {
                                     g_checksum_update(checksum, buffer, read);

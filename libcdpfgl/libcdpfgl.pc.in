@@ -1,7 +1,7 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-libdir=@libdir@/libcdpfgl
-includedir=@includedir@
+libdir=@libdir@/cdpfgl
+includedir=@includedir@/cdpfgl
 
 Name: libcdpfgl
 Description: cdpfgl's project shared library
