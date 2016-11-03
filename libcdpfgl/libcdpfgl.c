@@ -654,7 +654,7 @@ guint64 get_guint64_from_string(gchar *string)
 gint get_digit_value(gchar *date, guint i, guint size)
 {
     gchar *value = NULL;
-    gint digit_value = NULL;
+    gint digit_value = 0;
     guint j = 0;
     gint ret = 0;
 
