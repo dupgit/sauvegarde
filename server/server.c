@@ -847,7 +847,7 @@ static guint64 get_content_length(struct MHD_Connection *connection)
                     len = DEFAULT_SERVER_BUFFER_SIZE;
                 }
 
-            if (len < 0 || len > 4294967296)
+            if (len > 4294967296)
                 {
                     len = DEFAULT_SERVER_BUFFER_SIZE;
                 }
