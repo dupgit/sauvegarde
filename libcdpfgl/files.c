@@ -185,14 +185,23 @@ GList *keep_latests_meta_data_t_in_list(GList *file_list)
                                         }
                                     else
                                         {
-                                            unused = g_list_remove_link(file_list, file_list);
+                                            /* We only need to delete the link file_list and we
+                                             * know that this will not modify the head of the
+                                             * list and thus we do not need to keep the returned
+                                             * value as it is a previous valid element in the list.
+                                             * GCC warning IS expected and NORMAL.
+                                             */
+                                             unused = g_list_remove_link(file_list, file_list);
                                         }
                                     g_list_free_full(file_list, free_glist_meta_data_t);
                                     file_list = next;
                                 }
                             else
                                 {
-                                    /* removing next (the second one) */
+                                    /* removing next (the second one)
+                                     * Same comment applies here than the one above on the
+                                     * unused parameter. GCC warning IS expected and NORMAL.
+                                     */
                                     unused = g_list_remove_link(file_list, next);
                                     g_list_free_full(next, free_glist_meta_data_t);
                                 }
