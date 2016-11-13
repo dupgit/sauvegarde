@@ -168,6 +168,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     gboolean all_versions = FALSE; /** all_version: True if we want to restore all version FALSE otherwise (default)     */
     gboolean all_files = FALSE;    /** all_files: True if we want to restore all files found by REGEX (-r or -l options) */
     gboolean latest = FALSE;       /** latest: True if we only want to get the latest version of a file                  */
+    gboolean parents = FALSE;      /** parents: True if restore has to create / restore files with the whole path        */
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version."), NULL},
@@ -181,6 +182,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
         { "all-versions", 'e', 0, G_OPTION_ARG_NONE, &all_versions, N_("Selects all versions of a file."), NULL},
         { "all-files", 'f', 0, G_OPTION_ARG_NONE, &all_files, N_("Forces -r to restore all files found (not the latest one)"), NULL},
         { "latest", 'g', 0, G_OPTION_ARG_NONE, &latest, N_("Selects only latest version of each file."), NULL},
+        { "parents", 'P', 0, G_OPTION_ARG_NONE, &parents, N_("Creates directories if needed: ie restore with the whole path"), NULL},
         { "where", 'w', 0, G_OPTION_ARG_STRING, &where, N_("Specify a DIRECTORY where to restore a file."), N_("DIRECTORY")},
         { "ip", 'i', 0, G_OPTION_ARG_STRING, &ip, N_("IP address where server program is."), "IP"},
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which server program is listening."), N_("NUMBER")},
@@ -192,7 +194,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     summary = g_strdup(_("This program is restoring files from cdpfglserver's server."));
     parse_command_line(argc, argv, entries, summary);
 
-    /* 0) Setting default values */
+    /* 0) Setting some default values */
 
     opt = (options_t *) g_malloc0(sizeof(options_t));
 
@@ -230,6 +232,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     opt->all_versions = all_versions; /* only TRUE if -e or --all-versions was invoked */
     opt->all_files = all_files;       /* only TRUE if -f or --all-files was invoked    */
     opt->latest = latest;             /* only TRUE if -r or --latest was invoked       */
+    opt->parents = parents;           /* only TRUE if -p or --parents was invoked      */
 
     opt->date = set_option_str(date, opt->date);
     opt->afterdate = set_option_str(afterdate, opt->afterdate);

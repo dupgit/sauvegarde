@@ -42,19 +42,20 @@
  */
 typedef struct
 {
-    gboolean version;       /**< TRUE if we have to display program's version                                               */
-    gchar *list;            /**< Should contain a filename to be searched into saved files filename's list                  */
-    gchar *restore;         /**< Must contain a filename or a directory name to be restored (latest version by default      */
-    gchar *date;            /**< Should contain a date in the correct format to filter only files at that specific date     */
-    gchar *afterdate;       /**< Should contain a date in the correct format to filter only files after that specific date  */
-    gchar *beforedate;      /**< Should contain a date in the correct format to filter only files before that specific date */
-    gchar *configfile;      /**< Filename for the configuration file specified on the command line                          */
-    gchar *ip;              /**< A string representing the IP address where server is located (may be a hotsname)           */
-    gint port;              /**< Port number on which to send things to cdpfglserver's server (on which it must listen)     */
-    gchar *where;           /**< where is a string that should contain a directory where to restore a file / dirtectory     */
-    gboolean all_versions;  /**< all_versions says whether we should restore all versions of a file (TRUE) or not (FALSE)   */
-    gboolean all_files;     /**< all_files is true if we want to restore all files found by REGEX with -r or -l options     */
-    gboolean latest;        /**< latest is true if we want ot get only the latest version of a file. Defaults is false      */
+    gboolean version;       /**< TRUE if we have to display program's version                                                 */
+    gchar *list;            /**< Should contain a filename to be searched into saved files filename's list                    */
+    gchar *restore;         /**< Must contain a filename or a directory name to be restored (latest version by default        */
+    gchar *date;            /**< Should contain a date in the correct format to filter only files at that specific date       */
+    gchar *afterdate;       /**< Should contain a date in the correct format to filter only files after that specific date    */
+    gchar *beforedate;      /**< Should contain a date in the correct format to filter only files before that specific date   */
+    gchar *configfile;      /**< Filename for the configuration file specified on the command line                            */
+    gchar *ip;              /**< A string representing the IP address where server is located (may be a hotsname)             */
+    gint port;              /**< Port number on which to send things to cdpfglserver's server (on which it must listen)       */
+    gchar *where;           /**< where is a string that should contain a directory where to restore a file / dirtectory       */
+    gboolean all_versions;  /**< all_versions says whether we should restore all versions of a file (TRUE) or not (FALSE)     */
+    gboolean all_files;     /**< all_files is true if we want to restore all files found by REGEX with -r or -l options       */
+    gboolean latest;        /**< latest is true if we want ot get only the latest version of a file. Defaults is false        */
+    gboolean parents;       /**< when parents is true restore will create (if needed) and restore files with their whole path */
 } options_t;
 
 
