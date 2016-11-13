@@ -519,8 +519,6 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 
     if (res_struct != NULL && meta != NULL && res_struct->opt != NULL)
         {
-            /* get the basename of the file to be restored */
-            basename = g_path_get_basename(meta->name);
 
             opt = res_struct->opt;
 
@@ -534,6 +532,17 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
                     /* Fall back to get the current directory to make the file to be restored in it */
                     where = g_get_current_dir();
                 }
+
+            /* get the basename of the file to be restored */
+            if (opt->parents == FALSE)
+                {
+                    basename = g_path_get_basename(meta->name);
+                }
+            else
+                {
+                    basename = g_strdup(meta->name);
+                }
+
 
             if (opt->all_versions == TRUE)
                 {
@@ -552,6 +561,10 @@ static void create_file(res_struct_t *res_struct, meta_data_t *meta)
 
             if (g_strcmp0("", meta->link) == 0)
                 {
+                    if (opt->parents == TRUE)
+                        {
+                            create_directory(g_path_get_dirname(filename));
+                        }
                     stream = g_file_replace(file, NULL, TRUE, G_FILE_CREATE_NONE, NULL, &error);
 
                     if (stream != NULL)
