@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Sauvegarde 0.0.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-11-20 18:43+0100\n"
-"PO-Revision-Date: 2016-08-24 18:57+0100\n"
+"PO-Revision-Date: 2016-11-20 21:21+0100\n"
 "Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
 "Language: fr\n"
@@ -263,11 +263,10 @@ msgstr ""
 
 #. Scanning option
 #: ../client/options.c:137
-#, fuzzy
 msgid "Could not load scan configuration from file."
 msgstr ""
-"Impossible de charger la valeur de l'option 'adaptive' depuis le fichier de "
-"configuration."
+"Impossible de charger la configuration de la variable no-scan depuis le "
+"fichier de configuration."
 
 #. Buffer size to be used to send data to server
 #: ../client/options.c:140
@@ -358,7 +357,7 @@ msgstr "Exclu NOM DU FICHIER de la sauvegarde."
 
 #: ../client/options.c:264
 msgid "Does not do the first directory scan."
-msgstr ""
+msgstr "Ne pas faire la première passe sur les dossiers."
 
 #: ../client/options.c:269 ../server/options.c:203
 msgid ""
@@ -667,7 +666,6 @@ msgid "Activates (1) or deactivates (0) debug mode."
 msgstr "Active (1) ou désactive (0) le mode de débogage."
 
 #: ../restore/options.c:177
-#, fuzzy
 msgid "Lists saved files that correspond to the given REGEX."
 msgstr ""
 "Donne la liste des fichiers sauvegardés correspondants à l'EXPRESSION "
@@ -680,43 +678,39 @@ msgstr ""
 "version)."
 
 #: ../restore/options.c:179
-#, fuzzy
 msgid "Selects file with that specific DATE (YYYY-MM-DD HH:MM:SS format)."
 msgstr ""
 "Restaure le fichier sélectionné à une DATE spécifique (format YYYY-MM-DD HH:"
 "MM:SS)."
 
 #: ../restore/options.c:180
-#, fuzzy
 msgid "Selects file with mtime after DATE (YYYY-MM-DD HH:MM:SS format)."
 msgstr ""
 "Restaure le fichier sélectionné avec un 'mtime' postérieur à DATE (format "
 "YYYY-MM-DD HH:MM:SS)."
 
 #: ../restore/options.c:181
-#, fuzzy
 msgid "Selects file with mtime before DATE (YYYY-MM-DD HH:MM:SS format)."
 msgstr ""
 "Restaure le fichier sélectionné avec un 'mtime' antérieur à DATE (format "
 "YYYY-MM-DD HH:MM:SS)."
 
 #: ../restore/options.c:182
-#, fuzzy
 msgid "Selects all versions of a file."
 msgstr "Liste ou restaure toutes les versions d'un fichier."
 
 #: ../restore/options.c:183
 msgid "Forces -r to restore all files found (not the latest one)"
 msgstr ""
+"Force -r à restaurer tous les fichiers trouvés (pas seulement le dernier)  "
 
 #: ../restore/options.c:184
-#, fuzzy
 msgid "Selects only latest version of each file."
-msgstr "Liste ou restaure toutes les versions d'un fichier."
+msgstr "Liste ou restaure seulement la dernière version des fichiers."
 
 #: ../restore/options.c:185
 msgid "Creates directories if needed: ie restore with the whole path"
-msgstr ""
+msgstr "Créé les dossiers si besoin : restaure avec le chemin complet"
 
 #: ../restore/options.c:186
 msgid "DIRECTORY"
@@ -851,9 +845,9 @@ msgid "file_backend: filter is: %s && %s && %s && %s\n"
 msgstr "file_backend : le filtre est : %s && %s && %s && %s\n"
 
 #: ../server/file_backend.c:789
-#, fuzzy, c-format
+#, c-format
 msgid "file_backend: Reading in %s\n"
-msgstr "file_backend : chemin : %s, nom du fichier : %s\n"
+msgstr "file_backend : Lecture dans %s\n"
 
 #: ../server/file_backend.c:820 ../server/file_backend.c:905
 #, c-format
@@ -912,12 +906,10 @@ msgid "\tbackend variable freed.\n"
 msgstr "\tvariable 'backend' libérée\n"
 
 #: ../server/server.c:74
-#, fuzzy
 msgid "\tdata thread unreferenced.\n"
 msgstr "\tthread 'data' déréférencé.\n"
 
 #: ../server/server.c:76
-#, fuzzy
 msgid "\tmeta thread unreferenced.\n"
 msgstr "\tthread 'meta' déréférencé.\n"
 
@@ -940,13 +932,13 @@ msgid "Something's wrong with server's initialisation!"
 msgstr "Quelque chose ne va pas avec l'initialisation du serveur !"
 
 #: ../server/server.c:272
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s && %s && %s "
 "&& %s && %d\n"
 msgstr ""
-"hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s && %s && %s "
-"&& %s\n"
+"hostname : %s, uid : %s, gid : %s, owner : %s, group : %s, filter : %s && %s "
+"&& %s && %s && %d\n"
 
 #: ../server/server.c:282
 #, c-format
