@@ -68,6 +68,10 @@ cdpfglrestore will restore already saved files from a cdpfglserver to your local
 
    Filters out all versions of a file to keep only the latest one.
 
+**-P**, **--parents**:
+
+   Restores files with their full path and creates directories if needed. For instance, with this option, restoring `/home/dup/directory1/example.txt` file in `/tmp/restore` directory will create `/tmp/restore/home/dup/directory1/example.txt` file.
+
 **-w**, **--where=DIRECTORY**:
 
    Specify a DIRECTORY where to restore a file.

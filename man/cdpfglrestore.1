@@ -81,6 +81,14 @@ restoring in conjunction with \-r option.
 .PP
 Filters out all versions of a file to keep only the latest one.
 .PP
+\f[B]\-P\f[], \f[B]\-\-parents\f[]:
+.PP
+Restores files with their full path and creates directories if needed.
+For instance, with this option, restoring
+\f[C]/home/dup/directory1/example.txt\f[] file in \f[C]/tmp/restore\f[]
+directory will create
+\f[C]/tmp/restore/home/dup/directory1/example.txt\f[] file.
+.PP
 \f[B]\-w\f[], \f[B]\-\-where=DIRECTORY\f[]:
 .PP
 Specify a DIRECTORY where to restore a file.
