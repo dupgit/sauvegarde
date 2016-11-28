@@ -1,5 +1,38 @@
+[--2016] v0.0.10
+Continuous Data Protection For GNU/Linux (cdpfgl) is also known as 'sauvegarde' project. It is a set of programs: 'cdpfglserver', 'cdpfglclient' and 'cdpfglrestore' as of now. These programs will save your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server 'cdpfglserver' is stateless and achieves deduplication at the block level (optionally with adaptive block size). As a result it does not use much memory and may run on small machines (for instance I run one cdpfglserver on a 1Gb bananapi).
+
+This is v0.0.10 release of this project and some features were adaded and some small bugs corrected:
+
+    * Man pages were added for cdpfglclient, cdpfglserver and cdpfglrestore
+    * Code refactoring has been done:
+        * By simplifying some command line related parts
+        * By putting some generic code into libcdpfgl library
+    * New options has been added to cdpfglrestore program:
+        * -f, --all-files now restores all selected files (in conjunction with -r option)
+        * -g, --latest option selects only the latest version of each selected file
+        * -P, --parents option restores files with their full path (creates directories if needed).
+    * New option has been added to cdpfglclient program:
+        * -n, --no-scan now deactivates the initial scan of every directory to be saved when launching cdpfglclient. This option is a boolean value named no-scan in cdpfglclient configuration file.
+    * libcdpfgl is now built more cleanly and is also used in 'content-define-cut' project 
+
+Contributors to this version:
+
+    * Olivier Delhomme
+
+Links:
+
+    * Sauvegarde's project: https://github.com/dupgit/sauvegarde
+    * Sauvegarde's gitter: https://gitter.im/dupgit/sauvegarde
+    * Sauvegarde's openhub: https://openhub.net/p/sauvegarde
+    * Sauvegarde release v0.0.9: http://cdpfgl.delhomme.org/download/releases/cdpfgl-0.0.9.tar.xz
+    * travis continuous integration status: https://travis-ci.org/dupgit/sauvegarde
+    * sauvegarde's frescode: http://freshcode.club/projects/sauvegarde
+    * voidlinux distribution: http://www.voidlinux.eu/
+
+
+
 [24-08-2016] v0.0.9
-'sauvegarde' project is also known as Continuous Data Protection For GNU/Linux (cdpfgl). It is a set of programs: 'cdpfglserver', 'cdpfglclient' and 'cdpfglrestore' as of now. They will saves your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server 'cdpfglserver' is stateless and achieves deduplication at the block level (optionally with adaptive block size). As a result it does not use much memory and may run on small machines (for instance I run one cdpfglserver on a 1Gb bananapi).
+'sauvegarde' project is also known as Continuous Data Protection For GNU/Linux (cdpfgl). It is a set of programs: 'cdpfglserver', 'cdpfglclient' and 'cdpfglrestore' as of now. They will save your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server 'cdpfglserver' is stateless and achieves deduplication at the block level (optionally with adaptive block size). As a result it does not use much memory and may run on small machines (for instance I run one cdpfglserver on a 1Gb bananapi).
 
 This is v0.0.9 release of this project and some features were added and some major bugs corrected:
 
