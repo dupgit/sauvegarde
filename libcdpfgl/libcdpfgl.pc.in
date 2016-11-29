@@ -5,7 +5,7 @@ includedir=@includedir@/cdpfgl
 
 Name: libcdpfgl
 Description: cdpfgl's project shared library
-Version: 0.0.9
+Version: 0.0.10
 Requires: glib-2.0 gio-2.0 sqlite3 jansson libcurl
 Libs: -L${libdir} -lcdpfgl
 Cflags: -I${includedir}/

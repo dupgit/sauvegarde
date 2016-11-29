@@ -1,4 +1,4 @@
-[--2016] v0.0.10
+[29-11-2016] v0.0.10
 Continuous Data Protection For GNU/Linux (cdpfgl) is also known as 'sauvegarde' project. It is a set of programs: 'cdpfglserver', 'cdpfglclient' and 'cdpfglrestore' as of now. These programs will save your files in a live continuous way that is to say while they are written to disks. One interesting thing is that the server 'cdpfglserver' is stateless and achieves deduplication at the block level (optionally with adaptive block size). As a result it does not use much memory and may run on small machines (for instance I run one cdpfglserver on a 1Gb bananapi).
 
 This is v0.0.10 release of this project and some features were adaded and some small bugs corrected:

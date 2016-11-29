@@ -55,6 +55,7 @@ bugs/
 packaging/debian/sauvegarde*
 po/cdpfgl.pot
 packaging/debian/cdpfgl*
+packaging/debian/libcdpfgl*
 coverage*
 .frama-c
 *.gcda
@@ -63,3 +64,4 @@ gmon.out
 *.swp
 TAGS
 papers
+cdpfgl-*.tar.*

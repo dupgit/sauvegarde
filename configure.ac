@@ -1,6 +1,6 @@
 AC_PREREQ(2.59)
 
-AC_INIT([cdpfgl], [0.0.9], [Olivier DELHOMME <olivier.delhomme@free.fr>])
+AC_INIT([cdpfgl], [0.0.10], [Olivier DELHOMME <olivier.delhomme@free.fr>])
 AM_INIT_AUTOMAKE
 
 AC_PROG_CC

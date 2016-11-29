@@ -1,4 +1,4 @@
-% cdpfglserver(1) cdpfglserver user manual | version 0.0.9
+% cdpfglserver(1) cdpfglserver user manual | version 0.0.10
 
 # NAME
 
