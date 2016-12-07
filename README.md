@@ -119,8 +119,6 @@ If you need more than the above hints, please have a look at the user
 I am coding on spare hours so I may not tell any release dates and you
 should consider that "It ships when its ready".
 
-* 0.0.10 restore a directory and it's subfiles and directories at a
-         specific date. Write a man page for each programs.
 * 0.0.11 have some statistics with the server.
 * 0.0.12 Use compression in file_backend.
 * 0.0.13 Add some security beetween clients and server to avoid sending
@@ -155,7 +153,10 @@ should consider that "It ships when its ready".
                       files. Restore all the versions of a file. Now
                       cdpfglclient handles signals and should close its
                       database connection cleanly.
+* 0.0.10 [29.11.2016] restore a directory and it's subfiles and directories 
+                      at a specific date. Write a man page for each programs.
 
+                      
 ## Code documentation
 
 If you are interested in helping the project please have a look at
