@@ -121,7 +121,7 @@ should consider that "It ships when its ready".
 
 * 0.0.11 have some statistics with the server.
 * 0.0.12 Use compression in file_backend.
-* 0.0.13 Add some security beetween clients and server to avoid sending
+* 0.0.13 Add some security between clients and server to avoid sending
          plain clear text messages.
 
 
