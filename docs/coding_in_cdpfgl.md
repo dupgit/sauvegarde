@@ -55,10 +55,10 @@ following this link: [https://github.com/terryyin/lizard](https://github.com/ter
 * fanotify can not handle file permission changes (chmod and chown) nor
   file deletion (rm). This is really anoying if one wants restore a
   directory at a specified time (and we can not decide if a file was
-  deleted at that time.
+  deleted at that time).
 * It seems (on my system) that the more the blocksize is small the more the
   intra-deduplication rate is high (from 2.56 % at 32768 bytes to 8% at 512
-  bytes). But if the blocksize is smaller than cpu overhead is higher and
+  bytes). But if the blocksize is smaller then cpu overhead is higher and
   the maximum filesystem size is smaller... For the default value we will
   have to find a value that will fit best intra-deduplication rate, cpu
   demand, maximum filesystem size and low memory consumption. For now the
