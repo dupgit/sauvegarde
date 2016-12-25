@@ -3,7 +3,8 @@
 Any help on the project will be very welcomed and appreciated. Have a
 look at the TODO file, the Roadmap in this file or the @todo notes in
 the code if you do not know where to begin or what to do. Translations
-are welcomed !
+are welcomed ! Please use github's issue system to report any issue or
+ask to add some feature.
 
 
 ## irc
