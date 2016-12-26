@@ -123,7 +123,8 @@ should consider that "It ships when its ready".
 * 0.0.12 Use compression in file_backend.
 * 0.0.13 Add some security between clients and server to avoid sending
          plain clear text messages.
-
+* 0.0.14 Modify file_backend to store meta data into a database
+* 0.0.15 Add a new backend that will store things into an object storage.
 
 ### Releases
 
