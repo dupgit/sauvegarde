@@ -53,7 +53,7 @@ cdpfglserver will wait for cdpfglclient to send files to save and cdpfglrestore 
 
 # BUGS
 
-Please report bugs by either filling a pull request at [https://github.com/dupgit/sauvegarde/pulls](https://github.com/dupgit/sauvegarde/pulls "Github") or by sending a mail to Olivier Delhomme <olivier.delhomme@free.fr>
+Please report bugs by either filling an issue at [https://github.com/dupgit/sauvegarde/issues](https://github.com/dupgit/sauvegarde/issues "Github Issues") or a pull request at [https://github.com/dupgit/sauvegarde/pulls](https://github.com/dupgit/sauvegarde/pulls "Github PR") or by sending a mail to Olivier Delhomme <olivier.delhomme@free.fr>
 
 
 # AUTHORS
