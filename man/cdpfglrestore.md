@@ -62,7 +62,7 @@ cdpfglrestore will restore already saved files from a cdpfglserver to your local
 
 **-f**, **--all-files**:
 
-   Restores all files found by -r REGEX (or -l REGEX). This option has no real effect with -l option and only works when restoring in conjunction with -r option.
+   In conjunction with -r restores all files found by -r REGEX (or -l REGEX). This option has no real effect with -l option and only works when restoring in conjunction with -r option.
 
 **-g**, **--latest**:
 
@@ -83,6 +83,19 @@ cdpfglrestore will restore already saved files from a cdpfglserver to your local
 **-p**, **--port=NUMBER**:
 
    Port NUMBER on which to listen (default is 5468).
+
+
+# EXAMPLES
+
+   A typical restore session starts by listing saved files known by the server. At first you must provide the filename or a REGEX representing the filename that you want to restore:
+   
+   `cdpfglrestore -l myfile`
+
+   This command will give you a list of files that can be restored. If you simply replace `-l` by `-r` it will restore the last file of the list obtained with `-l` option:
+
+   `cdpfglrestore -r myfile`
+
+   To filter a bit the results obtained with `-l` option you can use `-a`, `-b`, `-t` options with a date (YYYY-MM-DD HH:MM:SS format). The date may be incomplete. For instance `2016-12` and `2016-12-26 17` are valid dates but `-12-26 17:33` isn't.
 
 
 # SEE ALSO
