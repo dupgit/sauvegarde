@@ -311,6 +311,7 @@ void free_options_t(options_t *opt)
             free_variable(opt->afterdate);
             free_variable(opt->beforedate);
             free_variable(opt->where);
+            free_variable(opt->r_hostname);
             free_variable(opt);
         }
 }

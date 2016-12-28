@@ -27,6 +27,7 @@
 
 #include "restore.h"
 
+static void set_res_struct_hostname(res_struct_t *res_struct, gchar *r_hostname);
 static res_struct_t *init_res_struct(int argc, char **argv);
 static query_t *prepare_query(gchar *hostname);
 static query_t *finish_query(query_t *query, gchar *encoded_filename, gchar *encoded_date, gchar *encoded_afterdate,gchar *encoded_beforedate, gboolean latest);
@@ -52,6 +53,32 @@ static void restore_files(res_struct_t *res_struct);
 static void restore_all_files(res_struct_t *res_struct, query_t *query);
 
 /**
+ * Sets the hostname of which we want to restore files from
+ * @param[in,out] res_struct is the main structure for the restore program.
+ * @param r_hostname is the hostname as specified on the command line
+ *        if it has been set or NULL otherwise
+ */
+static void set_res_struct_hostname(res_struct_t *res_struct, gchar *r_hostname)
+{
+
+    if (res_struct != NULL)
+        {
+            if (r_hostname == NULL)
+                {
+                    /* By default use the local host hostname */
+                    res_struct->hostname = (gchar *) g_get_host_name();
+                }
+            else
+                {
+                    /* One hostname has been specified on the command line */
+                    res_struct->hostname = g_strdup(r_hostname);
+                }
+        }
+}
+
+
+
+/**
  * Inits a res_struct_t * structure. Manages the command line options.
  * @param argc : number of arguments given on the command line.
  * @param argv : an array of strings that contains command line arguments.
@@ -66,8 +93,6 @@ static res_struct_t *init_res_struct(int argc, char **argv)
 
     res_struct = (res_struct_t *) g_malloc0(sizeof(res_struct_t));
 
-    res_struct->hostname = (gchar *) g_get_host_name();
-
     res_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
 
     if (res_struct->opt != NULL && res_struct->opt->ip != NULL)
@@ -75,6 +100,8 @@ static res_struct_t *init_res_struct(int argc, char **argv)
             /* We keep conn string into comm_t structure: do not free it ! */
             conn = make_connexion_string(res_struct->opt->ip, res_struct->opt->port);
             res_struct->comm = init_comm_struct(conn);
+
+            set_res_struct_hostname(res_struct, res_struct->opt->r_hostname);
         }
     else
         {
