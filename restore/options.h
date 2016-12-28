@@ -50,6 +50,7 @@ typedef struct
     gchar *beforedate;      /**< Should contain a date in the correct format to filter only files before that specific date   */
     gchar *configfile;      /**< Filename for the configuration file specified on the command line                            */
     gchar *ip;              /**< A string representing the IP address where server is located (may be a hotsname)             */
+    gchar *r_hostname;      /**< A string containing the hostname where the file to be restored was located.                  */
     gint port;              /**< Port number on which to send things to cdpfglserver's server (on which it must listen)       */
     gchar *where;           /**< where is a string that should contain a directory where to restore a file / dirtectory       */
     gboolean all_versions;  /**< all_versions says whether we should restore all versions of a file (TRUE) or not (FALSE)     */

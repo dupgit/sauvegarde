@@ -160,6 +160,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     gchar *ip =  NULL;             /** IP address where is located server's program                                      */
     gint port = 0;                 /** Port number on which to send things to the server                                 */
     gchar *list = NULL;            /** Should contain a filename or a directory to filter out                            */
+    gchar *r_hostname = NULL;      /** r_hostname is the name fo the host where the file to be restored belung.          */
     gchar *restore = NULL;         /** Must contain a filename or a directory name to be restored                        */
     gchar *date = NULL;            /** date at which we want to restore a file or directory                              */
     gchar *where = NULL;           /** Contains the directory where to restore a file / directory                        */
@@ -176,6 +177,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
         { "configuration", 'c', 0, G_OPTION_ARG_STRING, &configfile, N_("Specify an alternative configuration file."), N_("FILENAME")},
         { "list", 'l', 0, G_OPTION_ARG_FILENAME, &list, N_("Lists saved files that correspond to the given REGEX."), "REGEX"},
         { "restore", 'r', 0, G_OPTION_ARG_FILENAME, &restore, N_("Restores requested filename (REGEX) (by default latest version)."), "REGEX"},
+        { "hostname", 'n', 0, G_OPTION_ARG_STRING, &r_hostname, N_("Specifies a hostname (HOSTNAME) that owned the file to be restored."), "HOSTNAME"},
         { "date", 't', 0, G_OPTION_ARG_STRING, &date, N_("Selects file with that specific DATE (YYYY-MM-DD HH:MM:SS format)."), "DATE"},
         { "after", 'a', 0, G_OPTION_ARG_STRING, &afterdate, N_("Selects file with mtime after DATE (YYYY-MM-DD HH:MM:SS format)."), "DATE"},
         { "before", 'b', 0, G_OPTION_ARG_STRING, &beforedate, N_("Selects file with mtime before DATE (YYYY-MM-DD HH:MM:SS format)."), "DATE"},
@@ -204,6 +206,8 @@ static options_t *manage_command_line_options(int argc, char **argv)
     opt->ip = g_strdup("localhost");
     opt->port = SERVER_PORT;
     opt->where = NULL;
+    opt->r_hostname = NULL;
+
 
 
     /* 1) Reading options from default configuration file
@@ -241,6 +245,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     opt->restore = set_option_str(restore, opt->restore);
     opt->where = set_option_str(where, opt->where);
     opt->ip = set_option_str(ip, opt->ip);
+    opt->r_hostname = set_option_str(r_hostname, opt->r_hostname);
 
     if (port > 1024 && port < 65535)
         {
@@ -248,6 +253,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
         }
 
     free_variable(summary);
+    free_variable(r_hostname);
     free_variable(ip);
     free_variable(list);
     free_variable(restore);
