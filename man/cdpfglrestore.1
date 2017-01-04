@@ -52,6 +52,14 @@ For instance one may use \-\-list=.mp3$ to list all files ending with
 Restores requested filename (REGEX).
 It restores the latest file in the returned list with \-l option.
 .PP
+\f[B]\-n\f[], \f[B]\-\-hostname=HOSTNAME\f[]:
+.PP
+By default cdpfglrestore uses the hostname of the host where it is
+executed to search files for.
+With this option one can search (and restore) files from an another host
+(for instance one may want to restore /etc/fstab of an unbootable
+machine).
+.PP
 \f[B]\-t\f[], \f[B]\-\-date=DATE\f[]:
 .PP
 Lists or restores the selected file at that specific DATE (YYYY\-MM\-DD
@@ -73,7 +81,8 @@ Lists or restores all versions of a file.
 .PP
 \f[B]\-f\f[], \f[B]\-\-all\-files\f[]:
 .PP
-Restores all files found by \-r REGEX (or \-l REGEX).
+In conjunction with \-r restores all files found by \-r REGEX (or \-l
+REGEX).
 This option has no real effect with \-l option and only works when
 restoring in conjunction with \-r option.
 .PP
@@ -101,6 +110,27 @@ send POST and GET commands.
 \f[B]\-p\f[], \f[B]\-\-port=NUMBER\f[]:
 .PP
 Port NUMBER on which to listen (default is 5468).
+.SH EXAMPLES
+.PP
+A typical restore session starts by listing saved files known by the
+server.
+At first you must provide the filename or a REGEX representing the
+filename that you want to restore:
+.PP
+\f[C]cdpfglrestore\ \-l\ myfile\f[]
+.PP
+This command will give you a list of files that can be restored.
+If you simply replace \f[C]\-l\f[] by \f[C]\-r\f[] it will restore the
+last file of the list obtained with \f[C]\-l\f[] option:
+.PP
+\f[C]cdpfglrestore\ \-r\ myfile\f[]
+.PP
+To filter a bit the results obtained with \f[C]\-l\f[] option you can
+use \f[C]\-a\f[], \f[C]\-b\f[], \f[C]\-t\f[] options with a date
+(YYYY\-MM\-DD HH:MM:SS format).
+The date may be incomplete.
+For instance \f[C]2016\-12\f[] and \f[C]2016\-12\-26\ 17\f[] are valid
+dates but \f[C]\-12\-26\ 17:33\f[] isn\[aq]t.
 .SH SEE ALSO
 .PP
 \f[B]cdpfglclient\f[](1), \f[B]cdpfglserver\f[](1)

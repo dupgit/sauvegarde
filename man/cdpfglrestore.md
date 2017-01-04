@@ -44,6 +44,10 @@ cdpfglrestore will restore already saved files from a cdpfglserver to your local
 
    Restores requested filename (REGEX). It restores the latest file in the returned list with -l option.
 
+**-n**, **--hostname=HOSTNAME**:
+
+   By default cdpfglrestore uses the hostname of the host where it is executed to search files for. With this option one can search (and restore) files from an another host (for instance one may want to restore /etc/fstab of an unbootable machine).
+
 **-t**, **--date=DATE**:
 
    Lists or restores the selected file at that specific DATE (YYYY-MM-DD HH:MM:SS format).
