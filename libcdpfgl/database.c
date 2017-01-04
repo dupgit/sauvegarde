@@ -31,7 +31,7 @@
 static void print_db_error(sqlite3 *db, const char *format, ...);
 static void print_on_db_error(sqlite3 *db, int result, const gchar *infos);
 static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message);
-static int table_callback(void *num, int nbCol, char **data, char **nomCol);
+static int count_lines_callback(void *num, int nbCol, char **data, char **nomCol);
 static void verify_if_tables_exists(db_t *database);
 static file_row_t *new_file_row_t(void);
 static void free_file_row_t(file_row_t *row);
@@ -136,8 +136,19 @@ static void sql_commit(db_t *database)
  */
 static void sql_begin(db_t *database)
 {
-    exec_sql_cmd(database, "BEGIN;",  _("(%d) Error openning the transaction: %s\n"));
+    exec_sql_cmd(database, "BEGIN;",  _("(%d) Error opening the transaction: %s\n"));
 }
+
+
+/**
+ * Creates a new table that will store the version of the local database in
+ * order to ease migrations from versions to versions
+ */
+static void create_version_table(db_t *database)
+{
+    exec_sql_cmd(database, "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", _("(%d) Error while requesting table sqlite_master: %n\n"));
+}
+
 
 
 /**
@@ -148,7 +159,7 @@ static void sql_begin(db_t *database)
  * @param name_col contains the name of each column.
  * @returns always 0.
  */
-static int table_callback(void *num, int nb_col, char **data, char **name_col)
+static int count_lines_callback(void *num, int nb_col, char **data, char **name_col)
 {
     int *i = (int *) num;
 
@@ -173,7 +184,7 @@ static void verify_if_tables_exists(db_t *database)
     *i = 0;
 
     /* Trying to get all the tables that are in the database */
-    result = sqlite3_exec(database->db, "SELECT * FROM sqlite_master WHERE type='table';", table_callback, i, &error_message);
+    result = sqlite3_exec(database->db, "SELECT * FROM sqlite_master WHERE type='table';", count_lines_callback, i, &error_message);
 
     if (result == SQLITE_OK && *i == 0)  /* No row (0) means that there is no table */
         {
@@ -386,7 +397,7 @@ gboolean db_is_there_buffers_to_transmit(db_t *database)
     i = (int *) g_malloc0(sizeof(int));
     *i = 0;
 
-    result = sqlite3_exec(database->db, "SELECT * FROM buffers WHERE buffers.buffer_id NOT IN (SELECT transmited.buffer_id FROM transmited INNER JOIN buffers ON transmited.buffer_id = buffers.buffer_id);", table_callback, i, &error_message);
+    result = sqlite3_exec(database->db, "SELECT * FROM buffers WHERE buffers.buffer_id NOT IN (SELECT transmited.buffer_id FROM transmited INNER JOIN buffers ON transmited.buffer_id = buffers.buffer_id);", count_lines_callback, i, &error_message);
 
     if (result == SQLITE_OK && *i == 0)
         {
