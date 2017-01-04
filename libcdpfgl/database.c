@@ -31,6 +31,7 @@
 static void print_db_error(sqlite3 *db, const char *format, ...);
 static void print_on_db_error(sqlite3 *db, int result, const gchar *infos);
 static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message);
+static int make_list_first_column_callback(void *userp, int nb_col, char **data, char **name_col);
 static int count_lines_callback(void *num, int nbCol, char **data, char **nomCol);
 static void verify_if_tables_exists(db_t *database);
 static file_row_t *new_file_row_t(void);
@@ -47,6 +48,9 @@ static sqlite3_stmt *create_save_buffer_stmt(sqlite3 *db);
 static sqlite3_stmt *create_get_file_id_stmt(sqlite3 *db);
 static stmt_t *new_stmts(sqlite3 *db);
 static void free_stmts(stmt_t *stmts);
+static list_t *new_list_t(void);
+static void free_list_t(list_t *container);
+
 
 /**
  * @returns a string containing the version of the database used.
@@ -141,12 +145,33 @@ static void sql_begin(db_t *database)
 
 
 /**
+ * Makes a list of first column elements returned by a query
+ * @param userp is a pointer to a list_t structure that must not be NULL
+ * @param nb_col gives the number of columns in this row.
+ * @param data contains the data of each column.
+ * @param name_col contains the name of each column.
+ * @returns always 0.
+ */
+static int make_list_first_column_callback(void *userp, int nb_col, char **data, char **name_col)
+{
+    list_t *container = (list_t *)  userp;
+
+    if (container !=NULL && data != NULL)
+        {
+            container->list = g_list_prepend(container->list, data[0]);
+        }
+
+    return 0;
+}
+
+
+/**
  * Creates a new table that will store the version of the local database in
  * order to ease migrations from versions to versions
  */
 static void create_version_table(db_t *database)
 {
-    exec_sql_cmd(database, "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", _("(%d) Error while requesting table sqlite_master: %n\n"));
+    /* "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;" */
 }
 
 
@@ -797,6 +822,36 @@ static void free_stmts(stmt_t *stmts)
             sqlite3_finalize(stmts->save_buffer_stmt);
             sqlite3_finalize(stmts->get_file_id_stmt);
             g_free(stmts);
+        }
+}
+
+/**
+ * Allocates a new list_t * stucture
+ * @return a newly allocated list_t * stucture that may be
+ *         freed by free_list_t function when no longer needed
+ */
+static list_t *new_list_t(void)
+{
+    list_t *container = NULL;
+
+    container = (list_t *) g_malloc0(sizeof(list_t));
+
+    container->list = NULL;
+
+    return container;
+}
+
+
+/**
+ * Frees memory
+ * @param container is a list_t structure to be freed
+ */
+static void free_list_t(list_t *container)
+{
+    if (container != NULL)
+        {
+            g_list_free_full(container->list, free_gchar_variable);
+            free_variable(container);
         }
 }
 

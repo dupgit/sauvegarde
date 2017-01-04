@@ -82,6 +82,17 @@ typedef struct
 
 
 /**
+ * @struct list_t
+ * @brief Structure used over sqlite_exec callback procedure to make a list
+ *        of returned elements of a query.
+ */
+typedef struct
+{
+    GList *list;
+} list_t;
+
+
+/**
  * @returns a string containing the version of the database used.
  */
 extern gchar *db_version(void);
