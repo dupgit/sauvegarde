@@ -165,13 +165,80 @@ static int make_list_first_column_callback(void *userp, int nb_col, char **data,
 }
 
 
+static gint does_table_exists(db_t *database, gchar *tablename)
+{
+    char *error_message = NULL;
+    int result = 0;
+    list_t *container = NULL;
+    GList *list = NULL;
+    gboolean exists = FALSE;
+
+    container = new_list_t();
+
+    /* Trying to get all the table names that are in the database */
+    result = sqlite3_exec(database->db, "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", make_list_first_column_callback, container, &error_message);
+
+    if (result == SQLITE_OK && container != NULL)
+        {
+            list = container->list;
+
+            while (list != NULL && exists == FALSE)
+                {
+                    if (g_strcmp0(list->data, "version") == 0)
+                        {
+                            exists = TRUE;
+                        }
+                    list = list->next;
+                }
+
+            free_list_t(container);
+
+            if (exists == TRUE)
+                {
+                    return 0;
+                }
+            else
+                {
+                    return 1;
+                }
+        }
+    else
+        {
+            print_on_db_error(database->db, result, "does_table_exists");
+            return -1;
+        }
+}
+
+
 /**
  * Creates a new table that will store the version of the local database in
- * order to ease migrations from versions to versions
+ * order to ease migrations from versions to versions. It first checks that
+ * the table does not exists first.
+ * @param database : the structure to manage database's connexion.
+ * @returns the version as found in table as an integer > 0 if everything went
+ *          without error and < 0 otherwise.
  */
-static void create_version_table(db_t *database)
+static gint create_version_table(db_t *database)
 {
-    /* "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;" */
+    gint exists = -1;
+
+    exists = does_table_exists(database, "version");
+
+    if (exists == 1)  /* Does not exist */
+        {
+            exec_sql_cmd(database, "CREATE TABLE version (version INTEGER);", _("(%d) Error while creating database table 'version': %s\n"));
+            exec_sql_cmd(database, "INSERT INTO version (version) VALUES (1);", _("(%d) Error while inserting into table 'version': %s\n"));
+
+            return 1;
+        }
+    else if (exists == 0)  /* Already exists */
+        {
+
+        }
+    else
+        {
+            return -1;
+        }
 }
 
 
@@ -523,7 +590,7 @@ static int delete_transmited_callback(void *userp, int nb_col, char **data, char
             exec_sql_cmd(database, sql_command,  _("(%d) Error while deleting from table 'buffers': %s\n"));
             free_variable(sql_command);
 
-           sql_commit(database);
+            sql_commit(database);
         }
 
     return 0;
