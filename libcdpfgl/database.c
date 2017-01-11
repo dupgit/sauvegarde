@@ -32,6 +32,7 @@ static void print_db_error(sqlite3 *db, const char *format, ...);
 static void print_on_db_error(sqlite3 *db, int result, const gchar *infos);
 static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message);
 static int make_list_first_column_callback(void *userp, int nb_col, char **data, char **name_col);
+static gint does_table_exists(db_t *database, gchar *tablename);
 static int count_lines_callback(void *num, int nbCol, char **data, char **nomCol);
 static void verify_if_tables_exists(db_t *database);
 static file_row_t *new_file_row_t(void);
@@ -165,6 +166,15 @@ static int make_list_first_column_callback(void *userp, int nb_col, char **data,
 }
 
 
+/**
+ * Tells if a specific table exists or not in the selected
+ * and opened database.
+ * @param database is the database structure
+ * @param tablename is a gchar * string that is the name of
+ *        the table to look for.
+ * @returns 0 if the table exists, 1 if it doesn't and -1 on
+ *          if an error occurs.
+ */
 static gint does_table_exists(db_t *database, gchar *tablename)
 {
     char *error_message = NULL;
@@ -208,39 +218,6 @@ static gint does_table_exists(db_t *database, gchar *tablename)
             return -1;
         }
 }
-
-
-/**
- * Creates a new table that will store the version of the local database in
- * order to ease migrations from versions to versions. It first checks that
- * the table does not exists first.
- * @param database : the structure to manage database's connexion.
- * @returns the version as found in table as an integer > 0 if everything went
- *          without error and < 0 otherwise.
- */
-static gint create_version_table(db_t *database)
-{
-    gint exists = -1;
-
-    exists = does_table_exists(database, "version");
-
-    if (exists == 1)  /* Does not exist */
-        {
-            exec_sql_cmd(database, "CREATE TABLE version (version INTEGER);", _("(%d) Error while creating database table 'version': %s\n"));
-            exec_sql_cmd(database, "INSERT INTO version (version) VALUES (1);", _("(%d) Error while inserting into table 'version': %s\n"));
-
-            return 1;
-        }
-    else if (exists == 0)  /* Already exists */
-        {
-
-        }
-    else
-        {
-            return -1;
-        }
-}
-
 
 
 /**
