@@ -167,26 +167,45 @@ static int make_list_first_column_callback(void *userp, int nb_col, char **data,
 
 
 /**
- * Tells if a specific table exists or not in the selected
+ * Tells if a specific table or index exists or not in the selected
  * and opened database.
  * @param database is the database structure
- * @param tablename is a gchar * string that is the name of
- *        the table to look for.
+ * @param name is a gchar * string that is the name of
+ *        the table or index to look for.
+ * @param type is an integer that represents the type of the
+ *         object to look for.
  * @returns 0 if the table exists, 1 if it doesn't and -1 on
  *          if an error occurs.
  */
-static gint does_table_exists(db_t *database, gchar *tablename)
+static gint does_db_object_exists(db_t *database, gchar *name, gint type)
 {
     char *error_message = NULL;
     int result = 0;
     list_t *container = NULL;
     GList *list = NULL;
     gboolean exists = FALSE;
+    gchar *cmd = NULL;
 
     container = new_list_t();
 
+    if (type == SQLITE_TYPE_TABLE)
+        {
+            cmd = g_strdup("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;");
+        }
+    else if (type == SQLITE_TYPE_INDEX)
+        {
+            cmd = g_strdup("SELECT name FROM sqlite_master WHERE type='index' ORDER BY name;");
+        }
+    else
+        {
+            free_list_t(container);
+            return -1;
+        }
+
     /* Trying to get all the table names that are in the database */
-    result = sqlite3_exec(database->db, "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", make_list_first_column_callback, container, &error_message);
+    result = sqlite3_exec(database->db, cmd, make_list_first_column_callback, container, &error_message);
+    free_variable(cmd);
+
 
     if (result == SQLITE_OK && container != NULL)
         {
@@ -194,7 +213,7 @@ static gint does_table_exists(db_t *database, gchar *tablename)
 
             while (list != NULL && exists == FALSE)
                 {
-                    if (g_strcmp0(list->data, "version") == 0)
+                    if (g_strcmp0(list->data, name) == 0)
                         {
                             exists = TRUE;
                         }
@@ -214,9 +233,39 @@ static gint does_table_exists(db_t *database, gchar *tablename)
         }
     else
         {
-            print_on_db_error(database->db, result, "does_table_exists");
+            print_on_db_error(database->db, result, "sqlite_master table");
             return -1;
         }
+}
+
+
+/**
+ * Tells if a specific table exists or not in the selected
+ * and opened database.
+ * @param database is the database structure
+ * @param tablename is a gchar * string that is the name of
+ *        the table to look for.
+ * @returns 0 if the table exists, 1 if it doesn't and -1 on
+ *          if an error occurs.
+ */
+static gint does_table_exists(db_t *database, gchar *tablename)
+{
+    return does_db_object_exists(database, tablename, SQLITE_TYPE_TABLE);
+}
+
+
+/**
+ * Tells if a specific endex exists or not in the selected
+ * and opened database.
+ * @param database is the database structure
+ * @param indexname is a gchar * string that is the name of
+ *        the index to look for.
+ * @returns 0 if the index exists, 1 if it doesn't and -1 on
+ *          if an error occurs.
+ */
+static gint does_index_exists(db_t *database, gchar *indexname)
+{
+    return does_db_object_exists(database, indexname, SQLITE_TYPE_INDEX);
 }
 
 
@@ -238,6 +287,76 @@ static int count_lines_callback(void *num, int nb_col, char **data, char **name_
 }
 
 
+
+/**
+ * Checks if a table or an index exists and creates it if not.
+ * @param database : the structure to manage database's connexion.
+ * @param name is the name of the table or index to look for and
+ *        may be create.
+ * @param is a gint that should be one of SQLITE_TYPE_INDEX or
+ *        SQLITE_TYPE_TABLE
+ * @param sql_creation_cmd is the SQL command to create the table or
+ *        the index if needed.
+ * @param err_msg is the error message to be displayed in case of an
+ *        error when trying to create the table or index.
+ */
+static void check_and_create_object(db_t *database, gchar *name, gint type, gchar *sql_creation_cmd, gchar *err_msg)
+{
+    int result = 0;
+
+    if (type == SQLITE_TYPE_TABLE)
+        {
+            result = does_table_exists(database, name);
+        }
+    else if (type == SQLITE_TYPE_INDEX)
+        {
+            result = does_index_exists(database, name);
+        }
+    else
+        {
+            result = -1;
+        }
+
+    if (result == 1)
+        {
+            /* table or index does not exists and we have to create it */
+            exec_sql_cmd(database, sql_creation_cmd , err_msg);
+        }
+}
+
+
+/**
+ * Checks if a table exists and creates it if not.
+ * @param database : the structure to manage database's connexion.
+ * @param tablename is the name of the table to look for and
+ *        may be create.
+ * @param sql_creation_cmd is the SQL command to create the table
+ *        if needed.
+ * @param err_msg is the error message to be displayed in case of an
+ *        error when trying to create the table.
+ */
+static void check_and_create_table(db_t *database, gchar *tablename, gchar *sql_creation_cmd, gchar *err_msg)
+{
+    check_and_create_object(database, tablename, SQLITE_TYPE_TABLE, sql_creation_cmd, err_msg);
+}
+
+
+/**
+ * Checks if an index exists and creates it if not.
+ * @param database : the structure to manage database's connexion.
+ * @param indexname is the name of the index to look for and
+ *        may be create.
+ * @param sql_creation_cmd is the SQL command to create the index
+ *        if needed.
+ * @param err_msg is the error message to be displayed in case of an
+ *        error when trying to create the index.
+ */
+static void check_and_create_index(db_t *database, gchar *indexname, gchar *sql_creation_cmd, gchar *err_msg)
+{
+    check_and_create_object(database, indexname, SQLITE_TYPE_INDEX, sql_creation_cmd, err_msg);
+}
+
+
 /**
  * Verifies if the tables are created whithin the database and creates
  * them if there is no tables at all.
@@ -245,36 +364,20 @@ static int count_lines_callback(void *num, int nb_col, char **data, char **name_
  */
 static void verify_if_tables_exists(db_t *database)
 {
-    char *error_message = NULL;
-    int result = 0;
-    int *i = NULL;               /** int *i is used to count the number of row */
+    print_debug(_("Checking tables and index in the database\n"));
 
-    i = (int *) g_malloc0(sizeof(int));
-    *i = 0;
+    /* Creation of buffers table that contains checksums and their associated data */
+    check_and_create_table(database, "buffers",  "CREATE TABLE buffers (buffer_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, data TEXT);", _("(%d) Error while creating database table 'buffers': %s\n"));
 
-    /* Trying to get all the tables that are in the database */
-    result = sqlite3_exec(database->db, "SELECT * FROM sqlite_master WHERE type='table';", count_lines_callback, i, &error_message);
+    /* Creation of transmited table that may contain id of transmited buffers if any + creation of its indexes */
+    check_and_create_table(database, "transmited", "CREATE TABLE transmited (buffer_id INTEGER PRIMARY KEY);", _("(%d) Error while creating database table 'transmited': %s\n"));
 
-    if (result == SQLITE_OK && *i == 0)  /* No row (0) means that there is no table */
-        {
-            print_debug(_("Creating tables into the database\n"));
+    check_and_create_index(database, "transmitted_buffer_id", "CREATE INDEX main.transmited_buffer_id ON transmited (buffer_id ASC)", _("(%d) Error while creating index 'transmited_buffer_id': %s\n"));
 
-            /* The database does not contain any tables. So we have to create them.         */
-            /* Creation of buffers table that contains checksums and their associated data */
-            exec_sql_cmd(database, "CREATE TABLE buffers (buffer_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, data TEXT);", _("(%d) Error while creating database table 'buffers': %s\n"));
+    /* Creation of files table that contains everything about a file */
+    check_and_create_table(database, "files", "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL, link TEXT);", _("(%d) Error while creating database table 'files': %s\n"));
 
-            /* Creation of transmited table that may contain id of transmited buffers if any + creation of its indexes */
-            exec_sql_cmd(database, "CREATE TABLE transmited (buffer_id INTEGER PRIMARY KEY);", _("(%d) Error while creating database table 'transmited': %s\n"));
-
-            exec_sql_cmd(database, "CREATE INDEX main.transmited_buffer_id ON transmited (buffer_id ASC)", _("(%d) Error while creating index 'transmited_buffer_id': %s\n"));
-
-            /* Creation of files table that contains everything about a file */
-            exec_sql_cmd(database, "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL, link TEXT);", _("(%d) Error while creating database table 'files': %s\n"));
-
-            exec_sql_cmd(database, "CREATE INDEX main.files_inodes ON files (inode ASC)", _("(%d) Error while creating index 'files_inodes': %s\n"));
-        }
-
-    free_variable(i);
+    check_and_create_index(database, "files_inodes", "CREATE INDEX main.files_inodes ON files (inode ASC)", _("(%d) Error while creating index 'files_inodes': %s\n"));
 }
 
 

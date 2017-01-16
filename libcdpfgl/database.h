@@ -37,6 +37,20 @@
 
 
 /**
+ * @def SQLITE_TYPE_TABLE
+ * Defines object type as a table.
+ */
+#define SQLITE_TYPE_TABLE (0)
+
+
+/**
+ * @def SQLITE_TYPE_INDEX
+ * Defines object type as an index.
+ */
+#define SQLITE_TYPE_INDEX (1)
+
+
+/**
  * @struct stmt_t
  * @brief structure to hold all statements needed for the programs.
  */
