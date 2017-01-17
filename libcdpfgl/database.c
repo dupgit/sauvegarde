@@ -159,7 +159,7 @@ static int make_list_first_column_callback(void *userp, int nb_col, char **data,
 
     if (container !=NULL && data != NULL)
         {
-            container->list = g_list_prepend(container->list, data[0]);
+            container->list = g_list_prepend(container->list, g_strdup(data[0]));
         }
 
     return 0;
@@ -364,19 +364,24 @@ static void check_and_create_index(db_t *database, gchar *indexname, gchar *sql_
  */
 static void verify_if_tables_exists(db_t *database)
 {
-    print_debug(_("Checking tables and index in the database\n"));
+    print_debug(_("Checking tables and index in the database:\n"));
 
     /* Creation of buffers table that contains checksums and their associated data */
+    print_debug(_("\ttable buffers\n"));
     check_and_create_table(database, "buffers",  "CREATE TABLE buffers (buffer_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, data TEXT);", _("(%d) Error while creating database table 'buffers': %s\n"));
 
     /* Creation of transmited table that may contain id of transmited buffers if any + creation of its indexes */
+    print_debug(_("\ttable transmited\n"));
     check_and_create_table(database, "transmited", "CREATE TABLE transmited (buffer_id INTEGER PRIMARY KEY);", _("(%d) Error while creating database table 'transmited': %s\n"));
 
-    check_and_create_index(database, "transmitted_buffer_id", "CREATE INDEX main.transmited_buffer_id ON transmited (buffer_id ASC)", _("(%d) Error while creating index 'transmited_buffer_id': %s\n"));
+    print_debug(_("\tindex transmited_buffer_id\n"));
+    check_and_create_index(database, "transmited_buffer_id", "CREATE INDEX main.transmited_buffer_id ON transmited (buffer_id ASC)", _("(%d) Error while creating index 'transmited_buffer_id': %s\n"));
 
     /* Creation of files table that contains everything about a file */
+    print_debug(_("\ttable files\n"));
     check_and_create_table(database, "files", "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL, link TEXT);", _("(%d) Error while creating database table 'files': %s\n"));
 
+    print_debug(_("\tindex files_inodes\n"));
     check_and_create_index(database, "files_inodes", "CREATE INDEX main.files_inodes ON files (inode ASC)", _("(%d) Error while creating index 'files_inodes': %s\n"));
 }
 
@@ -973,8 +978,8 @@ static void free_stmts(stmt_t *stmts)
 }
 
 /**
- * Allocates a new list_t * stucture
- * @return a newly allocated list_t * stucture that may be
+ * Allocates a new list_t * structure
+ * @return a newly allocated list_t * structure that may be
  *         freed by free_list_t function when no longer needed
  */
 static list_t *new_list_t(void)
