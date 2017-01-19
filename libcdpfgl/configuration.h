@@ -55,11 +55,15 @@
   * Defines the group name for all preferences related to server's
   * backend named file_backend that stores everything into flat files.
   *
+  * @def GN_VERSION
+  * Defines the group name that will keep version information for
+  * the database in the client's cache directory (for now).
   */
 #define GN_CLIENT ("Client")
 #define GN_SERVER ("Server")
 #define GN_ALL ("All")
 #define GN_FILE_BACKEND ("File_Backend")
+#define GN_VERSION ("Version")
 
 
 /** Below you'll find some definitions for [All] section of configuration files */
@@ -163,6 +167,15 @@
  * filesystem space and creation time.
  */
 #define KN_DIR_LEVEL ("dir-level")
+
+
+/** Below you'll find some definitions for the version cache file */
+/**
+ * @def KN_CLIENT_DATABASE
+ * Defines the version number of client database. Must be a positive
+ * 64 bits integer.
+ */
+#define KN_CLIENT_DATABASE ("client-database")
 
 
 /**

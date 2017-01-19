@@ -344,4 +344,57 @@ void read_debug_mode_from_file(GKeyFile *keyfile, gchar *filename)
 
 
 
+/**
+ * Gets database version from a text file that should be
+ * placed along with the database file in the cache-directory
+ * path.
+ * @param dirname is the path to the cache-directory.
+ * @param version_filename is the filename to be read that may contain
+ *        database version number.
+ * @returns a positive version number or -1 on error.
+ */
+gint64 get_database_version(gchar *dirname, gchar *version_filename, gchar *keyvalue)
+{
+    GKeyFile *keyfile = NULL; /** Structure where to store key / value pairs read from the file. */
+    gchar *filename = NULL;   /** filename to be read                                            */
+    gboolean ok = FALSE;
+    GError *error = NULL;     /** Glib error handling                                            */
+    gint64 num = -1;          /** -1 is the error return value.                                  */
 
+    if (dirname != NULL && version_filename != NULL)
+        {
+            filename = g_build_filename(dirname, version_filename, NULL);
+            keyfile = g_key_file_new();
+
+            if (keyfile != NULL && (file_exists(filename) == TRUE))
+                {
+                    ok = g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error);
+
+                    if (ok == TRUE)
+                        {
+                            num = read_int64_from_file(keyfile, filename, GN_VERSION, keyvalue, _("Error while reading database version number"), num);
+                        }
+                    else if (error != NULL)
+                        {
+                            print_error(__FILE__, __LINE__,  _("Error while reading file: %s (%s)\n"), filename, error->message);
+                            error = free_error(error);
+                        }
+                }
+            else if (keyfile != NULL)
+                {
+                    /* file does not exists: we have to create it and fill with the first version number (1) */
+                    num = 1;
+                    g_key_file_set_int64(keyfile, GN_VERSION, keyvalue, num);
+                    ok = g_key_file_save_to_file(keyfile, filename, &error);
+
+                    if (ok != TRUE && error != NULL)
+                        {
+                            print_error(__FILE__, __LINE__,  _("Error while saving to file: %s (%s)\n"), filename, error->message);
+                            error = free_error(error);
+                            num = -1;
+                        }
+                }
+        }
+
+    return num;
+}
