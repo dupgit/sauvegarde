@@ -360,6 +360,8 @@ gint64 get_database_version(gchar *dirname, gchar *version_filename, gchar *keyv
     gboolean ok = FALSE;
     GError *error = NULL;     /** Glib error handling                                            */
     gint64 num = -1;          /** -1 is the error return value.                                  */
+    gsize length = 0;
+    gchar *content = NULL;
 
     if (dirname != NULL && version_filename != NULL)
         {
@@ -385,7 +387,9 @@ gint64 get_database_version(gchar *dirname, gchar *version_filename, gchar *keyv
                     /* file does not exists: we have to create it and fill with the first version number (1) */
                     num = 1;
                     g_key_file_set_int64(keyfile, GN_VERSION, keyvalue, num);
-                    ok = g_key_file_save_to_file(keyfile, filename, &error);
+                    content = g_key_file_to_data(keyfile, &length, NULL);
+                    ok = g_file_set_contents(filename, content, length, &error);
+                    free_variable(content);
 
                     if (ok != TRUE && error != NULL)
                         {
