@@ -28,6 +28,10 @@
 
 #include "libcdpfgl.h"
 
+static gint64 read_database_version_from_keyfile(GKeyFile *keyfile, gchar *filename, gchar *keyvalue);
+static gint64 create_database_version_keyfile(GKeyFile *keyfile, gchar *filename, gchar *keyvalue);
+
+
 /**
  * Gets the probable filename for the configuration file of sauvegarde
  * project. This is needed when one wants to install the project in an
@@ -344,6 +348,80 @@ void read_debug_mode_from_file(GKeyFile *keyfile, gchar *filename)
 
 
 
+
+/**
+ * Reads database version from an existing file
+ * @param keyfile is an opened GKeyFile file where we want to load keyvalue
+ * @param filename is the name of that GKeyfile
+ * @param keyvalue is the value we ant to load from GN_VERSION section.
+ * returns a positive version number or -1 en error
+ */
+static gint64 read_database_version_from_keyfile(GKeyFile *keyfile, gchar *filename, gchar *keyvalue)
+{
+    gint64 num = -1;          /** -1 is the error return value.  */
+    gboolean ok = FALSE;
+    GError *error = NULL;     /** Glib error handling            */
+
+
+    if (keyfile != NULL && filename != NULL && keyvalue != NULL)
+        {
+            ok = g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error);
+
+            if (ok == TRUE)
+                {
+                    num = read_int64_from_file(keyfile, filename, GN_VERSION, keyvalue, _("Error while reading database version number"), num);
+                }
+            else if (error != NULL)
+                {
+                    print_error(__FILE__, __LINE__,  _("Error while reading file: %s (%s)\n"), filename, error->message);
+                    error = free_error(error);
+                }
+        }
+
+    return num;
+}
+
+
+/**
+ * Creates database version text file
+ * @param keyfile is an opened GKeyFile file where we want to load keyvalue
+ * @param filename is the name of that GKeyfile
+ * @param keyvalue is the value we ant to load from GN_VERSION section.
+ * returns a positive version number or -1 en error
+ */
+static gint64 create_database_version_keyfile(GKeyFile *keyfile, gchar *filename, gchar *keyvalue)
+{
+    gint64 num = -1;          /** -1 is the error return value.  */
+    gboolean ok = FALSE;
+    GError *error = NULL;     /** Glib error handling            */
+    gsize length = 0;
+    gchar *content = NULL;
+
+    if (keyfile != NULL && filename != NULL && keyvalue != NULL)
+        {
+            /* file does not exists: we have to create it and fill with the first version number (1) */
+            num = 1;
+            g_key_file_set_int64(keyfile, GN_VERSION, keyvalue, num);
+            content = g_key_file_to_data(keyfile, &length, NULL);
+            ok = g_file_set_contents(filename, content, length, &error);
+            free_variable(content);
+
+            if (ok != TRUE && error != NULL)
+                {
+                    print_error(__FILE__, __LINE__,  _("Error while saving to file: %s (%s)\n"), filename, error->message);
+                    error = free_error(error);
+                    num = -1;
+                }
+            else if (ok != TRUE)
+                {
+                    num = -1;
+                }
+        }
+
+    return num;
+}
+
+
 /**
  * Gets database version from a text file that should be
  * placed along with the database file in the cache-directory
@@ -357,11 +435,7 @@ gint64 get_database_version(gchar *dirname, gchar *version_filename, gchar *keyv
 {
     GKeyFile *keyfile = NULL; /** Structure where to store key / value pairs read from the file. */
     gchar *filename = NULL;   /** filename to be read                                            */
-    gboolean ok = FALSE;
-    GError *error = NULL;     /** Glib error handling                                            */
     gint64 num = -1;          /** -1 is the error return value.                                  */
-    gsize length = 0;
-    gchar *content = NULL;
 
     if (dirname != NULL && version_filename != NULL)
         {
@@ -370,33 +444,11 @@ gint64 get_database_version(gchar *dirname, gchar *version_filename, gchar *keyv
 
             if (keyfile != NULL && (file_exists(filename) == TRUE))
                 {
-                    ok = g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error);
-
-                    if (ok == TRUE)
-                        {
-                            num = read_int64_from_file(keyfile, filename, GN_VERSION, keyvalue, _("Error while reading database version number"), num);
-                        }
-                    else if (error != NULL)
-                        {
-                            print_error(__FILE__, __LINE__,  _("Error while reading file: %s (%s)\n"), filename, error->message);
-                            error = free_error(error);
-                        }
+                    read_database_version_from_keyfile(keyfile, filename, keyvalue);
                 }
             else if (keyfile != NULL)
                 {
-                    /* file does not exists: we have to create it and fill with the first version number (1) */
-                    num = 1;
-                    g_key_file_set_int64(keyfile, GN_VERSION, keyvalue, num);
-                    content = g_key_file_to_data(keyfile, &length, NULL);
-                    ok = g_file_set_contents(filename, content, length, &error);
-                    free_variable(content);
-
-                    if (ok != TRUE && error != NULL)
-                        {
-                            print_error(__FILE__, __LINE__,  _("Error while saving to file: %s (%s)\n"), filename, error->message);
-                            error = free_error(error);
-                            num = -1;
-                        }
+                    create_database_version_keyfile(keyfile, filename, keyvalue);
                 }
         }
 
