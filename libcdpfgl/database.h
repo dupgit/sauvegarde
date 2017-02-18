@@ -120,13 +120,15 @@ extern gchar *db_version(void);
 
 
 /**
- * Returns a database
- * @param database_name is the filename of the file that contains the
+ * Returns a database connexion or NULL.
+ * @param dirname is the name of the directory where the database is
+ *        located.
+ * @param filename is the filename of the file that contains the
  *        database
  * @result returns a db_t * filled with the database connexion or NULL
  *         in case of an error.
  */
-extern db_t *open_database(gchar *database_name);
+extern db_t *open_database(gchar *dirname, gchar *filename);
 
 
 /**

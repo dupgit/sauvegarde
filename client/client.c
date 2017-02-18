@@ -118,7 +118,6 @@ static gboolean exclude_file(GSList *regex_exclude_list, gchar *filename)
 static main_struct_t *init_main_structure(options_t *opt)
 {
     main_struct_t *main_struct = NULL;
-    gchar *db_uri = NULL;
     gchar *conn = NULL;
 
     if (opt != NULL)
@@ -128,10 +127,7 @@ static main_struct_t *init_main_structure(options_t *opt)
 
             main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
 
-            create_directory(opt->dircache);
-            db_uri = g_build_filename(opt->dircache, opt->dbname , NULL);
-            main_struct->database = open_database(db_uri);
-            db_uri = free_variable(db_uri);
+            main_struct->database = open_database(opt->dircache, opt->dbname);
 
             main_struct->opt = opt;
             main_struct->hostname = g_get_host_name();

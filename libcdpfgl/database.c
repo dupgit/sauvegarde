@@ -1031,37 +1031,51 @@ void close_database(db_t *database)
 
 /**
  * Returns a database connexion or NULL.
- * @param database_name is the filename of the file that contains the
+ * @param dirname is the name of the directory where the database is
+ *        located.
+ * @param filename is the filename of the file that contains the
  *        database
  * @result returns a db_t * filled with the database connexion or NULL
  *         in case of an error.
  */
-db_t *open_database(gchar *database_name)
+db_t *open_database(gchar *dirname, gchar *filename)
 {
+    gchar *database_name = NULL;
     db_t *database = NULL;
     sqlite3 *db = NULL;
     int result = 0;
 
-    database = (db_t *) g_malloc0(sizeof(db_t));
 
-    result = sqlite3_open(database_name, &db);
-
-    if (result != SQLITE_OK)
+    if (dirname != NULL && filename != NULL)
         {
-            print_db_error(db, _("(%d) Error while trying to open %s database: %s\n"), result, database_name, sqlite3_errmsg(db));
-            free_variable(database);
-            sqlite3_close(db);
+            create_directory(dirname);
+            database_name = g_build_filename(dirname, filename, NULL);
 
-            return NULL;
+            database = (db_t *) g_malloc0(sizeof(db_t));
+
+            result = sqlite3_open(database_name, &db);
+
+            if (result != SQLITE_OK)
+                {
+                    print_db_error(db, _("(%d) Error while trying to open %s database: %s\n"), result, database_name, sqlite3_errmsg(db));
+                    free_variable(database);
+                    sqlite3_close(db);
+
+                    return NULL;
+                }
+            else
+                {
+                    database->db = db;
+                    database->stmts = new_stmts(db);
+                    sqlite3_extended_result_codes(db, 1);
+                    verify_if_tables_exists(database);
+
+                    return database;
+                }
         }
     else
         {
-            database->db = db;
-            database->stmts = new_stmts(db);
-            sqlite3_extended_result_codes(db, 1);
-            verify_if_tables_exists(database);
-
-            return database;
+            return NULL;
         }
 }
 
