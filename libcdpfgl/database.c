@@ -59,7 +59,7 @@ static void free_list_t(list_t *container);
 
 
 /**
- * @returns a string containing the version of the database used.
+ * @returns a string containing the version of library's database used.
  */
 gchar *db_version(void)
 {
@@ -1041,6 +1041,7 @@ void close_database(db_t *database)
 db_t *open_database(gchar *dirname, gchar *filename)
 {
     gchar *database_name = NULL;
+    gchar *version_filename = NULL;
     db_t *database = NULL;
     sqlite3 *db = NULL;
     int result = 0;
@@ -1061,14 +1062,21 @@ db_t *open_database(gchar *dirname, gchar *filename)
                     free_variable(database);
                     sqlite3_close(db);
 
+                    free_variable(database_name);
+
                     return NULL;
                 }
             else
                 {
+                    version_filename = g_strdup_printf(database_name, ".version");
                     database->db = db;
                     database->stmts = new_stmts(db);
                     sqlite3_extended_result_codes(db, 1);
                     verify_if_tables_exists(database);
+                    database->version = get_database_version(dirname, version_filename, KN_CLIENT_DATABASE);
+
+                    free_variable(database_name);
+                    free_variable(version_filename);
 
                     return database;
                 }

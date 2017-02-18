@@ -77,6 +77,7 @@ typedef struct
 {
     sqlite3 *db;  /**< database connexion  */
     stmt_t *stmts;
+    gint64 version;
 } db_t;
 
 
@@ -114,7 +115,7 @@ typedef struct
 
 
 /**
- * @returns a string containing the version of the database used.
+ * @returns a string containing the version of library's database used.
  */
 extern gchar *db_version(void);
 
