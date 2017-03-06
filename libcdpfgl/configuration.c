@@ -414,6 +414,7 @@ static gint64 create_database_version_keyfile(GKeyFile *keyfile, gchar *filename
                 }
             else if (ok != TRUE)
                 {
+                    print_error(__FILE__, __LINE__,  _("Error while saving to file: %s\n"), filename);
                     num = -1;
                 }
         }
@@ -444,11 +445,11 @@ gint64 get_database_version(gchar *dirname, gchar *version_filename, gchar *keyv
 
             if (keyfile != NULL && (file_exists(filename) == TRUE))
                 {
-                    read_database_version_from_keyfile(keyfile, filename, keyvalue);
+                    num = read_database_version_from_keyfile(keyfile, filename, keyvalue);
                 }
             else if (keyfile != NULL)
                 {
-                    create_database_version_keyfile(keyfile, filename, keyvalue);
+                    num = create_database_version_keyfile(keyfile, filename, keyvalue);
                 }
         }
 
