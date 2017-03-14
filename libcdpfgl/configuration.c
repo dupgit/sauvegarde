@@ -427,29 +427,26 @@ static gint64 create_database_version_keyfile(GKeyFile *keyfile, gchar *filename
  * Gets database version from a text file that should be
  * placed along with the database file in the cache-directory
  * path.
- * @param dirname is the path to the cache-directory.
  * @param version_filename is the filename to be read that may contain
  *        database version number.
  * @returns a positive version number or -1 on error.
  */
-gint64 get_database_version(gchar *dirname, gchar *version_filename, gchar *keyvalue)
+gint64 get_database_version(gchar *version_filename, gchar *keyvalue)
 {
     GKeyFile *keyfile = NULL; /** Structure where to store key / value pairs read from the file. */
-    gchar *filename = NULL;   /** filename to be read                                            */
     gint64 num = -1;          /** -1 is the error return value.                                  */
 
-    if (dirname != NULL && version_filename != NULL)
+    if (version_filename != NULL)
         {
-            filename = g_build_filename(dirname, version_filename, NULL);
             keyfile = g_key_file_new();
 
-            if (keyfile != NULL && (file_exists(filename) == TRUE))
+            if (keyfile != NULL && (file_exists(version_filename) == TRUE))
                 {
-                    num = read_database_version_from_keyfile(keyfile, filename, keyvalue);
+                    num = read_database_version_from_keyfile(keyfile, version_filename, keyvalue);
                 }
             else if (keyfile != NULL)
                 {
-                    num = create_database_version_keyfile(keyfile, filename, keyvalue);
+                    num = create_database_version_keyfile(keyfile, version_filename, keyvalue);
                 }
         }
 

@@ -1068,12 +1068,14 @@ db_t *open_database(gchar *dirname, gchar *filename)
                 }
             else
                 {
-                    version_filename = g_strdup_printf(database_name, ".version");
+                    version_filename = g_strdup_printf("%s.version", database_name);
+
                     database->db = db;
                     database->stmts = new_stmts(db);
                     sqlite3_extended_result_codes(db, 1);
+
                     verify_if_tables_exists(database);
-                    database->version = get_database_version(dirname, version_filename, KN_CLIENT_DATABASE);
+                    database->version = get_database_version(version_filename, KN_CLIENT_DATABASE);
 
                     free_variable(database_name);
                     free_variable(version_filename);

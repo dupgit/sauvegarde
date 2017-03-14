@@ -291,11 +291,10 @@ extern void read_debug_mode_from_file(GKeyFile *keyfile, gchar *filename);
  * Gets database version from a text file that should be
  * placed along with the database file in the cache-directory
  * path.
- * @param dirname is the path to the cache-directory.
  * @param version_filename is the filename to be read that may contain
  *        database version number.
  * @returns a positive version number or -1 on error.
  */
-extern gint64 get_database_version(gchar *dirname, gchar *version_filename, gchar *keyvalue);
+extern gint64 get_database_version(gchar *version_filename, gchar *keyvalue);
 
 #endif /* #ifndef _CONFIGURATION_H_ */
