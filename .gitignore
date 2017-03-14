@@ -63,5 +63,6 @@ coverage*
 gmon.out
 *.swp
 TAGS
+tags
 papers
 cdpfgl-*.tar.*
