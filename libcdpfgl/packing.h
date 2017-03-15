@@ -67,22 +67,6 @@
 
 
 /**
- * @struct capsule_t
- * @brief This structure encapsulate some commands and data that has
- *        to be transmited to antememoire's storing thread.
- */
-typedef struct
-{
-    gint command; /**< Is an integer that says what to do based on ENC_*
-                   *   macros
-                   */
-    void *data;   /**< Is a pointer to some structure. Type of the structure
-                   *   is determined by the command parameter
-                   */
-} capsule_t;
-
-
-/**
  * This function loads a JSON string into a json_t struture
  * @param json_str is the json string
  * @returns a pointer to a filled json_t * structure or NULL upon error
@@ -285,26 +269,6 @@ extern gchar *convert_hash_data_t_to_string(hash_data_t *hash_data);
  *          function can return NULL if json_str is NULL itself.
  */
 extern server_meta_data_t *convert_json_to_smeta_data(gchar *json_str);
-
-
-/**
- * Function that encapsulate a meta_data_t * variable into a capsule_t *
- * one. It does not check that meta is not NULL so it may encapsulate a
- * NULL pointer !
- * @param command is the command to be used with the encapsulated data.
- * @param meta is the meta_data_t * variable to be encapsulated
- * @returns a capsule_t * with command field set to ENC_META_DATA stating
- *          that the data field is of type meta_data_t *.
- */
-extern capsule_t *encapsulate_meta_data_t(gint command, meta_data_t *meta);
-
-
-/**
- * Function that encapsulate an END command.
- * @returns a capsule_t * with command field set to ENC_END stating
- *          that this is the end my friend (some famous song) !
- */
-extern capsule_t *encapsulate_end(void);
 
 
 /**

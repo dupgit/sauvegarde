@@ -500,41 +500,6 @@ gchar *convert_version_to_json(gchar *name, gchar *date, gchar *version, gchar *
 
 
 /**
- * Function that encapsulate a meta_data_t * variable into a capsule_t *
- * one. It does not check that meta is not NULL so it may encapsulate a
- * NULL pointer !
- * @param command is the command to be used with the encapsulated data.
- * @param meta is the meta_data_t * variable to be encapsulated
- * @returns a capsule_t * with command field set to ENC_META_DATA stating
- *          that the data field is of type meta_data_t *.
- */
-capsule_t *encapsulate_meta_data_t(gint command, meta_data_t *meta)
-{
-
-    capsule_t *capsule = NULL;
-
-    capsule = (capsule_t *) g_malloc0(sizeof(capsule_t));
-
-    capsule->command = command;
-    capsule->data = (void *) meta;
-
-    return capsule;
-}
-
-
-/**
- * Function that encapsulate an END command.
- * @returns a capsule_t * with command field set to ENC_END stating
- *          that this is the end my friend (some famous song) !
- */
-capsule_t *encapsulate_end(void)
-{
-    return encapsulate_meta_data_t(ENC_END, NULL);
-}
-
-
-
-/**
  * Encodes a gchar string into a base64 formated gchar * string.
  * @param string is the gchar string to be encoded (MUST be 0 terminated).
  * @returns a newly allocated gchar * string in base64 or NULL.

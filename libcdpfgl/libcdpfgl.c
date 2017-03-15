@@ -445,9 +445,9 @@ void print_debug(const char *format, ...)
 
 
 /**
- * Prints an error message
- * @param char *filename
- * @param int lineno
+ * Prints an error message to stderr
+ * @param char *filename should be __FILE__
+ * @param int lineno should be __LINE__
  * @param format : the format of the message (as in printf)
  * @param ... : va_list of variable that are to be printed into format.
  */
