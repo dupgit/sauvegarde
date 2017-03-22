@@ -61,7 +61,7 @@ void insert_json_value_into_json_root(json_t *root, gchar *keyname, json_t *valu
  * appends a string into the array (the array is ordered and should
  * not mess itself)
  * @param[in,out] array is an array of strings (may be hashs of filenames
- *                for instance.
+ *                for instance).
  * @param to_append is the string to be appended to the array
  */
 void append_string_to_array(json_t *array, gchar *to_append)
@@ -101,8 +101,6 @@ void insert_boolean_into_json_root(json_t *root, gchar *keyname, gboolean data_s
             insert_json_value_into_json_root(root, keyname, bool);
         }
 }
-
-
 
 
 /**
@@ -515,3 +513,64 @@ gchar *encode_to_base64(gchar *string)
 
     return encoded_string;
 }
+
+
+/**
+ * Makes an error json objet
+ * @param error_code is an integer that represents the error number.
+ * @param is the message associated with the error.
+ * @returns a json_t object containing 'code' and 'message' keys and their
+ *          corresponding values.
+ */
+static json_t *create_json_error(guint32 error_code, gchar *message)
+{
+    json_t *error = NULL;
+
+    error = json_object();
+
+    insert_guint32_into_json_root(error, "code", error_code);
+    insert_string_into_json_root(error, "message", message);
+
+    return error;
+}
+
+
+/**
+ * Makes a json object answer error message
+ * @param error_code is an integer that represents the error number.
+ * @param is the message associated with the error.
+ * @returns a json_t object containing the 'error' in json format containing
+ *          'code' and 'message' keys and their corresponding values.
+ */
+static json_t *create_json_error_answer(guint32 error_code, gchar *message)
+{
+    json_t *answer = NULL;
+    json_t *error = NULL;
+
+    answer = json_object();
+    error = create_json_error(error_code, message);
+    insert_json_value_into_json_root(answer, "error", error);
+
+    return answer;
+}
+
+
+/**
+ * Makes a json answer error message string.
+ * @param error_code is an integer that represents the error number.
+ * @param is the message associated with the error.
+ * @returns a gchar * string containing the 'error' in json format
+ *          containing 'code' and 'message' keys and their corresponding
+ *          values.
+ */
+gchar *answer_json_error_string(guint32 error_code, gchar *message)
+{
+    json_t *json_answer = NULL;
+    gchar *string_answer = NULL;
+
+    json_answer = create_json_error_answer(error_code, message);
+    string_answer = json_dumps(json_answer, 0);
+
+    return string_answer;
+}
+

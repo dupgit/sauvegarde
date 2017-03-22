@@ -326,4 +326,14 @@ extern gchar *convert_version_to_json(gchar *name, gchar *date, gchar *version, 
 extern gchar *encode_to_base64(gchar *string);
 
 
+/**
+ * Makes a json answer error message string.
+ * @param error_code is an integer that represents the error number.
+ * @param is the message associated with the error.
+ * @returns a gchar * string containing the 'error' in json format
+ *          containing 'code' and 'message' keys and their corresponding
+ *          values.
+ */
+extern gchar *answer_json_error_string(guint32 error_code, gchar *message);
+
 #endif /* #ifndef _PACKING_H_ */
