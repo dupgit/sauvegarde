@@ -246,6 +246,7 @@ static gboolean get_boolean_argument_value_from_key(struct MHD_Connection *conne
 static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Connection *connection)
 {
     gchar *answer = NULL;
+    gchar *message = NULL;
     backend_t *backend = NULL;
     query_t *query = NULL;
 
@@ -279,15 +280,20 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
                         }
                     else
                         {
-                            answer = g_strdup_printf(_("Malformed request. hostname: %s, uid: %s, gid: %s, owner: %s, group: %s"), \
+                            message = g_strdup_printf(_("Malformed request: hostname: %s, uid: %s, gid: %s, owner: %s, group: %s"), \
                                                         query->hostname, query->uid, query->gid, query->owner, query->group);
+                            answer = answer_json_error_string(MHD_HTTP_BAD_REQUEST, message);
+                            free_variable(message);
                         }
 
                     free_query_t(query); /** All variables hostname, uid... are freed there ! */
                 }
             else
                 {
-                    print_error(__FILE__, __LINE__, _("Error: no backend defined to get a list of files from it.\n"));
+                    message = g_strdup_printf(_("Error: no backend defined to get a list of files from it.\n"));
+                    print_error(__FILE__, __LINE__, message);
+                    answer = answer_json_error_string(MHD_HTTP_NOT_IMPLEMENTED, message);
+                    free_variable(message);
                 }
         }
 
