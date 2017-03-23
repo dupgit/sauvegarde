@@ -142,6 +142,7 @@ static server_struct_t *init_server_main_structure(int argc, char **argv)
 static gchar *get_data_from_a_specific_hash(server_struct_t *server_struct, gchar *hash)
 {
     gchar *answer = NULL;
+    gchar *message = NULL;
     backend_t *backend = NULL;
     hash_data_t *hash_data = NULL;
 
@@ -157,17 +158,23 @@ static gchar *get_data_from_a_specific_hash(server_struct_t *server_struct, gcha
 
                     if (answer == NULL)
                         {
-                            answer = g_strdup_printf("Error while trying to get data from hash %s", hash);
+                            message = g_strdup_printf(_("Error while trying to get data from hash %s"), hash);
+                            answer = answer_json_error_string(MHD_HTTP_INTERNAL_SERVER_ERROR, message);
+                            free_variable(message);
                         }
                 }
             else
                 {
-                    answer = g_strdup(_("This backend's missing a retrieve_data function!"));
+                    message = g_strdup(_("This backend's missing a retrieve_data function!"));
+                    answer = answer_json_error_string(MHD_HTTP_NOT_IMPLEMENTED, message);
+                    free_variable(message);
                 }
         }
     else
         {
-            answer = g_strdup(_("Something's wrong with server's initialisation!"));
+            message = g_strdup(_("Something's wrong with server's initialisation!"));
+            answer = answer_json_error_string(MHD_HTTP_INTERNAL_SERVER_ERROR, message);
+            free_variable(message);
         }
 
     return answer;
