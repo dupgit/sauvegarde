@@ -418,6 +418,7 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
 static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url)
 {
     gchar *answer = NULL;
+    gchar *message = NULL;
     gchar *hash = NULL;
     size_t hlen = 0;
 
@@ -446,14 +447,18 @@ static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connect
                 }
             else
                 {
-                    answer = g_strdup_printf("{\"Invalid url: in %s hash has length\": %zd instead of %d}", url, hlen, HASH_LEN*2);
+                    message = g_strdup_printf(_("Invalid url: in %s hash has length: %zd instead of %d"), url, hlen, HASH_LEN*2);
+                    answer = answer_json_error_string(MHD_HTTP_BAD_REQUEST, message);
+                    free_variable(message);
                 }
 
             free_variable(hash);
         }
     else
         { /* Some sort of echo to the invalid request */
-            answer = g_strdup_printf("{\"Invalid url\": %s}", url);
+            message = g_strdup_printf(_("URL not found: %s"), url);
+            answer = answer_json_error_string(MHD_HTTP_NOT_FOUND, message);
+            free_variable(message);
         }
 
     return answer;
