@@ -666,7 +666,7 @@ static int answer_meta_json_post_request(server_struct_t *server_struct, struct 
         }
     else
         {
-            answer = g_strdup_printf(_("Error: could not convert json to metadata\n"));
+            answer = answer_json_error_string(MHD_HTTP_INTERNAL_SERVER_ERROR, _("Error: could not convert json to metadata\n"));
         }
 
     return create_MHD_response(connection, answer, CT_JSON);
@@ -709,7 +709,7 @@ static int answer_hash_array_post_request(server_struct_t *server_struct, struct
         }
     else
         {
-            answer = g_strdup_printf(_("Error: could not convert json to metadata\n"));
+            answer = answer_json_error_string(MHD_HTTP_INTERNAL_SERVER_ERROR, _("Error: could not convert json to metadata\n"));
             content_type = CT_PLAIN;
         }
 
@@ -796,7 +796,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
             /**
              * creating an answer for the client to say that everything went Ok!
              */
-            answer = g_strdup_printf(_("Ok!"));
+            answer = answer_json_error_string(MHD_HTTP_OK, _("Ok!"));
             success = create_MHD_response(connection, answer, CT_PLAIN);
         }
     else if (g_strcmp0(url, "/Data_Array.json") == 0 && received_data != NULL)
@@ -830,14 +830,14 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
              * creating an answer for the client to say that everything went Ok!
              */
 
-            answer = g_strdup_printf(_("Ok!"));
+            answer = answer_json_error_string(MHD_HTTP_OK, _("Ok!"));
             success = create_MHD_response(connection, answer, CT_PLAIN);
         }
     else
         {
             /* The url is unknown to the server and we can not process the request ! */
             print_error(__FILE__, __LINE__, "Error: invalid url: %s\n", url);
-            answer = g_strdup_printf(_("Error: invalid url!\n"));
+            answer = answer_json_error_string(MHD_HTTP_BAD_REQUEST, _("Invalid url!\n"));
             success = create_MHD_response(connection, answer, CT_PLAIN);
         }
 
