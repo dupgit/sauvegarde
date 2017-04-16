@@ -796,7 +796,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
             /**
              * creating an answer for the client to say that everything went Ok!
              */
-            answer = answer_json_error_string(MHD_HTTP_OK, _("Ok!"));
+            answer = answer_json_success_string(MHD_HTTP_OK, _("Ok!"));
             success = create_MHD_response(connection, answer, CT_PLAIN);
         }
     else if (g_strcmp0(url, "/Data_Array.json") == 0 && received_data != NULL)
@@ -830,7 +830,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
              * creating an answer for the client to say that everything went Ok!
              */
 
-            answer = answer_json_error_string(MHD_HTTP_OK, _("Ok!"));
+            answer = answer_json_success_string(MHD_HTTP_OK, _("Ok!"));
             success = create_MHD_response(connection, answer, CT_PLAIN);
         }
     else

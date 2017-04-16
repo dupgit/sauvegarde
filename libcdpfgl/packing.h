@@ -336,4 +336,16 @@ extern gchar *encode_to_base64(gchar *string);
  */
 extern gchar *answer_json_error_string(guint32 error_code, gchar *message);
 
+
+/**
+ * Makes a json answer success message string.
+ * @param succes_code is an integer that represents the success number (See
+ *        HTTP CODES in wikipedia).
+ * @param is the message associated with the success.
+ * @returns a gchar * string containing the 'success' in json format
+ *          containing 'code' and 'message' keys and their corresponding
+ *          values.
+ */
+extern gchar *answer_json_success_string(guint32 error_code, gchar *message);
+
 #endif /* #ifndef _PACKING_H_ */

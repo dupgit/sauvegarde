@@ -31,6 +31,8 @@
 static void insert_guint8_into_json_root(json_t *root, gchar *keyname, guint8 number);
 static void insert_guint32_into_json_root(json_t *root, gchar *keyname, guint32 number);
 static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 number);
+static json_t *create_json_code(guint32 http_code, gchar *message);
+static json_t *create_json_answer(gchar *type, guint32 http_code, gchar *message);
 
 
 /**
@@ -516,40 +518,42 @@ gchar *encode_to_base64(gchar *string)
 
 
 /**
- * Makes an error json objet
- * @param error_code is an integer that represents the error number.
- * @param is the message associated with the error.
+ * Makes a 'code' json objet
+ * @param http_code is an integer that represents the HTTP code number.
+ * @param is the message associated with the code number.
  * @returns a json_t object containing 'code' and 'message' keys and their
  *          corresponding values.
  */
-static json_t *create_json_error(guint32 error_code, gchar *message)
+static json_t *create_json_code(guint32 http_code, gchar *message)
 {
-    json_t *error = NULL;
+    json_t *code = NULL;
 
-    error = json_object();
+    code = json_object();
 
-    insert_guint32_into_json_root(error, "code", error_code);
-    insert_string_into_json_root(error, "message", message);
+    insert_guint32_into_json_root(code, "code", http_code);
+    insert_string_into_json_root(code, "message", message);
 
-    return error;
+    return code;
 }
 
 
 /**
- * Makes a json object answer error message
- * @param error_code is an integer that represents the error number.
- * @param is the message associated with the error.
- * @returns a json_t object containing the 'error' in json format containing
+ * Makes a json object answer message
+ * @param type is a string that should represents the type of the message.
+ *        For instance it may be 'error' or 'success' or 'information'.
+ * @param http_code is an integer that represents the HTTP code number.
+ * @param is the message associated with the HTTP CODE.
+ * @returns a json_t object containing the type in json format containing
  *          'code' and 'message' keys and their corresponding values.
  */
-static json_t *create_json_error_answer(guint32 error_code, gchar *message)
+static json_t *create_json_answer(gchar *type, guint32 http_code, gchar *message)
 {
     json_t *answer = NULL;
-    json_t *error = NULL;
+    json_t *code = NULL;
 
     answer = json_object();
-    error = create_json_error(error_code, message);
-    insert_json_value_into_json_root(answer, "error", error);
+    code = create_json_code(http_code, message);
+    insert_json_value_into_json_root(answer, type, code);
 
     return answer;
 }
@@ -568,9 +572,34 @@ gchar *answer_json_error_string(guint32 error_code, gchar *message)
     json_t *json_answer = NULL;
     gchar *string_answer = NULL;
 
-    json_answer = create_json_error_answer(error_code, message);
+    json_answer = create_json_answer("error", error_code, message);
     string_answer = json_dumps(json_answer, 0);
 
     return string_answer;
 }
+
+
+
+/**
+ * Makes a json answer success message string.
+ * @param succes_code is an integer that represents the success number (See
+ *        HTTP CODES in wikipedia).
+ * @param is the message associated with the success.
+ * @returns a gchar * string containing the 'success' in json format
+ *          containing 'code' and 'message' keys and their corresponding
+ *          values.
+ */
+gchar *answer_json_success_string(guint32 error_code, gchar *message)
+{
+    json_t *json_answer = NULL;
+    gchar *string_answer = NULL;
+
+    json_answer = create_json_answer("success", error_code, message);
+    string_answer = json_dumps(json_answer, 0);
+
+    return string_answer;
+}
+
+
+
 
