@@ -1,6 +1,6 @@
 # API
 
-All urls ending with .json waits (POST) or provide (GET) json strings.
+All urls ending with .json waits (POST) or provide (GET) json strings (the upcoming v0.0.11 will also output errors in json strings).
 
 
 ## GET
