@@ -10,7 +10,8 @@ cdpfglserver_LDADD = $(GLIB_LIBS) $(GIO_LIBS)  -L../libcdpfgl -lcdpfgl \
 cdpfglserver_HEADERFILES =  server.h        \
 							options.h       \
 							backend.h       \
-							file_backend.h
+							file_backend.h	\
+							stats.h
 
 cdpfglserver_SOURCES =  server.c                    \
 						options.c                   \

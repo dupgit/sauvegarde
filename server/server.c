@@ -1093,6 +1093,9 @@ static void install_server_signal_traps(server_struct_t *server_struct)
     guint id_int = 0;
     guint id_term = 0;
 
+
+    fprintf(stdout, "%s\n", __func__);
+
     if (server_struct != NULL)
         {
             id_int = g_unix_signal_add(SIGINT, int_signal_handler, server_struct);

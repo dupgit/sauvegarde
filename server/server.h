@@ -121,22 +121,7 @@ typedef struct
 } upload_t;
 
 
-/**
- * @struct stats_t
- * @brief Structure that will contain some statistics.
- */
-typedef struct
-{
-    guint64 nb_get;          /**< nb_get is the number of GET requests                                                          */
-    guint64 nb_post;         /**< nb_post is the number of POST requests                                                        */
-    guint64 nb_files;        /**< nb_files is the number of version of files saved                                              */
-    guint64 nb_dedup_bytes;  /**< nb_dedup_bytes is the number of bytes saved by the server (the dedup ones)                    */
-    guint64 nb_total_bytes;  /**< nb_total_bytes is the number of bytes represented by file sizes of saved files (before dedup) */
-    guint64 nb_meta_bytes;   /**< nb_meta_bytes is the number of bytes of all the meta data saved                               */
-} stats_t;
-
-
 #include "file_backend.h"
-
+#include "stats.h"
 
 #endif /* #ifndef _SERVER_H_ */
