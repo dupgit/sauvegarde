@@ -78,6 +78,7 @@
 
 #include "options.h"
 #include "backend.h"
+#include "stats.h"
 
 /**
  * @def DEFAULT_SERVER_BUFFER_SIZE
