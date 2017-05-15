@@ -106,6 +106,7 @@ typedef struct
     GThread *data_thread;     /**< Thread that will take care of storing data      */
     GThread *meta_thread;     /**< Thread that will take care of storing meta data */
     GMainLoop* loop;          /**< Main loop in glib                               */
+    stats_t *stats;           /**< Keeps some stats about server usage             */
 } server_struct_t;
 
 

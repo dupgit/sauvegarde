@@ -126,6 +126,9 @@ static server_struct_t *init_server_main_structure(int argc, char **argv)
     server_struct->data_queue = g_async_queue_new();
     server_struct->loop = NULL;
 
+    /* server statistics */
+    server_struct->stats = new_stats_t();
+
     /* default backend (file_backend) */
     server_struct->backend = init_backend_structure(file_store_smeta, file_store_data, file_init_backend, file_build_needed_hash_list, file_get_list_of_files, file_retrieve_data);
 
@@ -980,14 +983,17 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
     if (g_strcmp0(method, "GET") == 0)
         {
             /* We have a GET method that needs to be processed */
+            add_one_get_request(ahc_server_struct->stats);
             success = process_get_request(ahc_server_struct, connection, url, con_cls);
         }
     else if (g_strcmp0(method, "POST") == 0)
         {  /* We have a POST method that needs to be processed */
+            add_one_post_request(ahc_server_struct->stats);
             success = process_post_request(ahc_server_struct, connection, url, con_cls, upload_data, upload_data_size);
         }
     else
         { /* not a GET nor a POST -> we do not know what to do ! */
+            add_one_unknown_request(ahc_server_struct->stats);
             success = MHD_NO;
         }
 
@@ -1156,14 +1162,11 @@ int main(int argc, char **argv)
                     return 1;
                 }
 
-            /* Unless on error we will never join the threads as they
-             * contain a while (TRUE) loop !
+            /**
+             * main program stops here (until we exit main loop)
+             * somewhere else in the program.
              */
             g_main_loop_run(server_struct->loop);
-
-            /* g_thread_join(server_struct->meta_thread); */
-            /* g_thread_join(server_struct->data_thread); */
-
 
         }
     else
