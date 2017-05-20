@@ -358,5 +358,5 @@ extern gchar *answer_json_success_string(guint32 error_code, gchar *message);
  *        of this type.
  * @returns a json_t structure filled with stats values.
  */
-extern json_t *make_json_from_stats(gchar *type, guint64 nb_requests);
+extern json_t *make_json_from_stats(guint64 nb_requests);
 #endif /* #ifndef _PACKING_H_ */

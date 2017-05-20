@@ -81,6 +81,12 @@ data concatenated and base64 encoded. size is the real size of the data
 (not encoded).
 
 
+### /Stats.json
+
+Gets basic usage statistics about the server.
+
+
+
 ## POST
 
 ### /Meta.json

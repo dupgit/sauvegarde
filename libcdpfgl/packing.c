@@ -610,17 +610,16 @@ gchar *answer_json_success_string(guint32 error_code, gchar *message)
  *        of this type.
  * @returns a json_t structure filled with stats values.
  */
-json_t *make_json_from_stats(gchar *type, guint64 nb_requests)
+json_t *make_json_from_stats(guint64 nb_request)
 {
-    json_t *root = NULL;
     json_t *stats = NULL;
+    json_t *nbr = NULL;
 
-    root = json_object();
-    stats = json_array();
+    stats = json_object();
 
-    insert_guint64_into_json_root(stats, "Total requests", nb_requests);
-    insert_json_value_into_json_root(root, type, stats);
+    nbr = json_integer(nb_request);
+    insert_json_value_into_json_root(stats, "Total requests", nbr);
 
-    return root;
+    return stats;
 }
 

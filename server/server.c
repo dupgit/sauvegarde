@@ -431,14 +431,14 @@ static gchar *answer_global_stats(stats_t *stats)
 
     root = json_object();
 
-    get = make_json_from_stats("GET", stats->requests->get->nb_request);
-    post = make_json_from_stats("POST", stats->requests->post->nb_request);
-    unk = make_json_from_stats("Unknown", stats->requests->unknown->nb_request);
-    req = make_json_from_stats("requests", stats->requests->nb_request);
-    insert_json_value_into_json_root(req, "request", get);
-    insert_json_value_into_json_root(req, "request", post);
-    insert_json_value_into_json_root(req, "request", unk);
-    insert_json_value_into_json_root(root, "requests", req);
+    get = make_json_from_stats(stats->requests->get->nb_request);
+    post = make_json_from_stats(stats->requests->post->nb_request);
+    unk = make_json_from_stats(stats->requests->unknown->nb_request);
+    req = make_json_from_stats(stats->requests->nb_request);
+    insert_json_value_into_json_root(req, "GET", get);
+    insert_json_value_into_json_root(req, "POST", post);
+    insert_json_value_into_json_root(req, "Unknown", unk);
+    insert_json_value_into_json_root(root, "Requests", req);
 
     answer = json_dumps(root, 0);
 
