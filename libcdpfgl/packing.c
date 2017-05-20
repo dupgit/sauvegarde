@@ -601,5 +601,26 @@ gchar *answer_json_success_string(guint32 error_code, gchar *message)
 }
 
 
+/**
+ * Makes a json structure with some parameters that comes from stats_t *
+ * structure.
+ * @param type is a string that may tell what type of stats we are going
+ *        to compile here : 'GET' and 'POST' for example.
+ * @param nb_request is a guint64 representing the total number of requests
+ *        of this type.
+ * @returns a json_t structure filled with stats values.
+ */
+json_t *make_json_from_stats(gchar *type, guint64 nb_requests)
+{
+    json_t *root = NULL;
+    json_t *stats = NULL;
 
+    root = json_object();
+    stats = json_array();
+
+    insert_guint64_into_json_root(stats, "Total requests", nb_requests);
+    insert_json_value_into_json_root(root, type, stats);
+
+    return root;
+}
 

@@ -214,6 +214,7 @@ void add_one_get_request(stats_t *stats)
 {
     if (stats != NULL && stats->requests != NULL && stats->requests->get != NULL)
         {
+            stats->requests->nb_request++;
             stats->requests->get->nb_request++;
         }
 }
@@ -228,6 +229,7 @@ void add_one_post_request(stats_t *stats)
 {
     if (stats != NULL && stats->requests != NULL && stats->requests->post != NULL)
         {
+            stats->requests->nb_request++;
             stats->requests->post->nb_request++;
         }
 }
@@ -242,6 +244,7 @@ void add_one_unknown_request(stats_t *stats)
 {
     if (stats != NULL && stats->requests != NULL && stats->requests->unknown != NULL)
         {
+            stats->requests->nb_request++;
             stats->requests->unknown->nb_request++;
         }
 }

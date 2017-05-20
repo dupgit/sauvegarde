@@ -45,6 +45,7 @@ typedef struct
     guint64 nb_request; /** total number of 'POST' requests */
 } req_post_t;
 
+
 typedef struct
 {
     guint64 nb_request; /** total number of 'unknown requests */

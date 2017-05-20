@@ -413,6 +413,38 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
     return answer;
 }
 
+/**
+ * Answers a json string containing all stats about the usage
+ * of this server.
+ * @param stats is the stats_t structure containing all stats
+ *        to be returned.
+ */
+static gchar *answer_global_stats(stats_t *stats)
+{
+    json_t *root = NULL;
+    json_t *get = NULL;
+    json_t *post = NULL;
+    json_t *unk = NULL;
+    json_t *req = NULL;
+
+    gchar *answer = NULL;
+
+    root = json_object();
+
+    get = make_json_from_stats("GET", stats->requests->get->nb_request);
+    post = make_json_from_stats("POST", stats->requests->post->nb_request);
+    unk = make_json_from_stats("Unknown", stats->requests->unknown->nb_request);
+    req = make_json_from_stats("requests", stats->requests->nb_request);
+    insert_json_value_into_json_root(req, "request", get);
+    insert_json_value_into_json_root(req, "request", post);
+    insert_json_value_into_json_root(req, "request", unk);
+    insert_json_value_into_json_root(root, "requests", req);
+
+    answer = json_dumps(root, 0);
+
+    return answer;
+}
+
 
 /**
  * Function to answer to get requests in a json way. This mode should be
@@ -435,6 +467,11 @@ static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connect
     if (g_strcmp0(url, "/Version.json") == 0)
         {
             answer = convert_version_to_json(PROGRAM_NAME, SERVER_DATE, SERVER_VERSION, SERVER_AUTHORS, SERVER_LICENSE);
+        }
+    else if (g_str_has_prefix(url, "/Stats.json"))
+        {
+            /* Answer a json string with stats on server's usage */
+            answer = answer_global_stats(server_struct->stats);
         }
     else if (g_str_has_prefix(url, "/File/List.json"))
         {
