@@ -604,8 +604,6 @@ gchar *answer_json_success_string(guint32 error_code, gchar *message)
 /**
  * Makes a json structure with some parameters that comes from stats_t *
  * structure.
- * @param type is a string that may tell what type of stats we are going
- *        to compile here : 'GET' and 'POST' for example.
  * @param nb_request is a guint64 representing the total number of requests
  *        of this type.
  * @returns a json_t structure filled with stats values.

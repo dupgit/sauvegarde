@@ -248,3 +248,20 @@ void add_one_unknown_request(stats_t *stats)
             stats->requests->unknown->nb_request++;
         }
 }
+
+
+/**
+ * Adds meta data bytes to the stats structure
+ * @param stats is a stats_t structure to keep some stats about server runs
+ * @param nb_bytes is a size_t number representing the number of bytes to
+ *        add to the stats
+ */
+void add_bytes_to_metadata_bytes(stats_t *stats, size_t nb_bytes)
+{
+    if (stats != NULL)
+        {
+            stats->nb_meta_bytes += (guint64) nb_bytes;
+        }
+}
+
+

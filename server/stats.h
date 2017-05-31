@@ -119,4 +119,12 @@ extern void add_one_post_request(stats_t *stats);
 extern void add_one_unknown_request(stats_t *stats);
 
 
+/**
+ * Adds meta data bytes to the stats structure
+ * @param stats is a stats_t structure to keep some stats about server runs
+ * @param nb_bytes is a size_t number representing the number of bytes to
+ *                 add to the stats
+ */
+extern void add_bytes_to_metadata_bytes(stats_t *stats, size_t nb_bytes);
+
 #endif /* #ifndef _STATS_H_ */

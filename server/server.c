@@ -426,21 +426,26 @@ static gchar *answer_global_stats(stats_t *stats)
     json_t *post = NULL;
     json_t *unk = NULL;
     json_t *req = NULL;
-
+    json_t *nbr = NULL;
     gchar *answer = NULL;
 
-    root = json_object();
+    if (stats != NULL && stats->requests != NULL && stats->requests->get != NULL && stats->requests->post != NULL && stats->requests->unknown != NULL)
+        {
+            root = json_object();
 
-    get = make_json_from_stats(stats->requests->get->nb_request);
-    post = make_json_from_stats(stats->requests->post->nb_request);
-    unk = make_json_from_stats(stats->requests->unknown->nb_request);
-    req = make_json_from_stats(stats->requests->nb_request);
-    insert_json_value_into_json_root(req, "GET", get);
-    insert_json_value_into_json_root(req, "POST", post);
-    insert_json_value_into_json_root(req, "Unknown", unk);
-    insert_json_value_into_json_root(root, "Requests", req);
+            get = make_json_from_stats(stats->requests->get->nb_request);
+            post = make_json_from_stats(stats->requests->post->nb_request);
+            unk = make_json_from_stats(stats->requests->unknown->nb_request);
+            req = make_json_from_stats(stats->requests->nb_request);
+            insert_json_value_into_json_root(req, "GET", get);
+            insert_json_value_into_json_root(req, "POST", post);
+            insert_json_value_into_json_root(req, "Unknown", unk);
+            insert_json_value_into_json_root(root, "Requests", req);
+            nbr = json_integer(stats->nb_meta_bytes);
+            insert_json_value_into_json_root(root, "metadata", nbr);
 
-    answer = json_dumps(root, 0);
+            answer = json_dumps(root, 0);
+        }
 
     return answer;
 }
@@ -674,13 +679,16 @@ static int answer_meta_json_post_request(server_struct_t *server_struct, struct 
     gchar *answer = NULL;             /** gchar *answer : Do not free answer variable as MHD will do it for us !       */
     json_t *root = NULL;              /** json_t *root is the root that will contain all meta data json formatted      */
     json_t *array = NULL;             /** json_t *array is the array that will receive base64 encoded hashs            */
+    size_t nb_bytes = 0;
 
     smeta = convert_json_to_smeta_data(received_data);
 
     if (smeta != NULL && smeta->meta != NULL)
         {   /* The convertion went well and smeta contains the meta data */
 
-            print_debug(_("Received meta data (%zd bytes) for file %s\n"), strlen(received_data), smeta->meta->name);
+            nb_bytes = strlen(received_data);
+            add_bytes_to_metadata_bytes(server_struct->stats, nb_bytes);
+            print_debug(_("Received meta data (%zd bytes) for file %s\n"), nb_bytes, smeta->meta->name);
 
             if (smeta->data_sent == FALSE)
                 {
