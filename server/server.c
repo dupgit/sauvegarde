@@ -688,6 +688,8 @@ static int answer_meta_json_post_request(server_struct_t *server_struct, struct 
 
             nb_bytes = strlen(received_data);
             add_bytes_to_metadata_bytes(server_struct->stats, nb_bytes);
+            /* STATS : we need to add smeta->meta->size to totat file size saved  */
+            /* STATS : we also need to increment by one the number of files saved */
             print_debug(_("Received meta data (%zd bytes) for file %s\n"), nb_bytes, smeta->meta->name);
 
             if (smeta->data_sent == FALSE)
@@ -827,6 +829,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
         {
 
             hash_data = convert_string_to_hash_data(received_data);
+            /** STATS : we need to add hash_data->read into dedup stats */
 
             if (get_debug_mode() == TRUE)
                 {
@@ -860,6 +863,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
             while (hash_data_list != NULL)
                 {
                     hash_data = hash_data_list->data;
+                    /** STATS : we need to add hash_data->read into dedup stats */
 
                     if (debug == TRUE)
                         {
@@ -931,7 +935,7 @@ static guint64 get_content_length(struct MHD_Connection *connection)
  * @param con_cls is a pointer used to know if this is the first call or not
  * @param upload_data is a char * pointer to the data being uploaded at this call
  * @param upload_size is a pointer to an size_t value that says how many data
- *        is ti be copied from upload_data string.
+ *        is to be copied from upload_data string.
  * @returns an int that is either MHD_NO or MHD_YES upon failure or not.
  */
 static int process_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size)
