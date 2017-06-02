@@ -443,6 +443,9 @@ static gchar *answer_global_stats(stats_t *stats)
             insert_json_value_into_json_root(root, "Requests", req);
             nbr = json_integer(stats->nb_meta_bytes);
             insert_json_value_into_json_root(root, "metadata", nbr);
+            nbr = json_integer(stats->nb_files);
+            insert_json_value_into_json_root(root, "files", nbr);
+
 
             answer = json_dumps(root, 0);
         }
@@ -688,8 +691,8 @@ static int answer_meta_json_post_request(server_struct_t *server_struct, struct 
 
             nb_bytes = strlen(received_data);
             add_bytes_to_metadata_bytes(server_struct->stats, nb_bytes);
+            add_one_saved_file(server_struct->stats);
             /* STATS : we need to add smeta->meta->size to totat file size saved  */
-            /* STATS : we also need to increment by one the number of files saved */
             print_debug(_("Received meta data (%zd bytes) for file %s\n"), nb_bytes, smeta->meta->name);
 
             if (smeta->data_sent == FALSE)

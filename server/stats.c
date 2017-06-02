@@ -251,6 +251,19 @@ void add_one_unknown_request(stats_t *stats)
 
 
 /**
+ * Adds one to the number of files saved
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ */
+void add_one_saved_file(stats_t *stats)
+{
+    if (stats != NULL)
+        {
+            stats->nb_files += 1;
+        }
+}
+
+
+/**
  * Adds meta data bytes to the stats structure
  * @param stats is a stats_t structure to keep some stats about server runs
  * @param nb_bytes is a size_t number representing the number of bytes to
