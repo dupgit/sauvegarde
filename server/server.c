@@ -441,12 +441,18 @@ static gchar *answer_global_stats(stats_t *stats)
             insert_json_value_into_json_root(req, "POST", post);
             insert_json_value_into_json_root(req, "Unknown", unk);
             insert_json_value_into_json_root(root, "Requests", req);
+
             nbr = json_integer(stats->nb_meta_bytes);
             insert_json_value_into_json_root(root, "metadata", nbr);
+
             nbr = json_integer(stats->nb_files);
             insert_json_value_into_json_root(root, "files", nbr);
+
             nbr = json_integer(stats->nb_total_bytes);
             insert_json_value_into_json_root(root, "total size", nbr);
+
+            nbr = json_integer(stats->nb_dedup_bytes);
+            insert_json_value_into_json_root(root, "dedup size", nbr);
 
             answer = json_dumps(root, 0);
         }
@@ -833,7 +839,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
         {
 
             hash_data = convert_string_to_hash_data(received_data);
-            /** STATS : we need to add hash_data->read into dedup stats */
+            add_hash_size_to_dedup_bytes(server_struct->stats, hash_data);
 
             if (get_debug_mode() == TRUE)
                 {
@@ -867,7 +873,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
             while (hash_data_list != NULL)
                 {
                     hash_data = hash_data_list->data;
-                    /** STATS : we need to add hash_data->read into dedup stats */
+                    add_hash_size_to_dedup_bytes(server_struct->stats, hash_data);
 
                     if (debug == TRUE)
                         {

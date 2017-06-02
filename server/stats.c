@@ -277,6 +277,7 @@ void add_bytes_to_metadata_bytes(stats_t *stats, size_t nb_bytes)
         }
 }
 
+
 /**
  * Adds file size to stats->nb_total_bytes in order to count the real
  * size of what has been saved
@@ -290,3 +291,22 @@ void add_file_size_to_total_size(stats_t *stats, guint64 size)
             stats->nb_total_bytes += size;
         }
 }
+
+
+/**
+ * Adds the size  of the hash to the total dedup number of bytes
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ * @param hash_data is a hash_data_t structure with read field representing
+ *        the size of the hashed buffer.
+ */
+void add_hash_size_to_dedup_bytes(stats_t *stats, hash_data_t *hash_data)
+{
+    if (stats != NULL && hash_data != NULL)
+        {
+            stats->nb_dedup_bytes += hash_data->read;
+        }
+}
+
+
+
+
