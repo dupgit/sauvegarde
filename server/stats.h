@@ -134,4 +134,13 @@ extern void add_one_saved_file(stats_t *stats);
  */
 extern void add_bytes_to_metadata_bytes(stats_t *stats, size_t nb_bytes);
 
+
+/**
+ * Adds file size to stats->nb_total_bytes in order to count the real
+ * size of what has been saved
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ * @param size is the file sized being saved to be added
+ */
+extern void add_file_size_to_total_size(stats_t *stats, guint64 size);
+
 #endif /* #ifndef _STATS_H_ */

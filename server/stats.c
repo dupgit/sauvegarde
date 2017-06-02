@@ -277,4 +277,16 @@ void add_bytes_to_metadata_bytes(stats_t *stats, size_t nb_bytes)
         }
 }
 
-
+/**
+ * Adds file size to stats->nb_total_bytes in order to count the real
+ * size of what has been saved
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ * @param size is the file sized being saved to be added
+ */
+void add_file_size_to_total_size(stats_t *stats, guint64 size)
+{
+    if (stats != NULL)
+        {
+            stats->nb_total_bytes += size;
+        }
+}
