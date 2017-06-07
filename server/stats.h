@@ -37,6 +37,7 @@
 typedef struct
 {
     guint64 nb_request;  /** total number of 'GET' requests */
+    guint64 stats;       /** number of GET /Stats.json URL  */
 } req_get_t;
 
 
@@ -152,5 +153,11 @@ extern void add_file_size_to_total_size(stats_t *stats, guint64 size);
  */
 extern void add_hash_size_to_dedup_bytes(stats_t *stats, hash_data_t *hash_data);
 
+
+/**
+ * Adds one to the number of visits of /Stats.json url
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ */
+extern void add_one_to_get_url_statsjson(stats_t *stats);
 
 #endif /* #ifndef _STATS_H_ */

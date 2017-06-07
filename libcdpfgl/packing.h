@@ -352,9 +352,12 @@ extern gchar *answer_json_success_string(guint32 error_code, gchar *message);
 /**
  * Makes a json structure with some parameters that comes from stats_t *
  * structure.
+ * @param title is a string representing the title of the corresponding
+ *        nb_request number.
  * @param nb_request is a guint64 representing the total number of requests
  *        of this type.
  * @returns a json_t structure filled with stats values.
  */
-extern json_t *make_json_from_stats(guint64 nb_requests);
+extern json_t *make_json_from_stats(gchar *title, guint64 nb_request);
+
 #endif /* #ifndef _PACKING_H_ */

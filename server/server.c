@@ -433,10 +433,13 @@ static gchar *answer_global_stats(stats_t *stats)
         {
             root = json_object();
 
-            get = make_json_from_stats(stats->requests->get->nb_request);
-            post = make_json_from_stats(stats->requests->post->nb_request);
-            unk = make_json_from_stats(stats->requests->unknown->nb_request);
-            req = make_json_from_stats(stats->requests->nb_request);
+            get = make_json_from_stats("Total requests", stats->requests->get->nb_request);
+            nbr = json_integer(stats->requests->get->stats);
+            insert_json_value_into_json_root(get, "/Stats.json", nbr);
+
+            post = make_json_from_stats("Total requests", stats->requests->post->nb_request);
+            unk = make_json_from_stats("Total requests", stats->requests->unknown->nb_request);
+            req = make_json_from_stats("Total requests", stats->requests->nb_request);
             insert_json_value_into_json_root(req, "GET", get);
             insert_json_value_into_json_root(req, "POST", post);
             insert_json_value_into_json_root(req, "Unknown", unk);
@@ -486,6 +489,7 @@ static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connect
     else if (g_str_has_prefix(url, "/Stats.json"))
         {
             /* Answer a json string with stats on server's usage */
+            add_one_to_get_url_statsjson(server_struct->stats);
             answer = answer_global_stats(server_struct->stats);
         }
     else if (g_str_has_prefix(url, "/File/List.json"))

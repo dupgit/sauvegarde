@@ -51,6 +51,7 @@ static req_get_t *new_req_get_t(void)
     req_get = (req_get_t *) g_malloc0(sizeof(req_get_t));
 
     req_get->nb_request = 0;
+    req_get->stats = 0;
 
     return req_get;
 }
@@ -214,8 +215,8 @@ void add_one_get_request(stats_t *stats)
 {
     if (stats != NULL && stats->requests != NULL && stats->requests->get != NULL)
         {
-            stats->requests->nb_request++;
-            stats->requests->get->nb_request++;
+            stats->requests->nb_request += 1;
+            stats->requests->get->nb_request +=1;
         }
 }
 
@@ -229,8 +230,8 @@ void add_one_post_request(stats_t *stats)
 {
     if (stats != NULL && stats->requests != NULL && stats->requests->post != NULL)
         {
-            stats->requests->nb_request++;
-            stats->requests->post->nb_request++;
+            stats->requests->nb_request += 1;
+            stats->requests->post->nb_request += 1;
         }
 }
 
@@ -244,8 +245,8 @@ void add_one_unknown_request(stats_t *stats)
 {
     if (stats != NULL && stats->requests != NULL && stats->requests->unknown != NULL)
         {
-            stats->requests->nb_request++;
-            stats->requests->unknown->nb_request++;
+            stats->requests->nb_request += 1;
+            stats->requests->unknown->nb_request += 1;
         }
 }
 
@@ -308,5 +309,16 @@ void add_hash_size_to_dedup_bytes(stats_t *stats, hash_data_t *hash_data)
 }
 
 
+/**
+ * Adds one to the number of visits of /Stats.json url
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ */
+void add_one_to_get_url_statsjson(stats_t *stats)
+{
+    if (stats != NULL && stats->requests != NULL && stats->requests->get != NULL)
+        {
+            stats->requests->get->stats += 1;
+        }
+}
 
 
