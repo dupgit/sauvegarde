@@ -436,6 +436,21 @@ static gchar *answer_global_stats(stats_t *stats)
             get = make_json_from_stats("Total requests", stats->requests->get->nb_request);
             nbr = json_integer(stats->requests->get->stats);
             insert_json_value_into_json_root(get, "/Stats.json", nbr);
+            nbr = json_integer(stats->requests->get->version);
+            insert_json_value_into_json_root(get, "/Version.json", nbr);
+            nbr = json_integer(stats->requests->get->verstxt);
+            insert_json_value_into_json_root(get, "/Version", nbr);
+            nbr = json_integer(stats->requests->get->file_list);
+            insert_json_value_into_json_root(get, "/File/List.json", nbr);
+            nbr = json_integer(stats->requests->get->data_hash);
+            insert_json_value_into_json_root(get, "/Data/0xxxx.json", nbr);
+            nbr = json_integer(stats->requests->get->data_hash_array);
+            insert_json_value_into_json_root(get, "/Data/Hash_Array.json", nbr);
+            nbr = json_integer(stats->requests->get->unk);
+            insert_json_value_into_json_root(get, "/unknown.json", nbr);
+            nbr = json_integer(stats->requests->get->unktxt);
+            insert_json_value_into_json_root(get, "/unknown", nbr);
+
 
             post = make_json_from_stats("Total requests", stats->requests->post->nb_request);
             unk = make_json_from_stats("Total requests", stats->requests->unknown->nb_request);
