@@ -36,8 +36,15 @@
  */
 typedef struct
 {
-    guint64 nb_request;  /** total number of 'GET' requests */
-    guint64 stats;       /** number of GET /Stats.json URL  */
+    guint64 nb_request;       /** total number of 'GET' requests          */
+    guint64 stats;            /** number of GET /Stats.json URL           */
+    guint64 version;          /** number of GET /Version.json URL         */
+    guint64 verstxt;          /** number of GET /Version URL              */
+    guint64 file_list;        /** number of GET /File/List.json URL       */
+    guint64 data_hash;        /** number of GET /Data/0xxxx.json URL      */
+    guint64 data_hash_array;  /** number of GET /Data/Hash_Array.json URL */
+    guint64 unktxt;           /** number of GET to unknown text URL       */
+    guint64 unk;              /** number of GET to unknown json URL       */
 } req_get_t;
 
 
@@ -158,6 +165,47 @@ extern void add_hash_size_to_dedup_bytes(stats_t *stats, hash_data_t *hash_data)
  * Adds one to the number of visits of /Stats.json url
  * @param stats is a stats_t structure to keep some stats about server's usage.
  */
-extern void add_one_to_get_url_statsjson(stats_t *stats);
+extern void add_one_to_get_url_stats(stats_t *stats);
+
+
+/**
+ * Adds one to the number of visits of /Version.json or /Version url
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ * @param txt is a boolean set to TRUE if the URL is a text one (not ending with
+ *            .json
+ */
+extern void add_one_to_get_url_version(stats_t *stats, gboolean txt);
+
+
+/**
+ * Adds one to the number of visits of /File/List.json url
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ */
+extern void add_one_to_get_url_file_list(stats_t *stats);
+
+
+/**
+ * Adds one to the number of visits of /Data/0xxxx.json url
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ */
+extern void add_one_to_get_url_data_hash(stats_t *stats);
+
+
+/**
+ * Adds one to the number of visits of /Data/Hash_Array.json url
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ */
+extern void add_one_to_get_url_data_hash_array(stats_t *stats);
+
+
+/**
+ * Adds one to the number of visits of unknown URL (if txt is FALSE then the
+ * unknown URL ends with .json
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ * @param txt is a boolean set to TRUE if the URL is a text one (not ending with
+ *            .json
+ */
+extern void add_one_to_get_url_unknown(stats_t *stats, gboolean txt);
+
 
 #endif /* #ifndef _STATS_H_ */

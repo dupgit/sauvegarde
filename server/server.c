@@ -484,24 +484,28 @@ static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connect
 
     if (g_strcmp0(url, "/Version.json") == 0)
         {
+            add_one_to_get_url_version(server_struct->stats, FALSE);
             answer = convert_version_to_json(PROGRAM_NAME, SERVER_DATE, SERVER_VERSION, SERVER_AUTHORS, SERVER_LICENSE);
         }
     else if (g_str_has_prefix(url, "/Stats.json"))
         {
             /* Answer a json string with stats on server's usage */
-            add_one_to_get_url_statsjson(server_struct->stats);
+            add_one_to_get_url_stats(server_struct->stats);
             answer = answer_global_stats(server_struct->stats);
         }
     else if (g_str_has_prefix(url, "/File/List.json"))
         {
+            add_one_to_get_url_file_list(server_struct->stats);
             answer = get_a_list_of_files(server_struct, connection);
         }
     else if (g_str_has_prefix(url, "/Data/Hash_Array.json"))
         {
+            add_one_to_get_url_data_hash_array(server_struct->stats);
             answer = get_data_from_a_list_of_hashs(server_struct, connection);
         }
     else if (g_str_has_prefix(url, "/Data/"))
         {
+            add_one_to_get_url_data_hash(server_struct->stats);
             hash = g_strndup((const gchar *) url + 6, HASH_LEN*2);  /* HASH_LEN is expressed when hash is in binary form  */
             hash = g_strcanon(hash, "abcdef0123456789", '\0');      /* replace anything not in hexadecimal format with \0 */
 
@@ -522,6 +526,7 @@ static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connect
         }
     else
         { /* Some sort of echo to the invalid request */
+            add_one_to_get_url_unknown(server_struct->stats, FALSE);
             message = g_strdup_printf(_("URL not found: %s"), url);
             answer = answer_json_error_string(MHD_HTTP_NOT_FOUND, message);
             free_variable(message);
@@ -547,8 +552,9 @@ static gchar *get_unformatted_answer(server_struct_t *server_struct, const char 
     gchar *buf2 = NULL;
     gchar *buf3 = NULL;
 
-    if (g_strcmp0(url, "/Version") == 0)
+    if (g_strcmp0(url, "/Version") == 0 && server_struct != NULL)
         {
+            add_one_to_get_url_version(server_struct->stats, TRUE);
             buf1 = buffer_program_version(PROGRAM_NAME, SERVER_DATE, SERVER_VERSION, SERVER_AUTHORS, SERVER_LICENSE);
             buf2 = buffer_libraries_versions(PROGRAM_NAME);
             buf3 = buffer_selected_option(server_struct->opt);
@@ -561,6 +567,7 @@ static gchar *get_unformatted_answer(server_struct_t *server_struct, const char 
         }
     else
         { /* Some sort of echo to the invalid request */
+            add_one_to_get_url_unknown(server_struct->stats, TRUE);
             answer = g_strdup_printf(_("Error: invalid url: %s\n"), url);
         }
 

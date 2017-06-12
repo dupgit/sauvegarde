@@ -52,6 +52,13 @@ static req_get_t *new_req_get_t(void)
 
     req_get->nb_request = 0;
     req_get->stats = 0;
+    req_get->version = 0;
+    req_get->verstxt = 0;
+    req_get->file_list = 0;
+    req_get->data_hash = 0;
+    req_get->data_hash_array = 0;
+    req_get->unktxt = 0;
+    req_get->unk = 0;
 
     return req_get;
 }
@@ -313,12 +320,98 @@ void add_hash_size_to_dedup_bytes(stats_t *stats, hash_data_t *hash_data)
  * Adds one to the number of visits of /Stats.json url
  * @param stats is a stats_t structure to keep some stats about server's usage.
  */
-void add_one_to_get_url_statsjson(stats_t *stats)
+void add_one_to_get_url_stats(stats_t *stats)
 {
     if (stats != NULL && stats->requests != NULL && stats->requests->get != NULL)
         {
             stats->requests->get->stats += 1;
         }
 }
+
+
+/**
+ * Adds one to the number of visits of /Version.json or /Version url
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ * @param txt is a boolean set to TRUE if the URL is a text one (not ending with
+ *            .json
+ */
+void add_one_to_get_url_version(stats_t *stats, gboolean txt)
+{
+    if (stats != NULL && stats->requests != NULL && stats->requests->get != NULL)
+        {
+            if (txt == TRUE)
+                {
+                    stats->requests->get->verstxt += 1;
+                }
+            else
+                {
+                    stats->requests->get->version += 1;
+                }
+        }
+}
+
+
+/**
+ * Adds one to the number of visits of /File/List.json url
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ */
+void add_one_to_get_url_file_list(stats_t *stats)
+{
+    if (stats != NULL && stats->requests != NULL && stats->requests->get != NULL)
+        {
+            stats->requests->get->file_list += 1;
+        }
+}
+
+
+/**
+ * Adds one to the number of visits of /Data/0xxxx.json url
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ */
+void add_one_to_get_url_data_hash(stats_t *stats)
+{
+    if (stats != NULL && stats->requests != NULL && stats->requests->get != NULL)
+        {
+            stats->requests->get->data_hash += 1;
+        }
+}
+
+
+/**
+ * Adds one to the number of visits of /Data/Hash_Array.json url
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ */
+void add_one_to_get_url_data_hash_array(stats_t *stats)
+{
+    if (stats != NULL && stats->requests != NULL && stats->requests->get != NULL)
+        {
+            stats->requests->get->data_hash_array += 1;
+        }
+}
+
+
+/**
+ * Adds one to the number of visits of unknown URL (if txt is FALSE then the
+ * unknown URL ends with .json
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ * @param txt is a boolean set to TRUE if the URL is a text one (not ending with
+ *            .json
+ */
+void add_one_to_get_url_unknown(stats_t *stats, gboolean txt)
+{
+    if (stats != NULL && stats->requests != NULL && stats->requests->get != NULL)
+        {
+            if (txt == TRUE)
+                {
+                    stats->requests->get->unktxt += 1;
+                }
+            else
+                {
+                    stats->requests->get->unk += 1;
+                }
+        }
+}
+
+
 
 
