@@ -50,7 +50,11 @@ typedef struct
 
 typedef struct
 {
-    guint64 nb_request; /** total number of 'POST' requests */
+    guint64 nb_request; /** total number of 'POST' requests                 */
+    guint64 meta;       /** Counts usage of 'POST' for /Meta.json URL       */
+    guint64 data;       /** Counts usage of 'POST' for /Data.json URL       */
+    guint64 data_array; /** Counts usage of 'POST' for /Data_Array.json URL */
+    guint64 hash_array; /** Counts usage of 'POST' for /Hash_Array.json URL */
 } req_post_t;
 
 

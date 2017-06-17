@@ -90,6 +90,10 @@ static req_post_t *new_req_post_t(void)
     req_post = (req_post_t *) g_malloc0(sizeof(req_post_t));
 
     req_post->nb_request = 0;
+    req_post->meta = 0;
+    req_post->data = 0;
+    req_post->data_array = 0;
+    req_post->hash_array = 0;
 
     return req_post;
 }
