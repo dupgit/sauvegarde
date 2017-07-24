@@ -46,7 +46,7 @@ static json_t *find_needed_hashs(server_struct_t *server_struct, GList *hash_dat
 static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data);
 static int answer_hash_array_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data);
 static void print_received_data_for_hash(guint8 *hash, gssize read);
-static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, gchar *received_data);
+static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, gchar *received_data, guint64 length);
 static guint64 get_content_length(struct MHD_Connection *connection);
 static int process_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size);
 static int print_out_key(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
@@ -838,8 +838,9 @@ static void print_received_data_for_hash(guint8 *hash, gssize read)
  * @param url is the requested url
  * @param received_data is a gchar * string to the data that was received
  *        by the POST request.
+ * @param length is received_data length (in bytes)
  */
-static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, gchar *received_data)
+static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, gchar *received_data, guint64 length)
 {
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     int success = MHD_NO;
@@ -1015,7 +1016,7 @@ static int process_post_request(server_struct_t *server_struct, struct MHD_Conne
             pp->buffer[pp->pos] = '\0';
 
             /* Do something with received_data */
-            success = process_received_data(server_struct, connection, url, pp->buffer);
+            success = process_received_data(server_struct, connection, url, pp->buffer, pp->pos);
 
             free_variable(pp->buffer);
             free_variable(pp);

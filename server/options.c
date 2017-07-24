@@ -281,5 +281,3 @@ options_t *do_what_is_needed_from_command_line_options(int argc, char **argv)
 
     return opt;
 }
-
-
