@@ -1248,6 +1248,9 @@ int main(int argc, char **argv)
                     print_error(__FILE__, __LINE__, _("Error while spawning libmicrohttpd daemon\n"));
                     return 1;
                 }
+            else {
+                    print_debug(_("Now listening on port %d\n"), server_struct->opt->port);
+                 }
 
             /**
              * main program stops here (until we exit main loop)
