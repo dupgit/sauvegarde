@@ -413,11 +413,13 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
     return answer;
 }
 
+
 /**
  * Answers a json string containing all stats about the usage
  * of this server.
  * @param stats is the stats_t structure containing all stats
  *        to be returned.
+ * @todo Needs a refactoring
  */
 static gchar *answer_global_stats(stats_t *stats)
 {
@@ -453,6 +455,9 @@ static gchar *answer_global_stats(stats_t *stats)
 
 
             post = make_json_from_stats("Total requests", stats->requests->post->nb_request);
+            nbr = json_integer(stats->requests->post->meta);
+            insert_json_value_into_json_root(post, "/Meta.json", nbr);
+
             unk = make_json_from_stats("Total requests", stats->requests->unknown->nb_request);
             req = make_json_from_stats("Total requests", stats->requests->nb_request);
             insert_json_value_into_json_root(req, "GET", get);
@@ -460,17 +465,14 @@ static gchar *answer_global_stats(stats_t *stats)
             insert_json_value_into_json_root(req, "Unknown", unk);
             insert_json_value_into_json_root(root, "Requests", req);
 
-            nbr = json_integer(stats->nb_meta_bytes);
-            insert_json_value_into_json_root(root, "metadata", nbr);
-
             nbr = json_integer(stats->nb_files);
             insert_json_value_into_json_root(root, "files", nbr);
-
             nbr = json_integer(stats->nb_total_bytes);
             insert_json_value_into_json_root(root, "total size", nbr);
-
             nbr = json_integer(stats->nb_dedup_bytes);
             insert_json_value_into_json_root(root, "dedup size", nbr);
+            nbr = json_integer(stats->nb_meta_bytes);
+            insert_json_value_into_json_root(root, "meta data size", nbr);
 
             answer = json_dumps(root, 0);
         }
