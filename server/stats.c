@@ -36,7 +36,7 @@ static req_unk_t *new_req_unk_t(void);
 static void free_req_unk_t(req_unk_t *req_unk);
 static requests_t *new_requests_t(void);
 static void free_requests_t(requests_t *requests);
-
+static void add_bytes_to_metadata_bytes(stats_t *stats, size_t nb_bytes);
 
 /**
  * Creates a new req_get_t structure initialized with zeros
@@ -281,7 +281,7 @@ void add_one_saved_file(stats_t *stats)
  * @param nb_bytes is a size_t number representing the number of bytes to
  *        add to the stats
  */
-void add_bytes_to_metadata_bytes(stats_t *stats, size_t nb_bytes)
+static void add_bytes_to_metadata_bytes(stats_t *stats, size_t nb_bytes)
 {
     if (stats != NULL)
         {
@@ -417,5 +417,17 @@ void add_one_to_get_url_unknown(stats_t *stats, gboolean txt)
 }
 
 
-
-
+/*** POST requests ***/
+/**
+ * Adds one to the number of visits of /Meta.json
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ * @param length is the total length of the request.
+ */
+void add_length_and_one_to_post_url_meta(stats_t *stats, guint64 length)
+{
+    if (stats != NULL && stats->requests != NULL && stats->requests->post != NULL)
+        {
+            stats->requests->post->meta += 1;
+            add_bytes_to_metadata_bytes(stats, length);
+        }
+}

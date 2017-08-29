@@ -139,15 +139,6 @@ extern void add_one_saved_file(stats_t *stats);
 
 
 /**
- * Adds meta data bytes to the stats structure
- * @param stats is a stats_t structure to keep some stats about server runs
- * @param nb_bytes is a size_t number representing the number of bytes to
- *                 add to the stats
- */
-extern void add_bytes_to_metadata_bytes(stats_t *stats, size_t nb_bytes);
-
-
-/**
  * Adds file size to stats->nb_total_bytes in order to count the real
  * size of what has been saved
  * @param stats is a stats_t structure to keep some stats about server's usage.
@@ -210,6 +201,14 @@ extern void add_one_to_get_url_data_hash_array(stats_t *stats);
  *            .json
  */
 extern void add_one_to_get_url_unknown(stats_t *stats, gboolean txt);
+
+
+/**
+ * Adds one to the number of visits of /Meta.json
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ * @param length is the total length of the request.
+ */
+extern void add_length_and_one_to_post_url_meta(stats_t *stats, guint64 length);
 
 
 #endif /* #ifndef _STATS_H_ */

@@ -43,7 +43,7 @@ static gchar *get_unformatted_answer(server_struct_t *server_struct, const char 
 static int create_MHD_response(struct MHD_Connection *connection, gchar *answer, gchar *content_type);
 static int process_get_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls);
 static json_t *find_needed_hashs(server_struct_t *server_struct, GList *hash_data_list);
-static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data);
+static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data, guint64 length);
 static int answer_hash_array_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data);
 static void print_received_data_for_hash(guint8 *hash, gssize read);
 static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, gchar *received_data, guint64 length);
@@ -708,25 +708,23 @@ static json_t *find_needed_hashs(server_struct_t *server_struct, GList *hash_dat
  * @param connection is the connection in MHD
  * @param received_data is a gchar * string to the data that was received
  *        by the POST request.
+ * @param length is the total length of POST request in bytes
  */
-static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data)
+static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data, guint64 length)
 {
     server_meta_data_t *smeta = NULL; /** server_meta_data_t *smeta stores meta data along with hostname of the client */
     gchar *answer = NULL;             /** gchar *answer : Do not free answer variable as MHD will do it for us !       */
     json_t *root = NULL;              /** json_t *root is the root that will contain all meta data json formatted      */
     json_t *array = NULL;             /** json_t *array is the array that will receive base64 encoded hashs            */
-    size_t nb_bytes = 0;
 
     smeta = convert_json_to_smeta_data(received_data);
 
     if (smeta != NULL && smeta->meta != NULL)
         {   /* The convertion went well and smeta contains the meta data */
 
-            nb_bytes = strlen(received_data);
-            add_bytes_to_metadata_bytes(server_struct->stats, nb_bytes);
             add_one_saved_file(server_struct->stats);
+            print_debug(_("Received meta data (%zd bytes) for file %s\n"), length, smeta->meta->name);
             add_file_size_to_total_size(server_struct->stats, smeta->meta->size);
-            print_debug(_("Received meta data (%zd bytes) for file %s\n"), nb_bytes, smeta->meta->name);
 
             if (smeta->data_sent == FALSE)
                 {
@@ -853,7 +851,8 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
 
     if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
         {
-            success = answer_meta_json_post_request(server_struct, connection, received_data);
+            add_length_and_one_to_post_url_meta(server_struct->stats, length);
+            success = answer_meta_json_post_request(server_struct, connection, received_data, length);
         }
     else if (g_strcmp0(url, "/Hash_Array.json") == 0 && received_data != NULL)
         {
