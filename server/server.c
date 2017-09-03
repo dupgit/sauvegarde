@@ -457,6 +457,15 @@ static gchar *answer_global_stats(stats_t *stats)
             post = make_json_from_stats("Total requests", stats->requests->post->nb_request);
             nbr = json_integer(stats->requests->post->meta);
             insert_json_value_into_json_root(post, "/Meta.json", nbr);
+            nbr = json_integer(stats->requests->post->data);
+            insert_json_value_into_json_root(post, "/Data.json", nbr);
+            nbr = json_integer(stats->requests->post->data_array);
+            insert_json_value_into_json_root(post, "/Data_Array.json", nbr);
+            nbr = json_integer(stats->requests->post->hash_array);
+            insert_json_value_into_json_root(post, "/Hash_Array.json", nbr);
+            nbr = json_integer(stats->requests->post->unk);
+            insert_json_value_into_json_root(post, "unknown.json", nbr);
+
 
             unk = make_json_from_stats("Total requests", stats->requests->unknown->nb_request);
             req = make_json_from_stats("Total requests", stats->requests->nb_request);
