@@ -649,6 +649,8 @@ static int process_get_request(server_struct_t *server_struct, struct MHD_Connec
         }
     else
         {
+            add_one_get_request(server_struct->stats);
+
             if (get_debug_mode() == TRUE)
                 {
                     print_debug(_("Requested get url: %s\n"), url);
@@ -859,6 +861,9 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
     GList *hash_data_list = NULL;
     GList *head = NULL;
     a_clock_t *elapsed = NULL;
+
+
+    add_one_post_request(server_struct->stats);
 
     if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
         {
@@ -1082,12 +1087,10 @@ static int ahc(void *cls, struct MHD_Connection *connection, const char *url, co
     if (g_strcmp0(method, "GET") == 0)
         {
             /* We have a GET method that needs to be processed */
-            add_one_get_request(ahc_server_struct->stats);
             success = process_get_request(ahc_server_struct, connection, url, con_cls);
         }
     else if (g_strcmp0(method, "POST") == 0)
         {  /* We have a POST method that needs to be processed */
-            add_one_post_request(ahc_server_struct->stats);
             success = process_post_request(ahc_server_struct, connection, url, con_cls, upload_data, upload_data_size);
         }
     else
