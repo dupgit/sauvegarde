@@ -858,6 +858,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
         }
     else if (g_strcmp0(url, "/Hash_Array.json") == 0 && received_data != NULL)
         {
+            add_one_to_post_url_hash_array(server_struct->stats);
             success = answer_hash_array_post_request(server_struct, connection, received_data);
             /* Here we will try to answer which hashs are needed and then
              * send thoses hashs back in the answer
