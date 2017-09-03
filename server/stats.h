@@ -225,4 +225,12 @@ extern void add_one_to_post_url_hash_array(stats_t *stats);
 extern void add_one_to_post_url_data(stats_t *stats);
 
 
+/**
+ * Adds one to the number of visits of /Data_Array.json
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ */
+extern void add_one_to_post_url_data_array(stats_t *stats);
+
+
+
 #endif /* #ifndef _STATS_H_ */

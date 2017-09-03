@@ -457,3 +457,16 @@ void add_one_to_post_url_data(stats_t *stats)
             stats->requests->post->data += 1;
         }
 }
+
+
+/**
+ * Adds one to the number of visits of /Data_Array.json
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ */
+void add_one_to_post_url_data_array(stats_t *stats)
+{
+    if (stats != NULL && stats->requests != NULL && stats->requests->post != NULL)
+        {
+            stats->requests->post->data_array += 1;
+        }
+}

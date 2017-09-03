@@ -891,6 +891,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
         }
     else if (g_strcmp0(url, "/Data_Array.json") == 0 && received_data != NULL)
         {
+            add_one_to_post_url_data_array(server_struct->stats);
             elapsed = new_clock_t();
             root = load_json(received_data);
             end_clock(elapsed, "load_json");
