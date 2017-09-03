@@ -928,6 +928,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
     else
         {
             /* The url is unknown to the server and we can not process the request ! */
+            add_one_to_post_url_unknown(server_struct->stats);
             print_error(__FILE__, __LINE__, "Error: invalid url: %s\n", url);
             answer = answer_json_error_string(MHD_HTTP_BAD_REQUEST, _("Invalid url!\n"));
             success = create_MHD_response(connection, answer, CT_PLAIN);

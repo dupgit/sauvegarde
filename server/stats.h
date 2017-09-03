@@ -55,6 +55,7 @@ typedef struct
     guint64 data;       /** Counts usage of 'POST' for /Data.json URL       */
     guint64 data_array; /** Counts usage of 'POST' for /Data_Array.json URL */
     guint64 hash_array; /** Counts usage of 'POST' for /Hash_Array.json URL */
+    guint64 unk;        /** Counts wrong usages (unknown urls)              */
 } req_post_t;
 
 
@@ -231,6 +232,12 @@ extern void add_one_to_post_url_data(stats_t *stats);
  */
 extern void add_one_to_post_url_data_array(stats_t *stats);
 
+
+/**
+ * Adds one to the number of visits of an unknown url (wrong usages)
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ */
+extern void add_one_to_post_url_unknown(stats_t *stats);
 
 
 #endif /* #ifndef _STATS_H_ */

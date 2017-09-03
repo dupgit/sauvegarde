@@ -94,6 +94,7 @@ static req_post_t *new_req_post_t(void)
     req_post->data = 0;
     req_post->data_array = 0;
     req_post->hash_array = 0;
+    req_post->unk = 0;
 
     return req_post;
 }
@@ -468,5 +469,18 @@ void add_one_to_post_url_data_array(stats_t *stats)
     if (stats != NULL && stats->requests != NULL && stats->requests->post != NULL)
         {
             stats->requests->post->data_array += 1;
+        }
+}
+
+
+/**
+ * Adds one to the number of visits of an unknown url (wrong usages)
+ * @param stats is a stats_t structure to keep some stats about server's usage.
+ */
+void add_one_to_post_url_unknown(stats_t *stats)
+{
+    if (stats != NULL && stats->requests != NULL && stats->requests->post != NULL)
+        {
+            stats->requests->post->unk += 1;
         }
 }
