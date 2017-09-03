@@ -464,7 +464,7 @@ static gchar *answer_global_stats(stats_t *stats)
             nbr = json_integer(stats->requests->post->hash_array);
             insert_json_value_into_json_root(post, "/Hash_Array.json", nbr);
             nbr = json_integer(stats->requests->post->unk);
-            insert_json_value_into_json_root(post, "unknown.json", nbr);
+            insert_json_value_into_json_root(post, "/unknown.json", nbr);
 
 
             unk = make_json_from_stats("Total requests", stats->requests->unknown->nb_request);
