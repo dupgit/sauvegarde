@@ -624,7 +624,5 @@ json_t *make_json_from_stats(gchar *title, guint64 nb_request)
             insert_json_value_into_json_root(stats, title, nbr);
         }
 
-
     return stats;
 }
-

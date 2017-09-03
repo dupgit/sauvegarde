@@ -38,6 +38,8 @@ static gboolean get_boolean_argument_value_from_key(struct MHD_Connection *conne
 static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Connection *connection);
 static hash_data_t *create_one_hash_data_t_from_hash_data_list(GList *hash_data_list, guint size);
 static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Connection *connection);
+static json_t *fills_json_with_get_stats(json_t *get, req_get_t *get_stats);
+static json_t *fills_json_with_post_stats(json_t *post, req_post_t *post_stats);
 static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url);
 static gchar *get_unformatted_answer(server_struct_t *server_struct, const char *url);
 static int create_MHD_response(struct MHD_Connection *connection, gchar *answer, gchar *content_type);
@@ -415,6 +417,83 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
 
 
 /**
+ * Fills a json structure from GET statistics
+ * @param get is the json structure to be filled with get statistics.
+ * @param get_stats is the structure (req_get_t *) that contains all statistics
+ *                  for GET http requests
+ * @returns a json_t * filled with GET statistics.
+ */
+json_t *fills_json_with_get_stats(json_t *get, req_get_t *get_stats)
+{
+
+  json_t *nbr = NULL;
+
+    if (get != NULL && get_stats != NULL)
+        {
+            nbr = json_integer(get_stats->stats);
+            insert_json_value_into_json_root(get, "/Stats.json", nbr);
+
+            nbr = json_integer(get_stats->version);
+            insert_json_value_into_json_root(get, "/Version.json", nbr);
+
+            nbr = json_integer(get_stats->verstxt);
+            insert_json_value_into_json_root(get, "/Version", nbr);
+
+            nbr = json_integer(get_stats->file_list);
+            insert_json_value_into_json_root(get, "/File/List.json", nbr);
+
+            nbr = json_integer(get_stats->data_hash);
+            insert_json_value_into_json_root(get, "/Data/0xxxx.json", nbr);
+
+            nbr = json_integer(get_stats->data_hash_array);
+            insert_json_value_into_json_root(get, "/Data/Hash_Array.json", nbr);
+
+            nbr = json_integer(get_stats->unk);
+            insert_json_value_into_json_root(get, "/unknown.json", nbr);
+
+            nbr = json_integer(get_stats->unktxt);
+            insert_json_value_into_json_root(get, "/unknown", nbr);
+        }
+
+        return get;
+}
+
+
+/**
+ * Fills a json structure from  POST statistics
+ * @param post is the json structure to be filled with post statistics.
+ * @param post_stats is the structure (req_post_t *) that contains all statistics
+ *                  for POST http requests
+ * @returns a json_t * filled with POST statistics.
+ */
+json_t *fills_json_with_post_stats(json_t *post, req_post_t *post_stats)
+{
+
+  json_t *nbr = NULL;
+
+    if (post != NULL && post_stats != NULL)
+        {
+            nbr = json_integer(post_stats->meta);
+            insert_json_value_into_json_root(post, "/Meta.json", nbr);
+
+            nbr = json_integer(post_stats->data);
+            insert_json_value_into_json_root(post, "/Data.json", nbr);
+
+            nbr = json_integer(post_stats->data_array);
+            insert_json_value_into_json_root(post, "/Data_Array.json", nbr);
+
+            nbr = json_integer(post_stats->hash_array);
+            insert_json_value_into_json_root(post, "/Hash_Array.json", nbr);
+
+            nbr = json_integer(post_stats->unk);
+            insert_json_value_into_json_root(post, "/unknown.json", nbr);
+        }
+
+        return post;
+}
+
+
+/**
  * Answers a json string containing all stats about the usage
  * of this server.
  * @param stats is the stats_t structure containing all stats
@@ -436,36 +515,10 @@ static gchar *answer_global_stats(stats_t *stats)
             root = json_object();
 
             get = make_json_from_stats("Total requests", stats->requests->get->nb_request);
-            nbr = json_integer(stats->requests->get->stats);
-            insert_json_value_into_json_root(get, "/Stats.json", nbr);
-            nbr = json_integer(stats->requests->get->version);
-            insert_json_value_into_json_root(get, "/Version.json", nbr);
-            nbr = json_integer(stats->requests->get->verstxt);
-            insert_json_value_into_json_root(get, "/Version", nbr);
-            nbr = json_integer(stats->requests->get->file_list);
-            insert_json_value_into_json_root(get, "/File/List.json", nbr);
-            nbr = json_integer(stats->requests->get->data_hash);
-            insert_json_value_into_json_root(get, "/Data/0xxxx.json", nbr);
-            nbr = json_integer(stats->requests->get->data_hash_array);
-            insert_json_value_into_json_root(get, "/Data/Hash_Array.json", nbr);
-            nbr = json_integer(stats->requests->get->unk);
-            insert_json_value_into_json_root(get, "/unknown.json", nbr);
-            nbr = json_integer(stats->requests->get->unktxt);
-            insert_json_value_into_json_root(get, "/unknown", nbr);
-
+            get = fills_json_with_get_stats(get, stats->requests->get);
 
             post = make_json_from_stats("Total requests", stats->requests->post->nb_request);
-            nbr = json_integer(stats->requests->post->meta);
-            insert_json_value_into_json_root(post, "/Meta.json", nbr);
-            nbr = json_integer(stats->requests->post->data);
-            insert_json_value_into_json_root(post, "/Data.json", nbr);
-            nbr = json_integer(stats->requests->post->data_array);
-            insert_json_value_into_json_root(post, "/Data_Array.json", nbr);
-            nbr = json_integer(stats->requests->post->hash_array);
-            insert_json_value_into_json_root(post, "/Hash_Array.json", nbr);
-            nbr = json_integer(stats->requests->post->unk);
-            insert_json_value_into_json_root(post, "/unknown.json", nbr);
-
+            fills_json_with_post_stats(post, stats->requests->post);
 
             unk = make_json_from_stats("Total requests", stats->requests->unknown->nb_request);
             req = make_json_from_stats("Total requests", stats->requests->nb_request);
