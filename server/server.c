@@ -866,7 +866,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
         }
     else if (g_strcmp0(url, "/Data.json") == 0 && received_data != NULL)
         {
-
+            add_one_to_post_url_data(server_struct->stats);
             hash_data = convert_string_to_hash_data(received_data);
             add_hash_size_to_dedup_bytes(server_struct->stats, hash_data);
 
