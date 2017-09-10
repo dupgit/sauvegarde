@@ -1,4 +1,4 @@
-% cdpfglclient(1) cdpfglclient user manual | version 0.0.10
+% cdpfglclient(1) cdpfglclient user manual | version 0.0.11
 
 # NAME
 

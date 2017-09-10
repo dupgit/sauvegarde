@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sauvegarde 0.0.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-08 22:04+0200\n"
-"PO-Revision-Date: 2017-09-10 14:22+0100\n"
+"POT-Creation-Date: 2017-09-10 14:45+0200\n"
+"PO-Revision-Date: 2017-09-10 14:46+0100\n"
 "Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
 "Language: fr\n"
@@ -115,16 +115,16 @@ msgid "Unable to add signal handlers\n"
 msgstr "Impossible d'ajouter une fonction pour traiter les signaux\n"
 
 #: ../client/client.h:75 ../restore/restore.h:80 ../server/server.h:74
-msgid "11 29 2016"
-msgstr "29 11 2016"
+msgid "09 10 2017"
+msgstr "10 09 2017"
 
 #: ../client/client.h:76 ../restore/restore.h:81 ../server/server.h:75
 msgid "GPL v3 or later"
 msgstr "GPL v3 ou plus récente."
 
 #: ../client/client.h:77 ../restore/restore.h:82 ../server/server.h:76
-msgid "0.0.10"
-msgstr "0.0.10"
+msgid "0.0.11"
+msgstr "0.0.11"
 
 #: ../client/m_fanotify.c:66
 #, c-format
@@ -1111,6 +1111,9 @@ msgstr "En écoute sur le port %d\n"
 msgid "Error: initialization failed.\n"
 msgstr "Erreur : initialisation échouée.\n"
 
+#~ msgid "11 29 2016"
+#~ msgstr "29 11 2016"
+
 #~ msgid "Couldn't block signals: %s\n"
 #~ msgstr "Impossible de bloquer les signaux : %s\n"
 
@@ -1143,9 +1146,6 @@ msgstr "Erreur : initialisation échouée.\n"
 
 #~ msgid "Error while loading JSON answer from serveur\n"
 #~ msgstr "Erreur en chargant le JSON de la réponse du serveur\n"
-
-#~ msgid "02 11 2015"
-#~ msgstr "02 11 2015"
 
 #~ msgid "Could not load serveur port number from file."
 #~ msgstr ""
