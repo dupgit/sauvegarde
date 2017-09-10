@@ -119,7 +119,6 @@ If you need more than the above hints, please have a look at the user
 I am coding on spare hours so I may not tell any release dates and you
 should consider that "It ships when its ready".
 
-* 0.0.11 have some statistics with the server.
 * 0.0.12 Use compression in file_backend.
 * 0.0.13 Add some security between clients and server to avoid sending
          plain clear text messages.
@@ -128,34 +127,35 @@ should consider that "It ships when its ready".
 
 ### Releases
 
-* 0.0.1  [08.07.2015] First usable version
-* 0.0.2  [15.08.2015] client redesigned
-* 0.0.3  [21.08.2015] saves and restores links
-* 0.0.4  [06.09.2015] new server url to post a bunch of hashs and
+* 0.0.1  [07.08.2015] First usable version
+* 0.0.2  [08.15.2015] client redesigned
+* 0.0.3  [08.21.2015] saves and restores links
+* 0.0.4  [09.06.2015] new server url to post a bunch of hashs and
                       associated data. Clean the answer list of needed
                       hashs to avoid having duplicated hashs into it.
-* 0.0.5  [04.10.2015] fanotify's code reviewed. Avoid having one entire
+* 0.0.5  [10.04.2015] fanotify's code reviewed. Avoid having one entire
                       file in memory.
-* 0.0.6  [02.11.2015] restore to some specific place. client adaptive
+* 0.0.6  [11.02.2015] restore to some specific place. client adaptive
                       blocksize with option to choose fixed or adaptive.
                       Add options to choose CLIENT_MIN_BUFFER.
-* 0.0.7  [03.01.2016] Ability to exclude some files by extension or path.
+* 0.0.7  [01.03.2016] Ability to exclude some files by extension or path.
                       Caching mechanism in client in case the server is
                       unreachable. Change GSList hash_data_list from
                       meta_data_t structure to something that allows
                       deletion of elements while walking through it.
-* 0.0.8  [27.04.2016] restore the latest version of a file before a
+* 0.0.8  [04.27.2016] restore the latest version of a file before a
                       specific date. Add a new post url such as
                       (Hash_Array.json) to submit an array of hashs to
                       server that will say which hashs are needed.
                       Avoids sql injection in sqlite queries.
-* 0.0.9  [24.08.2016] New GET url in order to get a bunch of hashs and
+* 0.0.9  [08.24.2016] New GET url in order to get a bunch of hashs and
                       their associated data to go quicker when restoring
                       files. Restore all the versions of a file. Now
                       cdpfglclient handles signals and should close its
                       database connection cleanly.
-* 0.0.10 [29.11.2016] restore a directory and it's subfiles and directories 
+* 0.0.10 [11.29.2016] restore a directory and it's subfiles and directories 
                       at a specific date. Write a man page for each programs.
+* 0.0.11 [09.10.2017] have some statistics with the server.
 
                       
 ## Code documentation
