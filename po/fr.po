@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Sauvegarde 0.0.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-09-08 22:04+0200\n"
-"PO-Revision-Date: 2016-11-29 21:21+0100\n"
+"PO-Revision-Date: 2017-09-10 14:22+0100\n"
 "Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
 "Language: fr\n"
@@ -448,26 +448,23 @@ msgstr ""
 "Impossible de charger le mode de débogage depuis le fichier de configuration."
 
 #: ../libcdpfgl/configuration.c:372
-#, fuzzy
 msgid "Error while reading database version number"
-msgstr ""
-"(%d) Erreur lors de la création de la table 'buffers' dans la base de "
-"données : %s\n"
+msgstr "Erreur lors de la lecture de la version de la base de données"
 
 #: ../libcdpfgl/configuration.c:376
-#, fuzzy, c-format
+#, c-format
 msgid "Error while reading file: %s (%s)\n"
-msgstr "Erreur en lisant le fichier : %s\n"
+msgstr "Erreur en lisant le fichier : %s (%s)\n"
 
 #: ../libcdpfgl/configuration.c:411
-#, fuzzy, c-format
+#, c-format
 msgid "Error while saving to file: %s (%s)\n"
-msgstr "Erreur en lisant le fichier : %s\n"
+msgstr "Erreur en sauvegardant le fichier : %s (%s)\n"
 
 #: ../libcdpfgl/configuration.c:417
-#, fuzzy, c-format
+#, c-format
 msgid "Error while saving to file: %s\n"
-msgstr "Erreur en lisant le fichier : %s\n"
+msgstr "Erreur en sauvegardant le fichier : %s\n"
 
 #: ../libcdpfgl/database.c:104
 #, c-format
@@ -480,19 +477,18 @@ msgid "(%d) Error commiting to the database: %s\n"
 msgstr "(%d) Erreur lors du \"commit\" dans la base de donnée : %s\n"
 
 #: ../libcdpfgl/database.c:149
-#, fuzzy, c-format
+#, c-format
 msgid "(%d) Error opening the transaction: %s\n"
 msgstr "(%d) Erreur lors de l'ouverture de la transaction : %s\n"
 
 #: ../libcdpfgl/database.c:372
-#, fuzzy
 msgid "Checking tables and index in the database:\n"
-msgstr "Création des tables dans la base de données\n"
+msgstr "Vérification des tables et des indexes dans la base de données :\n"
 
 #. Creation of buffers table that contains checksums and their associated data
 #: ../libcdpfgl/database.c:375
 msgid "\ttable buffers\n"
-msgstr ""
+msgstr "\ttable 'buffers'\n"
 
 #: ../libcdpfgl/database.c:376
 #, c-format
@@ -504,7 +500,7 @@ msgstr ""
 #. Creation of transmited table that may contain id of transmited buffers if any + creation of its indexes
 #: ../libcdpfgl/database.c:379
 msgid "\ttable transmited\n"
-msgstr ""
+msgstr "\ttable 'transmited'\n"
 
 #: ../libcdpfgl/database.c:380
 #, c-format
@@ -514,10 +510,8 @@ msgstr ""
 "données : %s\n"
 
 #: ../libcdpfgl/database.c:382
-#, fuzzy
 msgid "\tindex transmited_buffer_id\n"
-msgstr ""
-"(%d) Erreur lors de la création de la table 'transmited_buffer_id' : %s\n"
+msgstr "(\tindex 'transmited_buffer_id'\n"
 
 #: ../libcdpfgl/database.c:383
 #, c-format
@@ -528,7 +522,7 @@ msgstr ""
 #. Creation of files table that contains everything about a file
 #: ../libcdpfgl/database.c:386
 msgid "\ttable files\n"
-msgstr ""
+msgstr "\ttable 'files'\n"
 
 #: ../libcdpfgl/database.c:387
 #, c-format
@@ -539,7 +533,7 @@ msgstr ""
 
 #: ../libcdpfgl/database.c:389
 msgid "\tindex files_inodes\n"
-msgstr ""
+msgstr "\tindex 'files_inodes'\n"
 
 #: ../libcdpfgl/database.c:390
 #, c-format
@@ -724,6 +718,8 @@ msgstr ""
 #: ../restore/options.c:180
 msgid "Specifies a hostname (HOSTNAME) that owned the file to be restored."
 msgstr ""
+"Précise le nom de la machine (HOSTNAME) à qui appartenait le fichier à "
+"restaurer."
 
 #: ../restore/options.c:181
 msgid "Selects file with that specific DATE (YYYY-MM-DD HH:MM:SS format)."
@@ -970,9 +966,10 @@ msgid "\tmain structure freed.\n"
 msgstr "Structure principale libérée.\n"
 
 #: ../server/server.c:166
-#, fuzzy, c-format
+#, c-format
 msgid "Error while trying to get data from hash %s"
-msgstr "Essai de récupération des données pour le hash %s\n"
+msgstr ""
+"Erreur lors de la tentative de récupération des données pour le hash %s"
 
 #: ../server/server.c:173
 msgid "This backend's missing a retrieve_data function!"
@@ -994,10 +991,11 @@ msgstr ""
 "&& %s && %s && %d\n"
 
 #: ../server/server.c:295
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed request: hostname: %s, uid: %s, gid: %s, owner: %s, group: %s"
 msgstr ""
-"Requête mal formée. hostname : %s, uid : %s, gid : %s, owner : %s, group : %s"
+"Requête mal formée : hostname : %s, uid : %s, gid : %s, owner : %s, group : "
+"%s"
 
 #: ../server/server.c:305
 msgid "Error: no backend defined to get a list of files from it.\n"
@@ -1012,12 +1010,12 @@ msgstr "Essai de récupération des données pour le hash %s\n"
 #: ../server/server.c:599
 #, c-format
 msgid "Invalid url: in %s hash has length: %zd instead of %d"
-msgstr ""
+msgstr "Url invalide : dans %s la longueur du hash est : %zd au lieu de %d"
 
 #: ../server/server.c:609
 #, c-format
 msgid "URL not found: %s"
-msgstr ""
+msgstr "URL introuvable : %s"
 
 #: ../server/server.c:650
 #, c-format
@@ -1056,9 +1054,8 @@ msgid "Ok!"
 msgstr "Ok !"
 
 #: ../server/server.c:1000
-#, fuzzy
 msgid "Invalid url!\n"
-msgstr "Erreur : URL invalide !\n"
+msgstr "URL invalide !\n"
 
 #: ../server/server.c:1024
 #, c-format
@@ -1108,7 +1105,7 @@ msgstr "Erreur lors de l'exécution du daemon libmicrohttpd\n"
 #: ../server/server.c:1320
 #, c-format
 msgid "Now listening on port %d\n"
-msgstr ""
+msgstr "En écoute sur le port %d\n"
 
 #: ../server/server.c:1332
 msgid "Error: initialization failed.\n"
