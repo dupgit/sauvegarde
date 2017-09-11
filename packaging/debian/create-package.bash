@@ -26,7 +26,7 @@
 # References :
 #  . https://wiki.debian.org/IntroDebianPackaging documentation
 #
-export version=0.0.10
+export version=`grep ' VERSION ' ../../config.h | cut -d '"' -f2`
 export distfiles="../../cdpfgl-${version}.tar.xz"
 
 cp $distfiles .
