@@ -1,11 +1,12 @@
 bin_PROGRAMS = cdpfglclient
 
 DEFS = -I../libcdpfgl $(GLIB_CFLAGS) $(GIO_CFLAGS)   \
-	   $(JANSSON_CFLAGS) $(CURL_CFLAGS)
+	   $(JANSSON_CFLAGS) $(CURL_CFLAGS) $(SQLITE_CFLAGS)
+
 
 cdpfglclient_LDFLAGS = $(LDFLAGS)
 cdpfglclient_LDADD = $(GLIB_LIBS) $(GIO_LIBS)  -L../libcdpfgl -lcdpfgl \
-					 $(JANSSON_LIBS) $(CURL_LIBS)
+		     $(JANSSON_LIBS) $(CURL_LIBS) $(SQLITE_LIBS)
 
 cdpfglclient_HEADERFILES =  client.h       \
 							options.h      \
