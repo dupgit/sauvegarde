@@ -2,12 +2,14 @@
   libmicrohttpd, curl}:
 
 stdenv.mkDerivation rec {
-  name = "cdpfgl-0.0.11";
+  name = "cdpfgl-${version}";
+  version = "0.0.11"; 
 
-  buildInputs = [ pkgconfig intltool glib sqlite jansson libmicrohttpd curl]; 
+  buildInputs = [ pkgconfig intltool glib sqlite jansson libmicrohttpd curl ]; 
+  outputs = [ "out" "dev" "man" ];
 
   src = fetchurl {
-    url = "http://cdpfgl.delhomme.org/download/releases/cdpfgl-0.0.11.tar.xz";
+    url = "http://cdpfgl.delhomme.org/download/releases/${name}.tar.xz";
     sha256 = "16ablsb2hnni0d28y73w1gk8j8gsmyd5rcjxx4n7zdv5ph8fz5bd";
   };
   
