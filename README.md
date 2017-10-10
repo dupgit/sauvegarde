@@ -6,10 +6,10 @@ This page is cdpfgl's doxygen's @mainpage.
 [![Build Status](https://travis-ci.org/dupgit/sauvegarde.svg?branch=master)](https://travis-ci.org/dupgit/sauvegarde)
 [![Gitter](https://badges.gitter.im/dupgit/sauvegarde.svg)](https://gitter.im/dupgit/sauvegarde?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-With this code you can backup and restore files in a live and continuous
-way. Compile the code put the `cdpfglserver` on the machine where you want to
-save your files. Let `cdpfglclient` crawl your files to save them. If needed
-use `cdpfglrestore` to restore a file.
+With this project you can backup and restore files in a live and continuous
+way. Compile the project and put `cdpfglserver` on the machine where you want to
+save your files. Let `cdpfglclient` crawl your files to save them (on your client). 
+If needed use `cdpfglrestore` to restore files or directories.
 
 
 ## License
@@ -64,8 +64,8 @@ cdpfgl successfully in a system that is not listed here.
 
 ## Download
 
-You can download the source code from github or a packed defined version
-at [http://cdpfgl.delhomme.org/download/releases/](http://cdpfgl.delhomme.org/download/releases/)
+You can download the source code from github [https://github.com/dupgit/sauvegarde](https://github.com/dupgit/sauvegarde) 
+or get a packed defined version at [http://cdpfgl.delhomme.org/download/releases/](http://cdpfgl.delhomme.org/download/releases/)
 
 
 ## Installation
