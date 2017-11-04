@@ -164,7 +164,7 @@ gchar *buffer_libraries_versions(gchar *name)
                     buffer = free_variable(buffer);
                 }
 
-            buffer = g_strdup_printf(_("%s\t. %s version: %s\n\t. JANSSON version: %d.%d.%d\n"), buf1, DATABASE_NAME, db_version(), JANSSON_MAJOR_VERSION, JANSSON_MINOR_VERSION, JANSSON_MICRO_VERSION);
+            buffer = g_strdup_printf(_("%s\t. %s version: %s\n\t. JANSSON version: %d.%d.%d\n\t. ZLIB version: %s"), buf1, DATABASE_NAME, db_version(), JANSSON_MAJOR_VERSION, JANSSON_MINOR_VERSION, JANSSON_MICRO_VERSION, ZLIB_VERSION);
             buf1 = free_variable(buf1);
         }
 

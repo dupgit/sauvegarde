@@ -50,6 +50,7 @@
 #include <jansson.h>
 #include <curl/curl.h>
 #include <ctype.h>
+#include <zlib.h>
 
 #include "configuration.h"
 #include "files.h"

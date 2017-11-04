@@ -488,6 +488,13 @@ gchar *convert_version_to_json(gchar *name, gchar *date, gchar *version, gchar *
     json_array_append_new(libs, objs);
     free_variable(buffer);
 
+    /* zilb */
+    buffer = g_strdup_printf("%s", ZLIB_VERSION);
+    objs = json_object();
+    json_object_set_new(objs, "zlib", json_string(buffer));
+    json_array_append_new(libs, objs);
+    free_variable(buffer);
+
     insert_json_value_into_json_root(root, "librairies", libs);
 
     json_str = json_dumps(root, 0);
