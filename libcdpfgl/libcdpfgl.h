@@ -60,6 +60,7 @@
 #include "packing.h"
 #include "query.h"
 #include "clock.h"
+#include "compress.h"
 
 /**
  * @def SERVER_PORT
