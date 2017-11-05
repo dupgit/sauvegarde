@@ -28,10 +28,13 @@
 #include "libcdpfgl.h"
 
 
+static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer);
+
+
 /**
- * inits compress_t structure with default values */
+ * Inits compress_t structure with default values
  */
-compress_t *init_compress_t()
+compress_t *init_compress_t(void)
 {
     compress_t *comp = NULL;
 
@@ -46,13 +49,48 @@ compress_t *init_compress_t()
  * Compress buffer and returns a compressed text
  * @param buffer is the plain buffer text to be compressed
  *        this buffer must be \0 terminated.
+ * @param type is the compression type to use.
  * @returns a compress_t structure containing a compressed text
  *          buffer.
  */
-compress_t *compress_buffer(gchar *buffer)
+compress_t *compress_buffer(gchar *buffer, gint type)
 {
     compress_t *comp = NULL;
 
     comp = init_compress_t();
 
+    if (type == COMPRESS_ZLIB_TYPE)
+        {
+            comp = zlib_compress_buffer(comp, buffer);
+        }
+
+    return comp;
 }
+
+/**
+ * Compress buffer using zlib.
+ * @param comp is the compress_t structure that may contain
+ *        the compressed data
+ * @param buffer is the plain text buffer to be compressed
+ * @returns a compress_t structure with compressed data in it
+ *          or NULL in case that something went wrong.
+ */
+static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer)
+{
+    z_stream *stream = NULL;
+    int ret = Z_OK;
+
+    stream->zalloc = Z_NULL;
+    stream->zfree = Z_NULL;
+    stream->opaque = Z_NULL;
+
+    /* Default zlib compression level is set to best (9) */
+    ret = deflateInit(stream, 9);
+    if (ret != Z_OK)
+        {
+            return NULL;
+        }
+
+    return comp;
+}
+

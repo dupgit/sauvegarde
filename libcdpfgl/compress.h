@@ -29,6 +29,14 @@
 #ifndef _COMPRESS_H_
 #define _COMPRESS_H_
 
+
+/**
+ * @def COMPRESS_ZLIB_TYPE
+ * Defines that ZLIB is to be used to compress data
+ */
+#define COMPRESS_ZLIB_TYPE (0)
+
+
 /**
  * @struct compress_t
  * @brief This structure contains pointers to the selected backend functions.
@@ -42,18 +50,19 @@ typedef struct
 
 
 /**
- * inits compress_t structure with default values */
+ * Inits compress_t structure with default values.
  */
-extern compress_t *init_compress_t();
+extern compress_t *init_compress_t(void);
 
 /**
  * Compress buffer and returns a compressed text
  * @param buffer is the plain buffer text to be compressed
  *        this buffer must be \0 terminated.
+ * @param type is the compression type to use.
  * @returns a compress_t structure containing a compressed text
  *          buffer.
  */
-extern compress_t *compress_buffer(gchar *buffer);
+extern compress_t *compress_buffer(gchar *buffer, gint type);
 
 #endif  /* _COMPRESS_H_ */
 
