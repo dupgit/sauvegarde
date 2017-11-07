@@ -28,6 +28,7 @@
 #include "libcdpfgl.h"
 
 
+static void zlib_print_error(int ret);
 static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer);
 
 
@@ -68,6 +69,36 @@ compress_t *compress_buffer(gchar *buffer, gint type)
 }
 
 /**
+ * Error reporting for Zlib to stderr
+ * @param ret is an int that represents a zlib error code
+ */
+static void zlib_print_error(int ret)
+{
+    switch (ret)
+        {
+            case Z_ERRNO:
+                if (ferror(stdin))
+                    print_error(__FILE__, __LINE__, _("Error reading stdin."));
+                if (ferror(stdout))
+                    print_error(__FILE__, __LINE__, _("Error writing stdout."));
+                break;
+            case Z_STREAM_ERROR:
+                print_error(__FILE__, __LINE__, _("Error: invalid compression level."));
+                break;
+            case Z_DATA_ERROR:
+                print_error(__FILE__, __LINE__, _("Error: invalid or incomplete deflate data."));
+                break;
+            case Z_MEM_ERROR:
+                print_error(__FILE__, __LINE__, "Error: out of memory.");
+                break;
+            case Z_VERSION_ERROR:
+                print_error(__FILE__, __LINE__, "Error: zlib version mismatch!");
+        }
+}
+
+
+
+/**
  * Compress buffer using zlib.
  * @param comp is the compress_t structure that may contain
  *        the compressed data
@@ -88,7 +119,12 @@ static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer)
     ret = deflateInit(stream, 9);
     if (ret != Z_OK)
         {
+            zlib_print_error(ret);
             return NULL;
+        }
+    else
+        {
+
         }
 
     return comp;
