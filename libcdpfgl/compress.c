@@ -41,7 +41,7 @@ compress_t *init_compress_t(void)
 
     comp->text = NULL;
     comp->len = 0;
-    comp->comp = FALSE;  /* by default nothing is no compressed ! */
+    comp->comp = FALSE;  /* by default nothing is compressed ! */
 
     return comp;
 }
@@ -50,7 +50,7 @@ compress_t *init_compress_t(void)
  * Compress buffer and returns a compressed text
  * @param buffer is the plain buffer text to be compressed
  *        this buffer must be \0 terminated.
- * @param type is the compression type to use.
+ * @param type is the compression type to use (COMPRESS_ZLIB_TYPE).
  * @returns a compress_t structure containing a compressed text
  *          buffer.
  */
@@ -67,6 +67,7 @@ compress_t *compress_buffer(gchar *buffer, gint type)
 
     return comp;
 }
+
 
 /**
  * Error reporting for Zlib to stderr
@@ -97,7 +98,6 @@ static void zlib_print_error(int ret)
 }
 
 
-
 /**
  * Compress buffer using zlib.
  * @param comp is the compress_t structure that may contain
@@ -108,23 +108,29 @@ static void zlib_print_error(int ret)
  */
 static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer)
 {
-    z_stream *stream = NULL;
     int ret = Z_OK;
+    glong srclen = 0;
+    uLong destlen = 0;
+    Bytef *destbuffer = NULL;
 
-    stream->zalloc = Z_NULL;
-    stream->zfree = Z_NULL;
-    stream->opaque = Z_NULL;
+    srclen = strlen(buffer);
+    destlen = compressBound( (uLong) srclen);
+    destbuffer = (Bytef *) g_malloc(sizeof(Bytef)*destlen);
+
 
     /* Default zlib compression level is set to best (9) */
-    ret = deflateInit(stream, 9);
+    ret = compress2(destbuffer, &destlen, (Bytef *) buffer, (uLong) srclen, 9);
+
     if (ret != Z_OK)
         {
             zlib_print_error(ret);
-            return NULL;
+            comp = NULL;
         }
     else
         {
-
+            comp->text = destbuffer;
+            comp->len = destlen;
+            comp->comp = TRUE;
         }
 
     return comp;
