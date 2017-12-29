@@ -18,6 +18,7 @@ addons:
     - libsqlite3-dev
     - libglib2.0-dev
     - libcurl4-openssl-dev
+    - zlib1g-dev
 
 install:
     # jansson (not found by travis's apt as of 24.08.2015)
