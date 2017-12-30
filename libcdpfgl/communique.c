@@ -303,6 +303,7 @@ gint post_url(comm_t *comm, gchar *url)
 
     if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL && comm->readbuffer != NULL)
         {
+            /* Compress here */
             error_buf = (gchar *) g_malloc(CURL_ERROR_SIZE + 1);
             comm->seq = 0;
             comm->pos = 0;

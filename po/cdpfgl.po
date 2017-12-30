@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-10 14:45+0200\n"
+"POT-Creation-Date: 2017-12-30 14:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -376,33 +376,49 @@ msgstr ""
 msgid "Error while sending GET command and receiving data: %s\n"
 msgstr ""
 
-#: ../libcdpfgl/communique.c:335
+#: ../libcdpfgl/communique.c:336
 #, c-format
 msgid "Error while sending POST command (to \"%s\"): %s\n"
 msgstr ""
 
-#: ../libcdpfgl/communique.c:339
+#: ../libcdpfgl/communique.c:340
 #, c-format
 msgid "Answer is: \"%s\"\n"
 msgstr ""
 
-#: ../libcdpfgl/communique.c:372
+#: ../libcdpfgl/communique.c:373
 #, c-format
 msgid "Server (version %s) is alive at %s.\n"
 msgstr ""
 
-#: ../libcdpfgl/communique.c:376
+#: ../libcdpfgl/communique.c:377
 #, c-format
 msgid "Server (version %s) is alive.\n"
 msgstr ""
 
-#: ../libcdpfgl/communique.c:386
+#: ../libcdpfgl/communique.c:387
 #, c-format
 msgid "Server is not alive (%s).\n"
 msgstr ""
 
-#: ../libcdpfgl/communique.c:390
+#: ../libcdpfgl/communique.c:391
 msgid "Server is not alive.\n"
+msgstr ""
+
+#: ../libcdpfgl/compress.c:82
+msgid "Error reading stdin."
+msgstr ""
+
+#: ../libcdpfgl/compress.c:84
+msgid "Error writing stdout."
+msgstr ""
+
+#: ../libcdpfgl/compress.c:87
+msgid "Error: invalid compression level."
+msgstr ""
+
+#: ../libcdpfgl/compress.c:90
+msgid "Error: invalid or incomplete deflate data."
 msgstr ""
 
 #: ../libcdpfgl/configuration.c:118 ../libcdpfgl/configuration.c:155
@@ -573,6 +589,7 @@ msgstr ""
 msgid ""
 "%s\t. %s version: %s\n"
 "\t. JANSSON version: %d.%d.%d\n"
+"\t. ZLIB version: %s"
 msgstr ""
 
 #: ../libcdpfgl/libcdpfgl.c:219
