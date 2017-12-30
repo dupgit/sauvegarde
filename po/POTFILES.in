@@ -9,6 +9,8 @@ libcdpfgl/clock.c
 libcdpfgl/clock.h
 libcdpfgl/communique.c
 libcdpfgl/communique.h
+libcdpfgl/compress.c
+libcdpfgl/compress.h
 libcdpfgl/configuration.c
 libcdpfgl/configuration.h
 libcdpfgl/database.c
