@@ -33,11 +33,13 @@ static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer);
 
 
 /**
- * Inits compress_t structure with default values
+ * Inits compress_t structure with default values.
  */
 compress_t *init_compress_t(void)
 {
     compress_t *comp = NULL;
+
+    comp = (compress_t *) g_malloc0(sizeof(compress_t));
 
     comp->text = NULL;
     comp->len = 0;
@@ -45,6 +47,25 @@ compress_t *init_compress_t(void)
 
     return comp;
 }
+
+
+/**
+ * Frees memory of the compress_t structure passed as
+ * an argument.
+ * @param comp is the compress_t structure to be freed.
+ */
+void free_compress_t(compress_t *comp)
+{
+    if (comp != NULL)
+        {
+            if (comp->text != NULL)
+                {
+                    g_free(comp->text);
+                }
+            g_free(comp);
+        }
+}
+
 
 /**
  * Compress buffer and returns a compressed text

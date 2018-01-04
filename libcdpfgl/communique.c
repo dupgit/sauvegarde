@@ -300,16 +300,21 @@ gint post_url(comm_t *comm, gchar *url)
     gchar *error_buf = NULL;
     gchar *len = NULL;
     struct curl_slist *chunk = NULL;
+    compress_t *cmpbuf = NULL;
 
     if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL && comm->readbuffer != NULL)
         {
             /* Compress here */
+            cmpbuf = compress_buffer(comm->readbuffer, COMPRESS_ZLIB_TYPE);
+
             error_buf = (gchar *) g_malloc(CURL_ERROR_SIZE + 1);
             comm->seq = 0;
             comm->pos = 0;
             real_url = g_strdup_printf("%s%s", comm->conn, url);
 
-            comm->length = strlen(comm->readbuffer);
+            /*comm->length = strlen(comm->readbuffer); */
+            comm->length = cmpbuf->len;
+            strncpy(comm->readbuffer, cmpbuf->text, cmpbuf->len);
 
             curl_easy_reset(comm->curl_handle);
             curl_easy_setopt(comm->curl_handle, CURLOPT_POST, 1);
@@ -322,6 +327,7 @@ gint post_url(comm_t *comm, gchar *url)
             /* curl_easy_setopt(comm->curl_handle, CURLOPT_VERBOSE, 1L); */
 
             /* Setting header options */
+            chunk = curl_slist_append(chunk, "Content-Encoding: gzip");
             chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
             len = g_strdup_printf("Content-Length: %zd", comm->length);
             chunk = curl_slist_append(chunk, len);
@@ -343,6 +349,7 @@ gint post_url(comm_t *comm, gchar *url)
             free_variable(real_url);
             free_variable(error_buf);
             free_variable(len);
+            free_compress_t(cmpbuf);
         }
 
     return success;

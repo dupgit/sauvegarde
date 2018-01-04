@@ -55,6 +55,13 @@ typedef struct
 extern compress_t *init_compress_t(void);
 
 /**
+ * Frees memory of the compress_t structure passed as
+ * an argument.
+ * @param comp is the compress_t structure to be freed.
+ */
+extern void free_compress_t(compress_t *comp);
+
+/**
  * Compress buffer and returns a compressed text
  * @param buffer is the plain buffer text to be compressed
  *        this buffer must be \0 terminated.
