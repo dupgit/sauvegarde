@@ -706,7 +706,7 @@ static int process_get_request(server_struct_t *server_struct, struct MHD_Connec
 
             if (get_debug_mode() == TRUE)
                 {
-                    print_debug(_("Requested get url: %s\n"), url);
+                    print_debug(_("Requested GET url: %s\n"), url);
                     print_headers(connection);
                 }
 
@@ -1057,7 +1057,7 @@ static int process_post_request(server_struct_t *server_struct, struct MHD_Conne
     if (pp == NULL)
         {
             /* print_headers(connection); */ /* Used for debugging */
-            /* Initialzing the structure at first connection       */
+            /* Initializing the structure at first connection       */
             len = get_content_length(connection);
             pp = (upload_t *) g_malloc(sizeof(upload_t));
             pp->pos = 0;
@@ -1085,6 +1085,12 @@ static int process_post_request(server_struct_t *server_struct, struct MHD_Conne
             /* reset when done */
             *con_cls = NULL;
             pp->buffer[pp->pos] = '\0';
+
+            if (get_debug_mode() == TRUE)
+                {
+                    print_debug(_("Requested POST url: %s\n"), url);
+                    print_headers(connection);
+                }
 
             /* Do something with received_data */
             success = process_received_data(server_struct, connection, url, pp->buffer, pp->pos);
