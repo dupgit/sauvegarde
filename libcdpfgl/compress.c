@@ -145,6 +145,7 @@ static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer)
     if (ret != Z_OK)
         {
             zlib_print_error(ret);
+            free_compress_t(comp);
             comp = NULL;
         }
     else
@@ -156,4 +157,68 @@ static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer)
 
     return comp;
 }
+
+
+/**
+ * Uncompress buffer and returns an uncompressed text
+ * @param buffer is the compressed buffer to be uncompressed
+ * @param cmplen is the len of the above compressed buffer
+ * @param textlen is the len of the uncompressed data
+ * @param type is the compression type to use (COMPRESS_ZLIB_TYPE).
+ * @returns a compress_t structure containing a compressed text
+ *          buffer.
+ */
+compress_t *uncompress_buffer(gchar *buffer, guint64 cmplen, guint64 textlen, gint type)
+{
+    compress_t *comp = NULL;
+
+    comp = init_compress_t();
+
+    if (type == COMPRESS_ZLIB_TYPE)
+        {
+            comp->text = buffer;
+            comp->len = cmplen;
+            comp->comp = TRUE;
+            comp = zlib_uncompress_buffer(comp, textlen);
+        }
+
+    return comp;
+}
+
+
+/**
+ * Uncompress buffer using zlib
+ * @param comp is the compress_t structure that contains the compressed
+ *        data and that will contain the uncompressed data.
+ * @param len is the len of the uncompressed data
+ * @returns a compress_t structure with uncompressed data in it
+ *          or NULL in case that something went wrong.
+ */
+static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len)
+{
+    int ret = Z_OK;
+    uLongf destlen = len;
+    Bytef *destbuffer = NULL;
+
+    destbuffer = (Bytef *) g_malloc(destlen);
+
+    ret = uncompress2(destbuffer, &destlen, (const Bytef *) comp->text, comp->len);
+
+    if (ret != Z_OK)
+        {
+            zlib_print_error(ret);
+            free_compress_t(comp);
+            comp = NULL;
+        }
+    else
+        {
+            g_free(comp->text);
+            comp->text = destbuffer;
+            comp->len = destlen;
+            comp->comp = FALSE;
+        }
+
+    return comp;
+}
+
 
