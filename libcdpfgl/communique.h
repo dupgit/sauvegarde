@@ -39,6 +39,14 @@
 
 
 /**
+ * @def X_UNCOMPRESSED_CONTENT_LENGTH
+ * Defines header name string that will be inserted into post requests
+ * in order to inform about uncompressed request size.
+ */
+#define X_UNCOMPRESSED_CONTENT_LENGTH ("X-Uncompressed-Content-Length: ")
+
+
+/**
  * @def CT_JSON
  * Defines the Content-Type HTTP header for JSON requests / answers
  *
@@ -67,6 +75,7 @@ typedef struct
     guint seq;         /**< sequence number when receiving multiples parts   */
     guint64 pos;       /**< Position in readbuffer                           */
     size_t length;     /**< length of buffer                                 */
+    size_t uncomp_len; /**< length of uncompressed buffer                    */
 } comm_t;
 
 
