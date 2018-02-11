@@ -30,6 +30,7 @@
 
 static void zlib_print_error(int ret);
 static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer);
+static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len);
 
 
 /**
@@ -150,7 +151,7 @@ static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer)
         }
     else
         {
-            comp->text = destbuffer;
+            comp->text = (gchar *) destbuffer;
             comp->len = destlen;
             comp->comp = TRUE;
         }
@@ -202,7 +203,7 @@ static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len)
 
     destbuffer = (Bytef *) g_malloc(destlen);
 
-    ret = uncompress2(destbuffer, &destlen, (const Bytef *) comp->text, comp->len);
+    ret = uncompress(destbuffer, &destlen, (const Bytef *) comp->text, comp->len);
 
     if (ret != Z_OK)
         {
@@ -213,12 +214,10 @@ static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len)
     else
         {
             g_free(comp->text);
-            comp->text = destbuffer;
+            comp->text = (gchar *) destbuffer;
             comp->len = destlen;
             comp->comp = FALSE;
         }
 
     return comp;
 }
-
-

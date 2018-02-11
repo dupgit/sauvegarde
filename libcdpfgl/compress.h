@@ -3,7 +3,7 @@
  *    compress.h
  *    This file is part of "Sauvegarde" project.
  *
- *    (C) Copyright 2017 Olivier Delhomme
+ *    (C) Copyright 2018 Olivier Delhomme
  *     e-mail : olivier.delhomme@free.fr
  *
  *    "Sauvegarde" is free software: you can redistribute it and/or modify
@@ -54,12 +54,14 @@ typedef struct
  */
 extern compress_t *init_compress_t(void);
 
+
 /**
  * Frees memory of the compress_t structure passed as
  * an argument.
  * @param comp is the compress_t structure to be freed.
  */
 extern void free_compress_t(compress_t *comp);
+
 
 /**
  * Compress buffer and returns a compressed text
@@ -70,6 +72,19 @@ extern void free_compress_t(compress_t *comp);
  *          buffer.
  */
 extern compress_t *compress_buffer(gchar *buffer, gint type);
+
+
+/**
+ * Uncompress buffer and returns an uncompressed text
+ * @param buffer is the compressed buffer to be uncompressed
+ * @param cmplen is the len of the above compressed buffer
+ * @param textlen is the len of the uncompressed data
+ * @param type is the compression type to use (COMPRESS_ZLIB_TYPE).
+ * @returns a compress_t structure containing a compressed text
+ *          buffer.
+ */
+extern compress_t *uncompress_buffer(gchar *buffer, guint64 cmplen, guint64 textlen, gint type);
+
 
 #endif  /* _COMPRESS_H_ */
 
