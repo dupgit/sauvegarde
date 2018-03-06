@@ -76,6 +76,52 @@ gchar *make_connexion_string(gchar *ip, gint port)
     return conn;
 }
 
+/**
+ * Copy len bytes of buffer 'buffer' to a newly allocated buffer
+ * @param buffer is a gchar * string to be copied (it may be or not NULL
+ *        terminated).
+ * @param len is the number of bytes to copy.
+ * @returns a newly allocated gchar * string that is buffer's copy and
+ *          that may be freed when no longer needed
+ */
+static gchar *copy_buffer(void *buffer, size_t len)
+{
+    gchar *destbuffer = NULL;
+
+    destbuffer = (gchar *) g_malloc(len + 1);
+    memcpy(destbuffer, buffer, len);
+
+    /* mostly for text only to avoid extra buffer data */
+    destbuffer[len] = '\0';
+
+    return destbuffer;
+}
+
+
+/**
+ * Concatenates buffer with buf1: puts buf1 at 'pos' position of buffer
+ * @param buffer is a gchar * string that may be NULL terminated or not
+ * @param pos is the position where to put buf1 (should be length of buffer)
+ * @param buf1 is a gchar * string that may be NULL terminated or not
+ * @param len is the len of buf1 (at least the number of bytes to concatenate
+ * @returns a newly allocated gchar * string that may be (or not) NULL
+ *          terminated and that contains buffer followed by buf1.
+ */
+static gchar *concat_buffer(gchar *buffer, guint64 pos, gchar *buf1, size_t len)
+{
+    gchar *concat = NULL;
+
+    concat = (gchar *) g_malloc(pos + len + 1);
+    memcpy(concat, buffer, pos);
+    memcpy(concat + pos, buf1, len);
+
+    /* mostly for text only to avoid extra buffer data */
+    concat[pos + len] = '\0';
+
+    return concat;
+}
+
+
 
 /**
  * Used by libcurl to retrieve informations
@@ -91,20 +137,20 @@ gchar *make_connexion_string(gchar *ip, gint port)
 static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 {
     comm_t *comm = (comm_t *) userp;
-    gchar *buf1 = NULL;
     gchar *concat = NULL;
 
     if (comm != NULL)
         {
             if (comm->seq == 0)
                 {
-                    comm->buffer = g_strndup(buffer, size * nmemb);
+                    comm->buffer = copy_buffer(buffer, size * nmemb);
+                    comm->pos = size * nmemb;
                 }
             else
                 {
-                    buf1 = g_strndup(buffer, size * nmemb);
-                    concat = g_strdup_printf("%s%s", comm->buffer, buf1);
-                    free_variable(buf1);
+                    concat = concat_buffer(comm->buffer, comm->pos, buffer, size * nmemb);
+                    comm->pos = comm->pos + size * nmemb;
+
                     free_variable(comm->buffer);
                     comm->buffer = concat;
                 }
@@ -114,8 +160,6 @@ static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 
     return (size * nmemb);
 }
-
-
 
 
 /**
@@ -305,17 +349,26 @@ gint post_url(comm_t *comm, gchar *url)
 
     if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL && comm->readbuffer != NULL)
         {
-            /* Compress here */
-            cmpbuf = compress_buffer(comm->readbuffer, COMPRESS_ZLIB_TYPE);
 
             error_buf = (gchar *) g_malloc(CURL_ERROR_SIZE + 1);
             comm->seq = 0;
             comm->pos = 0;
             real_url = g_strdup_printf("%s%s", comm->conn, url);
 
+            /* readbuffer here should be plain base64 encoded text */
             comm->uncomp_len = strlen(comm->readbuffer);
-            comm->length = cmpbuf->len;
-            strncpy(comm->readbuffer, cmpbuf->text, cmpbuf->len);
+
+            if (comm->cmptype != COMPRESS_NONE_TYPE)
+                {
+                    /* Compress here */
+                    cmpbuf = compress_buffer(comm->readbuffer, comm->cmptype);
+                    comm->length = cmpbuf->len;
+                    memcpy(comm->readbuffer, cmpbuf->text, cmpbuf->len);
+                }
+            else
+                {
+                    comm->length = strlen(comm->readbuffer);
+                }
 
             curl_easy_reset(comm->curl_handle);
             curl_easy_setopt(comm->curl_handle, CURLOPT_POST, 1);
@@ -328,12 +381,17 @@ gint post_url(comm_t *comm, gchar *url)
             /* curl_easy_setopt(comm->curl_handle, CURLOPT_VERBOSE, 1L); */
 
             /* Setting header options */
-            chunk = curl_slist_append(chunk, "Content-Encoding: gzip");
+            if (comm->cmptype == COMPRESS_ZLIB_TYPE)
+                {
+                    curl_easy_setopt(comm->curl_handle, CURLOPT_POSTFIELDSIZE, comm->length);
+                    chunk = curl_slist_append(chunk, "Content-Encoding: gzip");
+                    uncomp = g_strdup_printf("%s: %zd", X_UNCOMPRESSED_CONTENT_LENGTH, comm->uncomp_len);
+                    chunk = curl_slist_append(chunk, uncomp);
+                }
+
             chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
             len = g_strdup_printf("Content-Length: %zd", comm->length);
             chunk = curl_slist_append(chunk, len);
-            uncomp = g_strdup_printf("%s: %zd", X_UNCOMPRESSED_CONTENT_LENGTH, comm->uncomp_len);
-            chunk = curl_slist_append(chunk, uncomp);
 
             chunk = append_content_type_to_header(chunk, url);
             curl_easy_setopt(comm->curl_handle, CURLOPT_HTTPHEADER, chunk);
@@ -429,6 +487,7 @@ comm_t *init_comm_struct(gchar *conn)
     comm->pos = 0;
     comm->length = 0;
     comm->uncomp_len = 0;
+    comm->cmptype = COMPRESS_ZLIB_TYPE;
 
     return comm;
 }
@@ -467,11 +526,11 @@ gchar *create_x_get_hash_array_http_header(hash_extract_t *hash_extract, guint m
 
     if (hash_extract != NULL)
         {
-            header = g_strconcat(X_GET_HASH_ARRAY, convert_max_hashs_from_hash_list_to_gchar(hash_extract, max), NULL);
+            header = g_strconcat(X_GET_HASH_ARRAY, ": ", convert_max_hashs_from_hash_list_to_gchar(hash_extract, max), NULL);
         }
     else
         {
-            header = g_strconcat(X_GET_HASH_ARRAY, NULL);
+            header = g_strconcat(X_GET_HASH_ARRAY, ": ", NULL);
         }
 
     return header;

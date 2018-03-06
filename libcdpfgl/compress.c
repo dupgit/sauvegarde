@@ -28,7 +28,7 @@
 #include "libcdpfgl.h"
 
 
-static void zlib_print_error(int ret);
+static void zlib_print_error(char *filename, int lineno, int ret);
 static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer);
 static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len);
 
@@ -93,29 +93,31 @@ compress_t *compress_buffer(gchar *buffer, gint type)
 
 /**
  * Error reporting for Zlib to stderr
+ * @param char *filename should be __FILE__
+ * @param int lineno should be __LINE__
  * @param ret is an int that represents a zlib error code
  */
-static void zlib_print_error(int ret)
+static void zlib_print_error(char *filename, int lineno, int ret)
 {
     switch (ret)
         {
             case Z_ERRNO:
                 if (ferror(stdin))
-                    print_error(__FILE__, __LINE__, _("Error reading stdin."));
+                    print_error(filename, lineno, _("Error reading stdin."));
                 if (ferror(stdout))
-                    print_error(__FILE__, __LINE__, _("Error writing stdout."));
+                    print_error(filename, lineno, _("Error writing stdout."));
                 break;
             case Z_STREAM_ERROR:
-                print_error(__FILE__, __LINE__, _("Error: invalid compression level."));
+                print_error(filename, lineno, _("Error: invalid compression level."));
                 break;
             case Z_DATA_ERROR:
-                print_error(__FILE__, __LINE__, _("Error: invalid or incomplete deflate data."));
+                print_error(filename, lineno, _("Error: invalid or incomplete deflate data."));
                 break;
             case Z_MEM_ERROR:
-                print_error(__FILE__, __LINE__, "Error: out of memory.");
+                print_error(filename, lineno, "Error: out of memory.");
                 break;
             case Z_VERSION_ERROR:
-                print_error(__FILE__, __LINE__, "Error: zlib version mismatch!");
+                print_error(filename, lineno, "Error: zlib version mismatch!");
         }
 }
 
@@ -132,20 +134,20 @@ static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer)
 {
     int ret = Z_OK;
     glong srclen = 0;
-    uLong destlen = 0;
+    uLongf destlen = 0;
     Bytef *destbuffer = NULL;
 
     srclen = strlen(buffer);
-    destlen = compressBound( (uLong) srclen);
-    destbuffer = (Bytef *) g_malloc(sizeof(Bytef)*destlen);
+    destlen = compressBound((uLong) srclen);
+    destbuffer = (Bytef *) g_malloc(sizeof(Bytef)*destlen + 1);
 
 
     /* Default zlib compression level is set to best (9) */
-    ret = compress2(destbuffer, &destlen, (Bytef *) buffer, (uLong) srclen, 9);
+    ret = compress2(destbuffer, &destlen, (const Bytef *) buffer, (uLong) srclen, 9);
 
     if (ret != Z_OK)
         {
-            zlib_print_error(ret);
+            zlib_print_error(__FILE__, __LINE__, ret);
             free_compress_t(comp);
             comp = NULL;
         }
@@ -198,23 +200,27 @@ compress_t *uncompress_buffer(gchar *buffer, guint64 cmplen, guint64 textlen, gi
 static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len)
 {
     int ret = Z_OK;
-    uLongf destlen = len;
+    uLongf destlen = (uLongf) len;
     Bytef *destbuffer = NULL;
+    const Bytef *srcbuffer = (const Bytef *) comp->text;
+    uLong sourcelen = comp->len;
 
-    destbuffer = (Bytef *) g_malloc(destlen);
+    destbuffer = (Bytef *) g_malloc0(destlen + 1);
 
-    ret = uncompress(destbuffer, &destlen, (const Bytef *) comp->text, comp->len);
+    ret = uncompress(destbuffer, &destlen, srcbuffer, sourcelen);
+
+    /* print_debug("ret : %d - Buffer (size %ld) uncompressed into a buffer (size %ld)\n", ret, sourcelen, destlen); */
 
     if (ret != Z_OK)
         {
-            zlib_print_error(ret);
+            zlib_print_error(__FILE__, __LINE__, ret);
             free_compress_t(comp);
             comp = NULL;
         }
     else
         {
-            g_free(comp->text);
             comp->text = (gchar *) destbuffer;
+            comp->text[destlen] = '\0';
             comp->len = destlen;
             comp->comp = FALSE;
         }

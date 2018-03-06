@@ -221,6 +221,13 @@ extern gpointer free_list(GSList *list);
  */
 extern void free_gchar_variable(gpointer data);
 
+/**
+ * Prints buffer using an hexadecimal form
+ * @param buffer is the buffer to be printed
+ * @param is the number of bytes of buffer to print.
+ */
+extern void print_hex(gchar *buffer, size_t len);
+
 
 /**
  * Prints a message if the debug flag is set

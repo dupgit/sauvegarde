@@ -49,7 +49,8 @@ static int answer_meta_json_post_request(server_struct_t *server_struct, struct 
 static int answer_hash_array_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data);
 static void print_received_data_for_hash(guint8 *hash, gssize read);
 static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, gchar *received_data, guint64 length);
-static guint64 get_content_length(struct MHD_Connection *connection);
+static guint64 get_header_content_length(struct MHD_Connection *connection, gchar *header, guint64 default_value);
+static gshort get_header_compression_type(struct MHD_Connection *connection);
 static int process_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size);
 static int print_out_key(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
 static void print_headers(struct MHD_Connection *connection);
@@ -70,7 +71,7 @@ void free_server_struct_t(server_struct_t *server_struct)
         {
             MHD_stop_daemon(server_struct->d);
             print_debug(_("\tMHD daemon stopped.\n"));
-            free_variable(server_struct->backend); /** we need a backend function to be called to free th backend structure */
+            free_variable(server_struct->backend); /** we need a backend function to be called to free the backend structure */
             print_debug(_("\tbackend variable freed.\n"));
             g_thread_unref(server_struct->data_thread);
             print_debug(_("\tdata thread unreferenced.\n"));
@@ -378,7 +379,7 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
 
 
     a_clock = new_clock_t();
-    header = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "X-Get-Hash-Array");
+    header = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, X_GET_HASH_ARRAY);
     header_hdl = make_hash_data_list_from_string((gchar *)header);
     end_clock(a_clock, "X-Get-Hash-Array retrieved in");
 
@@ -914,7 +915,29 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
     GList *hash_data_list = NULL;
     GList *head = NULL;
     a_clock_t *elapsed = NULL;
+    guint64 uncmp_len = 0;
+    compress_t *comp = NULL;
+    gshort cmptype = COMPRESS_NONE_TYPE;
 
+    cmptype = get_header_compression_type(connection);
+
+    if (cmptype != COMPRESS_NONE_TYPE)
+        {
+            uncmp_len = get_header_content_length(connection, X_UNCOMPRESSED_CONTENT_LENGTH, 2*DEFAULT_SERVER_BUFFER_SIZE);
+            /* print_debug(_("Lengths: compressed data received: %ld, uncompressed indication: %ld\n"), length, uncmp_len); */
+            comp = uncompress_buffer(received_data, length, uncmp_len, cmptype);
+
+            if (comp != NULL)
+                {
+                    /* print_debug(_("comp->text:\n")); */
+                    received_data = comp->text;
+                    length = comp->len;
+                }
+            else
+                {
+                    return MHD_NO;
+                }
+        }
 
     add_one_post_request(server_struct->stats);
 
@@ -1001,38 +1024,73 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
             success = create_MHD_response(connection, answer, CT_PLAIN);
         }
 
+    free_compress_t(comp);
+
+
     return success;
 }
 
 
 /**
  * @param connection is the connection in MHD
- * @returns in bytes the value (a guint) of the Content-Length: header
+ * @param header is the header to look for.
+ * @param default value is the default value to return
+ * @returns in bytes the value (a guint) of the "header" header.
+ * header should be Content-Length or X-Uncompressed-Content-Length
  */
-static guint64 get_content_length(struct MHD_Connection *connection)
+static guint64 get_header_content_length(struct MHD_Connection *connection, gchar *header, guint64 default_value)
 {
     const char *length = NULL;
-    guint64 len = DEFAULT_SERVER_BUFFER_SIZE;
+    guint64 len = default_value;
 
-    length = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "Content-Length");
+    length = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, header);
 
     if (length != NULL)
         {
-            /** @todo test len and return code for sscanf to validate a correct entry */
             if (sscanf(length, "%"G_GUINT64_FORMAT, &len) <= 0)
                 {
-                    print_error(__FILE__, __LINE__, _("Could not guess Content-Length header value: %s\n"), strerror(errno));
-                    len = DEFAULT_SERVER_BUFFER_SIZE;
+                    print_error(__FILE__, __LINE__, _("Could not guess '%s' header value: %s\n"), header, strerror(errno));
+                    len = default_value;
                 }
 
-            if (len > 4294967296)
+            if (len > 4294967296 || len < 0)
                 {
-                    len = DEFAULT_SERVER_BUFFER_SIZE;
+                    len = default_value;
                 }
         }
 
     return len;
 }
+
+/**
+ * @param connection is the connection in MHD
+ * @returns a gshort as a compression type (COMPRESS_*_TYPE as defined
+ *          in libcdpfgl/compress.h). Returns COMPRESS_NONE_TYPE by default
+ */
+static gshort get_header_compression_type(struct MHD_Connection *connection)
+{
+    const char *encoding = NULL;
+
+    encoding = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "Content-Encoding");
+
+    if (encoding != NULL)
+        {
+            print_debug("Encoding: '%s'\n", encoding);
+            if (g_strcmp0(encoding, "gzip") == 0)
+                {
+                    return COMPRESS_ZLIB_TYPE;
+                }
+            else
+                {
+                    return COMPRESS_NONE_TYPE;
+                }
+        }
+
+    return COMPRESS_NONE_TYPE;;
+}
+
+
+
 
 
 /**
@@ -1058,7 +1116,7 @@ static int process_post_request(server_struct_t *server_struct, struct MHD_Conne
         {
             /* print_headers(connection); */ /* Used for debugging */
             /* Initializing the structure at first connection       */
-            len = get_content_length(connection);
+            len = get_header_content_length(connection, "Content-Length", DEFAULT_SERVER_BUFFER_SIZE);
             pp = (upload_t *) g_malloc(sizeof(upload_t));
             pp->pos = 0;
             pp->buffer = g_malloc(sizeof(gchar) * (len + 1));  /* not using g_malloc0 here because it's 1000 times slower */
@@ -1088,9 +1146,10 @@ static int process_post_request(server_struct_t *server_struct, struct MHD_Conne
 
             if (get_debug_mode() == TRUE)
                 {
-                    print_debug(_("Requested POST url: %s\n"), url);
+                    print_debug(_("Requested POST url: %s (%ld bytes)\n"), url, pp->pos);
                     print_headers(connection);
                 }
+
 
             /* Do something with received_data */
             success = process_received_data(server_struct, connection, url, pp->buffer, pp->pos);

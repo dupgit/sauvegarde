@@ -427,6 +427,25 @@ gpointer free_list(GSList *list)
 
 
 /**
+ * Prints buffer using an hexadecimal form
+ * @param buffer is the buffer to be printed
+ * @param is the number of bytes of buffer to print.
+ */
+void print_hex(gchar *buffer, size_t len)
+{
+    size_t i = 0;
+    guchar c = '\0';
+
+    for (i = 0; i < len ; i++)
+        {
+            c = (guchar) buffer[i];
+            fprintf(stdout, "%0x ", c);
+        }
+    fprintf(stdout, "\n");
+}
+
+
+/**
  * Prints a message if the debug flag is set
  * @param format : the format of the message (as in printf)
  * @param ... : va_list of variable that are to be printed into format.

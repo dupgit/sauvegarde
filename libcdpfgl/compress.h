@@ -29,12 +29,17 @@
 #ifndef _COMPRESS_H_
 #define _COMPRESS_H_
 
+/**
+ * @def COMPRESS_NONE_TYPE
+ * Defines that no compression is required
+ */
+#define COMPRESS_NONE_TYPE (0)
 
 /**
  * @def COMPRESS_ZLIB_TYPE
  * Defines that ZLIB is to be used to compress data
  */
-#define COMPRESS_ZLIB_TYPE (0)
+#define COMPRESS_ZLIB_TYPE (1)
 
 
 /**

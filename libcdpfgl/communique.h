@@ -35,7 +35,7 @@
  * Defines header name string that will be inserted into the get request
  * in order to get a concatened array of hashs.
  */
-#define X_GET_HASH_ARRAY ("X-Get-Hash-Array: ")
+#define X_GET_HASH_ARRAY ("X-Get-Hash-Array")
 
 
 /**
@@ -43,7 +43,7 @@
  * Defines header name string that will be inserted into post requests
  * in order to inform about uncompressed request size.
  */
-#define X_UNCOMPRESSED_CONTENT_LENGTH ("X-Uncompressed-Content-Length: ")
+#define X_UNCOMPRESSED_CONTENT_LENGTH ("X-Uncompressed-Content-Length")
 
 
 /**
@@ -76,6 +76,7 @@ typedef struct
     guint64 pos;       /**< Position in readbuffer                           */
     size_t length;     /**< length of buffer                                 */
     size_t uncomp_len; /**< length of uncompressed buffer                    */
+    gshort cmptype;    /**< Compression type (COMPRESS_NONE_TYPE by default) */
 } comm_t;
 
 
