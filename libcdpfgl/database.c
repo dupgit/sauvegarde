@@ -56,6 +56,7 @@ static stmt_t *new_stmts(sqlite3 *db);
 static void free_stmts(stmt_t *stmts);
 static list_t *new_list_t(void);
 static void free_list_t(list_t *container);
+static void migrate_schema_if_needed(db_t *database);
 
 
 /**
@@ -1076,6 +1077,7 @@ db_t *open_database(gchar *dirname, gchar *filename)
 
                     verify_if_tables_exists(database);
                     database->version = get_database_version(version_filename, KN_CLIENT_DATABASE);
+                    migrate_schema_if_needed(database);
 
                     free_variable(database_name);
                     free_variable(version_filename);
@@ -1090,5 +1092,18 @@ db_t *open_database(gchar *dirname, gchar *filename)
 }
 
 
+/**
+ * Migrates or does changes on sql schema where needed
+ * @param database is the structure that contains everything that is
+ *        related to the database (it's connexion for instance).
+ */
+static void migrate_schema_if_needed(db_t *database)
+{
+
+    if (database->version < DATABASE_SCHEMA_VERSION)
+        {
+
+        }
+}
 
 
