@@ -51,6 +51,15 @@
 
 
 /**
+ * @def DATABASE_SCHEMA_VERSION
+ * Defines the schema version that this program is
+ * waiting for.
+ */
+#define DATABASE_SCHEMA_VERSION (2)
+
+
+
+/**
  * @struct stmt_t
  * @brief structure to hold all statements needed for the programs.
  */
