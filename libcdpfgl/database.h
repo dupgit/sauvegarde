@@ -51,13 +51,6 @@
 
 
 /**
- * @def DB_VERSION_FILENAME
- * Defines the name of the file that contains current
- * database version.
- */
-#define DB_VERSION_FILENAME ("db_version.txt")
-
-/**
  * @struct stmt_t
  * @brief structure to hold all statements needed for the programs.
  */
