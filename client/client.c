@@ -135,8 +135,8 @@ static main_struct_t *init_main_structure(options_t *opt)
             if (opt != NULL && opt->ip != NULL)
                 {
                     conn = make_connexion_string(opt->ip, opt->port);
-                    main_struct->comm = init_comm_struct(conn);
-                    main_struct->reconnected = init_comm_struct(conn);
+                    main_struct->comm = init_comm_struct(conn, opt->cmptype);
+                    main_struct->reconnected = init_comm_struct(conn, opt->cmptype);
                     free_variable(conn);
                 }
             else

@@ -246,6 +246,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     gchar *dbname = NULL;          /** Database filename where data and meta data are cached  */
     gchar *ip =  NULL;             /** IP address where is located server's program           */
     gint port = 0;                 /** Port number on which to send things to the server      */
+    gshort cmptype = 0;            /** compression type to be used when communicating         */
     gboolean noscan = FALSE;       /** If set to TRUE then do not do the first directory scan */
 
     GOptionEntry entries[] =
@@ -262,6 +263,7 @@ options_t *manage_command_line_options(int argc, char **argv)
         { "port", 'p', 0, G_OPTION_ARG_INT, &port, N_("Port NUMBER on which to listen."), N_("NUMBER")},
         { "exclude", 'x', 0, G_OPTION_ARG_FILENAME_ARRAY, &exclude_array, N_("Exclude FILENAME from being saved."), N_("FILENAME")},
         { "no-scan", 'n', 0, G_OPTION_ARG_NONE, &noscan, N_("Does not do the first directory scan."), NULL},
+        { "compression", 'z', 0, G_OPTION_ARG_INT, &cmptype, N_("Compression type to use: 0 is NONE, 1 is ZLIB"), N_("NUMBER")},
         { G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &dirname_array, "", NULL},
         { NULL }
     };
@@ -294,6 +296,15 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->version = version; /* only TRUE if -v or --version was invoked */
     opt->noscan = noscan;   /* only TRUE if -n or --no-scan was invoked */
 
+    if (is_compress_type_allowed(cmptype))
+        {
+            opt->cmptype = cmptype;
+        }
+    else
+        {
+            print_error(__FILE__, __LINE__, _("Unknown compression type: %d\n"), cmptype);
+            exit(EXIT_FAILURE);
+        }
 
     /* 2) Reading the configuration from the configuration file specified
      *    on the command line (if any).

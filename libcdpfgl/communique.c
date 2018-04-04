@@ -470,10 +470,12 @@ gboolean is_server_alive(comm_t *comm)
  * Creates a new communication comm_t * structure.
  * @param conn a gchar * connection string that should be some url like
  *        string : http://ip:port or http://servername:port
+ * @param cmptype is the compression type (according to compress.h)
+ *        to be applied when communicating
  * @returns a newly allocated comm_t * structure where sender and receiver
  *          are set to NULL.
  */
-comm_t *init_comm_struct(gchar *conn)
+comm_t *init_comm_struct(gchar *conn, gshort cmptype)
 {
     comm_t *comm = NULL;
 
@@ -487,7 +489,7 @@ comm_t *init_comm_struct(gchar *conn)
     comm->pos = 0;
     comm->length = 0;
     comm->uncomp_len = 0;
-    comm->cmptype = COMPRESS_ZLIB_TYPE;
+    comm->cmptype = cmptype;
 
     return comm;
 }

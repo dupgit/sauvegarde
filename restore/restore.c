@@ -99,7 +99,7 @@ static res_struct_t *init_res_struct(int argc, char **argv)
         {
             /* We keep conn string into comm_t structure: do not free it ! */
             conn = make_connexion_string(res_struct->opt->ip, res_struct->opt->port);
-            res_struct->comm = init_comm_struct(conn);
+            res_struct->comm = init_comm_struct(conn, COMPRESS_NONE_TYPE);
 
             set_res_struct_hostname(res_struct, res_struct->opt->r_hostname);
         }

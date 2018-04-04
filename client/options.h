@@ -49,6 +49,7 @@ typedef struct
     gint buffersize;      /**< buffersize is an option to choose how many bytes we may accumulate before sending them */
     gboolean adaptive;    /**< adaptive will make client compute hashs with an adaptive blocksize if TRUE             */
     gboolean noscan;      /**< noscan will avoid the first directory scan when set to TRUE. default = FALSE           */
+    gshort cmptype;       /**< compression type to be used when communicating. See compress.h for available types     */
 } options_t;
 
 

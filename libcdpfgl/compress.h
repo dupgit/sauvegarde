@@ -91,6 +91,13 @@ extern compress_t *compress_buffer(gchar *buffer, gint type);
 extern compress_t *uncompress_buffer(gchar *buffer, guint64 cmplen, guint64 textlen, gint type);
 
 
+/**
+ * Verify if a compress type is allowed
+ * @param cmptype is a gshort that should represents the compression type
+ * @returns a boolean: True if we know the compression type, False otherwise.
+ */
+extern gboolean is_compress_type_allowed(gshort cmptype);
+
 #endif  /* _COMPRESS_H_ */
 
 

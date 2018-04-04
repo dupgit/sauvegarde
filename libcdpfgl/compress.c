@@ -227,3 +227,21 @@ static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len)
 
     return comp;
 }
+
+
+/**
+ * Verify if a compress type is allowed
+ * @param cmptype is a gshort that should represents the compression type
+ * @returns a boolean: True if we know the compression type, False otherwise.
+ */
+gboolean is_compress_type_allowed(gshort cmptype)
+{
+    if (cmptype == COMPRESS_NONE_TYPE || cmptype == COMPRESS_ZLIB_TYPE)
+        {
+            return TRUE;
+        }
+    else
+        {
+            return FALSE;
+        }
+}

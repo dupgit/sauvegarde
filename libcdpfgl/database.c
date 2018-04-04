@@ -1102,7 +1102,8 @@ static void migrate_schema_if_needed(db_t *database)
 
     if (database->version < DATABASE_SCHEMA_VERSION)
         {
-
+            print_db_error(database->db, "Error database version is not correct: %d but expected: %d\n", database->version, DATABASE_SCHEMA_VERSION);
+            exit(EXIT_FAILURE);
         }
 }
 

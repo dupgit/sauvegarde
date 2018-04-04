@@ -103,10 +103,12 @@ extern gchar *make_connexion_string(gchar *ip, gint port);
  * Creates a new communication comm_t * structure.
  * @param conn a gchar * connection string that should be some url like
  *        string : http://ip:port or http://servername:port
+ * @param cmptype is the compression type (according to compress.h)
+ *        to be applied when communicating
  * @returns a newly allocated comm_t * structure where sender and receiver
  *          are set to NULL.
  */
-extern comm_t *init_comm_struct(gchar *conn);
+extern comm_t *init_comm_struct(gchar *conn, gshort cmptype);
 
 
 /**
