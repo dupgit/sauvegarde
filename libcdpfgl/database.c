@@ -30,7 +30,7 @@
 
 static void print_db_error(sqlite3 *db, const char *format, ...);
 static void print_on_db_error(sqlite3 *db, int result, const gchar *infos);
-static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message);
+static int exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message);
 static int make_list_first_column_callback(void *userp, int nb_col, char **data, char **name_col);
 static gint does_db_object_exists(db_t *database, gchar *name, gint type);
 static gint does_table_exists(db_t *database, gchar *tablename);
@@ -113,7 +113,7 @@ static void print_on_db_error(sqlite3 *db, int result, const gchar *infos)
  * @param sql_cmd : a gchar * SQL command to be executed onto the database
  * @param format_message : a gchar * format message to be used in case of an error
  */
-static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message)
+static int exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message)
 {
     char *error_message = NULL;
     const char *message = NULL;
@@ -128,6 +128,8 @@ static void exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message)
             message = sqlite3_errstr(result);
             print_db_error(database->db, format_message, result, message);
         }
+
+    return result;
 }
 
 
@@ -618,8 +620,8 @@ static int transmit_callback(void *userp, int nb_col, char **data, char **name_c
     if (trans != NULL && data != NULL && trans->comm != NULL && trans->database != NULL)
         {
 
-            trans->comm->readbuffer = data[2];          /** data[2] is the data column in buffers table of the database */
-            success = post_url(trans->comm, data[1]);   /** data[1] is the url column in buffers table of the database  */
+            trans->comm->readbuffer = data[2];         /** data[2] is the data column in buffers table of the database */
+            success = post_url(trans->comm, data[1]);  /** data[1] is the url column in buffers table of the database  */
 
             if (success == CURLE_OK)
                 {
@@ -824,6 +826,33 @@ static void bind_text_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, 
 
 
 /**
+ * Binds a gchar *blob_value into the prepared statement.
+ * @param db is the database concerned by stmt statement. It is only used
+ *        here to print an error if any.
+ * @param stmt is the prepared statement in which we want to bind the string
+ *        'value' in 'name' parameter
+ * @param name represents the name of the parameter in the prepared statement
+ *        which we want to fill in with 'value'
+ * @param blob_value is a gchar * string to be filled in 'name' parameter in the
+ *        prepared statement.
+ * @param length is the total number of bytes in blob_values to be taken into
+ *         account.
+ */
+static void bind_blob_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, gchar *blob_value, gsize length)
+{
+    int index = 0;
+    int result = 0;
+
+    if (stmt != NULL && name != NULL)
+        {
+            index = sqlite3_bind_parameter_index(stmt, name);
+            result = sqlite3_bind_blob64(stmt, index, blob_value, length, NULL);
+            print_on_db_error(db, result, name);
+        }
+}
+
+
+/**
  * Binds values to the prepared statement
  * @param db is the concerned database where to save meta data
  * @param stmt is the prepared statement where we want to bind values
@@ -878,6 +907,8 @@ static sqlite3_stmt *create_save_meta_stmt(sqlite3 *db)
  * Binds values to the prepared statement
  * @param db is the concerned database where to save meta data
  * @param stmt is the prepared statement where we want to bind values
+ * @param url is the url corresponding to the request to be saved
+ * @param buffer is the buffer to be saved
  */
 static void bind_values_to_save_buffer(sqlite3 *db, sqlite3_stmt *stmt, gchar *url, gchar *buffer)
 {
@@ -1042,7 +1073,6 @@ void close_database(db_t *database)
 db_t *open_database(gchar *dirname, gchar *filename)
 {
     gchar *database_name = NULL;
-    gchar *version_filename = NULL;
     db_t *database = NULL;
     sqlite3 *db = NULL;
     int result = 0;
@@ -1069,18 +1099,17 @@ db_t *open_database(gchar *dirname, gchar *filename)
                 }
             else
                 {
-                    version_filename = g_strdup_printf("%s.version", database_name);
+                    database->version_filename = g_strdup_printf("%s.version", database_name);
 
                     database->db = db;
                     database->stmts = new_stmts(db);
                     sqlite3_extended_result_codes(db, 1);
 
                     verify_if_tables_exists(database);
-                    database->version = get_database_version(version_filename, KN_CLIENT_DATABASE);
+                    database->version = get_database_version(database->version_filename, KN_CLIENT_DATABASE);
                     migrate_schema_if_needed(database);
 
                     free_variable(database_name);
-                    free_variable(version_filename);
 
                     return database;
                 }
@@ -1093,16 +1122,55 @@ db_t *open_database(gchar *dirname, gchar *filename)
 
 
 /**
+ * This function should migrate from version 1 to version 2
+ * the local database
+ * @param database is the structure that contains everything that is
+ *                 related to the database (it's connexion for instance).
+ */
+/*
+static gboolean migrate_to_2(db_t *database)
+{
+    int result = SQLITE_ERROR;
+
+    fprintf(stdout, _("Creating new 'buffers' table\n"));
+    check_and_create_table(database, "buffers_new",  "CREATE TABLE buffers_new (buffer_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, data BLOB);", _("(%d) Error while creating database table 'buffers_new': %s\n"));
+
+    result = exec_sql_cmd(database, "INSERT INTO buffers_new SELECT * FROM buffers ORDER BY buffer_id;", _("(%d) Error while inserting values from 'buffers' table into 'buffers_new table': %s\n"));
+
+    if (result == SQLITE_OK)
+        {
+            exec_sql_cmd(database, "DROP TABLE buffers;", _("(%d) Error while dropping table 'buffers': %s\n"));
+            exec_sql_cmd(database, "ALTER TABLE buffers_new RENAME TO buffers", _("(%d) Error while renaming 'buffers_new' to 'buffers' table: %s\n"));
+
+            set_database_version(database->version_filename, KN_CLIENT_DATABASE, 2);
+        }
+
+
+    return TRUE;
+}
+*/
+
+/**
  * Migrates or does changes on sql schema where needed
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
  */
 static void migrate_schema_if_needed(db_t *database)
 {
-
-    if (database->version < DATABASE_SCHEMA_VERSION)
+    if (database != NULL && database->version == 1)
         {
-            print_db_error(database->db, "Error database version is not correct: %d but expected: %d\n", database->version, DATABASE_SCHEMA_VERSION);
+            /* First version is OK and there is nothing to do with that */
+        }
+    else if (database != NULL && database->version >= 1 && database->version < DATABASE_SCHEMA_VERSION)
+        {
+            fprintf(stdout, _("Warning database version is not correct: %ld but expected: %d\n"), database->version, DATABASE_SCHEMA_VERSION);
+            fprintf(stdout, _("Now trying to migrate from %ld to %d\n"), database->version, DATABASE_SCHEMA_VERSION);
+            /* migrate_to_2(database); */
+            exit(EXIT_FAILURE);
+        }
+    else if (database != NULL)
+        {
+            print_db_error(database->db, _("Error database version is not correct: %ld but expected between 2 and %d\n"), database->version, DATABASE_SCHEMA_VERSION);
             exit(EXIT_FAILURE);
         }
 }

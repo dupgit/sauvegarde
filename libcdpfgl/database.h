@@ -55,7 +55,7 @@
  * Defines the schema version that this program is
  * waiting for.
  */
-#define DATABASE_SCHEMA_VERSION (2)
+#define DATABASE_SCHEMA_VERSION (1)
 
 
 
@@ -80,6 +80,7 @@ typedef struct
     sqlite3 *db;  /**< database connexion  */
     stmt_t *stmts;
     gint64 version;
+    gchar *version_filename;
 } db_t;
 
 

@@ -344,6 +344,7 @@ gint post_url(comm_t *comm, gchar *url)
     gchar *error_buf = NULL;
     gchar *len = NULL;
     gchar *uncomp = NULL;
+    gchar *readbuffer_orig = NULL;
     struct curl_slist *chunk = NULL;
     compress_t *cmpbuf = NULL;
 
@@ -363,7 +364,8 @@ gint post_url(comm_t *comm, gchar *url)
                     /* Compress here */
                     cmpbuf = compress_buffer(comm->readbuffer, comm->cmptype);
                     comm->length = cmpbuf->len;
-                    memcpy(comm->readbuffer, cmpbuf->text, cmpbuf->len);
+                    readbuffer_orig = comm->readbuffer;
+                    comm->readbuffer =  cmpbuf->text;
                 }
             else
                 {
@@ -412,6 +414,13 @@ gint post_url(comm_t *comm, gchar *url)
             free_variable(error_buf);
             free_variable(len);
             free_compress_t(cmpbuf);
+
+            if (comm->cmptype != COMPRESS_NONE_TYPE)
+                {
+                    comm->readbuffer = readbuffer_orig;
+                    comm->length = comm->uncomp_len;
+                }
+
         }
 
     return success;

@@ -381,17 +381,16 @@ static gint64 read_database_version_from_keyfile(GKeyFile *keyfile, gchar *filen
     return num;
 }
 
-
 /**
- * Creates database version text file
+ * Writes database version text file
  * @param keyfile is an opened GKeyFile file where we want to load keyvalue
  * @param filename is the name of that GKeyfile
  * @param keyvalue is the value we ant to load from GN_VERSION section.
- * returns a positive version number or -1 en error
+ * @param num is the number to be written
+ * returns a positive version number or -1 on error
  */
-static gint64 create_database_version_keyfile(GKeyFile *keyfile, gchar *filename, gchar *keyvalue)
+static gint64 write_database_version_keyfile(GKeyFile *keyfile, gchar *filename, gchar *keyvalue, gint64 num)
 {
-    gint64 num = -1;          /** -1 is the error return value.  */
     gboolean ok = FALSE;
     GError *error = NULL;     /** Glib error handling            */
     gsize length = 0;
@@ -400,7 +399,6 @@ static gint64 create_database_version_keyfile(GKeyFile *keyfile, gchar *filename
     if (keyfile != NULL && filename != NULL && keyvalue != NULL)
         {
             /* file does not exists: we have to create it and fill with the first version number (1) */
-            num = 1;
             g_key_file_set_int64(keyfile, GN_VERSION, keyvalue, num);
             content = g_key_file_to_data(keyfile, &length, NULL);
             ok = g_file_set_contents(filename, content, length, &error);
@@ -418,6 +416,26 @@ static gint64 create_database_version_keyfile(GKeyFile *keyfile, gchar *filename
                     num = -1;
                 }
         }
+    else
+        {
+            num = -1;
+        }
+
+    return num;
+}
+
+/**
+ * Creates database version text file
+ * @param keyfile is an opened GKeyFile file where we want to load keyvalue
+ * @param filename is the name of that GKeyfile
+ * @param keyvalue is the value we ant to load from GN_VERSION section.
+ * returns a positive version number or -1 en error
+ */
+static gint64 create_database_version_keyfile(GKeyFile *keyfile, gchar *filename, gchar *keyvalue)
+{
+    gint64 num = 1;
+
+    num = write_database_version_keyfile(keyfile, filename, keyvalue, num);
 
     return num;
 }
@@ -452,3 +470,22 @@ gint64 get_database_version(gchar *version_filename, gchar *keyvalue)
 
     return num;
 }
+
+
+/**
+ * Sets database version to a text file that should be placed along
+ * with the database file in the cache-directory path.
+ * @param version_filename is the filename to be read that may contain
+ *        database version number.
+ * @param keyvalue is the value we ant to load from GN_VERSION section.
+ * @returns a positive version number or -1 on error.
+ */
+gint64 set_database_version(gchar *version_filename, gchar *keyvalue, gint64 num)
+{
+    GKeyFile *keyfile = NULL;
+
+    /* @todo manage Error on g_key_file_load_from_file() function */
+    g_key_file_load_from_file(keyfile, version_filename, G_KEY_FILE_KEEP_COMMENTS, NULL);
+    return write_database_version_keyfile(keyfile, version_filename, keyvalue, num);
+}
+
