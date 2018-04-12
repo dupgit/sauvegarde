@@ -58,7 +58,6 @@
 #define DATABASE_SCHEMA_VERSION (1)
 
 
-
 /**
  * @struct stmt_t
  * @brief structure to hold all statements needed for the programs.

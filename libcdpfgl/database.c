@@ -1122,35 +1122,6 @@ db_t *open_database(gchar *dirname, gchar *filename)
 
 
 /**
- * This function should migrate from version 1 to version 2
- * the local database
- * @param database is the structure that contains everything that is
- *                 related to the database (it's connexion for instance).
- */
-/*
-static gboolean migrate_to_2(db_t *database)
-{
-    int result = SQLITE_ERROR;
-
-    fprintf(stdout, _("Creating new 'buffers' table\n"));
-    check_and_create_table(database, "buffers_new",  "CREATE TABLE buffers_new (buffer_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, data BLOB);", _("(%d) Error while creating database table 'buffers_new': %s\n"));
-
-    result = exec_sql_cmd(database, "INSERT INTO buffers_new SELECT * FROM buffers ORDER BY buffer_id;", _("(%d) Error while inserting values from 'buffers' table into 'buffers_new table': %s\n"));
-
-    if (result == SQLITE_OK)
-        {
-            exec_sql_cmd(database, "DROP TABLE buffers;", _("(%d) Error while dropping table 'buffers': %s\n"));
-            exec_sql_cmd(database, "ALTER TABLE buffers_new RENAME TO buffers", _("(%d) Error while renaming 'buffers_new' to 'buffers' table: %s\n"));
-
-            set_database_version(database->version_filename, KN_CLIENT_DATABASE, 2);
-        }
-
-
-    return TRUE;
-}
-*/
-
-/**
  * Migrates or does changes on sql schema where needed
  * @param database is the structure that contains everything that is
  *        related to the database (it's connexion for instance).
@@ -1165,7 +1136,11 @@ static void migrate_schema_if_needed(db_t *database)
         {
             fprintf(stdout, _("Warning database version is not correct: %ld but expected: %d\n"), database->version, DATABASE_SCHEMA_VERSION);
             fprintf(stdout, _("Now trying to migrate from %ld to %d\n"), database->version, DATABASE_SCHEMA_VERSION);
-            /* migrate_to_2(database); */
+
+            /* Here should go the code to migrate from on version to another one
+             * in an incremental way.
+             */
+
             exit(EXIT_FAILURE);
         }
     else if (database != NULL)

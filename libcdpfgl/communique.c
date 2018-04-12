@@ -344,7 +344,7 @@ gint post_url(comm_t *comm, gchar *url)
     gchar *error_buf = NULL;
     gchar *len = NULL;
     gchar *uncomp = NULL;
-    gchar *readbuffer_orig = NULL;
+    gchar *readbuffer_orig = NULL;   /** A pointer to keep readbuffer one while sending compressed data */
     struct curl_slist *chunk = NULL;
     compress_t *cmpbuf = NULL;
 
@@ -415,6 +415,12 @@ gint post_url(comm_t *comm, gchar *url)
             free_variable(len);
             free_compress_t(cmpbuf);
 
+            /* This function is called by the one that manages the local database
+             * directly with the values that are in the database and a strlen() is
+             * done at it's begining so the data in the database MUST be stlen()
+             * compatible. That is to say that they MUST be stored untransformed.
+             * So we get them as they were when entering this function.
+             */
             if (comm->cmptype != COMPRESS_NONE_TYPE)
                 {
                     comm->readbuffer = readbuffer_orig;
