@@ -304,8 +304,10 @@ extern gint64 get_database_version(gchar *version_filename, gchar *keyvalue);
  * @param version_filename is the filename to be read that may contain
  *        database version number.
  * @param keyvalue is the value we ant to load from GN_VERSION section.
+ * @param version_number is the version number that we want to fix into the
+ *                       database version_filename file.
  * @returns a positive version number or -1 on error.
  */
-extern gint64 set_database_version(gchar *version_filename, gchar *keyvalue, gint64 num);
+extern gint64 set_database_version(gchar *version_filename, gchar *keyvalue, gint64 version_number);
 
 #endif /* #ifndef _CONFIGURATION_H_ */

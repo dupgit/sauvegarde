@@ -478,14 +478,28 @@ gint64 get_database_version(gchar *version_filename, gchar *keyvalue)
  * @param version_filename is the filename to be read that may contain
  *        database version number.
  * @param keyvalue is the value we ant to load from GN_VERSION section.
+ * @param version_number is the version number that we want to fix into the
+ *                       database version_filename file.
  * @returns a positive version number or -1 on error.
  */
-gint64 set_database_version(gchar *version_filename, gchar *keyvalue, gint64 num)
+gint64 set_database_version(gchar *version_filename, gchar *keyvalue, gint64 version_number)
 {
     GKeyFile *keyfile = NULL;
+    gint64 num = -1;
+    gboolean ok = FALSE;
 
     /* @todo manage Error on g_key_file_load_from_file() function */
-    g_key_file_load_from_file(keyfile, version_filename, G_KEY_FILE_KEEP_COMMENTS, NULL);
-    return write_database_version_keyfile(keyfile, version_filename, keyvalue, num);
+    keyfile = g_key_file_new();
+
+    if (keyfile != NULL && (file_exists(version_filename) == TRUE))
+        {
+            ok = g_key_file_load_from_file(keyfile, version_filename, G_KEY_FILE_KEEP_COMMENTS, NULL);
+            if (ok == TRUE)
+                {
+                    num = write_database_version_keyfile(keyfile, version_filename, keyvalue, version_number);
+                }
+        }
+
+    return num;
 }
 
