@@ -91,12 +91,14 @@
  */
 #define KN_ADAPTIVE ("adaptive")
 
+
 /**
  * @def KN_NOSCAN
  * Defines the key name for the no-scan option that prevent the first
  * scan to occur if set to TRUE (FALSE is the default)
  */
 # define KN_NOSCAN ("no-scan")
+
 
 /**
  * @def KN_BUFFER_SIZE
@@ -112,6 +114,7 @@
  * Defines a list of directories that we want to watch.
  */
 #define KN_DIR_LIST ("directory-list")
+
 
 /**
  * @def KN_EXC_LIST
@@ -134,6 +137,16 @@
  * Defines the name of the database to be used for the local cache
  */
 #define KN_DB_NAME ("cache-db-name")
+
+
+/**
+ * @def KN_COMPRESSION_TYPE
+ * Defines compression type to use (should be the same than the one
+ * found in libcdpfgl/compress.h :
+ * . 0  COMPRESS_NONE_TYPE (no compression at all
+ * . 1  COMPRESS_ZLIB_TYPE (zlib compression)
+ */
+#define KN_COMPRESSION_TYPE ("compression-type")
 
 
 /**

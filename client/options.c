@@ -34,6 +34,7 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
 static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static void read_from_configuration_file(options_t *opt, gchar *filename);
 static void print_filelist(GSList *filelist, gchar *title);
+static void set_compression_type(options_t *opt, gshort cmptype);
 
 
 /**
@@ -112,6 +113,7 @@ static void print_selected_options(options_t *opt)
 static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *filename)
 {
     gchar *dircache = NULL;
+    gint cmptype = 0;
 
     if (keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_CLIENT) == TRUE)
         {
@@ -138,6 +140,10 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
 
             /* Buffer size to be used to send data to server */
             opt->buffersize = read_int_from_file(keyfile, filename, GN_CLIENT, KN_BUFFER_SIZE, _("Could not load buffersize from file"), CLIENT_MIN_BUFFER);
+
+            /* Compression type if any */
+            cmptype = read_int_from_file(keyfile, filename, GN_CLIENT, KN_COMPRESSION_TYPE, _("Compression type not defined in configuration file"), opt->cmptype);
+            set_compression_type(opt, cmptype);
         }
 
    read_debug_mode_from_file(keyfile, filename);
@@ -215,6 +221,27 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
 
 /**
+ * Verifies if cmptype is a compression type allowed to be used and
+ * sets the option accordingly or exit the program with an error
+ * message.
+ * @param Structure that manage program's options
+ * @param cmtype a type to be tested
+ */
+static void set_compression_type(options_t *opt, gshort cmptype)
+{
+    if (is_compress_type_allowed(cmptype))
+        {
+            opt->cmptype = cmptype;
+        }
+    else
+        {
+            print_error(__FILE__, __LINE__, _("Unknown compression type: %d\n"), cmptype);
+            exit(EXIT_FAILURE);
+        }
+}
+
+
+/**
  * This function parses command line options. It sets the options in this
  * order. It means that the value used for an option is the one set in the
  * lastest step.
@@ -246,7 +273,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     gchar *dbname = NULL;          /** Database filename where data and meta data are cached  */
     gchar *ip =  NULL;             /** IP address where is located server's program           */
     gint port = 0;                 /** Port number on which to send things to the server      */
-    gshort cmptype = 0;            /** compression type to be used when communicating         */
+    gshort cmptype = -1;            /** compression type to be used when communicating         */
     gboolean noscan = FALSE;       /** If set to TRUE then do not do the first directory scan */
 
     GOptionEntry entries[] =
@@ -287,6 +314,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->port = SERVER_PORT;
     opt->buffersize = -1;
     opt->adaptive = FALSE;
+    opt->cmptype = 0;
 
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "client.conf");
@@ -295,16 +323,6 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     opt->version = version; /* only TRUE if -v or --version was invoked */
     opt->noscan = noscan;   /* only TRUE if -n or --no-scan was invoked */
-
-    if (is_compress_type_allowed(cmptype))
-        {
-            opt->cmptype = cmptype;
-        }
-    else
-        {
-            print_error(__FILE__, __LINE__, _("Unknown compression type: %d\n"), cmptype);
-            exit(EXIT_FAILURE);
-        }
 
     /* 2) Reading the configuration from the configuration file specified
      *    on the command line (if any).
@@ -323,6 +341,11 @@ options_t *manage_command_line_options(int argc, char **argv)
 
     opt->dirname_list = convert_gchar_array_to_GSList(dirname_array, opt->dirname_list);
     opt->exclude_list = convert_gchar_array_to_GSList(exclude_array, opt->exclude_list);
+
+    if (cmptype >= 0)
+        {
+            set_compression_type(opt, cmptype);
+        }
 
     g_strfreev(dirname_array);
     g_strfreev(exclude_array);
