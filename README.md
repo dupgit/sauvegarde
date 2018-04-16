@@ -24,9 +24,18 @@ Feel free to contribute to cdpfgl's project and/or give help to the
 projects used here (see dependencies section below).
 
 
-## Dependencies
 
-### Mandatory
+## Download
+
+You can download the source code from github [https://github.com/dupgit/sauvegarde](https://github.com/dupgit/sauvegarde) 
+or get a packed defined version at [http://cdpfgl.delhomme.org/download/releases/](http://cdpfgl.delhomme.org/download/releases/)
+
+
+## Installation
+
+### Dependencies
+
+#### Mandatory
 
 This project depends on the following projects (minimum version required is
 stated between () and recommended version between []):
@@ -51,7 +60,7 @@ on x86_64 and arm7l architectures. Please let me know if you have compiled
 cdpfgl successfully in a system that is not listed here.
 
 
-### Optional
+#### Optional
 
 * `doxygen` (1.6.1) is used to generate code's documentation.
 * `gnuplot` (4.6) is used to generate graphs for the documentation.
@@ -61,14 +70,6 @@ cdpfgl successfully in a system that is not listed here.
             .md manual files. It is also used to generate man pages from
             .md files in 'man' directory.
 
-
-## Download
-
-You can download the source code from github [https://github.com/dupgit/sauvegarde](https://github.com/dupgit/sauvegarde) 
-or get a packed defined version at [http://cdpfgl.delhomme.org/download/releases/](http://cdpfgl.delhomme.org/download/releases/)
-
-
-## Installation
 
 If you had the code from the git repository you may generate the configure
 script by invoking `./autogen.sh` script. It will execute aclocal, libtoolize
