@@ -38,7 +38,7 @@ cdpfglclient will monitor the file system for file creation or changes and will 
 
 **-b**, **--blocksize=SIZE**:
 
-   Fixed block SIZE used to compute hashs (default is 16384). This option is not taken into account when adaptive blocksize option is set to 1.
+   Fixed block SIZE (in bytes) used to compute hashs (default is 16384). This option is not taken into account when adaptive blocksize option is set to 1.
 
 **-a**, **--adaptive=BOOLEAN**:
 
@@ -46,7 +46,7 @@ cdpfglclient will monitor the file system for file creation or changes and will 
 
 **-s**, **--buffersize=SIZE**:
 
-   SIZE of the cache used to send data to server. For correct operations SIZE value should not be less than 1048576 (the default size).
+   SIZE (in bytes) of the cache used to send data to server. For correct operations SIZE value should not be less than 1048576 (the default size).
 
 **-r**, **--dircache=DIRNAME**:
 
