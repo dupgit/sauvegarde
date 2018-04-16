@@ -3,7 +3,7 @@
  *    database.h
  *    This file is part of "Sauvegarde" project.
  *
- *    (C) Copyright 2014 - 2017 Olivier Delhomme
+ *    (C) Copyright 2014 - 2018 Olivier Delhomme
  *     e-mail : olivier.delhomme@free.fr
  *
  *    "Sauvegarde" is free software: you can redistribute it and/or modify
@@ -81,6 +81,12 @@ typedef struct
     gint64 version;
     gchar *version_filename;
 } db_t;
+
+
+/**
+ * Function template definition to be used when upgrading the local database.
+ */
+typedef int (* migrate_to_version) (db_t *);   /**< Migrates the local database to a specific version */
 
 
 /**
