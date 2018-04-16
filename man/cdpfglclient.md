@@ -72,6 +72,10 @@ cdpfglclient will monitor the file system for file creation or changes and will 
 
    Does not do the first directory scan.
 
+**-z TYPE**, **--compression=TYPE**:
+
+   Allow to choose compression TYPE used by the cdpfglclient. 0 means no compression at all and 1 uses zlib (gz compression type). Other values may end the program with an error.
+
 
 # CONFIGURATION FILE
 

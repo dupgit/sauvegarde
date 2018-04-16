@@ -86,6 +86,12 @@ directory obtained from a specified configuration file if any.
 \f[B]\-n\f[], \f[B]\-\-no\-scan\f[]:
 .PP
 Does not do the first directory scan.
+.PP
+\f[B]\-z TYPE\f[], \f[B]\-\-compression=TYPE\f[]:
+.PP
+Allow to choose compression TYPE used by the cdpfglclient.
+0 means no compression at all and 1\ uses zlib (gz compression type).
+Other values may end the program with an error.
 .SH CONFIGURATION FILE
 .PP
 By default the configuration file is named
