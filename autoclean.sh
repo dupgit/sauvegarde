@@ -10,8 +10,8 @@
 #
 function delete_file {
 
-    echo "$1"
-    rm -f $1
+    echo "${1}"
+    rm -f "${1}"
 
 }
 
@@ -22,8 +22,8 @@ function delete_file {
 #
 function delete_dir {
 
-    echo "$1"
-    rm -fr $1
+    echo "${1}"
+    rm -fr "${1}"
 }
 
 
@@ -33,8 +33,8 @@ function delete_dir {
 #
 function delete_evrywhere {
 
-echo "find . -name $1 -exec rm -f {} \;"
-find . -name $1 -exec rm -f {} \;
+echo "find . -name ${1} -exec rm -f {} \;"
+find . -name "${1}" -exec rm -f {} \;
 
 }
 

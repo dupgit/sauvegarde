@@ -26,13 +26,13 @@
 # References :
 #  . https://wiki.debian.org/IntroDebianPackaging documentation
 #
-export version=`grep ' VERSION ' ../../config.h | cut -d '"' -f2`
+export version=$(grep ' VERSION ' ../../config.h | cut -d '"' -f2)
 export distfiles="../../cdpfgl-${version}.tar.xz"
 
-cp $distfiles .
-mv cdpfgl-${version}.tar.xz cdpfgl_${version}.orig.tar.xz
-tar Jxf cdpfgl_${version}.orig.tar.xz
-cd cdpfgl-${version}
+cp "${distfiles}" .
+mv "cdpfgl-${version}.tar.xz" "cdpfgl_${version}.orig.tar.xz"
+tar Jxf "cdpfgl_${version}.orig.tar.xz"
+cd "cdpfgl-${version}"
 cp -a ../debian .
 
 debuild -us -uc
