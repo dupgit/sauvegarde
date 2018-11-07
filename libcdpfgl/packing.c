@@ -36,6 +36,22 @@ static json_t *create_json_answer(gchar *type, guint32 http_code, gchar *message
 
 
 /**
+ * Inserts an integer value into a json…t *root array
+ * @param[in,out] root is the root that will contain all meta data values
+ * @param keyname is the keyname associated with the value (in fact it is
+ *        variable's name)
+ * @param value is the integer value to insert into root
+ */
+void insert_integer_value_into_json_root(json_t *root, gchar *keyname, guint64 value)
+{
+    json_t *nbr = NULL;
+
+    nbr = json_integer(value);
+    insert_json_value_into_json_root(root, keyname, nbr);
+}
+
+
+/**
  * Inserts a json_t *value into the json_t *root array.
  * @param[in,out] root is the root that will contain all meta data values
  * @param keyname is the keyname associated with the value (in fact it is

@@ -75,6 +75,16 @@ extern json_t *load_json(gchar *json_str);
 
 
 /**
+ * Inserts an integer value into a json…t *root array
+ * @param[in,out] root is the root that will contain all meta data values
+ * @param keyname is the keyname associated with the value (in fact it is
+ *        variable's name)
+ * @param value is the integer value to insert into root
+ */
+extern void insert_integer_value_into_json_root(json_t *root, gchar *keyname, guint64 value);
+
+
+/**
  * Inserts a json_t *value into the json_t *root array.
  * @param[in,out] root is the root that will contain all meta data values
  * @param keyname is the keyname associated with the value (in fact it is
