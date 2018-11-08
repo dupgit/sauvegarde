@@ -468,8 +468,7 @@ static buffer_t *init_buffer_structure(GFileInputStream *stream)
     gchar *buf = NULL;
 
     a_buffer = (buffer_t *) g_malloc0(sizeof(buffer_t));
-
-    buf =(gchar *) g_malloc0(FILE_BACKEND_BUFFER_SIZE + 1); /* to store the \0 at the end ! */
+    buf = (gchar *) g_malloc0(FILE_BACKEND_BUFFER_SIZE + 1); /* to store the \0 at the end ! */
 
     a_buffer->buf = buf;
     a_buffer->size = 0;
