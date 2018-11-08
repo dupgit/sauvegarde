@@ -426,34 +426,16 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
  */
 json_t *fills_json_with_get_stats(json_t *get, req_get_t *get_stats)
 {
-
-  json_t *nbr = NULL;
-
     if (get != NULL && get_stats != NULL)
         {
-            nbr = json_integer(get_stats->stats);
-            insert_json_value_into_json_root(get, "/Stats.json", nbr);
-
-            nbr = json_integer(get_stats->version);
-            insert_json_value_into_json_root(get, "/Version.json", nbr);
-
-            nbr = json_integer(get_stats->verstxt);
-            insert_json_value_into_json_root(get, "/Version", nbr);
-
-            nbr = json_integer(get_stats->file_list);
-            insert_json_value_into_json_root(get, "/File/List.json", nbr);
-
-            nbr = json_integer(get_stats->data_hash);
-            insert_json_value_into_json_root(get, "/Data/0xxxx.json", nbr);
-
-            nbr = json_integer(get_stats->data_hash_array);
-            insert_json_value_into_json_root(get, "/Data/Hash_Array.json", nbr);
-
-            nbr = json_integer(get_stats->unk);
-            insert_json_value_into_json_root(get, "/unknown.json", nbr);
-
-            nbr = json_integer(get_stats->unktxt);
-            insert_json_value_into_json_root(get, "/unknown", nbr);
+            insert_integer_value_into_json_root(get, "/Stats.json", get_stats->stats);
+            insert_integer_value_into_json_root(get, "/Version.json", get_stats->version);
+            insert_integer_value_into_json_root(get, "/Version", get_stats->verstxt);
+            insert_integer_value_into_json_root(get, "/File/List.json", get_stats->file_list);
+            insert_integer_value_into_json_root(get, "/Data/0xxxx.json", get_stats->data_hash);
+            insert_integer_value_into_json_root(get, "/Data/Hash_Array.json", get_stats->data_hash_array);
+            insert_integer_value_into_json_root(get, "/unknown.json", get_stats->unk);
+            insert_integer_value_into_json_root(get, "/unknown", get_stats->unktxt);
         }
 
         return get;
@@ -469,25 +451,13 @@ json_t *fills_json_with_get_stats(json_t *get, req_get_t *get_stats)
  */
 json_t *fills_json_with_post_stats(json_t *post, req_post_t *post_stats)
 {
-
-  json_t *nbr = NULL;
-
     if (post != NULL && post_stats != NULL)
         {
-            nbr = json_integer(post_stats->meta);
-            insert_json_value_into_json_root(post, "/Meta.json", nbr);
-
-            nbr = json_integer(post_stats->data);
-            insert_json_value_into_json_root(post, "/Data.json", nbr);
-
-            nbr = json_integer(post_stats->data_array);
-            insert_json_value_into_json_root(post, "/Data_Array.json", nbr);
-
-            nbr = json_integer(post_stats->hash_array);
-            insert_json_value_into_json_root(post, "/Hash_Array.json", nbr);
-
-            nbr = json_integer(post_stats->unk);
-            insert_json_value_into_json_root(post, "/unknown.json", nbr);
+            insert_integer_value_into_json_root(post, "/Meta.json", post_stats->meta);
+            insert_integer_value_into_json_root(post, "/Data.json", post_stats->data);
+            insert_integer_value_into_json_root(post, "/Data_Array.json", post_stats->data_array);
+            insert_integer_value_into_json_root(post, "/Hash_Array.json", post_stats->hash_array);
+            insert_integer_value_into_json_root(post, "/unknown.json", post_stats->unk);
         }
 
         return post;
@@ -508,7 +478,6 @@ static gchar *answer_global_stats(stats_t *stats)
     json_t *post = NULL;
     json_t *unk = NULL;
     json_t *req = NULL;
-    json_t *nbr = NULL;
     gchar *answer = NULL;
 
     if (stats != NULL && stats->requests != NULL && stats->requests->get != NULL && stats->requests->post != NULL && stats->requests->unknown != NULL)
@@ -528,14 +497,10 @@ static gchar *answer_global_stats(stats_t *stats)
             insert_json_value_into_json_root(req, "Unknown", unk);
             insert_json_value_into_json_root(root, "Requests", req);
 
-            nbr = json_integer(stats->nb_files);
-            insert_json_value_into_json_root(root, "files", nbr);
-            nbr = json_integer(stats->nb_total_bytes);
-            insert_json_value_into_json_root(root, "total size", nbr);
-            nbr = json_integer(stats->nb_dedup_bytes);
-            insert_json_value_into_json_root(root, "dedup size", nbr);
-            nbr = json_integer(stats->nb_meta_bytes);
-            insert_json_value_into_json_root(root, "meta data size", nbr);
+            insert_integer_value_into_json_root(root, "files", stats->nb_files);
+            insert_integer_value_into_json_root(root, "total size", stats->nb_total_bytes);
+            insert_integer_value_into_json_root(root, "dedup size", stats->nb_dedup_bytes);
+            insert_integer_value_into_json_root(root, "meta data size", stats->nb_meta_bytes);
 
             answer = json_dumps(root, 0);
         }
