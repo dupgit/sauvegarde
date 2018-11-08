@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Sauvegarde 0.0.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-30 14:50+0100\n"
-"PO-Revision-Date: 2017-09-10 14:46+0100\n"
+"PO-Revision-Date: 2018-11-08 21:10+0100\n"
 "Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
 "Language: fr\n"
@@ -420,22 +420,20 @@ msgid "Server is not alive.\n"
 msgstr "Le serveur n'est pas en fonctionnement.\n"
 
 #: ../libcdpfgl/compress.c:82
-#, fuzzy
 msgid "Error reading stdin."
-msgstr "Erreur en lisant le fichier : %s\n"
+msgstr "Erreur en lisant l'entrée standard (stdin)."
 
 #: ../libcdpfgl/compress.c:84
 msgid "Error writing stdout."
-msgstr ""
+msgstr "Erreur en écrivant dans la sortie standard (stdout)."
 
 #: ../libcdpfgl/compress.c:87
-#, fuzzy
 msgid "Error: invalid compression level."
-msgstr "Erreur : URL invalide : %s\n"
+msgstr "Erreur : niveau de compression invalide"
 
 #: ../libcdpfgl/compress.c:90
 msgid "Error: invalid or incomplete deflate data."
-msgstr ""
+msgstr "Erreur : Données à décompresser invalides ou incomplètes."
 
 #: ../libcdpfgl/configuration.c:118 ../libcdpfgl/configuration.c:155
 #: ../libcdpfgl/configuration.c:196 ../libcdpfgl/configuration.c:236
@@ -529,7 +527,7 @@ msgstr ""
 
 #: ../libcdpfgl/database.c:382
 msgid "\tindex transmited_buffer_id\n"
-msgstr "(\tindex 'transmited_buffer_id'\n"
+msgstr "\tindex 'transmited_buffer_id'\n"
 
 #: ../libcdpfgl/database.c:383
 #, c-format
@@ -615,7 +613,7 @@ msgstr ""
 "\t. GLIB version : %d.%d.%d\n"
 
 #: ../libcdpfgl/libcdpfgl.c:167
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "%s\t. %s version: %s\n"
 "\t. JANSSON version: %d.%d.%d\n"
@@ -623,6 +621,7 @@ msgid ""
 msgstr ""
 "%s\t. %s version : %s\n"
 "\t. JANSSON version : %d.%d.%d\n"
+"\t. ZLIB version : %s"
 
 #: ../libcdpfgl/libcdpfgl.c:219
 #, c-format
