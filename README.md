@@ -46,6 +46,7 @@ stated between () and recommended version between []):
 * `libcurl`        (7.22.0)
 * `sqlite`         (3.7.15)
 * `jansson`        (2.5)    [2.7]
+* `zlib`           (1.2.8)
 
 jansson's library version is quite recent but it compiles nicely and
 depends on nothing (as far as I know).
@@ -55,7 +56,7 @@ to compile dependencies before compiling cdpfgl.
 
 cdpfgl's project is known to compile (sometimes at the expense of
 recompiling and installing newer versions of dependencies) and run under
-Centos 7, Debian Jessie, Ubuntu 12.04 LTS, VoidLinux and raspbian 3 and
+Centos 7, Debian Jessie, Ubuntu 12.04 LTS, VoidLinux, raspbian 3 and
 on x86_64 and arm7l architectures. Please let me know if you have compiled
 cdpfgl successfully in a system that is not listed here.
 
