@@ -1,6 +1,9 @@
 FROM debian:latest
-MAINTAINER Olivier Delhomme <olivier.delhomme@free.fr>
+
+LABEL maintainer="Olivier Delhomme <olivier.delhomme@free.fr>"
+
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
+
 RUN apt-get -y update; \
     apt-get -y upgrade; \
     apt-get -y install apt-utils; \

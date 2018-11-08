@@ -1,5 +1,7 @@
 FROM voidlinux/voidlinux
-MAINTAINER Olivier Delhomme <olivier.delhomme@free.fr>
+
+LABEL maintainer="Olivier Delhomme <olivier.delhomme@free.fr>"
+
 RUN xbps-install -A -y -S ; \
     xbps-install -A -y -S jansson-devel; \
     xbps-install -A -y -S glib-devel; \
@@ -16,4 +18,5 @@ RUN xbps-install -A -y -S ; \
     xbps-remove -F -y libressl-2.2.4_3; \
     xbps-install -A -y -S make; \
     xbps-install -A -y -S libcurl-devel
+
 RUN cd; git clone https://github.com/dupgit/sauvegarde.git; cd sauvegarde; ./autogen.sh && ./configure && make && make check && make install;
