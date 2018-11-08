@@ -132,7 +132,7 @@ static main_struct_t *init_main_structure(options_t *opt)
             main_struct->opt = opt;
             main_struct->hostname = g_get_host_name();
 
-            if (opt != NULL && opt->ip != NULL)
+            if (opt->ip != NULL)
                 {
                     conn = make_connexion_string(opt->ip, opt->port);
                     main_struct->comm = init_comm_struct(conn, opt->cmptype);
