@@ -610,7 +610,7 @@ static gchar *get_unformatted_answer(server_struct_t *server_struct, const char 
             buf2 = free_variable(buf2);
             buf3 = free_variable(buf3);
         }
-    else
+    else if (server_struct != NULL)
         { /* Some sort of echo to the invalid request */
             add_one_to_get_url_unknown(server_struct->stats, TRUE);
             answer = g_strdup_printf(_("Error: invalid url: %s\n"), url);
