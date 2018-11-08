@@ -11,7 +11,6 @@ way. Compile the project and put `cdpfglserver` on the machine where you want to
 save your files. Let `cdpfglclient` crawl your files to save them (on your client). 
 If needed use `cdpfglrestore` to restore files or directories.
 
-
 ## License
 
 This is free software and real open source as GPLv3 is used for this
@@ -23,13 +22,10 @@ for the programs (GPL v3) and one in the pixmaps directory for the artwork
 Feel free to contribute to cdpfgl's project and/or give help to the
 projects used here (see dependencies section below).
 
-
-
 ## Download
 
 You can download the source code from github [https://github.com/dupgit/sauvegarde](https://github.com/dupgit/sauvegarde) 
 or get a packed defined version at [http://cdpfgl.delhomme.org/download/releases/](http://cdpfgl.delhomme.org/download/releases/)
-
 
 ## Installation
 
@@ -60,7 +56,6 @@ Centos 7, Debian Jessie, Ubuntu 12.04 LTS, VoidLinux, raspbian 3 and
 on x86_64 and arm7l architectures. Please let me know if you have compiled
 cdpfgl successfully in a system that is not listed here.
 
-
 #### Optional
 
 * `doxygen` (1.6.1) is used to generate code's documentation.
@@ -85,7 +80,6 @@ in the classic way:
 If you need more information about how to install cdpfgl you can
 also have a look at the [installation manual](manual/installation.md).
 
-
 ## Usage
 
 ### The server (the one that collects everything)
@@ -95,13 +89,11 @@ a server. You can configure options in `server.conf` (located by default
 in `{prefix}/etc/cdpfgl/`) or use the command's line options as shown in
 [cdpfglserver man page](man/cdpfglserver.md).
 
-
 ### The client (the one that saves your files).
 
 Then you may use `cdpfglclient` program to report modified files to the server
 and save them accordingly. Configuration file is named `client.conf` and
 command line options are documented in [cdpfglclient man page](man/cdpfglclient.md).
-
 
 ### The restore program (the one that saves your life when needed)
 
@@ -109,12 +101,10 @@ At a time you may need to restore a file then you'll have to use `cdpfglrestore`
 program. Configuration file is named `restore.conf` and command line
 options are documented in [cdpfglrestore man page](man/cdpfglrestore.md).
 
-
 ## Manual
 
 If you need more than the above hints, please have a look at the user
 [manual](manual/installation.md).
-
 
 ## Roadmap
 
