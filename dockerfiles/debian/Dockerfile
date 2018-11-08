@@ -1,4 +1,4 @@
-FROM debian:latest
+FROM debian:8
 
 LABEL maintainer="Olivier Delhomme <olivier.delhomme@free.fr>"
 
