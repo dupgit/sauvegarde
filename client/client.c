@@ -120,50 +120,48 @@ static main_struct_t *init_main_structure(options_t *opt)
     main_struct_t *main_struct = NULL;
     gchar *conn = NULL;
 
-    if (opt != NULL)
+    g_assert_nonnull(opt);
+
+    print_debug(_("Please wait while initializing main structure...\n"));
+
+    main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
+    g_assert_nonnull(main_struct);
+
+    main_struct->database = open_database(opt->dircache, opt->dbname);
+
+    main_struct->opt = opt;
+    main_struct->hostname = g_get_host_name();
+
+    if (opt->ip != NULL)
         {
-
-            print_debug(_("Please wait while initializing main structure...\n"));
-
-            main_struct = (main_struct_t *) g_malloc0(sizeof(main_struct_t));
-
-            main_struct->database = open_database(opt->dircache, opt->dbname);
-
-            main_struct->opt = opt;
-            main_struct->hostname = g_get_host_name();
-
-            if (opt->ip != NULL)
-                {
-                    conn = make_connexion_string(opt->ip, opt->port);
-                    main_struct->comm = init_comm_struct(conn, opt->cmptype);
-                    main_struct->reconnected = init_comm_struct(conn, opt->cmptype);
-                    free_variable(conn);
-                }
-            else
-                {
-                    /* This should never happen because we have default values */
-                    main_struct->comm = NULL;
-                }
-
-            main_struct->fanotify_fd = start_fanotify(opt);
-
-            /* inits the queue that will wait for events on files */
-            main_struct->save_queue = g_async_queue_new();
-            main_struct->dir_queue = g_async_queue_new();
-            main_struct->regex_exclude_list = make_regex_exclude_list(opt->exclude_list);
-
-            /* Thread initialization */
-            main_struct->save_one_file = g_thread_new("save_one_file", save_one_file_threaded, main_struct);
-            main_struct->carve_all_directories = g_thread_new("carve_all_directories", carve_all_directories, main_struct);
-            main_struct->reconn_thread = g_thread_new("reconnected", reconnected, main_struct);
-            main_struct->fanotify_loop = g_thread_new("fanotify-loop", fanotify_loop_thread, main_struct);
-
-            /* Main loop creation (used to trap signals into main loop run) */
-            main_struct->loop = g_main_loop_new(g_main_context_default(), FALSE);
-
-            print_debug(_("Main structure initialized !\n"));
-
+            conn = make_connexion_string(opt->ip, opt->port);
+            main_struct->comm = init_comm_struct(conn, opt->cmptype);
+            main_struct->reconnected = init_comm_struct(conn, opt->cmptype);
+            free_variable(conn);
         }
+    else
+        {
+            /* This should never happen because we have default values */
+            main_struct->comm = NULL;
+        }
+
+    main_struct->fanotify_fd = start_fanotify(opt);
+
+    /* inits the queue that will wait for events on files */
+    main_struct->save_queue = g_async_queue_new();
+    main_struct->dir_queue = g_async_queue_new();
+    main_struct->regex_exclude_list = make_regex_exclude_list(opt->exclude_list);
+
+    /* Thread initialization */
+    main_struct->save_one_file = g_thread_new("save_one_file", save_one_file_threaded, main_struct);
+    main_struct->carve_all_directories = g_thread_new("carve_all_directories", carve_all_directories, main_struct);
+    main_struct->reconn_thread = g_thread_new("reconnected", reconnected, main_struct);
+    main_struct->fanotify_loop = g_thread_new("fanotify-loop", fanotify_loop_thread, main_struct);
+
+    /* Main loop creation (used to trap signals into main loop run) */
+    main_struct->loop = g_main_loop_new(g_main_context_default(), FALSE);
+
+    print_debug(_("Main structure initialized !\n"));
 
     return main_struct;
 }
@@ -366,7 +364,9 @@ static gchar *send_meta_data_to_server(main_struct_t *main_struct, meta_data_t *
     json_t *root = NULL;
     json_t *array = NULL;
 
-    if (main_struct != NULL && meta != NULL && main_struct->hostname != NULL)
+    g_assert_nonnull(main_struct);
+
+    if (meta != NULL && main_struct->hostname != NULL)
         {
             json_str = convert_meta_data_to_json_string(meta, main_struct->hostname, data_sent);
 
@@ -454,8 +454,9 @@ static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *ar
     json_t *root = NULL;
     gint success = CURLE_FAILED_INIT;
 
+    g_assert_nonnull(main_struct);
 
-    if (main_struct != NULL && main_struct->comm != NULL && array != NULL)
+    if (main_struct->comm != NULL && array != NULL)
         {
 
             root = json_object();
@@ -504,7 +505,9 @@ static GList *send_all_data_to_server(main_struct_t *main_struct, GList *hash_da
     gint64 limit = 0;
     a_clock_t *elapsed = NULL;
 
-    if (answer != NULL && hash_data_list != NULL && main_struct != NULL && main_struct->opt != NULL)
+    g_assert_nonnull(main_struct);
+
+    if (answer != NULL && hash_data_list != NULL && main_struct->opt != NULL)
         {
             root = load_json(answer);
 
@@ -598,7 +601,9 @@ static GList *send_data_to_server(main_struct_t *main_struct, GList *hash_data_l
     hash_data_t *found = NULL;
     hash_data_t *hash_data = NULL;
 
-    if (main_struct != NULL && main_struct->comm != NULL && answer != NULL &&  hash_data_list!= NULL)
+    g_assert_nonnull(main_struct);
+
+    if (main_struct->comm != NULL && answer != NULL &&  hash_data_list!= NULL)
         {
             root = load_json(answer);
 
@@ -665,6 +670,7 @@ file_event_t *new_file_event_t(gchar *directory, GFileInfo *fileinfo)
 
 
     file_event = (file_event_t *) g_malloc(sizeof(file_event_t));
+    g_assert_nonnull(file_event);
 
     file_event->directory = g_strdup(directory);
     file_event->fileinfo = g_file_info_dup(fileinfo);
@@ -743,7 +749,9 @@ static gpointer save_one_file_threaded(gpointer data)
     main_struct_t *main_struct = (main_struct_t *) data;
     file_event_t *file_event = NULL;
 
-    if (main_struct != NULL && main_struct->save_queue != NULL)
+    g_assert_nonnull(main_struct);
+
+    if (main_struct->save_queue != NULL)
         {
             while (1)
                 {
@@ -824,7 +832,9 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
     gint success = 0;      /** success returns a CURL Error status such as CURLE_OK for instance */
     a_clock_t *mesure_time = NULL;
 
-    if (main_struct != NULL && main_struct->opt != NULL && meta != NULL)
+    g_assert_nonnull(main_struct);
+
+    if (main_struct->opt != NULL && meta != NULL)
         {
 
             print_debug(_("Processing small file: %s\n"), meta->name);
@@ -890,7 +900,9 @@ static gchar *send_hash_array_to_server(comm_t *comm, GList *hash_data_list)
     gchar *answer = NULL;
     gboolean success = CURLE_FAILED_INIT;
 
-    if (comm != NULL && hash_data_list != NULL)
+    g_assert_nonnull(comm);
+
+    if (hash_data_list != NULL)
         {
             array = convert_hash_list_to_json(hash_data_list);
             root = json_object();
@@ -947,7 +959,9 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
     gsize read_bytes = 0;
     a_clock_t *elapsed = NULL;
 
-    if (main_struct != NULL && main_struct->opt != NULL && meta != NULL)
+    g_assert_nonnull(main_struct);
+
+    if (main_struct->opt != NULL && meta != NULL)
         {
             a_file = g_file_new_for_path(meta->name);
             print_debug(_("Processing file: %s\n"), meta->name);
@@ -1090,7 +1104,9 @@ void save_one_file(main_struct_t *main_struct, file_event_t *file_event)
     gchar *another_dir = NULL;
     filter_file_t *filter = NULL;
 
-    if (main_struct != NULL && file_event != NULL)
+    g_assert_nonnull(main_struct);
+
+    if (file_event != NULL)
         {
             my_clock = new_clock_t();
 
@@ -1156,7 +1172,9 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
     GFileInfo *fileinfo = NULL;
     file_event_t *file_event = NULL;
 
-    if (main_struct != NULL && file_enum != NULL)
+    g_assert_nonnull(main_struct);
+
+    if (file_enum != NULL)
         {
             fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
 
@@ -1193,7 +1211,9 @@ static void carve_one_directory(gpointer data, gpointer user_data)
     GFileEnumerator *file_enum = NULL;
     GError *error = NULL;
 
-    if (directory != NULL && main_struct != NULL)
+    g_assert_nonnull(main_struct);
+
+    if (directory != NULL)
         {
             a_dir = g_file_new_for_path(directory);
             file_enum = g_file_enumerate_children(a_dir, "*", G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, NULL, &error);
@@ -1228,7 +1248,9 @@ static gpointer carve_all_directories(gpointer data)
     main_struct_t *main_struct = (main_struct_t *) data;
     gchar *directory = NULL;
 
-    if (main_struct != NULL && main_struct->opt != NULL && main_struct->opt->noscan == FALSE)
+    g_assert_nonnull(main_struct);
+
+    if (main_struct->opt != NULL && main_struct->opt->noscan == FALSE)
         {
             g_slist_foreach(main_struct->opt->dirname_list, carve_one_directory, main_struct);
 
@@ -1255,7 +1277,6 @@ static gpointer carve_all_directories(gpointer data)
 static gpointer reconnected(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
-
 
     while (main_struct != NULL)
         {
@@ -1294,23 +1315,20 @@ static gpointer reconnected(gpointer data)
 static gboolean client_signal_handler(gpointer user_data)
 {
     main_struct_t *main_struct = (main_struct_t *) user_data;
+    g_assert_nonnull(main_struct);
 
-    if (main_struct != NULL)
-        {
+    print_debug(_("\nEnding the program:\n"));
 
-            print_debug(_("\nEnding the program:\n"));
+    stop_fanotify(main_struct->opt, main_struct->fanotify_fd);
+    print_debug(_("\tNotification stopped.\n"));
 
-            stop_fanotify(main_struct->opt, main_struct->fanotify_fd);
-            print_debug(_("\tNotification stopped.\n"));
+    g_main_loop_quit(main_struct->loop);
+    print_debug(_("\tMain loop exited.\n"));
 
-            g_main_loop_quit(main_struct->loop);
-            print_debug(_("\tMain loop exited.\n"));
+    close_database(main_struct->database);
+    print_debug(_("\tDatabase closed.\n"));
 
-            close_database(main_struct->database);
-            print_debug(_("\tDatabase closed.\n"));
-
-            free_options_t(main_struct->opt);
-        }
+    free_options_t(main_struct->opt);
 
     /** we can remove the handler as we are exiting the program anyway */
     return FALSE;
@@ -1326,17 +1344,16 @@ static gpointer fanotify_loop_thread(gpointer data)
 {
     main_struct_t *main_struct = (main_struct_t *) data;
 
-    if (main_struct != NULL)
-        {
-            /** Launching an infinite loop to get modifications done on
-             * the filesystem (on directories we watch).
-             * @note fanotify's kernel interface does not provide the events
-             * needed to know if a file has been deleted or it's attributes
-             * changed. Enabling this feature even if we know that files
-             * will never get deleted in our database.
-             */
-            fanotify_loop(main_struct);
-        }
+    g_assert_nonnull(main_struct);
+
+    /** Launching an infinite loop to get modifications done on
+     * the filesystem (on directories we watch).
+     * @note fanotify's kernel interface does not provide the events
+     * needed to know if a file has been deleted or it's attributes
+     * changed. Enabling this feature even if we know that files
+     * will never get deleted in our database.
+     */
+    fanotify_loop(main_struct);
 
     return NULL;
 }
@@ -1353,15 +1370,14 @@ static void install_client_signal_traps(main_struct_t *main_struct)
     guint id_int = 0;
     guint id_term = 0;
 
-    if (main_struct != NULL)
-        {
-            id_int = g_unix_signal_add(SIGINT, client_signal_handler, main_struct);
-            id_term = g_unix_signal_add(SIGTERM, client_signal_handler, main_struct);
+    g_assert_nonnull(main_struct);
 
-            if (id_int <= 0 || id_term <= 0)
-                {
-                    print_error(__FILE__, __LINE__, _("Unable to add signal handlers\n"));
-                }
+    id_int = g_unix_signal_add(SIGINT, client_signal_handler, main_struct);
+    id_term = g_unix_signal_add(SIGTERM, client_signal_handler, main_struct);
+
+    if (id_int <= 0 || id_term <= 0)
+        {
+            print_error(__FILE__, __LINE__, _("Unable to add signal handlers\n"));
         }
 }
 
@@ -1378,7 +1394,6 @@ int main(int argc, char **argv)
     main_struct_t *main_struct = NULL;
 
 
-
     #if !GLIB_CHECK_VERSION(2, 36, 0)
         g_type_init();  /** g_type_init() is deprecated since glib 2.36 */
     #endif
@@ -1389,21 +1404,18 @@ int main(int argc, char **argv)
     curl_global_init(CURL_GLOBAL_ALL);
 
     opt = do_what_is_needed_from_command_line_options(argc, argv);
+    g_assert_nonnull(opt);
 
-    if (opt != NULL)
-        {
-            /**
-             * Inits the main structure and launches two threads one that
-             * will save the files with an asynchronous queue and a second
-             * that will do directory carving. Threads communicates with
-             * the asynchronous queue.
-             */
-            main_struct = init_main_structure(opt);
+    /**
+     * Inits the main structure and launches two threads one that
+     * will save the files with an asynchronous queue and a second
+     * that will do directory carving. Threads communicates with
+     * the asynchronous queue.
+     */
+    main_struct = init_main_structure(opt);
+    install_client_signal_traps(main_struct);
 
-            install_client_signal_traps(main_struct);
-
-            g_main_loop_run(main_struct->loop);
-        }
+    g_main_loop_run(main_struct->loop);
 
     return 0;
 }
