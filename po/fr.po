@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Sauvegarde 0.0.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-12-30 14:50+0100\n"
-"PO-Revision-Date: 2018-11-08 21:10+0100\n"
+"PO-Revision-Date: 2018-11-09 22:23+0100\n"
 "Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
 "Language: fr\n"
@@ -965,7 +965,7 @@ msgstr "\tdémon MHD arrêté.\n"
 #. * we need a backend function to be called to free th backend structure
 #: ../server/server.c:74
 msgid "\tbackend variable freed.\n"
-msgstr "\tvariable 'backend' libérée\n"
+msgstr "\tvariable 'backend' libérée.\n"
 
 #: ../server/server.c:76
 msgid "\tdata thread unreferenced.\n"
