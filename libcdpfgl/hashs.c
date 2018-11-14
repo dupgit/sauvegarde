@@ -214,17 +214,14 @@ guint8 *string_to_hash(gchar *str_hash)
  *        and its size to be freed.
  * @returns always NULL.
  */
-gpointer free_hash_data_t(hash_data_t *hash_data)
+void free_hash_data_t(hash_data_t *hash_data)
 {
-
     if (hash_data != NULL)
         {
             free_variable(hash_data->data);
             free_variable(hash_data->hash);
             free_variable(hash_data);
         }
-
-    return NULL;
 }
 
 
