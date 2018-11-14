@@ -43,7 +43,7 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
 static void carve_one_directory(gpointer data, gpointer user_data);
 static gpointer carve_all_directories(gpointer data);
 static gpointer save_one_file_threaded(gpointer data);
-static gpointer free_file_event_t(file_event_t *file_event);
+static void free_file_event_t(file_event_t *file_event);
 static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *array);
 static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta);
 static gint64 calculate_file_blocksize(options_t *opt, gint64 size);
@@ -684,7 +684,7 @@ file_event_t *new_file_event_t(gchar *directory, GFileInfo *fileinfo)
  * @param file_event is the event to be freed
  * @returns NULL
  */
-static gpointer free_file_event_t(file_event_t *file_event)
+static void free_file_event_t(file_event_t *file_event)
 {
     if (file_event != NULL)
         {
@@ -692,8 +692,6 @@ static gpointer free_file_event_t(file_event_t *file_event)
             free_object(file_event->fileinfo);
             free_variable(file_event);
         }
-
-    return NULL;
 }
 
 
