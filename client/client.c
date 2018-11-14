@@ -43,6 +43,7 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
 static void carve_one_directory(gpointer data, gpointer user_data);
 static gpointer carve_all_directories(gpointer data);
 static gpointer save_one_file_threaded(gpointer data);
+static void free_filter_file_t(filter_file_t *filter);
 static void free_file_event_t(file_event_t *file_event);
 static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *array);
 static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta);
@@ -724,7 +725,7 @@ static filter_file_t *new_filter_t(db_t *database, GSList *regex_exclude_list, g
  * @param filter the filter to be freed
  * @returns NULL
  */
-static gpointer free_filter_file_t(filter_file_t *filter)
+static void free_filter_file_t(filter_file_t *filter)
 {
     /* Beware not to free database and regex_exclude_list that are
      * used elsewhere in the program
@@ -733,7 +734,6 @@ static gpointer free_filter_file_t(filter_file_t *filter)
         {
             g_free(filter);
         }
-    return NULL;
 }
 
 
