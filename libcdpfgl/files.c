@@ -90,7 +90,7 @@ server_meta_data_t *new_smeta_data_t(void)
  * @param free_link is a boolean that when set to TRUE will free
  * @returns always NULL
  */
-gpointer free_meta_data_t(meta_data_t *meta, gboolean free_link)
+void free_meta_data_t(meta_data_t *meta, gboolean free_link)
 {
     if (meta != NULL)
         {
@@ -107,8 +107,6 @@ gpointer free_meta_data_t(meta_data_t *meta, gboolean free_link)
             g_list_free_full(meta->hash_data_list, free_hdt_struct);
             free_variable(meta);
         }
-
-    return NULL;
 }
 
 
@@ -233,9 +231,9 @@ gpointer free_smeta_data_t(server_meta_data_t *smeta)
 {
     if (smeta != NULL)
         {
-            smeta->meta = free_meta_data_t(smeta->meta, TRUE);
-            smeta->hostname = free_variable(smeta->hostname);
-            smeta = free_variable(smeta);
+            free_meta_data_t(smeta->meta, TRUE);
+            free_variable(smeta->hostname);
+            free_variable(smeta);
         }
 
     return NULL;

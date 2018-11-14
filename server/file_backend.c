@@ -690,12 +690,12 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
                                  }
                             else
                                 {
-                                    meta = free_meta_data_t(meta, TRUE);
+                                    free_meta_data_t(meta, TRUE);
                                 }
                         }
                     else
                         {
-                             meta = free_meta_data_t(meta, TRUE);
+                             free_meta_data_t(meta, TRUE);
                         }
                 }
             else

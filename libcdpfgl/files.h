@@ -228,7 +228,7 @@ extern server_meta_data_t *new_smeta_data_t(void);
  * @param free_link is a boolean that when set to TRUE will free
  * @returns always NULL
  */
-extern gpointer free_meta_data_t(meta_data_t *meta, gboolean free_link);
+extern void free_meta_data_t(meta_data_t *meta, gboolean free_link);
 
 
 /**
