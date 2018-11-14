@@ -227,7 +227,7 @@ GList *keep_latests_meta_data_t_in_list(GList *file_list)
  * @param smeta is a meta_data_t * structure to be freed
  * @returns always NULL
  */
-gpointer free_smeta_data_t(server_meta_data_t *smeta)
+void free_smeta_data_t(server_meta_data_t *smeta)
 {
     if (smeta != NULL)
         {
@@ -235,8 +235,6 @@ gpointer free_smeta_data_t(server_meta_data_t *smeta)
             free_variable(smeta->hostname);
             free_variable(smeta);
         }
-
-    return NULL;
 }
 
 

@@ -269,7 +269,7 @@ extern GList *keep_latests_meta_data_t_in_list(GList *file_list);
  * @param smeta is a meta_data_t * structure to be freed
  * @returns always NULL
  */
-extern gpointer free_smeta_data_t(server_meta_data_t *smeta);
+extern void free_smeta_data_t(server_meta_data_t *smeta);
 
 
 /**
