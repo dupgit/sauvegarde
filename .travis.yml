@@ -34,7 +34,7 @@ install:
     - (tar zxf sqlite-autoconf-3140100.tar.gz; cd sqlite-autoconf-3140100; ./configure --prefix=$HOME/local; make; make install; cd ..; rm -fr sqlite-autoconf-3140100)
 
     # glib newer version for travis-ci
-    - wget --quiet -c https://git.gnome.org/browse/glib/snapshot/glib-2.51.5.tar.xz
+    - wget --quiet -c http://ftp.acc.umu.se/pub/gnome/sources/glib/2.51/glib-2.51.5.tar.xz
     - (tar Jxf glib-2.51.5.tar.xz; cd glib-2.51.5; ./autogen.sh; ./configure --prefix=$HOME/local; make; make install; cd ..; rm -fr glib-2.51.5)
 
 # Building cdpfgl
