@@ -209,9 +209,8 @@ extern gpointer free_error(gpointer error);
 /**
  * Frees all elements of a gchar * GSList
  * @param list the list to be freed
- * @returns NULL
  */
-extern gpointer free_list(GSList *list);
+extern void free_list(GSList *list);
 
 
 /**

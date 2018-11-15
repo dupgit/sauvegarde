@@ -416,13 +416,10 @@ gpointer free_error(gpointer error)
 /**
  * Frees all elements of a gchar * GSList
  * @param list the list to be freed
- * @returns NULL
  */
-gpointer free_list(GSList *list)
+void free_list(GSList *list)
 {
     g_slist_free_full(list, free_gchar_variable);
-
-    return NULL;
 }
 
 
