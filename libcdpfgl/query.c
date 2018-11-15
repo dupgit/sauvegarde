@@ -70,7 +70,7 @@ query_t *init_query_t(gchar *hostname, gchar *uid, gchar *gid, gchar *owner, gch
  * @param query is the qery to be freed
  * @returns NULL;
  */
-gpointer free_query_t(query_t *query)
+void free_query_t(query_t *query)
 {
     if (query != NULL)
         {
@@ -85,8 +85,6 @@ gpointer free_query_t(query_t *query)
             free_variable(query->beforedate);
             free_variable(query);
         }
-
-    return NULL;
 }
 
 
