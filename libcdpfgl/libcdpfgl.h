@@ -193,9 +193,8 @@ extern gpointer free_variable(gpointer to_free);
 /**
  * Unrefs an object if it is not NULL and returns NULL
  * @param object_to_unref is the pointer to be unref'ed.
- * @returns NULL
  */
-extern gpointer free_object(gpointer object_to_unref);
+extern void free_object(gpointer object_to_unref);
 
 
 /**

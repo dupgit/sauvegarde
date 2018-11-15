@@ -382,17 +382,13 @@ void free_gchar_variable(gpointer data)
 /**
  * Unrefs an object if it is not NULL and returns NULL
  * @param object_to_unref is the pointer to be unref'ed.
- * @returns NULL
  */
-gpointer free_object(gpointer object_to_unref)
+void free_object(gpointer object_to_unref)
 {
     if (object_to_unref != NULL)
         {
             g_object_unref(object_to_unref);
-            object_to_unref = NULL;
         }
-
-    return NULL;
 }
 
 
@@ -520,7 +516,7 @@ void create_directory(gchar *directory)
                     free_error(error);
                 }
 
-            dir = free_object(dir);
+            free_object(dir);
         }
 }
 

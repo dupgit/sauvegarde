@@ -844,7 +844,7 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
                     /* Calculates hashs and takes care of data */
                     a_file = g_file_new_for_path(meta->name);
                     meta->hash_data_list = calculate_hash_data_list_for_file(a_file, meta->blocksize);
-                    a_file = free_object(a_file);
+                    free_object(a_file);
 
                     end_clock(mesure_time, "calculate_hash_data_list");
                 }
@@ -1077,7 +1077,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                             end_clock(elapsed, "db_save_meta_data");
                         }
 
-                    a_file = free_object(a_file);
+                    free_object(a_file);
                 }
         }
 }
@@ -1185,7 +1185,7 @@ static void iterate_over_enum(main_struct_t *main_struct, gchar *directory, GFil
                     file_event = new_file_event_t(directory, fileinfo);
                     g_async_queue_push(main_struct->save_queue, file_event);
 
-                    fileinfo = free_object(fileinfo);
+                    free_object(fileinfo);
 
                     fileinfo = g_file_enumerator_next_file(file_enum, NULL, &error);
                 }
@@ -1220,7 +1220,7 @@ static void carve_one_directory(gpointer data, gpointer user_data)
                 {
                     iterate_over_enum(main_struct, directory, file_enum);
                     g_file_enumerator_close(file_enum, NULL, NULL);
-                    file_enum = free_object(file_enum);
+                    free_object(file_enum);
                 }
             else
                 {
@@ -1228,7 +1228,7 @@ static void carve_one_directory(gpointer data, gpointer user_data)
                     free_error(error);
                 }
 
-            a_dir = free_object(a_dir);
+            free_object(a_dir);
         }
 }
 

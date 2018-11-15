@@ -196,8 +196,8 @@ static void prepare_before_saving(main_struct_t *main_struct, gchar *path)
                     file_event = new_file_event_t(directory, fileinfo);
                     g_async_queue_push(main_struct->save_queue, file_event);
 
-                    fileinfo = free_object(fileinfo);
-                    file = free_object(file);
+                    free_object(fileinfo);
+                    free_object(file);
                     free_variable(directory);
                 }
             else
