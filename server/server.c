@@ -606,9 +606,9 @@ static gchar *get_unformatted_answer(server_struct_t *server_struct, const char 
 
             answer = g_strconcat(buf1, buf2, buf3, NULL);
 
-            buf1 = free_variable(buf1);
-            buf2 = free_variable(buf2);
-            buf3 = free_variable(buf3);
+            free_variable(buf1);
+            free_variable(buf2);
+            free_variable(buf3);
         }
     else if (server_struct != NULL)
         { /* Some sort of echo to the invalid request */

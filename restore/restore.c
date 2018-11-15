@@ -342,7 +342,7 @@ static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query)
                     list = g_slist_sort(list, compare_filenames);
 
                     json_decref(root);
-                    res_struct->comm->buffer = free_variable(res_struct->comm->buffer);
+                    free_variable(res_struct->comm->buffer);
                 }
 
             free_variable(request);
@@ -499,7 +499,7 @@ static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *
                             if (res_struct->comm->buffer != NULL)
                                 {
                                     hash_data = convert_string_to_hash_data(res_struct->comm->buffer);
-                                    res_struct->comm->buffer = free_variable(res_struct->comm->buffer);
+                                    free_variable(res_struct->comm->buffer);
 
                                     if (hash_data != NULL)
                                         {

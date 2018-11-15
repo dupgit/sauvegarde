@@ -319,7 +319,7 @@ options_t *manage_command_line_options(int argc, char **argv)
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "client.conf");
     read_from_configuration_file(opt,  defaultconfigfilename);
-    defaultconfigfilename = free_variable(defaultconfigfilename);
+    free_variable(defaultconfigfilename);
 
     opt->version = version; /* only TRUE if -v or --version was invoked */
     opt->noscan = noscan;   /* only TRUE if -n or --no-scan was invoked */

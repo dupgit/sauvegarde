@@ -216,7 +216,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
      */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "restore.conf");
     read_from_configuration_file(opt,  defaultconfigfilename);
-    defaultconfigfilename = free_variable(defaultconfigfilename);
+    free_variable(defaultconfigfilename);
 
 
     /* 2) Reading the configuration from the configuration file specified

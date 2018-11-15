@@ -315,7 +315,7 @@ gint get_url(comm_t *comm, gchar *url, gchar *header)
                     print_error(__FILE__, __LINE__, _("Error while sending GET command and receiving data: %s\n"), error_buf);
                 }
 
-            real_url = free_variable(real_url);
+            free_variable(real_url);
             free_variable(error_buf);
         }
 

@@ -379,7 +379,7 @@ static gchar *send_meta_data_to_server(main_struct_t *main_struct, meta_data_t *
             if (success == CURLE_OK)
                 {
                     answer = g_strdup(main_struct->comm->buffer);
-                    main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
+                    free_variable(main_struct->comm->buffer);
                 }
             else
                 {
@@ -475,7 +475,7 @@ static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *ar
 
             free_variable(main_struct->comm->readbuffer);
             json_decref(root);
-            main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
+            free_variable(main_struct->comm->buffer);
 
         }
 
@@ -639,7 +639,7 @@ static GList *send_data_to_server(main_struct_t *main_struct, GList *hash_data_l
                              */
                             g_list_free_full(iter, free_hdt_struct);
 
-                            main_struct->comm->buffer = free_variable(main_struct->comm->buffer);
+                            free_variable(main_struct->comm->buffer);
                             hash_list = g_list_next(hash_list);
                         }
 
@@ -916,7 +916,7 @@ static gchar *send_hash_array_to_server(comm_t *comm, GList *hash_data_list)
             if (success == CURLE_OK)
                 {
                     answer = g_strdup(comm->buffer);
-                    comm->buffer = free_variable(comm->buffer);
+                    free_variable(comm->buffer);
                 }
             else
                 {

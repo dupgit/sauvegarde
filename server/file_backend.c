@@ -388,7 +388,7 @@ static void read_from_group_file_backend(file_backend_t *file_backend, gchar *fi
 
     if (prefix != NULL && file_backend != NULL)
         {
-            file_backend->prefix = free_variable(file_backend->prefix);
+            free_variable(file_backend->prefix);
             file_backend->prefix = normalize_directory(prefix);
         }
 

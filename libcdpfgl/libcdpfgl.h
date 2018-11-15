@@ -185,9 +185,8 @@ extern gchar *set_option_str(gchar *cmdline, gchar *option_str);
  * Frees a pointer if it is not NULL and returns NULL
  * @param to_free is the pointer to be freed (must have been malloc with
  *         g_malloc* functions).
- * @returns NULL
  */
-extern gpointer free_variable(gpointer to_free);
+extern void free_variable(gpointer to_free);
 
 
 /**

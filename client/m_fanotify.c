@@ -238,7 +238,7 @@ static GSList *does_event_concerns_monitored_directory(gchar *path, GSList *dir_
                 }
         }
 
-    pathutf8 = free_variable(pathutf8);
+    free_variable(pathutf8);
 
     if (found == TRUE)
         {

@@ -95,7 +95,7 @@ static void print_buffer(gchar *buffer)
     if (buffer != NULL)
         {
             fprintf(stdout, "%s", buffer);
-            buffer = free_variable(buffer);
+            free_variable(buffer);
         }
 }
 
@@ -143,8 +143,8 @@ gchar *buffer_libraries_versions(gchar *name)
                 {
                     comm_version = make_MHD_version();
                     buf1 = g_strdup_printf("%s\t. LIBMHD: %s\n", buffer, comm_version);
-                    buffer = free_variable(buffer);
-                    comm_version = free_variable(comm_version);
+                    free_variable(buffer);
+                    free_variable(comm_version);
                 }
             else
                 {
@@ -153,19 +153,19 @@ gchar *buffer_libraries_versions(gchar *name)
                     if (comm_version != NULL)
                         {
                             buf1 = g_strdup_printf("%s%s", buffer, comm_version);
-                            comm_version = free_variable(comm_version);
-                            buffer = free_variable(buffer);
+                            free_variable(comm_version);
+                            free_variable(buffer);
                         }
                 }
 
             if (buf1 == NULL && buffer != NULL)
                 {
                     buf1 = g_strdup(buffer);
-                    buffer = free_variable(buffer);
+                    free_variable(buffer);
                 }
 
             buffer = g_strdup_printf(_("%s\t. %s version: %s\n\t. JANSSON version: %d.%d.%d\n\t. ZLIB version: %s"), buf1, DATABASE_NAME, db_version(), JANSSON_MAJOR_VERSION, JANSSON_MINOR_VERSION, JANSSON_MICRO_VERSION, ZLIB_VERSION);
-            buf1 = free_variable(buf1);
+            free_variable(buf1);
         }
 
     return buffer;
@@ -354,17 +354,13 @@ gchar *set_option_str(gchar *cmdline, gchar *option_str)
  * Frees a pointer if it is not NULL and returns NULL
  * @param to_free is the pointer to be freed (must have been malloc with
  *         g_malloc* functions).
- * @returns NULL
  */
-gpointer free_variable(gpointer to_free)
+void free_variable(gpointer to_free)
 {
     if (to_free != NULL)
         {
             g_free(to_free);
-            to_free = NULL;
         }
-
-    return NULL;
 }
 
 
