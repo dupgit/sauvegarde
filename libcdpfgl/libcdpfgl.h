@@ -201,9 +201,8 @@ extern gpointer free_object(gpointer object_to_unref);
 /**
  * Frees an error if it exists and return NULL
  * @param error : the error to be freed
- * @returns NULL
  */
-extern gpointer free_error(gpointer error);
+extern void free_error(gpointer error);
 
 
 /**

@@ -826,7 +826,7 @@ void set_file_attributes(GFile *file, meta_data_t *meta)
             if (fileinfo == NULL || error != NULL)
                 {
                     print_error(__FILE__, __LINE__, _("Error while getting file information: %s\n"), error->message);
-                    error = free_error(error);
+                    free_error(error);
                 }
             else
                 {

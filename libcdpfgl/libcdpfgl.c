@@ -399,17 +399,13 @@ gpointer free_object(gpointer object_to_unref)
 /**
  * Frees an error if it exists and return NULL
  * @param error : the error to be freed
- * @returns NULL
  */
-gpointer free_error(gpointer error)
+void free_error(gpointer error)
 {
     if (error != NULL)
         {
             g_error_free(error);
-            error = NULL;
         }
-
-    return NULL;
 }
 
 
@@ -521,7 +517,7 @@ void create_directory(gchar *directory)
                         {
                             print_error(__FILE__, __LINE__, ("Failed to create directory %s: %s\n"), directory, error->message);
                         }
-                    error = free_error(error);
+                    free_error(error);
                 }
 
             dir = free_object(dir);

@@ -110,13 +110,13 @@ gchar *read_string_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupnam
             if (error != NULL)
                 {
                     print_error(__FILE__, __LINE__,  "%s %s: %s", errormsg, filename, error->message);
-                    error = free_error(error);
+                    free_error(error);
                 }
         }
     else if (error != NULL)
         {
             print_error(__FILE__, __LINE__, _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
-            error = free_error(error);
+            free_error(error);
         }
 
     return a_string;
@@ -147,13 +147,13 @@ gint64 read_int64_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
             if (error != NULL)
                 {
                     print_error(__FILE__, __LINE__, "%s %s: %s", errormsg, filename, error->message);
-                    error = free_error(error);
+                    free_error(error);
                 }
         }
     else if (error != NULL)
         {
             print_error(__FILE__, __LINE__, _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
-            error = free_error(error);
+            free_error(error);
         }
     else
         {
@@ -188,13 +188,13 @@ gint read_int_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname, gc
             if (error != NULL)
                 {
                     print_error(__FILE__, __LINE__, "%s %s: %s", errormsg, filename, error->message);
-                    error = free_error(error);
+                    free_error(error);
                 }
         }
     else if (error != NULL)
         {
             print_error(__FILE__, __LINE__,  _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
-            error = free_error(error);
+            free_error(error);
         }
     else
         {
@@ -228,13 +228,13 @@ gboolean read_boolean_from_file(GKeyFile *keyfile, gchar *filename, gchar *group
             if (error != NULL)
                 {
                     print_error(__FILE__, __LINE__, "%s %s: %s", errormsg, filename, error->message);
-                    error = free_error(error);
+                    free_error(error);
                 }
         }
     else if (error != NULL)
         {
             print_error(__FILE__, __LINE__,  _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
-            error = free_error(error);
+            free_error(error);
         }
     else
         {
@@ -310,13 +310,13 @@ GSList *read_list_from_file(GKeyFile *keyfile, gchar *filename, gchar *groupname
             else if (error != NULL)
                 {
                     print_error(__FILE__, __LINE__, _("%s %s: %s\n"), errormsg, filename, error->message);
-                    error = free_error(error);
+                    free_error(error);
                 }
         }
     else if (error != NULL)
         {
             print_error(__FILE__, __LINE__, _("Error while looking for %s key in configuration file: %s\n"), keyname, error->message);
-            error = free_error(error);
+            free_error(error);
         }
     else
         {
@@ -374,7 +374,7 @@ static gint64 read_database_version_from_keyfile(GKeyFile *keyfile, gchar *filen
             else if (error != NULL)
                 {
                     print_error(__FILE__, __LINE__,  _("Error while reading file: %s (%s)\n"), filename, error->message);
-                    error = free_error(error);
+                    free_error(error);
                 }
         }
 
@@ -407,7 +407,7 @@ static gint64 write_database_version_keyfile(GKeyFile *keyfile, gchar *filename,
             if (ok != TRUE && error != NULL)
                 {
                     print_error(__FILE__, __LINE__,  _("Error while saving to file: %s (%s)\n"), filename, error->message);
-                    error = free_error(error);
+                    free_error(error);
                     num = -1;
                 }
             else if (ok != TRUE)

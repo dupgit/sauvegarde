@@ -228,7 +228,7 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
                     if (error != NULL)
                         {
                             print_error(__FILE__, __LINE__, _("Error while reading file: %s\n"), error->message);
-                            error = free_error(error);
+                            free_error(error);
                             g_list_free_full(hash_data_list, free_hdt_struct);
                             hash_data_list =  NULL;
                         }
@@ -248,7 +248,7 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
             else
                 {
                     print_error(__FILE__, __LINE__, _("Unable to open file for reading: %s\n"), error->message);
-                    error = free_error(error);
+                    free_error(error);
                 }
         }
 
@@ -1021,7 +1021,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                             if (error != NULL)
                                 {
                                     print_error(__FILE__, __LINE__, _("Error while reading file: %s\n"), error->message);
-                                    error = free_error(error);
+                                    free_error(error);
                                     g_list_free_full(hash_data_list, free_hdt_struct);
                                     hash_data_list =  NULL;
                                 }
@@ -1062,7 +1062,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                     else
                         {
                             print_error(__FILE__, __LINE__, _("Unable to open file for reading: %s\n"), error->message);
-                            error = free_error(error);
+                            free_error(error);
                         }
 
                     meta->hash_data_list = saved_list;
@@ -1225,7 +1225,7 @@ static void carve_one_directory(gpointer data, gpointer user_data)
             else
                 {
                     print_error(__FILE__, __LINE__, _("Unable to enumerate directory %s: %s\n"), directory, error->message);
-                    error = free_error(error);
+                    free_error(error);
                 }
 
             a_dir = free_object(a_dir);

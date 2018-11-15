@@ -154,7 +154,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
             else if (error != NULL)
                 {
                     print_error(__FILE__, __LINE__,  _("Failed to open %s configuration file: %s\n"), filename, error->message);
-                    error = free_error(error);
+                    free_error(error);
                 }
 
             g_key_file_free(keyfile);
