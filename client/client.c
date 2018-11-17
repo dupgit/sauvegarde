@@ -47,6 +47,8 @@ static void free_filter_file_t(filter_file_t *filter);
 static void free_file_event_t(file_event_t *file_event);
 static gint insert_array_in_root_and_send(main_struct_t *main_struct, json_t *array);
 static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta);
+static GList *lets_send_all_that_now(main_struct_t *main_struct, GList *hash_data_list, GList *saved_list, gsize read_bytes);
+static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_t *meta);
 static gint64 calculate_file_blocksize(options_t *opt, gint64 size);
 static gpointer reconnected(gpointer data);
 static gboolean client_signal_handler(gpointer user_data);
@@ -930,7 +932,31 @@ static gchar *send_hash_array_to_server(comm_t *comm, GList *hash_data_list)
 }
 
 
+static GList *lets_send_all_that_now(main_struct_t *main_struct, GList *hash_data_list, GList *saved_list, gsize read_bytes)
+{
+    GList *hdl_copy = NULL;
+    a_clock_t *elapsed = NULL;
+    gchar *answer = NULL;
 
+    elapsed = new_clock_t();
+    print_debug(_("Sending data: %d bytes\n"), read_bytes);
+    /* 0. Save the list in order to keep hashs for meta-data */
+    hdl_copy = g_list_copy_deep(hash_data_list, copy_only_hash, NULL);
+    saved_list = g_list_concat(hdl_copy, saved_list);
+
+    /* 1. Send an array of hashs to Hash_Array.json server url */
+    answer = send_hash_array_to_server(main_struct->comm, hash_data_list);
+
+    /* 2. Keep only hashs that are needed (answer from the server) */
+    hash_data_list = send_all_data_to_server(main_struct, hash_data_list, answer);
+
+    /* 3. free memory of this list if any is left */
+    g_list_free_full(hash_data_list, free_hdt_struct);
+
+    end_clock(elapsed, "lets_send_all_that_now");
+
+    return saved_list;
+}
 
 
 /**
@@ -946,7 +972,6 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
     GFileInputStream *stream = NULL;
     GError *error = NULL;
     GList *hash_data_list = NULL;
-    GList *hdl_copy = NULL;
     GList *saved_list = NULL;
     hash_data_t *hash_data = NULL;
     gssize read = 0;
@@ -992,24 +1017,10 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
 
                                     if (read_bytes >= main_struct->opt->buffersize)
                                         {
-                                            elapsed = new_clock_t();
-                                            print_debug(_("Sending data: %d bytes\n"), read_bytes);
-                                            /* 0. Save the list in order to keep hashs for meta-data */
-                                            hdl_copy = g_list_copy_deep(hash_data_list, copy_only_hash, NULL);
-                                            saved_list = g_list_concat(hdl_copy, saved_list);
-
-                                            /* 1. Send an array of hashs to Hash_Array.json server url */
-                                            answer = send_hash_array_to_server(main_struct->comm, hash_data_list);
-
-                                            /* 2. Keep only hashs that are needed (answer from the server) */
-                                            hash_data_list = send_all_data_to_server(main_struct, hash_data_list, answer);
-
-                                            /* 3. free memory of this list if any is left */
-                                            g_list_free_full(hash_data_list, free_hdt_struct);
+                                            /* Buffer is full so we need to send it to the server */
+                                            saved_list = lets_send_all_that_now(main_struct, hash_data_list, saved_list, read_bytes);
                                             hash_data_list = NULL;
                                             read_bytes = 0;
-
-                                            end_clock(elapsed, "process_big_file_not_in_cache");
                                         }
 
                                     buffer = (guchar *) g_malloc(meta->blocksize);
@@ -1029,24 +1040,10 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                 {
                                     if (read_bytes > 0)
                                         {
-                                            elapsed = new_clock_t();
-                                            print_debug(_("Sending data: %d bytes\n"), read_bytes);
-                                                                                        /* 0. Save the list in order to keep hashs for meta-data */
-                                            hdl_copy = g_list_copy_deep(hash_data_list, copy_only_hash, NULL);
-                                            saved_list = g_list_concat(hdl_copy, saved_list);
-
-                                            /* 1. Send an array of hashs to Hash_Array.json server url */
-                                            answer = send_hash_array_to_server(main_struct->comm, hash_data_list);
-
-                                            /* 2. Keep only hashs that are needed (answer from the server) */
-                                            hash_data_list = send_all_data_to_server(main_struct, hash_data_list, answer);
-
-                                            /* 3. free memory of this list if any is left */
-                                            g_list_free_full(hash_data_list, free_hdt_struct);
+                                            /* Last buffer for that file : send it to the server */
+                                            saved_list = lets_send_all_that_now(main_struct, hash_data_list, saved_list, read_bytes);
                                             hash_data_list = NULL;
                                             read_bytes = 0;
-
-                                            end_clock(elapsed, "process_big_file_not_in_cache");
                                         }
 
                                     /* get the list in correct order (because we prepended the hashs to get speed when inserting hashs in the list) */
