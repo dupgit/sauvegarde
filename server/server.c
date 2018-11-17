@@ -656,7 +656,7 @@ static int process_get_request(server_struct_t *server_struct, struct MHD_Connec
     static int aptr = 0;
     int success = MHD_NO;
     gchar *answer = NULL;
-    gchar *content_type;
+    gchar *content_type = NULL;
 
 
     if (&aptr != *con_cls)
