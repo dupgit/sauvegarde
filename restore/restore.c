@@ -343,6 +343,7 @@ static GSList *get_files_from_server(res_struct_t *res_struct, query_t *query)
 
                     json_decref(root);
                     free_variable(res_struct->comm->buffer);
+                    res_struct->comm->buffer = NULL; /* This is a way to know that this variable has been freed */
                 }
 
             free_variable(request);
@@ -500,6 +501,7 @@ static void restore_data_to_stream(res_struct_t *res_struct, GFileOutputStream *
                                 {
                                     hash_data = convert_string_to_hash_data(res_struct->comm->buffer);
                                     free_variable(res_struct->comm->buffer);
+                                    res_struct->comm->buffer = NULL; /* This is a way to know that this variable has been freed */
 
                                     if (hash_data != NULL)
                                         {
