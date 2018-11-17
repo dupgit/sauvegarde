@@ -538,9 +538,7 @@ void ignore_sigpipe(void)
     sig.sa_handler = &catcher;
     sigemptyset (&sig.sa_mask);
 
-    #ifdef SA_INTERRUPT
-        sig.sa_flags = SA_INTERRUPT;  /* SunOS */
-    #else
+    #ifndef SA_INTERRUPT
         sig.sa_flags = SA_RESTART;
     #endif
 
