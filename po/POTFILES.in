@@ -21,6 +21,8 @@ libcdpfgl/hashs.c
 libcdpfgl/hashs.h
 libcdpfgl/libcdpfgl.c
 libcdpfgl/libcdpfgl.h
+libcdpfgl/options.c
+libcdpfgl/options.h
 libcdpfgl/packing.c
 libcdpfgl/packing.h
 libcdpfgl/query.c

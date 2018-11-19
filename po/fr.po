@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sauvegarde 0.0.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-30 14:50+0100\n"
+"POT-Creation-Date: 2018-11-19 22:18+0100\n"
 "PO-Revision-Date: 2018-11-09 22:23+0100\n"
 "Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
@@ -17,80 +17,80 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.6.10\n"
 
-#: ../client/client.c:75
+#: ../client/client.c:78
 #, c-format
 msgid "Error while compiling %s to a regular expression: %s"
 msgstr "Erreur lors de la compilation de %s en une expression rationnelle : %s"
 
-#: ../client/client.c:126
+#: ../client/client.c:128
 msgid "Please wait while initializing main structure...\n"
 msgstr ""
 "Merci de patienter pendant l'initialisation de la structure principale...\n"
 
-#: ../client/client.c:164
+#: ../client/client.c:167
 msgid "Main structure initialized !\n"
 msgstr "Structure principale initialisée !\n"
 
-#: ../client/client.c:231 ../client/client.c:1011
+#: ../client/client.c:232 ../client/client.c:1034
 #, c-format
 msgid "Error while reading file: %s\n"
 msgstr "Erreur en lisant le fichier : %s\n"
 
-#: ../client/client.c:251 ../client/client.c:1052
+#: ../client/client.c:252 ../client/client.c:1061
 #, c-format
 msgid "Unable to open file for reading: %s\n"
 msgstr "Impossible d'ouvrir le fichier pour y lire : %s\n"
 
 #. Sends meta data here: readbuffer is the buffer sent to server
-#: ../client/client.c:374
+#: ../client/client.c:377
 #, c-format
 msgid "Sending meta data: %s\n"
 msgstr "Envoi des méta données : %s\n"
 
-#: ../client/client.c:574 ../client/client.c:647
+#: ../client/client.c:580 ../client/client.c:655
 msgid "Error while loading JSON answer from server\n"
 msgstr "Erreur en chargeant le JSON de la réponse du serveur\n"
 
-#: ../client/client.c:830
+#: ../client/client.c:840
 #, c-format
 msgid "Processing small file: %s\n"
 msgstr "Traitement du petit fichier %s\n"
 
-#: ../client/client.c:953
-#, c-format
-msgid "Processing file: %s\n"
-msgstr "Traitement du fichier %s\n"
-
-#: ../client/client.c:984 ../client/client.c:1021
+#: ../client/client.c:942
 #, c-format
 msgid "Sending data: %d bytes\n"
 msgstr "Envoi des données : %d octets\n"
 
-#: ../client/client.c:1124
+#: ../client/client.c:990
+#, c-format
+msgid "Processing file: %s\n"
+msgstr "Traitement du fichier %s\n"
+
+#: ../client/client.c:1135
 #, c-format
 msgid "processing file %s"
 msgstr "Traitement du fichier %s"
 
-#: ../client/client.c:1130
+#: ../client/client.c:1141
 #, c-format
 msgid "processing excluded file %s"
 msgstr "Traitement du fichier exclu %s"
 
-#: ../client/client.c:1136
+#: ../client/client.c:1147
 #, c-format
 msgid "Error with meta (%p) or filter (%p) structures\n"
 msgstr "Erreur avec les structures 'meta' (%p) ou 'filter' (%p)\n"
 
-#: ../client/client.c:1209
+#: ../client/client.c:1224
 #, c-format
 msgid "Unable to enumerate directory %s: %s\n"
 msgstr "Impossible d'énumérer le dossier %s : %s\n"
 
-#: ../client/client.c:1266
+#: ../client/client.c:1282
 msgid "We have data and meta data to transmit to server\n"
 msgstr "Il y a des données et des métas-données à transmettre au serveur\n"
 
-#: ../client/client.c:1301 ../server/server.c:99
+#: ../client/client.c:1315 ../server/server.c:100
 msgid ""
 "\n"
 "Ending the program:\n"
@@ -98,19 +98,19 @@ msgstr ""
 "\n"
 "Terminaison du programme :\n"
 
-#: ../client/client.c:1304
+#: ../client/client.c:1318
 msgid "\tNotification stopped.\n"
 msgstr "\tNotification arrêtée.\n"
 
-#: ../client/client.c:1307 ../server/server.c:101
+#: ../client/client.c:1321 ../server/server.c:102
 msgid "\tMain loop exited.\n"
 msgstr "\tBoucle principale terminée.\n"
 
-#: ../client/client.c:1310
+#: ../client/client.c:1324
 msgid "\tDatabase closed.\n"
 msgstr "\tBase de données fermée.\n"
 
-#: ../client/client.c:1363 ../server/server.c:1267
+#: ../client/client.c:1375 ../server/server.c:1297
 msgid "Unable to add signal handlers\n"
 msgstr "Impossible d'ajouter une fonction pour traiter les signaux\n"
 
@@ -171,8 +171,8 @@ msgstr " le dossier correspondant est : %s\n"
 msgid "Couldn't poll(): '%s'\n"
 msgstr "Impossible d'exécuter poll() : '%s'\n"
 
-#: ../client/options.c:72 ../restore/options.c:46 ../server/options.c:59
-#: ../server/options.c:90
+#: ../client/options.c:72 ../restore/options.c:45 ../server/options.c:58
+#: ../server/options.c:89
 #, c-format
 msgid ""
 "\n"
@@ -199,7 +199,7 @@ msgstr "Taille du bloc : %s\n"
 msgid "Blocksize: adaptive mode\n"
 msgstr "Taille de bloc : mode adaptatif\n"
 
-#: ../client/options.c:93 ../restore/options.c:47 ../server/options.c:61
+#: ../client/options.c:93 ../restore/options.c:46 ../server/options.c:60
 #, c-format
 msgid "Configuration file: %s\n"
 msgstr "Fichier de configuration : %s\n"
@@ -230,136 +230,148 @@ msgid "Buffersize: %d\n"
 msgstr "Taille du cache : %d\n"
 
 #. Reading the directory list
-#: ../client/options.c:119
+#: ../client/options.c:120
 msgid "Could not load directory list from file"
 msgstr "Impossible de charger la liste des dossiers depuis le fichier"
 
-#: ../client/options.c:120
+#: ../client/options.c:121
 msgid "Could not load exclude file list from file"
 msgstr "Impossible de charger la liste des dossiers depuis le fichier"
 
 #. Reading blocksize
-#: ../client/options.c:123
+#: ../client/options.c:124
 msgid "Could not load blocksize from file"
 msgstr "Impossible de charger la taille du bloc depuis le fichier"
 
 #. Reading the cache directory if any
-#: ../client/options.c:126
+#: ../client/options.c:127
 msgid "Could not load directory name"
 msgstr "Impossible de charger le nom du dossier"
 
 #. Reading filename of the database if any
+#. @todo: put a warning in case of a wrong port number
 #. Reading IP address of server's host if any
-#: ../client/options.c:131 ../client/options.c:170 ../restore/options.c:90
+#: ../client/options.c:132 ../libcdpfgl/options.c:85
 msgid "Could not load cache database name"
 msgstr "Impossible de charger le nom de la base de données dans le cache"
 
 #. Adaptative mode for blocksize ?
-#: ../client/options.c:134
+#: ../client/options.c:135
 msgid "Could not load adaptive configuration from file."
 msgstr ""
 "Impossible de charger la valeur de l'option 'adaptive' depuis le fichier de "
 "configuration."
 
 #. Scanning option
-#: ../client/options.c:137
+#: ../client/options.c:138
 msgid "Could not load scan configuration from file."
 msgstr ""
 "Impossible de charger la configuration de la variable no-scan depuis le "
 "fichier de configuration."
 
 #. Buffer size to be used to send data to server
-#: ../client/options.c:140
+#: ../client/options.c:141
 msgid "Could not load buffersize from file"
 msgstr "Impossible de charger la taille du cache depuis le fichier"
 
-#. Reading the port number if any
-#: ../client/options.c:162 ../restore/options.c:82 ../server/options.c:119
-msgid "Could not load server port number from file."
-msgstr "Impossible de charger le numéro du port du serveur depuis le fichier."
+#. Compression type if any
+#: ../client/options.c:144
+#, fuzzy
+msgid "Compression type not defined in configuration file"
+msgstr "Spécifie un fichier de configuration alternatif."
 
-#: ../client/options.c:195 ../restore/options.c:116 ../server/options.c:146
+#: ../client/options.c:173 ../restore/options.c:89 ../server/options.c:125
 #, c-format
 msgid "Reading configuration from file %s\n"
 msgstr "Lecture de la configuration depuis le fichier %s\n"
 
-#: ../client/options.c:208 ../restore/options.c:127
-#: ../server/file_backend.c:385 ../server/options.c:156
+#: ../client/options.c:188 ../restore/options.c:102
+#: ../server/file_backend.c:385 ../server/options.c:137
 #, c-format
 msgid "Failed to open %s configuration file: %s\n"
 msgstr "Impossible d'ouvrir le fichier de configuration %s : %s\n"
 
-#: ../client/options.c:253
+#: ../client/options.c:212
+#, c-format
+msgid "Unknown compression type: %d\n"
+msgstr ""
+
+#: ../client/options.c:255
 msgid "Prints program version"
 msgstr "Affiche la version du programme."
 
-#: ../client/options.c:254
+#: ../client/options.c:256
 msgid "Activates (1) or desactivates (0) debug mode."
 msgstr "Active (1) ou désactive (0) le mode de débogage."
 
-#: ../client/options.c:254 ../client/options.c:257 ../restore/options.c:176
-#: ../server/options.c:189
+#: ../client/options.c:256 ../client/options.c:259 ../restore/options.c:151
+#: ../server/options.c:170
 msgid "BOOLEAN"
 msgstr "BOOLÉEN"
 
-#: ../client/options.c:255 ../client/options.c:260 ../client/options.c:263
-#: ../restore/options.c:177 ../server/options.c:190
+#: ../client/options.c:257 ../client/options.c:262 ../client/options.c:265
+#: ../restore/options.c:152 ../server/options.c:171
 msgid "FILENAME"
 msgstr "NOM DU FICHIER"
 
-#: ../client/options.c:255 ../restore/options.c:177 ../server/options.c:190
+#: ../client/options.c:257 ../restore/options.c:152 ../server/options.c:171
 msgid "Specify an alternative configuration file."
 msgstr "Spécifie un fichier de configuration alternatif."
 
-#: ../client/options.c:256
+#: ../client/options.c:258
 msgid "Fixed block SIZE used to compute hashs."
 msgstr "TAILLE fixe des blocs pour le calcul des sommes de contrôle."
 
-#: ../client/options.c:256 ../client/options.c:258
+#: ../client/options.c:258 ../client/options.c:260
 msgid "SIZE"
 msgstr "TAILLE"
 
-#: ../client/options.c:257
+#: ../client/options.c:259
 msgid "Adapative block size used to compute hashs."
 msgstr "Taille des blocs adaptative pour le calcul des sommes de contrôle."
 
-#: ../client/options.c:258
+#: ../client/options.c:260
 msgid "SIZE of the cache used to send data to server."
 msgstr "Taille du cache utilisé pour envoyer les données au serveur."
 
-#: ../client/options.c:259
+#: ../client/options.c:261
 msgid "DIRNAME"
 msgstr "NOM DU RÉPERTOIRE"
 
-#: ../client/options.c:259
+#: ../client/options.c:261
 msgid "Directory DIRNAME where to cache files."
 msgstr "Répertoire NOM DU RÉPERTOIRE du cache des fichiers."
 
-#: ../client/options.c:260
+#: ../client/options.c:262
 msgid "Database FILENAME."
 msgstr "NOM DU FICHIER de la base de données."
 
-#: ../client/options.c:261 ../restore/options.c:189
+#: ../client/options.c:263 ../restore/options.c:164
 msgid "IP address where server program is."
 msgstr "Adresse IP du serveur."
 
-#: ../client/options.c:262 ../restore/options.c:190 ../server/options.c:191
+#: ../client/options.c:264 ../client/options.c:267 ../restore/options.c:165
+#: ../server/options.c:172
 msgid "NUMBER"
 msgstr "NUMÉRO"
 
-#: ../client/options.c:262 ../server/options.c:191
+#: ../client/options.c:264 ../server/options.c:172
 msgid "Port NUMBER on which to listen."
 msgstr "NUMÉRO du port à écouter."
 
-#: ../client/options.c:263
+#: ../client/options.c:265
 msgid "Exclude FILENAME from being saved."
 msgstr "Exclu NOM DU FICHIER de la sauvegarde."
 
-#: ../client/options.c:264
+#: ../client/options.c:266
 msgid "Does not do the first directory scan."
 msgstr "Ne pas faire la première passe sur les dossiers."
 
-#: ../client/options.c:269 ../server/options.c:203
+#: ../client/options.c:267
+msgid "Compression type to use: 0 is NONE, 1 is ZLIB"
+msgstr ""
+
+#: ../client/options.c:272 ../server/options.c:184
 msgid ""
 "This program is monitoring file changes in the filesystem and is hashing\n"
 "files with SHA256 algorithms from Glib."
@@ -378,60 +390,60 @@ msgstr "Temps écoulé (%s) : %d µs\n"
 msgid "\t. LIBCURL version: %s\n"
 msgstr "\t. LIBCURL version : %s\n"
 
-#: ../libcdpfgl/communique.c:267
+#: ../libcdpfgl/communique.c:311
 #, c-format
 msgid "Answer length: %d\n"
 msgstr "La taille de la réponse est : %d\n"
 
-#: ../libcdpfgl/communique.c:271
+#: ../libcdpfgl/communique.c:315
 #, c-format
 msgid "Error while sending GET command and receiving data: %s\n"
 msgstr ""
 "Erreur lors de l'envoie de la commande GET et de la réception des données : "
 "%s\n"
 
-#: ../libcdpfgl/communique.c:336
+#: ../libcdpfgl/communique.c:406
 #, c-format
 msgid "Error while sending POST command (to \"%s\"): %s\n"
 msgstr "Erreur lors de l'envoi de la commande POST (à \"%s\") : %s\n"
 
-#: ../libcdpfgl/communique.c:340
+#: ../libcdpfgl/communique.c:410
 #, c-format
 msgid "Answer is: \"%s\"\n"
 msgstr "La réponse est : \"%s\"\n"
 
-#: ../libcdpfgl/communique.c:373
+#: ../libcdpfgl/communique.c:457
 #, c-format
 msgid "Server (version %s) is alive at %s.\n"
 msgstr "Serveur (version %s) en fonctionnement à %s.\n"
 
-#: ../libcdpfgl/communique.c:377
+#: ../libcdpfgl/communique.c:461
 #, c-format
 msgid "Server (version %s) is alive.\n"
 msgstr "Serveur (version %s) en fonctionnement.\n"
 
-#: ../libcdpfgl/communique.c:387
+#: ../libcdpfgl/communique.c:471
 #, c-format
 msgid "Server is not alive (%s).\n"
 msgstr "Le serveur n'est pas en fonctionnement (%s).\n"
 
-#: ../libcdpfgl/communique.c:391
+#: ../libcdpfgl/communique.c:475
 msgid "Server is not alive.\n"
 msgstr "Le serveur n'est pas en fonctionnement.\n"
 
-#: ../libcdpfgl/compress.c:82
+#: ../libcdpfgl/compress.c:106
 msgid "Error reading stdin."
 msgstr "Erreur en lisant l'entrée standard (stdin)."
 
-#: ../libcdpfgl/compress.c:84
+#: ../libcdpfgl/compress.c:108
 msgid "Error writing stdout."
 msgstr "Erreur en écrivant dans la sortie standard (stdout)."
 
-#: ../libcdpfgl/compress.c:87
+#: ../libcdpfgl/compress.c:111
 msgid "Error: invalid compression level."
 msgstr "Erreur : niveau de compression invalide"
 
-#: ../libcdpfgl/compress.c:90
+#: ../libcdpfgl/compress.c:114
 msgid "Error: invalid or incomplete deflate data."
 msgstr "Erreur : Données à décompresser invalides ou incomplètes."
 
@@ -472,41 +484,41 @@ msgstr "Erreur lors de la lecture de la version de la base de données"
 msgid "Error while reading file: %s (%s)\n"
 msgstr "Erreur en lisant le fichier : %s (%s)\n"
 
-#: ../libcdpfgl/configuration.c:411
+#: ../libcdpfgl/configuration.c:409
 #, c-format
 msgid "Error while saving to file: %s (%s)\n"
 msgstr "Erreur en sauvegardant le fichier : %s (%s)\n"
 
-#: ../libcdpfgl/configuration.c:417
+#: ../libcdpfgl/configuration.c:415
 #, c-format
 msgid "Error while saving to file: %s\n"
 msgstr "Erreur en sauvegardant le fichier : %s\n"
 
-#: ../libcdpfgl/database.c:104
+#: ../libcdpfgl/database.c:105
 #, c-format
 msgid "sqlite error (%d - %d) on %s: %s\n"
 msgstr "Erreur sqlite (%d - %d) sur %s : %s\n"
 
-#: ../libcdpfgl/database.c:139
+#: ../libcdpfgl/database.c:142
 #, c-format
 msgid "(%d) Error commiting to the database: %s\n"
 msgstr "(%d) Erreur lors du \"commit\" dans la base de donnée : %s\n"
 
-#: ../libcdpfgl/database.c:149
+#: ../libcdpfgl/database.c:152
 #, c-format
 msgid "(%d) Error opening the transaction: %s\n"
 msgstr "(%d) Erreur lors de l'ouverture de la transaction : %s\n"
 
-#: ../libcdpfgl/database.c:372
+#: ../libcdpfgl/database.c:375
 msgid "Checking tables and index in the database:\n"
 msgstr "Vérification des tables et des indexes dans la base de données :\n"
 
 #. Creation of buffers table that contains checksums and their associated data
-#: ../libcdpfgl/database.c:375
+#: ../libcdpfgl/database.c:378
 msgid "\ttable buffers\n"
 msgstr "\ttable 'buffers'\n"
 
-#: ../libcdpfgl/database.c:376
+#: ../libcdpfgl/database.c:379
 #, c-format
 msgid "(%d) Error while creating database table 'buffers': %s\n"
 msgstr ""
@@ -514,83 +526,100 @@ msgstr ""
 "données : %s\n"
 
 #. Creation of transmited table that may contain id of transmited buffers if any + creation of its indexes
-#: ../libcdpfgl/database.c:379
+#: ../libcdpfgl/database.c:382
 msgid "\ttable transmited\n"
 msgstr "\ttable 'transmited'\n"
 
-#: ../libcdpfgl/database.c:380
+#: ../libcdpfgl/database.c:383
 #, c-format
 msgid "(%d) Error while creating database table 'transmited': %s\n"
 msgstr ""
 "(%d) Erreur lors de la création de la table 'transmited' dans la base de "
 "données : %s\n"
 
-#: ../libcdpfgl/database.c:382
+#: ../libcdpfgl/database.c:385
 msgid "\tindex transmited_buffer_id\n"
 msgstr "\tindex 'transmited_buffer_id'\n"
 
-#: ../libcdpfgl/database.c:383
+#: ../libcdpfgl/database.c:386
 #, c-format
 msgid "(%d) Error while creating index 'transmited_buffer_id': %s\n"
 msgstr ""
 "(%d) Erreur lors de la création de la table 'transmited_buffer_id' : %s\n"
 
 #. Creation of files table that contains everything about a file
-#: ../libcdpfgl/database.c:386
+#: ../libcdpfgl/database.c:389
 msgid "\ttable files\n"
 msgstr "\ttable 'files'\n"
 
-#: ../libcdpfgl/database.c:387
+#: ../libcdpfgl/database.c:390
 #, c-format
 msgid "(%d) Error while creating database table 'files': %s\n"
 msgstr ""
 "(%d) Erreur lors de la création de la table 'files' dans la base de "
 "données : %s\n"
 
-#: ../libcdpfgl/database.c:389
+#: ../libcdpfgl/database.c:392
 msgid "\tindex files_inodes\n"
 msgstr "\tindex 'files_inodes'\n"
 
-#: ../libcdpfgl/database.c:390
+#: ../libcdpfgl/database.c:393
 #, c-format
 msgid "(%d) Error while creating index 'files_inodes': %s\n"
 msgstr "(%d) Erreur lors de la création de la table 'files_inodes' : %s\n"
 
-#: ../libcdpfgl/database.c:628
+#: ../libcdpfgl/database.c:631
 #, c-format
 msgid "(%d) Error while inserting into the table 'transmited': %s\n"
 msgstr "(%d) Erreur lors de l'insertion dans la table 'transmited' : %s\n"
 
-#: ../libcdpfgl/database.c:680
+#: ../libcdpfgl/database.c:683
 #, c-format
 msgid "(%d) Error while deleting from table 'buffers': %s\n"
 msgstr "(%d) Erreur lors de la destruction dans la table 'buffers' : %s\n"
 
-#: ../libcdpfgl/database.c:1025
+#: ../libcdpfgl/database.c:1057
 msgid "\tClosing database.\n"
 msgstr "\tFermeture de la base de données.\n"
 
-#: ../libcdpfgl/database.c:1061
+#: ../libcdpfgl/database.c:1092
 #, c-format
 msgid "(%d) Error while trying to open %s database: %s\n"
 msgstr "(%d) Erreur lors de l'ouverture de la base de données %s : %s\n"
 
-#: ../libcdpfgl/files.c:531
+#: ../libcdpfgl/database.c:1137
+#, c-format
+msgid "Warning database version is not correct: %ld but expected: %d\n"
+msgstr ""
+
+#: ../libcdpfgl/database.c:1138
+#, fuzzy, c-format
+msgid "Now trying to migrate from %ld to %d\n"
+msgstr ""
+"Erreur lors de la tentative de récupération des données pour le hash %s"
+
+#: ../libcdpfgl/database.c:1148
+#, c-format
+msgid ""
+"Error database version is not correct: %ld but expected between 2 and %d\n"
+msgstr ""
+
+#: ../libcdpfgl/files.c:527
 #, c-format
 msgid "Setting mode: %d\n"
 msgstr "Fixe le mode : %d\n"
 
-#: ../libcdpfgl/files.c:832
+#: ../libcdpfgl/files.c:828
 #, c-format
 msgid "Error while getting file information: %s\n"
 msgstr "Erreur lors de la récupération des informations du fichier : %s\n"
 
-#: ../libcdpfgl/files.c:842
+#: ../libcdpfgl/files.c:838
 #, c-format
 msgid "Error or warning for file (%s): %s\n"
 msgstr "Erreur ou avertissement pour le fichier (%s) : %s\n"
 
-#: ../libcdpfgl/files.c:873
+#: ../libcdpfgl/files.c:869
 #, c-format
 msgid "Error: unable to create symbolic link %s to %s: %s.\n"
 msgstr "Erreur : Impossible de créé un lien symbolique de %s vers %s : %s.\n"
@@ -657,7 +686,7 @@ msgid "Text domain: %s\n"
 msgstr "Domaine du texte : %s\n"
 
 #. * Bug Report message
-#: ../libcdpfgl/libcdpfgl.c:315 ../server/options.c:202
+#: ../libcdpfgl/libcdpfgl.c:315 ../server/options.c:183
 msgid "Please report bugs to: "
 msgstr "Indiquez les bugs à : "
 
@@ -666,17 +695,22 @@ msgstr "Indiquez les bugs à : "
 msgid "Option parsing failed: %s\n"
 msgstr "Analyse des options échouée : %s\n"
 
-#: ../libcdpfgl/libcdpfgl.c:478
+#: ../libcdpfgl/libcdpfgl.c:482
 msgid "g_thread_create failed !"
 msgstr "g_thread_create a échoué !"
 
-#: ../libcdpfgl/libcdpfgl.c:545
+#: ../libcdpfgl/libcdpfgl.c:547
 #, c-format
 msgid "Failed to install SIGPIPE handler: %s\n"
 msgstr ""
 "Impossible d'installer la fonction pour traiter le signal SIGPIPE : %s\n"
 
-#: ../libcdpfgl/packing.c:55
+#. Reading the port number if any
+#: ../libcdpfgl/options.c:76
+msgid "Could not load server port number from file."
+msgstr "Impossible de charger le numéro du port du serveur depuis le fichier."
+
+#: ../libcdpfgl/packing.c:71
 msgid "Error while converting to JSON\n"
 msgstr "Erreur lors de la conversion à JSON\n"
 
@@ -703,90 +737,90 @@ msgstr ""
 "Quelque chose est erroné dans les longueurs : data_len = %s, read = %s, "
 "hash_len = %s, HASH_LEN = %d\n"
 
-#: ../restore/options.c:48
+#: ../restore/options.c:47
 #, c-format
 msgid "server's IP address: %s\n"
 msgstr "Adresse IP du serveur : %s\n"
 
-#: ../restore/options.c:49
+#: ../restore/options.c:48
 #, c-format
 msgid "server's port number: %d\n"
 msgstr "Numéro du port du serveur : %d\n"
 
-#: ../restore/options.c:175 ../server/options.c:188
+#: ../restore/options.c:150 ../server/options.c:169
 msgid "Prints program version."
 msgstr "Affiche la version du programme."
 
-#: ../restore/options.c:176 ../server/options.c:189
+#: ../restore/options.c:151 ../server/options.c:170
 msgid "Activates (1) or deactivates (0) debug mode."
 msgstr "Active (1) ou désactive (0) le mode de débogage."
 
-#: ../restore/options.c:178
+#: ../restore/options.c:153
 msgid "Lists saved files that correspond to the given REGEX."
 msgstr ""
 "Donne la liste des fichiers sauvegardés correspondants à l'EXPRESSION "
 "RATIONNELLE."
 
-#: ../restore/options.c:179
+#: ../restore/options.c:154
 msgid "Restores requested filename (REGEX) (by default latest version)."
 msgstr ""
 "Restaure le fichier demandé (EXPRESSION RATIONNELLE) (par défaut la dernière "
 "version)."
 
-#: ../restore/options.c:180
+#: ../restore/options.c:155
 msgid "Specifies a hostname (HOSTNAME) that owned the file to be restored."
 msgstr ""
 "Précise le nom de la machine (HOSTNAME) à qui appartenait le fichier à "
 "restaurer."
 
-#: ../restore/options.c:181
+#: ../restore/options.c:156
 msgid "Selects file with that specific DATE (YYYY-MM-DD HH:MM:SS format)."
 msgstr ""
 "Restaure le fichier sélectionné à une DATE spécifique (format YYYY-MM-DD HH:"
 "MM:SS)."
 
-#: ../restore/options.c:182
+#: ../restore/options.c:157
 msgid "Selects file with mtime after DATE (YYYY-MM-DD HH:MM:SS format)."
 msgstr ""
 "Restaure le fichier sélectionné avec un 'mtime' postérieur à DATE (format "
 "YYYY-MM-DD HH:MM:SS)."
 
-#: ../restore/options.c:183
+#: ../restore/options.c:158
 msgid "Selects file with mtime before DATE (YYYY-MM-DD HH:MM:SS format)."
 msgstr ""
 "Restaure le fichier sélectionné avec un 'mtime' antérieur à DATE (format "
 "YYYY-MM-DD HH:MM:SS)."
 
-#: ../restore/options.c:184
+#: ../restore/options.c:159
 msgid "Selects all versions of a file."
 msgstr "Liste ou restaure toutes les versions d'un fichier."
 
-#: ../restore/options.c:185
+#: ../restore/options.c:160
 msgid "Forces -r to restore all files found (not the latest one)"
 msgstr ""
 "Force -r à restaurer tous les fichiers trouvés (pas seulement le dernier)  "
 
-#: ../restore/options.c:186
+#: ../restore/options.c:161
 msgid "Selects only latest version of each file."
 msgstr "Liste ou restaure seulement la dernière version des fichiers."
 
-#: ../restore/options.c:187
+#: ../restore/options.c:162
 msgid "Creates directories if needed: ie restore with the whole path"
 msgstr "Créé les dossiers si besoin : restaure avec le chemin complet"
 
-#: ../restore/options.c:188
+#: ../restore/options.c:163
 msgid "DIRECTORY"
 msgstr "RÉPERTOIRE"
 
-#: ../restore/options.c:188
+#: ../restore/options.c:163
 msgid "Specify a DIRECTORY where to restore a file."
 msgstr "Indique un RÉPERTOIRE où restaurer un fichier."
 
-#: ../restore/options.c:190
+#: ../restore/options.c:165
 msgid "Port NUMBER on which server program is listening."
 msgstr "NUMÉRO du port sur lequel le programme serveur est à l'écoute."
 
-#: ../restore/options.c:196
+#: ../restore/options.c:171
 msgid "This program is restoring files from cdpfglserver's server."
 msgstr "Ce programme restaure les fichiers depuis le serveur cdpfglserver."
 
@@ -800,33 +834,33 @@ msgstr "hostname : %s, uid : %s, gid : %s, propriétaire : %s, groupe : %s\n"
 msgid "Query is: %s\n"
 msgstr "La requête est : %s\n"
 
-#: ../restore/restore.c:493
+#: ../restore/restore.c:494
 #, c-format
 msgid "Query is: %s with header %s\n"
 msgstr "La requête est : %s avec l'en-tête %s\n"
 
-#: ../restore/restore.c:511
+#: ../restore/restore.c:513
 #, c-format
 msgid "Error while trying to restore %s hash\n"
 msgstr "Erreur lors de la restauration du hash %s\n"
 
-#: ../restore/restore.c:517
+#: ../restore/restore.c:519
 #, c-format
 msgid "Error while getting hash %s"
 msgstr "Erreur lors de la récupération du hash %s"
 
-#: ../restore/restore.c:586
+#: ../restore/restore.c:588
 #, c-format
 msgid "filename to restore: %s\n"
 msgstr "Fichier à restaurer : %s\n"
 
-#: ../restore/restore.c:606
+#: ../restore/restore.c:608
 #, c-format
 msgid "Error: unable to open file %s to write data in it (%s).\n"
 msgstr ""
 "Erreur : Impossible d'ouvrir le fichier %s pour y écrire des données (%s).\n"
 
-#: ../restore/restore.c:650
+#: ../restore/restore.c:652
 #, c-format
 msgid ""
 "File to be restored: type %d, inode: %s, mode: %d, atime: %s, ctime: %s, "
@@ -896,48 +930,48 @@ msgstr "Fini !\n"
 msgid "Error: no server structure or no backend structure.\n"
 msgstr "Erreur : aucune structure serveur ou aucune structure de backend.\n"
 
-#: ../server/file_backend.c:512
+#: ../server/file_backend.c:511
 #, c-format
 msgid "Error while reading the file: %s\n"
 msgstr "Erreur en lisant le fichier : %s\n"
 
-#: ../server/file_backend.c:781
+#: ../server/file_backend.c:780
 #, c-format
 msgid "file_backend: filter is: %s && %s && %s && %s\n"
 msgstr "file_backend : le filtre est : %s && %s && %s && %s\n"
 
-#: ../server/file_backend.c:789
+#: ../server/file_backend.c:788
 #, c-format
 msgid "file_backend: Reading in %s\n"
 msgstr "file_backend : Lecture dans %s\n"
 
-#: ../server/file_backend.c:820 ../server/file_backend.c:905
+#: ../server/file_backend.c:819 ../server/file_backend.c:904
 #, c-format
 msgid "Error: unable to open file %s to read data from it.\n"
 msgstr "Erreur impossible d'ouvrir le fichier %s pour y lire des données.\n"
 
-#: ../server/file_backend.c:828
+#: ../server/file_backend.c:827
 msgid "file_backend: Something is wrong with backend initialization!\n"
 msgstr ""
 "file_backend : Quelque chose ne va pas avec l'initialisation du backend !\n"
 
-#: ../server/file_backend.c:878
+#: ../server/file_backend.c:877
 #, c-format
 msgid "file_backend: path: %s, filename: %s\n"
 msgstr "file_backend : chemin : %s, nom du fichier : %s\n"
 
-#: ../server/file_backend.c:891
+#: ../server/file_backend.c:890
 #, c-format
 msgid "Error: unable to read from file %s (%s bytes read): %s.\n"
 msgstr ""
 "Erreur : impossible de lire depuis le fichier %s (%s octets lus) : %s.\n"
 
-#: ../server/options.c:65
+#: ../server/options.c:64
 #, c-format
 msgid "Port number: %d\n"
 msgstr "Numéro du port : %d\n"
 
-#: ../server/options.c:86
+#: ../server/options.c:85
 #, c-format
 msgid ""
 "\n"
@@ -948,58 +982,58 @@ msgstr ""
 "Les options de %s sont :\n"
 "Fichier de configuration : %s\n"
 
-#: ../server/options.c:95
+#: ../server/options.c:94
 #, c-format
 msgid "%sPort number: %d\n"
 msgstr "%sNuméro du port : %d\n"
 
-#: ../server/options.c:212
+#: ../server/options.c:193
 #, c-format
 msgid "[%s, %d] Option parsing failed: %s\n"
 msgstr "[%s, %d] Analyse des options échouée : %s\n"
 
-#: ../server/server.c:72
+#: ../server/server.c:73
 msgid "\tMHD daemon stopped.\n"
 msgstr "\tdémon MHD arrêté.\n"
 
-#. * we need a backend function to be called to free th backend structure
-#: ../server/server.c:74
+#. * we need a backend function to be called to free the backend structure
+#: ../server/server.c:75
 msgid "\tbackend variable freed.\n"
 msgstr "\tvariable 'backend' libérée.\n"
 
-#: ../server/server.c:76
+#: ../server/server.c:77
 msgid "\tdata thread unreferenced.\n"
 msgstr "\tthread 'data' déréférencé.\n"
 
-#: ../server/server.c:78
+#: ../server/server.c:79
 msgid "\tmeta thread unreferenced.\n"
 msgstr "\tthread 'meta' déréférencé.\n"
 
-#: ../server/server.c:80
+#: ../server/server.c:81
 msgid "\toption structure freed.\n"
 msgstr "\tstructure 'option' libérée.\n"
 
-#: ../server/server.c:82
+#: ../server/server.c:83
 msgid "\tmain structure freed.\n"
 msgstr "Structure principale libérée.\n"
 
-#: ../server/server.c:166
+#: ../server/server.c:167
 #, c-format
 msgid "Error while trying to get data from hash %s"
 msgstr ""
 "Erreur lors de la tentative de récupération des données pour le hash %s"
 
-#: ../server/server.c:173
+#: ../server/server.c:174
 msgid "This backend's missing a retrieve_data function!"
 msgstr ""
 "Il manque une fonction de récupération des données (retrieve_data) à ce "
 "backend !"
 
-#: ../server/server.c:180
+#: ../server/server.c:181
 msgid "Something's wrong with server's initialisation!"
 msgstr "Quelque chose ne va pas avec l'initialisation du serveur !"
 
-#: ../server/server.c:285
+#: ../server/server.c:286
 #, c-format
 msgid ""
 "hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s && %s && %s "
@@ -1008,58 +1042,58 @@ msgstr ""
 "hostname : %s, uid : %s, gid : %s, owner : %s, group : %s, filter : %s && %s "
 "&& %s && %s && %d\n"
 
-#: ../server/server.c:295
+#: ../server/server.c:296
 #, c-format
 msgid "Malformed request: hostname: %s, uid: %s, gid: %s, owner: %s, group: %s"
 msgstr ""
 "Requête mal formée : hostname : %s, uid : %s, gid : %s, owner : %s, group : "
 "%s"
 
-#: ../server/server.c:305
+#: ../server/server.c:306
 msgid "Error: no backend defined to get a list of files from it.\n"
 msgstr ""
 "Erreur : aucun backend n'est défini pour obtenir la liste des fichiers\n"
 
-#: ../server/server.c:594
+#: ../server/server.c:560
 #, c-format
 msgid "Trying to get data for hash %s\n"
 msgstr "Essai de récupération des données pour le hash %s\n"
 
-#: ../server/server.c:599
+#: ../server/server.c:565
 #, c-format
 msgid "Invalid url: in %s hash has length: %zd instead of %d"
 msgstr "Url invalide : dans %s la longueur du hash est : %zd au lieu de %d"
 
-#: ../server/server.c:609
+#: ../server/server.c:575
 #, c-format
 msgid "URL not found: %s"
 msgstr "URL introuvable : %s"
 
-#: ../server/server.c:650
+#: ../server/server.c:616
 #, c-format
 msgid "Error: invalid url: %s\n"
 msgstr "Erreur : URL invalide : %s\n"
 
-#: ../server/server.c:709
-#, c-format
-msgid "Requested get url: %s\n"
+#: ../server/server.c:675
+#, fuzzy, c-format
+msgid "Requested GET url: %s\n"
 msgstr "URL requise (get) : %s\n"
 
-#: ../server/server.c:792
+#: ../server/server.c:758
 #, c-format
 msgid "Received meta data (%zd bytes) for file %s\n"
 msgstr "Méta données reçues (%zd octets) pour le fichier %s\n"
 
-#: ../server/server.c:819 ../server/server.c:862
+#: ../server/server.c:785 ../server/server.c:828
 msgid "Error: could not convert json to metadata\n"
 msgstr "Erreur : impossible de convertir json en méta-données\n"
 
-#: ../server/server.c:849
+#: ../server/server.c:815
 #, c-format
 msgid "Received hash array of %zd bytes size\n"
 msgstr "Réception du tableau de hashs d'une taille de %zd octets\n"
 
-#: ../server/server.c:887
+#: ../server/server.c:853
 #, c-format
 msgid "Received data for hash: \"%s\" (%s bytes)\n"
 msgstr "Réception des données pour le hash :  \"%s\" (%s octets)\n"
@@ -1067,34 +1101,39 @@ msgstr "Réception des données pour le hash :  \"%s\" (%s octets)\n"
 #. *
 #. * creating an answer for the client to say that everything went Ok!
 #.
-#: ../server/server.c:956 ../server/server.c:992
+#: ../server/server.c:944 ../server/server.c:980
 msgid "Ok!"
 msgstr "Ok !"
 
-#: ../server/server.c:1000
+#: ../server/server.c:988
 msgid "Invalid url!\n"
 msgstr "URL invalide !\n"
 
-#: ../server/server.c:1024
-#, c-format
-msgid "Could not guess Content-Length header value: %s\n"
+#: ../server/server.c:1017
+#, fuzzy, c-format
+msgid "Could not guess '%s' header value: %s\n"
 msgstr "Impossible de deviner la valeur de l'entête Content-Length : %s\n"
 
-#: ../server/server.c:1122
+#: ../server/server.c:1114
+#, fuzzy, c-format
+msgid "Requested POST url: %s (%ld bytes)\n"
+msgstr "URL requise (get) : %s\n"
+
+#: ../server/server.c:1152
 #, c-format
 msgid "Headers for this connection are:\n"
 msgstr "Les en-têtes de cette connexion sont :\n"
 
-#: ../server/server.c:1181
+#: ../server/server.c:1211
 #, c-format
 msgid "meta_data_thread: received from %s meta for file %s\n"
 msgstr "meta_data_thread: Méta données reçues de %s pour le fichier %s\n"
 
-#: ../server/server.c:1187
+#: ../server/server.c:1217
 msgid "Error: received a NULL pointer.\n"
 msgstr "Erreur : réception d'un pointeur NULL.\n"
 
-#: ../server/server.c:1193
+#: ../server/server.c:1223
 msgid ""
 "Error: no meta data store backend defined, meta-data's thread "
 "terminating...\n"
@@ -1102,30 +1141,30 @@ msgstr ""
 "Erreur : pas de backend défini pour stocker les méta-données, le thread des "
 "méta-données se termine...\n"
 
-#: ../server/server.c:1198
+#: ../server/server.c:1228
 msgid "Error: unable to launch meta-data thread.\n"
 msgstr "Erreur : impossible de démarrer le thread des méta-données.\n"
 
-#: ../server/server.c:1233
+#: ../server/server.c:1263
 msgid "Error: no data store backend defined, data's thread terminating...\n"
 msgstr ""
 "Erreur : pas de backend pour stocker les données, le thread des données se "
 "termine...\n"
 
-#: ../server/server.c:1239
+#: ../server/server.c:1269
 msgid "Error while trying to launch data thread"
 msgstr "Erreur lors du lancement du thread des données."
 
-#: ../server/server.c:1316
+#: ../server/server.c:1346
 msgid "Error while spawning libmicrohttpd daemon\n"
 msgstr "Erreur lors de l'exécution du daemon libmicrohttpd\n"
 
-#: ../server/server.c:1320
+#: ../server/server.c:1350
 #, c-format
 msgid "Now listening on port %d\n"
 msgstr "En écoute sur le port %d\n"
 
-#: ../server/server.c:1332
+#: ../server/server.c:1362
 msgid "Error: initialization failed.\n"
 msgstr "Erreur : initialisation échouée.\n"
 
