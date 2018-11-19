@@ -323,4 +323,7 @@ extern gint64 get_database_version(gchar *version_filename, gchar *keyvalue);
  */
 extern gint64 set_database_version(gchar *version_filename, gchar *keyvalue, gint64 version_number);
 
+
+
+
 #endif /* #ifndef _CONFIGURATION_H_ */

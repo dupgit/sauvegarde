@@ -61,6 +61,7 @@
 #include "query.h"
 #include "clock.h"
 #include "compress.h"
+#include "options.h"
 
 /**
  * @def SERVER_PORT

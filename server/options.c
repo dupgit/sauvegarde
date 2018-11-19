@@ -30,7 +30,6 @@
 
 static void print_selected_options(options_t *opt);
 static void read_from_configuration_file(options_t *opt, gchar *filename);
-static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename);
 
 /**
  * Frees the options structure if necessary.
@@ -103,27 +102,6 @@ gchar *buffer_selected_option(options_t *opt)
 
 
 /**
- * Reads keys in keyfile if groupname is in that keyfile and fills
- * options_t *opt structure accordingly.
- * @param[in,out] opt : options_t * structure to store options read from the
- *                configuration file "filename".
- * @param keyfile is the GKeyFile structure that is used by glib to read
- *        groups and keys from.
- * @param filename : the filename of the configuration file to read from
- */
-static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename)
-{
-    if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVER) == TRUE)
-        {
-            /* Reading the port number if any */
-            opt->port = read_int_from_file(keyfile, filename, GN_SERVER, KN_SERVER_PORT, _("Could not load server port number from file."), SERVER_PORT);
-        }
-
-    read_debug_mode_from_file(keyfile, filename);
-}
-
-
-/**
  * Reads from the configuration file "filename"
  * @param[in,out] opt : options_t * structure to store options read from the
  *                configuration file "filename"
@@ -133,6 +111,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 {
     GKeyFile *keyfile = NULL;      /** Configuration file parser */
     GError *error = NULL;          /** Glib error handling       */
+    srv_conf_t *srv_conf = NULL;
 
     if (filename != NULL)
         {
@@ -149,7 +128,9 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
-                    read_from_group_server(opt, keyfile, filename);
+                    srv_conf = read_from_group_server(keyfile, filename);
+                    opt->port = srv_conf ->port;
+                    read_debug_mode_from_file(keyfile, filename);
                 }
             else if (error != NULL)
                 {

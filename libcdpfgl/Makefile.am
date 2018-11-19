@@ -9,7 +9,8 @@ headerfiles = libcdpfgl.h       \
 	      database.h	\
 	      query.h		\
 	      clock.h           \
-	      compress.h
+	      compress.h	\
+	      options.h
 
 libcdpfgl_la_SOURCES = libcdpfgl.c      \
                        configuration.c  \
@@ -22,6 +23,7 @@ libcdpfgl_la_SOURCES = libcdpfgl.c      \
                        query.c		\
                        clock.c          \
 		       compress.c       \
+		       options.c	\
                        $(headerfiles)
 
 libcdpfgl_la_CFLAGS = $(CFLAGS) $(GLIB_CFLAGS) $(GIO_CFLAGS)       \

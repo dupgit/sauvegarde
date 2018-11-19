@@ -31,7 +31,6 @@
 
 static void print_selected_options(options_t *opt);
 static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *filename);
-static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename);
 static void read_from_configuration_file(options_t *opt, gchar *filename);
 static void print_filelist(GSList *filelist, gchar *title);
 static void set_compression_type(options_t *opt, gshort cmptype);
@@ -149,34 +148,6 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
    read_debug_mode_from_file(keyfile, filename);
 }
 
-/**
- * Reads keys in keyfile if groupname is in that keyfile and fills
- * options_t *opt structure accordingly.
- * @param[in,out] opt : options_t * structure to store options read from the
- *                configuration file "filename".
- * @param keyfile is the GKeyFile structure that is used by glib to read
- *        groups and keys from.
- * @param filename : the filename of the configuration file to read from
- */
-static void read_from_group_server(options_t *opt, GKeyFile *keyfile, gchar *filename)
-{
-    gint port = 0;
-
-    if (opt != NULL && keyfile != NULL && filename != NULL && g_key_file_has_group(keyfile, GN_SERVER) == TRUE)
-        {
-            /* Reading the port number if any */
-            port = read_int_from_file(keyfile, filename, GN_SERVER, KN_SERVER_PORT, _("Could not load server port number from file."), SERVER_PORT);
-
-            if (port > 1024 && port < 65535)
-                {
-                    opt->port = port;
-                }
-
-            /* Reading IP address of server's host if any */
-            opt->ip = read_string_from_file(keyfile, filename, GN_SERVER, KN_SERVER_IP, _("Could not load cache database name"));
-        }
-}
-
 
 /**
  * Reads from the configuration file "filename" and fills the options_t *
@@ -189,6 +160,7 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 {
     GKeyFile *keyfile = NULL;      /** Configuration file parser                          */
     GError *error = NULL;          /** Glib error handling                                */
+    srv_conf_t *srv_conf = NULL;
 
     if (filename != NULL)
         {
@@ -207,7 +179,9 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
                     opt->configfile = g_strdup(filename);
 
                     read_from_group_client(opt, keyfile, filename);
-                    read_from_group_server(opt, keyfile, filename);
+                    srv_conf = read_from_group_server(keyfile, filename);
+                    opt->port = srv_conf->port;
+                    opt->ip = srv_conf->ip;
                 }
             else if (error != NULL)
                 {
