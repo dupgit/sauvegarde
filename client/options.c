@@ -77,7 +77,7 @@ static void print_selected_options(options_t *opt)
             if (opt->adaptive == FALSE)
                 {
                     /**
-                     * We need to translated this number into a string before
+                     * We need to translate this number into a string before
                      * inserting it into the final string in order to allow
                      * this final string to be translated in an other language.
                      */
@@ -93,8 +93,11 @@ static void print_selected_options(options_t *opt)
             print_string_option(_("Configuration file: %s\n"), opt->configfile);
             print_string_option(_("Cache directory: %s\n"), opt->dircache);
             print_string_option(_("Cache database name: %s\n"), opt->dbname);
-            print_string_option(_("Server's IP address: %s\n"), opt->ip);
-            fprintf(stdout, _("Server's port number: %d\n"), opt->port);
+            if (opt->srv_conf != NULL)
+                {
+                    print_string_option(_("Server's IP address: %s\n"), opt->srv_conf->ip);
+                    fprintf(stdout, _("Server's port number: %d\n"), opt->srv_conf->port);
+                }
             fprintf(stdout, _("Buffersize: %d\n"), opt->buffersize);
         }
 }
@@ -160,28 +163,29 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 {
     GKeyFile *keyfile = NULL;      /** Configuration file parser                          */
     GError *error = NULL;          /** Glib error handling                                */
-    srv_conf_t *srv_conf = NULL;
 
     if (filename != NULL)
         {
-
-            if (opt->configfile != NULL)
-                {
-                    free_variable(opt->configfile);
-                }
-
             print_debug(_("Reading configuration from file %s\n"), filename);
 
             keyfile = g_key_file_new();
 
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
+                    if (opt->configfile != NULL)
+                        {
+                            free_variable(opt->configfile);
+                        }
                     opt->configfile = g_strdup(filename);
 
                     read_from_group_client(opt, keyfile, filename);
-                    srv_conf = read_from_group_server(keyfile, filename);
-                    opt->port = srv_conf->port;
-                    opt->ip = srv_conf->ip;
+
+                    if (opt->srv_conf != NULL)
+                        {
+                            free_srv_conf_t(opt->srv_conf);
+                        }
+                    opt->srv_conf = read_from_group_server(keyfile, filename);
+
                 }
             else if (error != NULL)
                 {
@@ -247,8 +251,9 @@ options_t *manage_command_line_options(int argc, char **argv)
     gchar *dbname = NULL;          /** Database filename where data and meta data are cached  */
     gchar *ip =  NULL;             /** IP address where is located server's program           */
     gint port = 0;                 /** Port number on which to send things to the server      */
-    gshort cmptype = -1;            /** compression type to be used when communicating         */
+    gshort cmptype = -1;           /** compression type to be used when communicating         */
     gboolean noscan = FALSE;       /** If set to TRUE then do not do the first directory scan */
+    srv_conf_t *srv_conf = NULL;
 
     GOptionEntry entries[] =
     {
@@ -284,11 +289,14 @@ options_t *manage_command_line_options(int argc, char **argv)
     opt->configfile = NULL;
     opt->dircache = g_strdup("/var/tmp/cdpfgl");
     opt->dbname = g_strdup("filecache.db");
-    opt->ip = g_strdup("localhost");
-    opt->port = SERVER_PORT;
     opt->buffersize = -1;
     opt->adaptive = FALSE;
     opt->cmptype = 0;
+    opt->srv_conf = NULL;
+
+    srv_conf = new_srv_conf_t();
+    srv_conf->ip = g_strdup("localhost");
+    srv_conf->port = SERVER_PORT;
 
     /* 1) Reading options from default configuration file */
     defaultconfigfilename = get_probable_etc_path(PROGRAM_NAME, "client.conf");
@@ -306,6 +314,15 @@ options_t *manage_command_line_options(int argc, char **argv)
             read_from_configuration_file(opt, configfile);
         }
 
+    if (opt->srv_conf != NULL)
+        {
+            free_srv_conf_t(srv_conf);
+            srv_conf = NULL;
+        }
+    else
+        {
+            opt->srv_conf = srv_conf;
+        }
 
     /* 3) retrieving other options from the command line. Directories are
      *    added to the existing directory list and then the array is freed
@@ -330,12 +347,15 @@ options_t *manage_command_line_options(int argc, char **argv)
         }
 
     opt->dircache = set_option_str(dircache, opt->dircache);
-    opt->ip = set_option_str(ip, opt->ip);
     opt->dbname = set_option_str(dbname, opt->dbname);
 
-    if (port > 1024 && port < 65535)
+    if (opt->srv_conf != NULL)
         {
-            opt->port = port;
+            opt->srv_conf->ip = set_option_str(ip, opt->srv_conf->ip);
+            if (port > 1024 && port < 65535)
+                {
+                    opt->srv_conf->port = port;
+                }
         }
 
     if (adaptive > 0)
@@ -377,7 +397,7 @@ void free_options_t(options_t *opt)
             free_variable(opt->dircache);
             free_variable(opt->configfile);
             free_variable(opt->dbname);
-            free_variable(opt->ip);
+            free_srv_conf_t(opt->srv_conf);
             free_variable(opt);
         }
 

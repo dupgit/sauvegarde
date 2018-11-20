@@ -29,7 +29,8 @@
 #include "libcdpfgl.h"
 
 /**
- *
+ * @returns a newlly allocated srv_conf_t structure that can be freed
+ *          with free_srv_conf_t() function
  */
 srv_conf_t *new_srv_conf_t(void)
 {
@@ -42,8 +43,8 @@ srv_conf_t *new_srv_conf_t(void)
 
 
 /**
- *
- *
+ * Frees a srv_conf_t structture variable
+ * @param srv_conf is a srv_conf_t * structure to be freed.
  */
 void free_srv_conf_t(srv_conf_t *srv_conf)
 {

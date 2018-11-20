@@ -42,6 +42,18 @@ typedef struct
     gint port;              /**< Port number on which to send things to cdpfglserver's server (on which it must listen)       */
 } srv_conf_t;
 
+/**
+ * @returns a newlly allocated srv_conf_t structure that can be freed
+ *          with free_srv_conf_t() function
+ */
+extern srv_conf_t *new_srv_conf_t(void);
+
+
+/**
+ * Frees a srv_conf_t structture variable
+ * @param srv_conf is a srv_conf_t * structure to be freed.
+ */
+extern void free_srv_conf_t(srv_conf_t *srv_conf);
 
 /**
  * Reads keys in keyfile if groupname is in that keyfile and fills

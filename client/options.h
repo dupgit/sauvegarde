@@ -44,8 +44,7 @@ typedef struct
     gchar *configfile;    /**< filename for the configuration file specified on the command line                      */
     gchar *dircache;      /**< Directory where we will cache files and temporary stuff to do the job                  */
     gchar *dbname;        /**< File name of the database that is used to cache files and buffers localy               */
-    gchar *ip;            /**< A string representing the IP address where server is located (may be a hotsname)       */
-    gint port;            /**< Port number on which to send things to server's server (on which it must listen)       */
+    srv_conf_t *srv_conf; /**< Server configuration (mainly ip and port where the server is supposed to be listening  */
     gint buffersize;      /**< buffersize is an option to choose how many bytes we may accumulate before sending them */
     gboolean adaptive;    /**< adaptive will make client compute hashs with an adaptive blocksize if TRUE             */
     gboolean noscan;      /**< noscan will avoid the first directory scan when set to TRUE. default = FALSE           */
