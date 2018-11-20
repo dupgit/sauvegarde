@@ -135,9 +135,9 @@ static main_struct_t *init_main_structure(options_t *opt)
     main_struct->opt = opt;
     main_struct->hostname = g_get_host_name();
 
-    if (opt->srv_conf != NULL && opt->srv_conf->ip != NULL)
+    if (opt->srv_conf != NULL)
         {
-            conn = make_connexion_string(opt->srv_conf->ip, opt->srv_conf->port);
+            conn = make_connexion_string(opt->srv_conf);
             main_struct->comm = init_comm_struct(conn, opt->cmptype);
             main_struct->reconnected = init_comm_struct(conn, opt->cmptype);
             free_variable(conn);

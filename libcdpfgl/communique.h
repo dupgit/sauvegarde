@@ -29,6 +29,7 @@
 #ifndef _COMMUNIQUE_H_
 #define _COMMUNIQUE_H_
 
+#include "options.h"
 
 /**
  * @def X_GET_HASH_ARRAY
@@ -91,12 +92,12 @@ extern gchar *get_communication_library_version(void);
 /**
  * Makes the connexion string that is used by ZMQ to create a new socket
  * and verifies that port number is between 1025 and 65534 included.
- * @param ip : a gchar * that contains either an ip address or a hostname
- * @param port : a gint that is comprised between 1025 and 65534 included
+ * @param srv_conf is a structure that contains ip and port needed to
+ *                 make the connection string.
  * @returns a newly allocated string that may be freed with free_variable()
  *          function.
  */
-extern gchar *make_connexion_string(gchar *ip, gint port);
+extern gchar *make_connexion_string(srv_conf_t *srv_conf);
 
 
 /**
