@@ -89,3 +89,39 @@ srv_conf_t *read_from_group_server(GKeyFile *keyfile, gchar *filename)
     return srv_conf;
 }
 
+
+/**
+ * Drops configfile if it was already used and return filename
+ * that will be the new configfile
+ * @param configfile configuration filename to be freed if needed
+ * @param filename the new configfilename
+ * @returns a copy of filename string that may be freed with g_free()
+ *          when no longer needed.
+ */
+gchar *manage_opt_configfile(gchar *configfile, gchar *filename)
+{
+    if (configfile != NULL)
+        {
+            free_variable(configfile);
+        }
+    return g_strdup(filename);
+}
+
+
+/**
+ * Drops srv_conf if it was already used and returns a new srv_conf_t
+ * structure read from 'filename configuration file.
+ * @param srv_conf to be dropped if used
+ * @param keyfile keyfile file where to read keys configuration values
+ * @returns a newly allocated srv conf_t * structure that may be freed
+ *          with free_srv_conf_t() when no longer needed.
+ */
+srv_conf_t *manage_opt_srv_conf(srv_conf_t *srv_conf, GKeyFile *keyfile, gchar *filename)
+{
+    if (srv_conf != NULL)
+        {
+            free_srv_conf_t(srv_conf);
+        }
+
+    return read_from_group_server(keyfile, filename);
+}

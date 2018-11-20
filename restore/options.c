@@ -29,7 +29,6 @@
 #include "restore.h"
 
 static void print_selected_options(options_t *opt);
-static void read_from_group_all(GKeyFile *keyfile, gchar *filename);
 static options_t *manage_command_line_options(int argc, char **argv);
 
 
@@ -54,20 +53,6 @@ static void print_selected_options(options_t *opt)
 
 
 /**
- * Reads keys in keyfile if group GN_ALL is in that keyfile.
- * @param keyfile is the GKeyFile structure that is used by glib to read
- *        groups and keys from.
- * @param filename : the filename of the configuration file to read from
- */
-static void read_from_group_all(GKeyFile *keyfile, gchar *filename)
-{
-    read_debug_mode_from_file(keyfile, filename);
-}
-
-
-
-
-/**
  * Reads from the configuration file "filename" and fills the options_t *
  * opt structure.
  * @param[in,out] opt : options_t * structure to store options read from
@@ -87,19 +72,11 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
-                    if (opt->configfile != NULL)
-                        {
-                            free_variable(opt->configfile);
-                        }
-                    opt->configfile = g_strdup(filename);
+                    opt->configfile = manage_opt_configfile(opt->configfile, filename);
 
-                    read_from_group_all(keyfile, filename);
+                    read_debug_mode_from_file(keyfile, filename);
 
-                    if (opt->srv_conf != NULL)
-                        {
-                            free_srv_conf_t(opt->srv_conf);
-                        }
-                    opt->srv_conf = read_from_group_server(keyfile, filename);
+                    opt->srv_conf = manage_opt_srv_conf(opt->srv_conf, keyfile, filename);
                 }
             else if (error != NULL)
                 {

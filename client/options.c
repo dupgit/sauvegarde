@@ -148,7 +148,6 @@ static void read_from_group_client(options_t *opt, GKeyFile *keyfile, gchar *fil
             set_compression_type(opt, cmptype);
         }
 
-   read_debug_mode_from_file(keyfile, filename);
 }
 
 
@@ -172,20 +171,12 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
-                    if (opt->configfile != NULL)
-                        {
-                            free_variable(opt->configfile);
-                        }
-                    opt->configfile = g_strdup(filename);
+                    opt->configfile = manage_opt_configfile(opt->configfile, filename);
 
                     read_from_group_client(opt, keyfile, filename);
+                    read_debug_mode_from_file(keyfile, filename);
 
-                    if (opt->srv_conf != NULL)
-                        {
-                            free_srv_conf_t(opt->srv_conf);
-                        }
-                    opt->srv_conf = read_from_group_server(keyfile, filename);
-
+                    opt->srv_conf = manage_opt_srv_conf(opt->srv_conf, keyfile, filename);
                 }
             else if (error != NULL)
                 {
