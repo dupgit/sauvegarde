@@ -95,10 +95,10 @@ static res_struct_t *init_res_struct(int argc, char **argv)
 
     res_struct->opt = do_what_is_needed_from_command_line_options(argc, argv);
 
-    if (res_struct->opt != NULL && res_struct->opt->ip != NULL)
+    if (res_struct->opt != NULL && res_struct->opt->srv_conf != NULL && res_struct->opt->srv_conf->ip != NULL)
         {
             /* We keep conn string into comm_t structure: do not free it ! */
-            conn = make_connexion_string(res_struct->opt->ip, res_struct->opt->port);
+            conn = make_connexion_string(res_struct->opt->srv_conf->ip, res_struct->opt->srv_conf->port);
             res_struct->comm = init_comm_struct(conn, COMPRESS_NONE_TYPE);
 
             set_res_struct_hostname(res_struct, res_struct->opt->r_hostname);

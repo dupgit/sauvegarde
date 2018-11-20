@@ -49,10 +49,9 @@ typedef struct
     gchar *afterdate;       /**< Should contain a date in the correct format to filter only files after that specific date    */
     gchar *beforedate;      /**< Should contain a date in the correct format to filter only files before that specific date   */
     gchar *configfile;      /**< Filename for the configuration file specified on the command line                            */
-    gchar *ip;              /**< A string representing the IP address where server is located (may be a hotsname)             */
     gchar *r_hostname;      /**< A string containing the hostname where the file to be restored was located.                  */
-    gint port;              /**< Port number on which to send things to cdpfglserver's server (on which it must listen)       */
     gchar *where;           /**< where is a string that should contain a directory where to restore a file / dirtectory       */
+    srv_conf_t *srv_conf;   /**< Server configuration (mainly ip and port where the server is supposed to be listening        */
     gboolean all_versions;  /**< all_versions says whether we should restore all versions of a file (TRUE) or not (FALSE)     */
     gboolean all_files;     /**< all_files is true if we want to restore all files found by REGEX with -r or -l options       */
     gboolean latest;        /**< latest is true if we want ot get only the latest version of a file. Defaults is false        */

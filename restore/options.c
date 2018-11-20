@@ -44,8 +44,11 @@ static void print_selected_options(options_t *opt)
         {
             fprintf(stdout, _("\n%s options are:\n"), PROGRAM_NAME);
             print_string_option(_("Configuration file: %s\n"), opt->configfile);
-            print_string_option(_("server's IP address: %s\n"), opt->ip);
-            fprintf(stdout, _("server's port number: %d\n"), opt->port);
+            if (opt->srv_conf != NULL)
+                {
+                    print_string_option(_("Server's IP address: %s\n"), opt->srv_conf->ip);
+                    fprintf(stdout, _("Server's port number: %d\n"), opt->srv_conf->port);
+                }
         }
 }
 
@@ -75,27 +78,28 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
 {
     GKeyFile *keyfile = NULL;      /** Configuration file parser   */
     GError *error = NULL;          /** Glib error handling         */
-    srv_conf_t *srv_conf = NULL;
 
     if (filename != NULL)
         {
-
-            if (opt->configfile != NULL)
-                {
-                    free_variable(opt->configfile);
-                }
-            opt->configfile = g_strdup(filename);
-
             print_debug(_("Reading configuration from file %s\n"), filename);
 
             keyfile = g_key_file_new();
 
             if (g_key_file_load_from_file(keyfile, filename, G_KEY_FILE_KEEP_COMMENTS, &error))
                 {
+                    if (opt->configfile != NULL)
+                        {
+                            free_variable(opt->configfile);
+                        }
+                    opt->configfile = g_strdup(filename);
+
                     read_from_group_all(keyfile, filename);
-                    srv_conf = read_from_group_server(keyfile, filename);
-                    opt->port = srv_conf->port;
-                    opt->ip = srv_conf->ip;
+
+                    if (opt->srv_conf != NULL)
+                        {
+                            free_srv_conf_t(opt->srv_conf);
+                        }
+                    opt->srv_conf = read_from_group_server(keyfile, filename);
                 }
             else if (error != NULL)
                 {
@@ -145,6 +149,7 @@ static options_t *manage_command_line_options(int argc, char **argv)
     gboolean all_files = FALSE;    /** all_files: True if we want to restore all files found by REGEX (-r or -l options) */
     gboolean latest = FALSE;       /** latest: True if we only want to get the latest version of a file                  */
     gboolean parents = FALSE;      /** parents: True if restore has to create / restore files with the whole path        */
+    srv_conf_t *srv_conf = NULL;
     GOptionEntry entries[] =
     {
         { "version", 'v', 0, G_OPTION_ARG_NONE, &version, N_("Prints program version."), NULL},
@@ -178,12 +183,13 @@ static options_t *manage_command_line_options(int argc, char **argv)
     opt->configfile = NULL;
     opt->list = NULL;
     opt->restore = NULL;
-    opt->ip = g_strdup("localhost");
-    opt->port = SERVER_PORT;
     opt->where = NULL;
     opt->r_hostname = NULL;
+    opt->srv_conf = NULL;
 
-
+    srv_conf = new_srv_conf_t();
+    srv_conf->ip = g_strdup("localhost");
+    srv_conf->port = SERVER_PORT;
 
     /* 1) Reading options from default configuration file
      *    note: restore option will never be read into the configuration
@@ -203,6 +209,15 @@ static options_t *manage_command_line_options(int argc, char **argv)
             read_from_configuration_file(opt, configfile);
         }
 
+    if (opt->srv_conf != NULL)
+        {
+            free_srv_conf_t(srv_conf);
+            srv_conf = NULL;
+        }
+    else
+        {
+            opt->srv_conf = srv_conf;
+        }
 
     /* 3) retrieving other options from the command line.
      */
@@ -219,12 +234,15 @@ static options_t *manage_command_line_options(int argc, char **argv)
     opt->list = set_option_str(list, opt->list);
     opt->restore = set_option_str(restore, opt->restore);
     opt->where = set_option_str(where, opt->where);
-    opt->ip = set_option_str(ip, opt->ip);
     opt->r_hostname = set_option_str(r_hostname, opt->r_hostname);
 
-    if (port > 1024 && port < 65535)
+    if (opt->srv_conf != NULL)
         {
-            opt->port = port;
+            opt->srv_conf->ip = set_option_str(ip, opt->srv_conf->ip);
+            if (port > 1024 && port < 65535)
+                {
+                    opt->srv_conf->port = port;
+                }
         }
 
     free_variable(summary);
@@ -282,7 +300,7 @@ void free_options_t(options_t *opt)
             free_variable(opt->restore);
             free_variable(opt->date);
             free_variable(opt->configfile);
-            free_variable(opt->ip);
+            free_srv_conf_t(opt->srv_conf);
             free_variable(opt->afterdate);
             free_variable(opt->beforedate);
             free_variable(opt->where);
