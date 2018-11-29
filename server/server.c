@@ -120,6 +120,8 @@ static server_struct_t *init_server_main_structure(int argc, char **argv)
     server_struct_t *server_struct = NULL;  /** main structure for 'server' program. */
 
     server_struct = (server_struct_t *) g_malloc0(sizeof(server_struct_t));
+    g_assert_nonnull(server_struct);
+
 
     server_struct->data_thread = NULL;
     server_struct->meta_thread = NULL;
@@ -152,34 +154,28 @@ static gchar *get_data_from_a_specific_hash(server_struct_t *server_struct, gcha
     backend_t *backend = NULL;
     hash_data_t *hash_data = NULL;
 
-    if (server_struct != NULL && server_struct->backend != NULL)
+    g_assert_nonnull(server_struct);
+    g_assert_nonnull(server_struct->backend);
+
+    backend = server_struct->backend;
+
+    if (backend->retrieve_data != NULL)
         {
-            backend = server_struct->backend;
+            hash_data = backend->retrieve_data(server_struct, hash);
+            answer = convert_hash_data_t_to_string(hash_data);
+            free_hash_data_t(hash_data);
 
-            if (backend->retrieve_data != NULL)
+            if (answer == NULL)
                 {
-                    hash_data = backend->retrieve_data(server_struct, hash);
-                    answer = convert_hash_data_t_to_string(hash_data);
-                    free_hash_data_t(hash_data);
-
-                    if (answer == NULL)
-                        {
-                            message = g_strdup_printf(_("Error while trying to get data from hash %s"), hash);
-                            answer = answer_json_error_string(MHD_HTTP_INTERNAL_SERVER_ERROR, message);
-                            free_variable(message);
-                        }
-                }
-            else
-                {
-                    message = g_strdup(_("This backend's missing a retrieve_data function!"));
-                    answer = answer_json_error_string(MHD_HTTP_NOT_IMPLEMENTED, message);
+                    message = g_strdup_printf(_("Error while trying to get data from hash %s"), hash);
+                    answer = answer_json_error_string(MHD_HTTP_INTERNAL_SERVER_ERROR, message);
                     free_variable(message);
                 }
         }
     else
         {
-            message = g_strdup(_("Something's wrong with server's initialisation!"));
-            answer = answer_json_error_string(MHD_HTTP_INTERNAL_SERVER_ERROR, message);
+            message = g_strdup(_("This backend's missing a retrieve_data function!"));
+            answer = answer_json_error_string(MHD_HTTP_NOT_IMPLEMENTED, message);
             free_variable(message);
         }
 
@@ -264,50 +260,50 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
     query_t *query = NULL;
 
 
-    if (server_struct != NULL && server_struct->backend != NULL)
+    g_assert_nonnull(server_struct);
+    g_assert_nonnull(server_struct->backend);
+
+    backend = server_struct->backend;
+
+    if (backend->get_list_of_files != NULL)
         {
-            backend = server_struct->backend;
+            query = init_query_t(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FALSE);
 
-            if (backend->get_list_of_files != NULL)
+            query->hostname = get_argument_value_from_key(connection, "hostname", FALSE);
+            query->uid = get_argument_value_from_key(connection, "uid", FALSE);
+            query->gid = get_argument_value_from_key(connection, "gid", FALSE);
+            query->owner = get_argument_value_from_key(connection, "owner", FALSE);
+            query->group = get_argument_value_from_key(connection, "group", FALSE);
+            query->filename = get_argument_value_from_key(connection, "filename", TRUE);
+            query->date = get_argument_value_from_key(connection, "date", TRUE);
+            query->afterdate = get_argument_value_from_key(connection, "afterdate", TRUE);
+            query->beforedate = get_argument_value_from_key(connection, "beforedate", TRUE);
+            query->latest = get_boolean_argument_value_from_key(connection, "latest");
+
+            print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s && %s && %s && %s && %d\n"), \
+                           query->hostname, query->uid, query->gid, query->owner, query->group,                     \
+                           query->filename, query->date, query->afterdate, query->beforedate, query->latest);
+
+            if (query->hostname != NULL && query-> uid != NULL && query->gid != NULL && query->owner != NULL && query->group != NULL)
                 {
-                    query = init_query_t(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FALSE);
-
-                    query->hostname = get_argument_value_from_key(connection, "hostname", FALSE);
-                    query->uid = get_argument_value_from_key(connection, "uid", FALSE);
-                    query->gid = get_argument_value_from_key(connection, "gid", FALSE);
-                    query->owner = get_argument_value_from_key(connection, "owner", FALSE);
-                    query->group = get_argument_value_from_key(connection, "group", FALSE);
-                    query->filename = get_argument_value_from_key(connection, "filename", TRUE);
-                    query->date = get_argument_value_from_key(connection, "date", TRUE);
-                    query->afterdate = get_argument_value_from_key(connection, "afterdate", TRUE);
-                    query->beforedate = get_argument_value_from_key(connection, "beforedate", TRUE);
-                    query->latest = get_boolean_argument_value_from_key(connection, "latest");
-
-                    print_debug(_("hostname: %s, uid: %s, gid: %s, owner: %s, group: %s, filter: %s && %s && %s && %s && %d\n"), \
-                                   query->hostname, query->uid, query->gid, query->owner, query->group,                     \
-                                   query->filename, query->date, query->afterdate, query->beforedate, query->latest);
-
-                    if (query->hostname != NULL && query-> uid != NULL && query->gid != NULL && query->owner != NULL && query->group != NULL)
-                        {
-                            answer = backend->get_list_of_files(server_struct, query);
-                        }
-                    else
-                        {
-                            message = g_strdup_printf(_("Malformed request: hostname: %s, uid: %s, gid: %s, owner: %s, group: %s"), \
-                                                        query->hostname, query->uid, query->gid, query->owner, query->group);
-                            answer = answer_json_error_string(MHD_HTTP_BAD_REQUEST, message);
-                            free_variable(message);
-                        }
-
-                    free_query_t(query); /** All variables hostname, uid... are freed there ! */
+                    answer = backend->get_list_of_files(server_struct, query);
                 }
             else
                 {
-                    message = g_strdup_printf(_("Error: no backend defined to get a list of files from it.\n"));
-                    print_error(__FILE__, __LINE__, message);
-                    answer = answer_json_error_string(MHD_HTTP_NOT_IMPLEMENTED, message);
+                    message = g_strdup_printf(_("Malformed request: hostname: %s, uid: %s, gid: %s, owner: %s, group: %s"), \
+                                                query->hostname, query->uid, query->gid, query->owner, query->group);
+                    answer = answer_json_error_string(MHD_HTTP_BAD_REQUEST, message);
                     free_variable(message);
                 }
+
+            free_query_t(query); /** All variables hostname, uid... are freed there ! */
+        }
+    else
+        {
+            message = g_strdup_printf(_("Error: no backend defined to get a list of files from it.\n"));
+            print_error(__FILE__, __LINE__, message);
+            answer = answer_json_error_string(MHD_HTTP_NOT_IMPLEMENTED, message);
+            free_variable(message);
         }
 
     return answer;
@@ -527,7 +523,9 @@ static gchar *get_json_answer(server_struct_t *server_struct, struct MHD_Connect
     gchar *hash = NULL;
     size_t hlen = 0;
 
-    if (g_strcmp0(url, "/Version.json") == 0)
+    g_assert_nonnull(server_struct);
+
+    if (g_str_has_prefix(url, "/Version.json"))
         {
             add_one_to_get_url_version(server_struct->stats, FALSE);
             answer = convert_version_to_json(PROGRAM_NAME, SERVER_DATE, SERVER_VERSION, SERVER_AUTHORS, SERVER_LICENSE);
@@ -597,7 +595,9 @@ static gchar *get_unformatted_answer(server_struct_t *server_struct, const char 
     gchar *buf2 = NULL;
     gchar *buf3 = NULL;
 
-    if (g_strcmp0(url, "/Version") == 0 && server_struct != NULL)
+    g_assert_nonnull(server_struct);
+
+    if (g_strcmp0(url, "/Version") == 0)
         {
             add_one_to_get_url_version(server_struct->stats, TRUE);
             buf1 = buffer_program_version(PROGRAM_NAME, SERVER_DATE, SERVER_VERSION, SERVER_AUTHORS, SERVER_LICENSE);
@@ -610,7 +610,7 @@ static gchar *get_unformatted_answer(server_struct_t *server_struct, const char 
             free_variable(buf2);
             free_variable(buf3);
         }
-    else if (server_struct != NULL)
+    else
         { /* Some sort of echo to the invalid request */
             add_one_to_get_url_unknown(server_struct->stats, TRUE);
             answer = g_strdup_printf(_("Error: invalid url: %s\n"), url);
@@ -665,6 +665,7 @@ static int process_get_request(server_struct_t *server_struct, struct MHD_Connec
     gchar *answer = NULL;
     gchar *content_type = NULL;
 
+    g_assert_nonnull(server_struct);
 
     if (&aptr != *con_cls)
         {
@@ -724,8 +725,10 @@ static json_t *find_needed_hashs(server_struct_t *server_struct, GList *hash_dat
      * the selected backend does not have a build_needed_hash_list
      * function we are returning the whole hash_data_list !
      */
+    g_assert_nonnull(server_struct);
+    g_assert_nonnull(server_struct->backend);
 
-    if (server_struct != NULL && server_struct->backend != NULL && server_struct->backend->build_needed_hash_list != NULL)
+    if (server_struct->backend->build_needed_hash_list != NULL)
         {
             needed = server_struct->backend->build_needed_hash_list(server_struct, hash_data_list);
             array = convert_hash_list_to_json(needed);
@@ -812,7 +815,9 @@ static int answer_hash_array_post_request(server_struct_t *server_struct, struct
     GList *hash_data_list = NULL;
     gchar *content_type = NULL;
 
-    if (server_struct != NULL && connection != NULL && received_data != NULL)
+    g_assert_nonnull(server_struct);
+
+    if (connection != NULL && received_data != NULL)
         {
 
             root = load_json(received_data);
@@ -913,12 +918,12 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
 
     add_one_post_request(server_struct->stats);
 
-    if (g_strcmp0(url, "/Meta.json") == 0 && received_data != NULL)
+    if (g_str_has_prefix(url, "/Meta.json") == 0 && received_data != NULL)
         {
             add_length_and_one_to_post_url_meta(server_struct->stats, length);
             success = answer_meta_json_post_request(server_struct, connection, received_data, length);
         }
-    else if (g_strcmp0(url, "/Hash_Array.json") == 0 && received_data != NULL)
+    else if (g_str_has_prefix(url, "/Hash_Array.json") == 0 && received_data != NULL)
         {
             add_one_to_post_url_hash_array(server_struct->stats);
             success = answer_hash_array_post_request(server_struct, connection, received_data);
@@ -926,7 +931,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
              * send thoses hashs back in the answer
              */
         }
-    else if (g_strcmp0(url, "/Data.json") == 0 && received_data != NULL)
+    else if (g_str_has_prefix(url, "/Data.json") == 0 && received_data != NULL)
         {
             add_one_to_post_url_data(server_struct->stats);
             hash_data = convert_string_to_hash_data(received_data);
@@ -951,7 +956,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
             answer = answer_json_success_string(MHD_HTTP_OK, _("Ok!"));
             success = create_MHD_response(connection, answer, CT_PLAIN);
         }
-    else if (g_strcmp0(url, "/Data_Array.json") == 0 && received_data != NULL)
+    else if (g_str_has_prefix(url, "/Data_Array.json") == 0 && received_data != NULL)
         {
             add_one_to_post_url_data_array(server_struct->stats);
             elapsed = new_clock_t();
@@ -1203,10 +1208,12 @@ static gpointer meta_data_thread(gpointer user_data)
     server_struct_t *server_struct = user_data;
     server_meta_data_t *smeta = NULL;
 
-    if (server_struct != NULL && server_struct->meta_queue != NULL)
-        {
+    g_assert_nonnull(server_struct);
+    g_assert_nonnull(server_struct->backend);
 
-            if (server_struct->backend != NULL && server_struct->backend->store_smeta != NULL)
+    if (server_struct->meta_queue != NULL)
+        {
+            if (server_struct->backend->store_smeta != NULL)
                 {
 
                     while (TRUE)
@@ -1249,10 +1256,13 @@ static gpointer data_thread(gpointer user_data)
     server_struct_t *dt_server_struct = user_data;
     hash_data_t *hash_data = NULL;
 
-    if (dt_server_struct != NULL && dt_server_struct->meta_queue != NULL)
+    g_assert_nonnull(dt_server_struct);
+    g_assert_nonnull(dt_server_struct->backend);
+
+    if (dt_server_struct->meta_queue != NULL)
         {
 
-            if (dt_server_struct->backend != NULL && dt_server_struct->backend->store_data != NULL)
+            if (dt_server_struct->backend->store_data != NULL)
                 {
 
                     while (TRUE)
@@ -1291,18 +1301,16 @@ static void install_server_signal_traps(server_struct_t *server_struct)
     guint id_int = 0;
     guint id_term = 0;
 
+    g_assert_nonnull(server_struct);
 
     fprintf(stdout, "%s\n", __func__);
 
-    if (server_struct != NULL)
-        {
-            id_int = g_unix_signal_add(SIGINT, int_signal_handler, server_struct);
-            id_term = g_unix_signal_add(SIGTERM, int_signal_handler, server_struct);
+    id_int = g_unix_signal_add(SIGINT, int_signal_handler, server_struct);
+    id_term = g_unix_signal_add(SIGTERM, int_signal_handler, server_struct);
 
-            if (id_int <= 0 || id_term <= 0)
-                {
-                    print_error(__FILE__, __LINE__, _("Unable to add signal handlers\n"));
-                }
+    if (id_int <= 0 || id_term <= 0)
+        {
+            print_error(__FILE__, __LINE__, _("Unable to add signal handlers\n"));
         }
 }
 
