@@ -438,7 +438,7 @@ json_t *fills_json_with_get_stats(json_t *get, req_get_t *get_stats)
             insert_integer_value_into_json_root(get, "/unknown", get_stats->unktxt);
         }
 
-        return get;
+    return get;
 }
 
 
@@ -460,7 +460,7 @@ json_t *fills_json_with_post_stats(json_t *post, req_post_t *post_stats)
             insert_integer_value_into_json_root(post, "/unknown.json", post_stats->unk);
         }
 
-        return post;
+    return post;
 }
 
 
@@ -635,7 +635,14 @@ static int create_MHD_response(struct MHD_Connection *connection, gchar *answer,
     int success = MHD_NO;
 
     response = MHD_create_response_from_buffer(strlen(answer), (void *) answer, MHD_RESPMEM_MUST_FREE);
-    MHD_add_response_header(response, "Content-Type", "text/plain; charset=utf-8");
+    if (content_type != NULL)
+        {
+            MHD_add_response_header(response, "Content-Type", content_type);
+        }
+    else
+        {
+            MHD_add_response_header(response, "Content-Type", "text/plain; charset=utf-8");
+        }
     success = MHD_queue_response(connection, MHD_HTTP_OK, response);
     MHD_destroy_response(response);
 
