@@ -69,4 +69,5 @@ delete_evrywhere "*.gcno"
 delete_evrywhere "gmon.out"
 delete_evrywhere "Makefile"
 delete_evrywhere "Makefile.in"
-
+delete_evrywhere ".libs"
+delete_evrywhere ".deps"
