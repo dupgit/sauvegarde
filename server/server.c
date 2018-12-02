@@ -918,12 +918,12 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
 
     add_one_post_request(server_struct->stats);
 
-    if (g_str_has_prefix(url, "/Meta.json") == 0 && received_data != NULL)
+    if (g_str_has_prefix(url, "/Meta.json") && received_data != NULL)
         {
             add_length_and_one_to_post_url_meta(server_struct->stats, length);
             success = answer_meta_json_post_request(server_struct, connection, received_data, length);
         }
-    else if (g_str_has_prefix(url, "/Hash_Array.json") == 0 && received_data != NULL)
+    else if (g_str_has_prefix(url, "/Hash_Array.json") && received_data != NULL)
         {
             add_one_to_post_url_hash_array(server_struct->stats);
             success = answer_hash_array_post_request(server_struct, connection, received_data);
@@ -931,7 +931,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
              * send thoses hashs back in the answer
              */
         }
-    else if (g_str_has_prefix(url, "/Data.json") == 0 && received_data != NULL)
+    else if (g_str_has_prefix(url, "/Data.json") && received_data != NULL)
         {
             add_one_to_post_url_data(server_struct->stats);
             hash_data = convert_string_to_hash_data(received_data);
@@ -956,7 +956,7 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
             answer = answer_json_success_string(MHD_HTTP_OK, _("Ok!"));
             success = create_MHD_response(connection, answer, CT_PLAIN);
         }
-    else if (g_str_has_prefix(url, "/Data_Array.json") == 0 && received_data != NULL)
+    else if (g_str_has_prefix(url, "/Data_Array.json") && received_data != NULL)
         {
             add_one_to_post_url_data_array(server_struct->stats);
             elapsed = new_clock_t();
