@@ -89,10 +89,18 @@ static gchar *copy_buffer(void *buffer, size_t len)
     gchar *destbuffer = NULL;
 
     destbuffer = (gchar *) g_malloc(len + 1);
-    memcpy(destbuffer, buffer, len);
+    g_assert_nonnull(destbuffer);
+    if (buffer != NULL)
+        {
+            memcpy(destbuffer, buffer, len);
+            /* mostly for text only to avoid extra buffer data */
+            destbuffer[len] = '\0';
+        }
+    else
+        {
+            destbuffer[0] = '\0';
+        }
 
-    /* mostly for text only to avoid extra buffer data */
-    destbuffer[len] = '\0';
 
     return destbuffer;
 }
@@ -112,11 +120,32 @@ static gchar *concat_buffer(gchar *buffer, guint64 pos, gchar *buf1, size_t len)
     gchar *concat = NULL;
 
     concat = (gchar *) g_malloc(pos + len + 1);
-    memcpy(concat, buffer, pos);
-    memcpy(concat + pos, buf1, len);
+    g_assert_nonnull(concat);
+    if (buffer != NULL && buf1 != NULL)
+        {
+            memcpy(concat, buffer, pos);
+            memcpy(concat + pos, buf1, len);
 
-    /* mostly for text only to avoid extra buffer data */
-    concat[pos + len] = '\0';
+            /* mostly for text only to avoid extra buffer data */
+            concat[pos + len] = '\0';
+        }
+    else if (buffer != NULL)
+        {
+            /* buf1 is NULL */
+            memcpy(concat, buffer, pos);
+            concat[pos] = '\0';
+        }
+    else if (buf1 != NULL)
+        {
+            /* buffer is NULL */
+            memcpy(concat, buf1, len);
+            concat[len] = '\0';
+        }
+    else
+        {
+            free_variable(concat);
+            concat = NULL;
+        }
 
     return concat;
 }
