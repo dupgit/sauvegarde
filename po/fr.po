@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Sauvegarde 0.0.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-11-19 22:18+0100\n"
-"PO-Revision-Date: 2018-11-09 22:23+0100\n"
+"PO-Revision-Date: 2018-12-04 21:49+0100\n"
 "Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
 "Language: fr\n"
@@ -276,9 +276,9 @@ msgstr "Impossible de charger la taille du cache depuis le fichier"
 
 #. Compression type if any
 #: ../client/options.c:144
-#, fuzzy
 msgid "Compression type not defined in configuration file"
-msgstr "Spécifie un fichier de configuration alternatif."
+msgstr ""
+"Le type de compression n'est pas défini dans le fichier de configuration"
 
 #: ../client/options.c:173 ../restore/options.c:89 ../server/options.c:125
 #, c-format
@@ -294,7 +294,7 @@ msgstr "Impossible d'ouvrir le fichier de configuration %s : %s\n"
 #: ../client/options.c:212
 #, c-format
 msgid "Unknown compression type: %d\n"
-msgstr ""
+msgstr "Type de compression inconnu : %d\n"
 
 #: ../client/options.c:255
 msgid "Prints program version"
@@ -369,7 +369,7 @@ msgstr "Ne pas faire la première passe sur les dossiers."
 
 #: ../client/options.c:267
 msgid "Compression type to use: 0 is NONE, 1 is ZLIB"
-msgstr ""
+msgstr "Type de compression à utiliser : 0 pour AUCUNE, 1 pour ZLIB"
 
 #: ../client/options.c:272 ../server/options.c:184
 msgid ""
@@ -399,7 +399,7 @@ msgstr "La taille de la réponse est : %d\n"
 #, c-format
 msgid "Error while sending GET command and receiving data: %s\n"
 msgstr ""
-"Erreur lors de l'envoie de la commande GET et de la réception des données : "
+"Erreur lors de l'envoi de la commande GET et de la réception des données : "
 "%s\n"
 
 #: ../libcdpfgl/communique.c:406
@@ -591,18 +591,21 @@ msgstr "(%d) Erreur lors de l'ouverture de la base de données %s : %s\n"
 #, c-format
 msgid "Warning database version is not correct: %ld but expected: %d\n"
 msgstr ""
+"Avertissement la version de la base de données est incorrecte : %ld mais %d "
+"est attendu.\n"
 
 #: ../libcdpfgl/database.c:1138
-#, fuzzy, c-format
+#, c-format
 msgid "Now trying to migrate from %ld to %d\n"
-msgstr ""
-"Erreur lors de la tentative de récupération des données pour le hash %s"
+msgstr "Essai de migration de %ld à %d.\n"
 
 #: ../libcdpfgl/database.c:1148
 #, c-format
 msgid ""
 "Error database version is not correct: %ld but expected between 2 and %d\n"
 msgstr ""
+"Erreur la version de la base de donnée est incorrecte : %ld mais il devrait "
+"être entre 2 et %d.\n"
 
 #: ../libcdpfgl/files.c:527
 #, c-format
@@ -1075,9 +1078,9 @@ msgid "Error: invalid url: %s\n"
 msgstr "Erreur : URL invalide : %s\n"
 
 #: ../server/server.c:675
-#, fuzzy, c-format
+#, c-format
 msgid "Requested GET url: %s\n"
-msgstr "URL requise (get) : %s\n"
+msgstr "URL requise (GET) : %s\n"
 
 #: ../server/server.c:758
 #, c-format
@@ -1110,14 +1113,14 @@ msgid "Invalid url!\n"
 msgstr "URL invalide !\n"
 
 #: ../server/server.c:1017
-#, fuzzy, c-format
+#, c-format
 msgid "Could not guess '%s' header value: %s\n"
-msgstr "Impossible de deviner la valeur de l'entête Content-Length : %s\n"
+msgstr "Impossible de deviner la valeur de l'entête '%s' : %s\n"
 
 #: ../server/server.c:1114
-#, fuzzy, c-format
+#, c-format
 msgid "Requested POST url: %s (%ld bytes)\n"
-msgstr "URL requise (get) : %s\n"
+msgstr "URL requise (POST) : %s (%ld octets)\n"
 
 #: ../server/server.c:1152
 #, c-format
