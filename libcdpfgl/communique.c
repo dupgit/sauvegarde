@@ -222,7 +222,7 @@ static size_t read_data(char *buffer, size_t size, size_t nitems, void *userp)
                             whole_size = comm->length - comm->pos;
                             memcpy(buffer, comm->readbuffer + comm->pos, whole_size);
                             comm->pos = comm->length;
-                            return (whole_size);
+                            return whole_size;
                         }
                     else
                         {
@@ -246,19 +246,25 @@ static gboolean does_url_end_with_json(gchar *url)
 {
     gchar **strings = NULL;
 
-    strings = g_strsplit(url, "?", 2);
+    if (url != NULL)
+        {
+            strings = g_strsplit(url, "?", 2);
 
-    if (g_str_has_suffix(strings[0], ".json"))
-        {
-            g_strfreev(strings);
-            return TRUE;
+            if (g_str_has_suffix(strings[0], ".json"))
+                {
+                    g_strfreev(strings);
+                    return TRUE;
+                }
+            else
+                {
+                    g_strfreev(strings);
+                    return FALSE;
+                }
         }
-    else
-        {
-            g_strfreev(strings);
-            return FALSE;
-        }
+
+    return FALSE;
 }
+
 
 /**
  * @param chunk is the list of chunk headers as defined by libcurl
@@ -474,39 +480,43 @@ gboolean is_server_alive(comm_t *comm)
     gint success = CURLE_FAILED_INIT;
     gchar *version = NULL;
 
-    success = get_url(comm, "/Version.json", NULL);
-    version = get_json_version(comm->buffer);
-
-    free_variable(comm->buffer);
-
-    if (success == CURLE_OK && version !=  NULL)
+    if (comm != NULL)
         {
-            if (comm->conn != NULL)
+            success = get_url(comm, "/Version.json", NULL);
+            version = get_json_version(comm->buffer);
+
+            free_variable(comm->buffer);
+
+            if (success == CURLE_OK && version !=  NULL)
                 {
-                    print_debug(_("Server (version %s) is alive at %s.\n"), version, comm->conn);
+                    if (comm->conn != NULL)
+                        {
+                            print_debug(_("Server (version %s) is alive at %s.\n"), version, comm->conn);
+                        }
+                    else
+                        {
+                            print_debug(_("Server (version %s) is alive.\n"), version);
+                        }
+
+                    free_variable(version);
+                    return TRUE;
                 }
             else
                 {
-                    print_debug(_("Server (version %s) is alive.\n"), version);
-                }
+                    if (comm->conn != NULL)
+                        {
+                            print_debug(_("Server is not alive (%s).\n"), comm->conn);
+                        }
+                    else
+                        {
+                            print_debug(_("Server is not alive.\n"));
+                        }
 
-            free_variable(version);
-            return TRUE;
-        }
-    else
-        {
-            if (comm->conn != NULL)
-                {
-                    print_debug(_("Server is not alive (%s).\n"), comm->conn);
+                    free_variable(version);
+                    return FALSE;
                 }
-            else
-                {
-                    print_debug(_("Server is not alive.\n"));
-                }
-
-            free_variable(version);
-            return FALSE;
         }
+    return FALSE;
 }
 
 
@@ -524,6 +534,7 @@ comm_t *init_comm_struct(gchar *conn, gshort cmptype)
     comm_t *comm = NULL;
 
     comm = (comm_t *) g_malloc0(sizeof(comm_t));
+    g_assert_nonnull(comm);
 
     comm->curl_handle = curl_easy_init();
     comm->buffer = NULL;
