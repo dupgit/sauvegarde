@@ -23,6 +23,8 @@
 /**
  * @file clock.c
  * This file contains the functions to measure time.
+ * The whole programs should not fail even if these functions
+ * does and returns NULL pointers.
  */
 
 #include "libcdpfgl.h"
@@ -37,8 +39,11 @@ a_clock_t *new_clock_t(void)
 
     my_clock = (a_clock_t *) g_malloc0(sizeof(a_clock_t));
 
-    my_clock->end = NULL;
-    my_clock->begin = g_date_time_new_now_local();
+    if (my_clock != NULL)
+        {
+            my_clock->end = NULL;
+            my_clock->begin = g_date_time_new_now_local();
+        }
 
     return my_clock;
 }
