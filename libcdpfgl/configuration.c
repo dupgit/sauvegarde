@@ -347,8 +347,6 @@ void read_debug_mode_from_file(GKeyFile *keyfile, gchar *filename)
 }
 
 
-
-
 /**
  * Reads database version from an existing file
  * @param keyfile is an opened GKeyFile file where we want to load keyvalue

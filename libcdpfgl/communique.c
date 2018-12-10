@@ -213,7 +213,7 @@ static size_t read_data(char *buffer, size_t size, size_t nitems, void *userp)
                 {
                     return 0;
                 }
-            else
+            else if (buffer != NULL)
                 {
                     whole_size = size * nitems;
 
