@@ -28,7 +28,7 @@
 
 #include "libcdpfgl.h"
 
-static void print_db_error(sqlite3 *db, const char *format, ...);
+static void print_db_error(const char *format, ...);
 static void print_on_db_error(sqlite3 *db, int result, const gchar *infos);
 static int exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message);
 static int make_list_first_column_callback(void *userp, int nb_col, char **data, char **name_col);
@@ -75,7 +75,7 @@ gchar *db_version(void)
  * @param format : the format of the message (as in printf)
  * @param ... : va_list of variable that are to be printed into format.
  */
-static void print_db_error(sqlite3 *db, const char *format, ...)
+static void print_db_error(const char *format, ...)
 {
     va_list ap;
 
@@ -98,11 +98,12 @@ static void print_on_db_error(sqlite3 *db, int result, const gchar *infos)
     const char *message = NULL;
     int errcode = 0;
 
-    if (result == SQLITE_ERROR)
+    if (result == SQLITE_ERROR && db != NULL)
         {
+            /** @note sqlite3_errstr needs at least sqlite 3.7.15 */
             errcode = sqlite3_extended_errcode(db);
             message = sqlite3_errstr(errcode);
-            print_db_error(db, _("sqlite error (%d - %d) on %s: %s\n"), result, errcode, infos, message);
+            print_db_error(_("sqlite error (%d - %d) on %s: %s\n"), result, errcode, infos, message);
         }
 }
 
@@ -118,15 +119,19 @@ static int exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message)
     char *error_message = NULL;
     const char *message = NULL;
     int result = 0;
+    int errcode = 0;
 
-    result = sqlite3_exec(database->db, sql_cmd, NULL, 0, &error_message);
-
-    if (result != SQLITE_OK)
+    if (database != NULL && database->db != NULL)
         {
-            result = sqlite3_extended_errcode(database->db);
-            /** @note sqlite3_errstr needs at least sqlite 3.7.15 */
-            message = sqlite3_errstr(result);
-            print_db_error(database->db, format_message, result, message);
+            result = sqlite3_exec(database->db, sql_cmd, NULL, 0, &error_message);
+
+            if (result != SQLITE_OK)
+                {
+                    /** @note sqlite3_errstr needs at least sqlite 3.7.15 */
+                    errcode = sqlite3_extended_errcode(database->db);
+                    message = sqlite3_errstr(result);
+                    print_db_error(format_message, result, errcode, message);
+                }
         }
 
     return result;
@@ -139,7 +144,7 @@ static int exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message)
  */
 static void sql_commit(db_t *database)
 {
-    exec_sql_cmd(database, "COMMIT;",  _("(%d) Error commiting to the database: %s\n"));
+    exec_sql_cmd(database, "COMMIT;",  _("(%d - %d) Error commiting to the database: %s\n"));
 }
 
 
@@ -149,7 +154,7 @@ static void sql_commit(db_t *database)
  */
 static void sql_begin(db_t *database)
 {
-    exec_sql_cmd(database, "BEGIN;",  _("(%d) Error opening the transaction: %s\n"));
+    exec_sql_cmd(database, "BEGIN;",  _("(%d - %d) Error opening the transaction: %s\n"));
 }
 
 
@@ -165,7 +170,7 @@ static int make_list_first_column_callback(void *userp, int nb_col, char **data,
 {
     list_t *container = (list_t *)  userp;
 
-    if (container !=NULL && data != NULL)
+    if (container != NULL && data != NULL)
         {
             container->list = g_list_prepend(container->list, g_strdup(data[0]));
         }
@@ -210,10 +215,12 @@ static gint does_db_object_exists(db_t *database, gchar *name, gint type)
             return -1;
         }
 
-    /* Trying to get all the table names that are in the database */
-    result = sqlite3_exec(database->db, cmd, make_list_first_column_callback, container, &error_message);
+    if (database != NULL && database->db != NULL)
+        {
+            /* Trying to get all the table names that are in the database */
+            result = sqlite3_exec(database->db, cmd, make_list_first_column_callback, container, &error_message);
+        }
     free_variable(cmd);
-
 
     if (result == SQLITE_OK && container != NULL)
         {
@@ -239,10 +246,14 @@ static gint does_db_object_exists(db_t *database, gchar *name, gint type)
                     return 1;
                 }
         }
-    else
+    else if (database != NULL && database->db != NULL)
         {
             print_on_db_error(database->db, result, "sqlite_master table");
             return -1;
+        }
+    else
+        {
+            return -2;
         }
 }
 
@@ -376,21 +387,21 @@ static void verify_if_tables_exists(db_t *database)
 
     /* Creation of buffers table that contains checksums and their associated data */
     print_debug(_("\ttable buffers\n"));
-    check_and_create_table(database, "buffers",  "CREATE TABLE buffers (buffer_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, data TEXT);", _("(%d) Error while creating database table 'buffers': %s\n"));
+    check_and_create_table(database, "buffers",  "CREATE TABLE buffers (buffer_id INTEGER PRIMARY KEY AUTOINCREMENT, url TEXT, data TEXT);", _("(%d - %d) Error while creating database table 'buffers': %s\n"));
 
     /* Creation of transmited table that may contain id of transmited buffers if any + creation of its indexes */
     print_debug(_("\ttable transmited\n"));
-    check_and_create_table(database, "transmited", "CREATE TABLE transmited (buffer_id INTEGER PRIMARY KEY);", _("(%d) Error while creating database table 'transmited': %s\n"));
+    check_and_create_table(database, "transmited", "CREATE TABLE transmited (buffer_id INTEGER PRIMARY KEY);", _("(%d - %d) Error while creating database table 'transmited': %s\n"));
 
     print_debug(_("\tindex transmited_buffer_id\n"));
-    check_and_create_index(database, "transmited_buffer_id", "CREATE INDEX main.transmited_buffer_id ON transmited (buffer_id ASC)", _("(%d) Error while creating index 'transmited_buffer_id': %s\n"));
+    check_and_create_index(database, "transmited_buffer_id", "CREATE INDEX main.transmited_buffer_id ON transmited (buffer_id ASC)", _("(%d - %d) Error while creating index 'transmited_buffer_id': %s\n"));
 
     /* Creation of files table that contains everything about a file */
     print_debug(_("\ttable files\n"));
-    check_and_create_table(database, "files", "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL, link TEXT);", _("(%d) Error while creating database table 'files': %s\n"));
+    check_and_create_table(database, "files", "CREATE TABLE files (file_id  INTEGER PRIMARY KEY AUTOINCREMENT, cache_time INTEGER, type INTEGER, inode INTEGER, file_user TEXT, file_group TEXT, uid INTEGER, gid INTEGER, atime INTEGER, ctime INTEGER, mtime INTEGER, mode INTEGER, size INTEGER, name TEXT, transmitted BOOL, link TEXT);", _("(%d - %d) Error while creating database table 'files': %s\n"));
 
     print_debug(_("\tindex files_inodes\n"));
-    check_and_create_index(database, "files_inodes", "CREATE INDEX main.files_inodes ON files (inode ASC)", _("(%d) Error while creating index 'files_inodes': %s\n"));
+    check_and_create_index(database, "files_inodes", "CREATE INDEX main.files_inodes ON files (inode ASC)", _("(%d - %d) Error while creating index 'files_inodes': %s\n"));
 }
 
 
@@ -452,21 +463,24 @@ static file_row_t *get_file_id(db_t *database, meta_data_t *meta)
     sqlite3_stmt *stmt = NULL;
     gint result = 0;
 
-    row = new_file_row_t();
-    stmt = database->stmts->get_file_id_stmt;
-
-    bind_values_to_get_file_id(database->db, stmt, meta);
-    result = sqlite3_step(stmt);
-
-    while (result == SQLITE_ROW)
+    if (database != NULL && database->stmts != NULL && database->db != NULL)
         {
-            row->nb_row = row->nb_row + 1;
+            row = new_file_row_t();
+            stmt = database->stmts->get_file_id_stmt;
+
+            bind_values_to_get_file_id(database->db, stmt, meta);
             result = sqlite3_step(stmt);
+
+            while (result == SQLITE_ROW)
+                {
+                    row->nb_row = row->nb_row + 1;
+                    result = sqlite3_step(stmt);
+                }
+
+            print_on_db_error(database->db, result, "get_file_id");
+
+            sqlite3_reset(stmt);
         }
-
-    print_on_db_error(database->db, result, "get_file_id");
-
-    sqlite3_reset(stmt);
 
     return row;
 }
@@ -474,6 +488,8 @@ static file_row_t *get_file_id(db_t *database, meta_data_t *meta)
 
 /**
  * Creates and inits a new file_row_t * structure.
+ * Here failing to allocate a file_row_t structure is
+ * considered as FATAL.
  * @returns an empty file_row_t * structure.
  */
 static file_row_t *new_file_row_t(void)
@@ -481,6 +497,7 @@ static file_row_t *new_file_row_t(void)
     file_row_t *row = NULL;
 
     row = (file_row_t *) g_malloc(sizeof(file_row_t));
+    g_assert_nonnull(row);
 
     row->nb_row = 0;
 
@@ -518,7 +535,7 @@ void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
     gint result = 0;
     sqlite3_stmt *stmt = NULL;
 
-    if (meta != NULL && database != NULL && database->stmts != NULL && database->stmts->save_meta_stmt != NULL)
+    if (meta != NULL && database != NULL && database->stmts != NULL)
         {
             cache_time = g_get_real_time();
 
@@ -527,9 +544,12 @@ void db_save_meta_data(db_t *database, meta_data_t *meta, gboolean only_meta)
 
             /* Inserting the file into the files table */
             stmt = database->stmts->save_meta_stmt;
-            bind_values_to_save_meta_data(database->db, stmt, meta, only_meta, cache_time);
-            result = sqlite3_step(stmt);
-            print_on_db_error(database->db, result, "sqlite3_step");
+            if (stmt != NULL)
+                {
+                    bind_values_to_save_meta_data(database->db, stmt, meta, only_meta, cache_time);
+                    result = sqlite3_step(stmt);
+                    print_on_db_error(database->db, result, "sqlite3_step");
+                }
 
             /* ending the transaction here */
             sql_commit(database);
@@ -551,15 +571,17 @@ void db_save_buffer(db_t *database, gchar *url, gchar *buffer)
     sqlite3_stmt *stmt = NULL;
     gint result = 0;
 
-    if (database != NULL && url != NULL && buffer != NULL)
+    if (database != NULL && url != NULL && buffer != NULL && database->stmts != NULL)
         {
             sql_begin(database);
 
             stmt = database->stmts->save_buffer_stmt;
-            bind_values_to_save_buffer(database->db, stmt, url, buffer);
-            result = sqlite3_step(stmt);
-            print_on_db_error(database->db, result, "db_save_buffer");
-
+            if (stmt != NULL)
+                {
+                    bind_values_to_save_buffer(database->db, stmt, url, buffer);
+                    result = sqlite3_step(stmt);
+                    print_on_db_error(database->db, result, "db_save_buffer");
+                }
             sql_commit(database);
             sqlite3_reset(stmt);
         }
@@ -579,26 +601,31 @@ gboolean db_is_there_buffers_to_transmit(db_t *database)
     int result = 0;
     int *i = NULL;               /** int *i is used to count the number of row */
 
-    i = (int *) g_malloc0(sizeof(int));
-    *i = 0;
-
-    result = sqlite3_exec(database->db, "SELECT * FROM buffers WHERE buffers.buffer_id NOT IN (SELECT transmited.buffer_id FROM transmited INNER JOIN buffers ON transmited.buffer_id = buffers.buffer_id);", count_lines_callback, i, &error_message);
-
-    if (result == SQLITE_OK && *i == 0)
+    if (database != NULL && database->db != NULL)
         {
-            /* Table exists but there is no buffers to transmit to server */
-            return FALSE;
-        }
-    else if (result == SQLITE_OK && *i > 0)
-        {
-            /* Table exists and there is buffers to transmit to server    */
-            return TRUE;
+            i = (int *) g_malloc0(sizeof(int));
+            *i = 0;
+
+            result = sqlite3_exec(database->db, "SELECT * FROM buffers WHERE buffers.buffer_id NOT IN (SELECT transmited.buffer_id FROM transmited INNER JOIN buffers ON transmited.buffer_id = buffers.buffer_id);", count_lines_callback, i, &error_message);
+
+            if (result == SQLITE_OK && *i == 0)
+                {
+                    /* Table exists but there is no buffers to transmit to server */
+                    return FALSE;
+                }
+            else if (result == SQLITE_OK && *i > 0)
+                {
+                    /* Table exists and there is buffers to transmit to server    */
+                    return TRUE;
+                }
+            else
+                {
+                    /* result is not SQLITE_OK : something went wrong */
+                    return FALSE;
+                }
         }
     else
-        {
-            /* result is not SQLITE_OK : something went wrong */
-            return FALSE;
-        }
+        return FALSE;
 }
 
 
@@ -619,19 +646,16 @@ static int transmit_callback(void *userp, int nb_col, char **data, char **name_c
 
     if (trans != NULL && data != NULL && trans->comm != NULL && trans->database != NULL)
         {
-
             trans->comm->readbuffer = data[2];         /** data[2] is the data column in buffers table of the database */
             success = post_url(trans->comm, data[1]);  /** data[1] is the url column in buffers table of the database  */
 
             if (success == CURLE_OK)
                 {
                     sql_begin(trans->database);
-
                     sql_command = g_strdup_printf("INSERT INTO transmited (buffer_id) VALUES ('%s');", data[0]);
-                    exec_sql_cmd(trans->database, sql_command,  _("(%d) Error while inserting into the table 'transmited': %s\n"));
-                    free_variable(sql_command);
-
+                    exec_sql_cmd(trans->database, sql_command,  _("(%d - %d) Error while inserting into the table 'transmited': %s\n"));
                     sql_commit(trans->database);
+                    free_variable(sql_command);
                 }
             /** @todo use the result of post to be able to manage errors */
         }
@@ -653,6 +677,7 @@ static transmited_t *new_transmited_t(db_t *database, comm_t *comm)
     transmited_t *trans = NULL;
 
     trans = (transmited_t *) g_malloc0(sizeof(transmited_t));
+    g_assert_nonnull(trans);
 
     trans->database = database;
     trans->comm = comm;
@@ -678,12 +703,10 @@ static int delete_transmited_callback(void *userp, int nb_col, char **data, char
     if (database != NULL && data != NULL)
         {
             sql_begin(database);
-
             sql_command = g_strdup_printf("DELETE FROM buffers WHERE buffer_id='%s';", data[0]);
-            exec_sql_cmd(database, sql_command,  _("(%d) Error while deleting from table 'buffers': %s\n"));
-            free_variable(sql_command);
-
+            exec_sql_cmd(database, sql_command,  _("(%d - %d) Error while deleting from table 'buffers': %s\n"));
             sql_commit(database);
+            free_variable(sql_command);
         }
 
     return 0;
@@ -700,8 +723,11 @@ static int delete_transmited_buffers(db_t *database)
     char *error_message = NULL;
     int result = 0;
 
-    /* This should select every buffer_id that where transmited and not deleted (that are still present in buffers table) */
-    result = sqlite3_exec(database->db, "SELECT transmited.buffer_id FROM transmited INNER JOIN buffers ON transmited.buffer_id = buffers.buffer_id;", delete_transmited_callback, database, &error_message);
+    if (database != NULL && database->db != NULL)
+        {
+            /* This should select every buffer_id that where transmited and not deleted (that are still present in buffers table) */
+            result = sqlite3_exec(database->db, "SELECT transmited.buffer_id FROM transmited INNER JOIN buffers ON transmited.buffer_id = buffers.buffer_id;", delete_transmited_callback, database, &error_message);
+        }
 
     return result;
 }
@@ -721,15 +747,19 @@ gboolean db_transmit_buffers(db_t *database, comm_t *comm)
     int result = 0;
     transmited_t *trans = NULL;
 
-    trans = new_transmited_t(database, comm);
+    if (database != NULL && comm != NULL)
+        {
+            trans = new_transmited_t(database, comm);
 
-    /* This should select only the rows in buffers that are not in transmited based on the primary key buffer_id */
-    result = sqlite3_exec(database->db, "SELECT * FROM buffers WHERE buffers.buffer_id NOT IN (SELECT transmited.buffer_id FROM transmited INNER JOIN buffers ON transmited.buffer_id = buffers.buffer_id);", transmit_callback, trans, &error_message);
+            /* This should select only the rows in buffers that are not in transmited based on the primary key buffer_id */
+            result = sqlite3_exec(database->db, "SELECT * FROM buffers WHERE buffers.buffer_id NOT IN (SELECT transmited.buffer_id FROM transmited INNER JOIN buffers ON transmited.buffer_id = buffers.buffer_id);", transmit_callback, trans, &error_message);
 
-    g_free(trans);
+            g_free(trans);
 
-    delete_transmited_buffers(database);
-    /** @todo Catch the return value of this function and do something with it */
+            delete_transmited_buffers(database);
+            /** @todo Catch the return value of this function and do something with it */
+
+        }
 
     if (result == SQLITE_OK)
         {
@@ -896,8 +926,11 @@ static sqlite3_stmt *create_save_meta_stmt(sqlite3 *db)
     sqlite3_stmt *stmt = NULL;
     int result = 0;
 
-    result = sqlite3_prepare_v2(db, "INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted, link) VALUES (:cache_time, :type, :inode, :file_user, :file_group, :uid, :gid, :atime, :ctime, :mtime, :mode, :size, :name, :transmited, :link);", -1, &stmt, NULL);
-    print_on_db_error(db, result, "create_save_meta_stmt");
+    if (db != NULL)
+        {
+            result = sqlite3_prepare_v2(db, "INSERT INTO files (cache_time, type, inode, file_user, file_group, uid, gid, atime, ctime, mtime, mode, size, name, transmitted, link) VALUES (:cache_time, :type, :inode, :file_user, :file_group, :uid, :gid, :atime, :ctime, :mtime, :mode, :size, :name, :transmited, :link);", -1, &stmt, NULL);
+            print_on_db_error(db, result, "create_save_meta_stmt");
+        }
 
     return stmt;
 }
@@ -912,9 +945,11 @@ static sqlite3_stmt *create_save_meta_stmt(sqlite3 *db)
  */
 static void bind_values_to_save_buffer(sqlite3 *db, sqlite3_stmt *stmt, gchar *url, gchar *buffer)
 {
-
-    bind_text_value(db, stmt, ":url", url);
-    bind_text_value(db, stmt, ":data", buffer);
+    if (stmt != NULL && db != NULL)
+        {
+            bind_text_value(db, stmt, ":url", url);
+            bind_text_value(db, stmt, ":data", buffer);
+        }
 }
 
 
@@ -930,8 +965,11 @@ static sqlite3_stmt *create_save_buffer_stmt(sqlite3 *db)
     sqlite3_stmt *stmt = NULL;
     int result = 0;
 
-    result = sqlite3_prepare_v2(db, "INSERT INTO buffers (url, data) VALUES (:url, :data);", -1, &stmt, NULL);
-    print_on_db_error(db, result, "create_save_buffer_stmt");
+    if (db != NULL)
+        {
+            result = sqlite3_prepare_v2(db, "INSERT INTO buffers (url, data) VALUES (:url, :data);", -1, &stmt, NULL);
+            print_on_db_error(db, result, "create_save_buffer_stmt");
+        }
 
     return stmt;
 }
@@ -970,8 +1008,11 @@ static sqlite3_stmt *create_get_file_id_stmt(sqlite3 *db)
     sqlite3_stmt *stmt = NULL;
     int result = 0;
 
-    result = sqlite3_prepare_v2(db, "SELECT file_id from files WHERE inode=:inode AND name=:name AND type=:file_type AND uid=:uid AND gid=:gid AND ctime=:ctime AND mtime=:mtime AND mode=:mode AND size=:size;", -1, &stmt, NULL);
-    print_on_db_error(db, result, "create_save_buffer_stmt");
+    if (db != NULL)
+        {
+            result = sqlite3_prepare_v2(db, "SELECT file_id from files WHERE inode=:inode AND name=:name AND type=:file_type AND uid=:uid AND gid=:gid AND ctime=:ctime AND mtime=:mtime AND mode=:mode AND size=:size;", -1, &stmt, NULL);
+            print_on_db_error(db, result, "create_get_file_id_stmt");
+        }
 
     return stmt;
 }
@@ -989,6 +1030,7 @@ static stmt_t *new_stmts(sqlite3 *db)
 
 
     stmts = (stmt_t *) g_malloc0(sizeof(stmt_t));
+    g_assert_nonnull(stmts);
 
     stmts->save_meta_stmt = create_save_meta_stmt(db);
     stmts->save_buffer_stmt = create_save_buffer_stmt(db);
@@ -1004,7 +1046,6 @@ static stmt_t *new_stmts(sqlite3 *db)
  */
 static void free_stmts(stmt_t *stmts)
 {
-
     if (stmts != NULL)
         {
             sqlite3_finalize(stmts->save_meta_stmt);
@@ -1024,6 +1065,7 @@ static list_t *new_list_t(void)
     list_t *container = NULL;
 
     container = (list_t *) g_malloc0(sizeof(list_t));
+    g_assert_nonnull(container);
 
     container->list = NULL;
 
@@ -1056,7 +1098,10 @@ void close_database(db_t *database)
         {
             print_debug(_("\tClosing database.\n"));
             free_stmts(database->stmts);
-            sqlite3_close(database->db);
+            if (database->db != NULL)
+                {
+                    sqlite3_close(database->db);
+                }
         }
 }
 
@@ -1077,7 +1122,6 @@ db_t *open_database(gchar *dirname, gchar *filename)
     sqlite3 *db = NULL;
     int result = 0;
 
-
     if (dirname != NULL && filename != NULL)
         {
             create_directory(dirname);
@@ -1089,7 +1133,7 @@ db_t *open_database(gchar *dirname, gchar *filename)
 
             if (result != SQLITE_OK)
                 {
-                    print_db_error(db, _("(%d) Error while trying to open %s database: %s\n"), result, database_name, sqlite3_errmsg(db));
+                    print_db_error(_("(%d) Error while trying to open %s database: %s\n"), result, database_name, sqlite3_errmsg(db));
                     free_variable(database);
                     sqlite3_close(db);
 
@@ -1145,7 +1189,7 @@ static void migrate_schema_if_needed(db_t *database)
         }
     else if (database != NULL)
         {
-            print_db_error(database->db, _("Error database version is not correct: %ld but expected between 2 and %d\n"), database->version, DATABASE_SCHEMA_VERSION);
+            print_db_error(_("Error database version is not correct: %ld but expected between 2 and %d\n"), database->version, DATABASE_SCHEMA_VERSION);
             exit(EXIT_FAILURE);
         }
 }
