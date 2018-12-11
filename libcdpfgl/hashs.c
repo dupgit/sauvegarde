@@ -244,6 +244,7 @@ hash_data_t *new_hash_data_t(guchar *data, gssize read, guint8 *hash)
     hash_data_t *hash_data = NULL;
 
     hash_data = (hash_data_t *) g_malloc(sizeof(hash_data_t));
+    g_assert_nonnull(hash_data);
 
     hash_data->hash = hash;
     hash_data->data = data;
@@ -306,6 +307,7 @@ hash_extract_t *new_hash_extract_t(void)
     hash_extract_t *hash_extract = NULL;
 
     hash_extract = (hash_extract_t *) g_malloc(sizeof(hash_extract_t));
+    g_assert_nonnull(hash_extract);
 
     hash_extract->hash_list = NULL;
     hash_extract->hash_string = NULL;
@@ -326,12 +328,17 @@ hash_extract_t *new_hash_extract_t(void)
  */
 gchar *convert_max_hashs_from_hash_list_to_gchar(hash_extract_t *hash_extract, gint max)
 {
-    GList *head = hash_extract->hash_list;
+    GList *head = NULL;
     gchar *base64 = NULL;
     gchar *hash_string = NULL;
     gchar *old_list = NULL;
     hash_data_t *hash_data = NULL;
     gint i = 0;
+
+    if (hash_extract != NULL)
+        {
+            head = hash_extract->hash_list;
+        }
 
     while (head != NULL && i < max)
         {
@@ -502,6 +509,8 @@ gpointer copy_only_hash(gconstpointer src, gpointer user_data)
     guint8 *hash_dst = NULL;
 
     hash_dst = (guint8 *) g_malloc(sizeof(guint8) * HASH_LEN);
+    g_assert_nonnull(hash_dst);
+
     hash_dst = memcpy(hash_dst, hash_data_src->hash, HASH_LEN);
     hash_data_dst = new_hash_data_t(NULL, hash_data_src->read, hash_dst);
 
