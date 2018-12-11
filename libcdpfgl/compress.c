@@ -205,7 +205,7 @@ compress_t *uncompress_buffer(gchar *buffer, guint64 cmplen, guint64 textlen, gi
 static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len)
 {
     int ret = Z_OK;
-    uLongf destlen = 0;
+    uLongf destlen = (uLongf) len;
     Bytef *destbuffer = NULL;
     const Bytef *srcbuffer = NULL;
     uLong sourcelen = 0;
@@ -216,7 +216,7 @@ static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len)
         {
             sourcelen = comp->len;
             srcbuffer = (const Bytef *) comp->text;
-            destlen = (uLongf) len;
+
             ret = uncompress(destbuffer, &destlen, srcbuffer, sourcelen);
 
             /* print_debug("ret : %d - Buffer (size %ld) uncompressed into a buffer (size %ld)\n", ret, sourcelen, destlen); */
