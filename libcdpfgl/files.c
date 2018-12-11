@@ -39,26 +39,24 @@ meta_data_t *new_meta_data_t(void)
     meta_data_t *meta = NULL;
 
     meta = (meta_data_t *) g_malloc(sizeof(meta_data_t));
+    g_assert_nonnull(meta);
 
-    if (meta != NULL)
-        {
-            meta->file_type = 0;
-            meta->inode = 0;
-            meta->mode = 0;
-            meta->atime = 0;
-            meta->ctime = 0;
-            meta->mtime = 0;
-            meta->size = 0;
-            meta->owner = NULL;
-            meta->group = NULL;
-            meta->uid = 65534;  /* nfsnobody on my system ie unpriviledged user */
-            meta->gid = 65534;  /* nfsnobody on my system ie unpriviledged user */
-            meta->name = NULL;
-            meta->link = NULL;
-            meta->hash_data_list = NULL;
-            meta->in_cache = FALSE; /* a newly meta data is not in the local cache ! */
-            meta->blocksize = 16384; /* Default blocksize */
-        }
+    meta->file_type = 0;
+    meta->inode = 0;
+    meta->mode = 0;
+    meta->atime = 0;
+    meta->ctime = 0;
+    meta->mtime = 0;
+    meta->size = 0;
+    meta->owner = NULL;
+    meta->group = NULL;
+    meta->uid = 65534;  /* nfsnobody on my system ie unpriviledged user */
+    meta->gid = 65534;  /* nfsnobody on my system ie unpriviledged user */
+    meta->name = NULL;
+    meta->link = NULL;
+    meta->hash_data_list = NULL;
+    meta->in_cache = FALSE; /* a newly meta data is not in the local cache ! */
+    meta->blocksize = 16384; /* Default blocksize */
 
     return meta;
 }
@@ -72,13 +70,11 @@ server_meta_data_t *new_smeta_data_t(void)
     server_meta_data_t *smeta = NULL;
 
     smeta = (server_meta_data_t *) g_malloc(sizeof(server_meta_data_t));
+    g_assert_nonnull(smeta);
 
-    if (smeta != NULL)
-        {
-            smeta->hostname = NULL;
-            smeta->data_sent = FALSE;
-            smeta->meta = NULL;
-        }
+    smeta->hostname = NULL;
+    smeta->data_sent = FALSE;
+    smeta->meta = NULL;
 
     return smeta;
 }
@@ -414,15 +410,18 @@ gint compare_mtime_to_gchar_date(guint64 mtime, gchar *date)
 {
     GDateTime *mtime_date = NULL;
     GDateTime *date_date = NULL;
-    gint result = 0;
+    gint result = 1;
 
-    date_date = convert_gchar_date_to_gdatetime(date);
-    mtime_date = g_date_time_new_from_unix_local(mtime);
+    if (date != NULL)
+        {
+            date_date = convert_gchar_date_to_gdatetime(date);
+            mtime_date = g_date_time_new_from_unix_local(mtime);
 
-    result = g_date_time_compare(mtime_date, date_date);
+            result = g_date_time_compare(mtime_date, date_date);
 
-    g_date_time_unref(mtime_date);
-    g_date_time_unref(date_date);
+            g_date_time_unref(mtime_date);
+            g_date_time_unref(date_date);
+        }
 
     return result;
 }
@@ -440,16 +439,20 @@ gboolean compare_after_before_date(guint64 mtime, gchar *date, gboolean after)
 {
     gint cmp_date = 0;
 
-    cmp_date = compare_mtime_to_gchar_date(mtime, date);
+    if (date != NULL)
+        {
+            cmp_date = compare_mtime_to_gchar_date(mtime, date);
 
-    if (cmp_date >= 0)
-        {
-            return after;
+            if (cmp_date >= 0)
+                {
+                    return after;
+                }
+            else
+                {
+                    return !after;
+                }
         }
-    else
-        {
-            return !after;
-        }
+    else return FALSE;
 }
 
 
@@ -470,16 +473,19 @@ GDateTime *convert_gchar_date_to_gdatetime(gchar *date)
     GDateTime *datetime = NULL;
     GTimeZone *tz = NULL;
 
-    year = get_digit_value(date, 0, 4);
-    month = get_digit_value(date, 5, 2);
-    day = get_digit_value(date, 8, 2);
-    hour = get_digit_value(date, 11, 2);
-    minute = get_digit_value(date, 14, 2);
-    second = get_digit_value(date, 17, 2);
+    if (date != NULL)
+        {
+            year = get_digit_value(date, 0, 4);
+            month = get_digit_value(date, 5, 2);
+            day = get_digit_value(date, 8, 2);
+            hour = get_digit_value(date, 11, 2);
+            minute = get_digit_value(date, 14, 2);
+            second = get_digit_value(date, 17, 2);
 
-    tz = g_time_zone_new_local();
-    datetime = g_date_time_new(tz, year, month, day, hour, minute, second);
-    g_time_zone_unref(tz);
+            tz = g_time_zone_new_local();
+            datetime = g_date_time_new(tz, year, month, day, hour, minute, second);
+            g_time_zone_unref(tz);
+        }
 
     return datetime;
 }
@@ -498,7 +504,7 @@ gchar *get_file_mode_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 {
     gchar *result = NULL;
 
-    if (fileinfo != NULL)
+    if (fileinfo != NULL && meta != NULL)
         {
             meta->mode = g_file_info_get_attribute_uint32(fileinfo, G_FILE_ATTRIBUTE_UNIX_MODE);
 
@@ -543,7 +549,7 @@ gchar *get_file_size_from_gfile(GFileInfo *fileinfo, meta_data_t *meta)
 {
     gchar *result = NULL;
 
-    if (fileinfo != NULL)
+    if (fileinfo != NULL && meta != NULL)
         {
             meta->size = g_file_info_get_attribute_uint64(fileinfo, G_FILE_ATTRIBUTE_STANDARD_SIZE);
 
@@ -905,10 +911,12 @@ gchar *normalize_directory(gchar *path)
 void file_create_directory(gchar *save_dir, gchar *sub_dir)
 {
     gchar *a_directory = NULL;
-
-    a_directory = g_build_filename(save_dir, sub_dir, NULL);
-    create_directory(a_directory);
-    free_variable(a_directory);
+    if (save_dir != NULL && sub_dir != NULL)
+        {
+            a_directory = g_build_filename(save_dir, sub_dir, NULL);
+            create_directory(a_directory);
+            free_variable(a_directory);
+        }
 }
 
 
