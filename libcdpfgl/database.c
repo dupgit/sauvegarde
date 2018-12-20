@@ -178,6 +178,65 @@ static int make_list_first_column_callback(void *userp, int nb_col, char **data,
     return 0;
 }
 
+/**
+ * Returns the SQL select command to run upon the type
+ * of database to search for.
+ * @param type is a gint that speicfies the type where the
+ *        search has to occur.
+ * @returns a newly allocated gchar * string or NULL if the
+ *          type passed as an argument does not mach any
+ *          known types.
+ */
+static gchar *get_select_command_upon_type(gint type)
+{
+    gchar *cmd = NULL;
+
+    if (type == SQLITE_TYPE_TABLE)
+        {
+            cmd = g_strdup("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;");
+        }
+    else if (type == SQLITE_TYPE_INDEX)
+        {
+            cmd = g_strdup("SELECT name FROM sqlite_master WHERE type='index' ORDER BY name;");
+        }
+
+    return cmd;
+}
+
+
+/**
+ * Returns if the object named 'name' is present in the list of names.
+ * @param name is a gchar * string that is the name of
+ *        the table or index to look for.
+ * @list is the list returned by the SQL search that may contain the
+ *       searched object.
+ * @returns a gint that is 0 when the object exists and 1 when it does
+ *          not.
+ */
+static gint does_object_name_exists_in_returned_list(gchar *name, GList *list)
+{
+    gboolean exists = FALSE;
+
+    while (list != NULL && exists == FALSE)
+        {
+            if (g_strcmp0(list->data, name) == 0)
+                {
+                    exists = TRUE;
+                }
+            list = list->next;
+        }
+
+
+    if (exists == TRUE)
+        {
+            return 0;
+        }
+    else
+        {
+            return 1;
+        }
+}
+
 
 /**
  * Tells if a specific table or index exists or not in the selected
@@ -193,68 +252,46 @@ static int make_list_first_column_callback(void *userp, int nb_col, char **data,
 static gint does_db_object_exists(db_t *database, gchar *name, gint type)
 {
     char *error_message = NULL;
-    int result = 0;
+    int result = 0;              /* result is used for the sqlite execution result */
     list_t *container = NULL;
-    GList *list = NULL;
-    gboolean exists = FALSE;
+    gint object_exists = -1;     /* -1 is an SQL error and -2 is a struct error    */
     gchar *cmd = NULL;
 
-    container = new_list_t();
 
-    if (type == SQLITE_TYPE_TABLE)
+    cmd = get_select_command_upon_type(type);
+
+    if (cmd == NULL)
         {
-            cmd = g_strdup("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;");
+            return object_exists;
         }
-    else if (type == SQLITE_TYPE_INDEX)
-        {
-            cmd = g_strdup("SELECT name FROM sqlite_master WHERE type='index' ORDER BY name;");
-        }
-    else
-        {
-            free_list_t(container);
-            return -1;
-        }
+
+    /* this structure is needed by sqlite3_exec call bak make_list_first_column_callback.*/
+    container = new_list_t();
 
     if (database != NULL && database->db != NULL)
         {
             /* Trying to get all the table names that are in the database */
             result = sqlite3_exec(database->db, cmd, make_list_first_column_callback, container, &error_message);
         }
+
     free_variable(cmd);
 
     if (result == SQLITE_OK && container != NULL)
         {
-            list = container->list;
-
-            while (list != NULL && exists == FALSE)
-                {
-                    if (g_strcmp0(list->data, name) == 0)
-                        {
-                            exists = TRUE;
-                        }
-                    list = list->next;
-                }
-
-            free_list_t(container);
-
-            if (exists == TRUE)
-                {
-                    return 0;
-                }
-            else
-                {
-                    return 1;
-                }
+            object_exists = does_object_name_exists_in_returned_list(name, container->list);
         }
     else if (database != NULL && database->db != NULL)
         {
             print_on_db_error(database->db, result, "sqlite_master table");
-            return -1;
+            object_exists = -1;
         }
     else
         {
-            return -2;
+            object_exists = -2;
         }
+
+    free_list_t(container);
+    return result;
 }
 
 
