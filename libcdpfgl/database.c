@@ -32,6 +32,8 @@ static void print_db_error(const char *format, ...);
 static void print_on_db_error(sqlite3 *db, int result, const gchar *infos);
 static int exec_sql_cmd(db_t *database, gchar *sql_cmd, gchar *format_message);
 static int make_list_first_column_callback(void *userp, int nb_col, char **data, char **name_col);
+static gchar *get_select_command_upon_type(gint type);
+static gint does_object_name_exists_in_returned_list(gchar *name, GList *list);
 static gint does_db_object_exists(db_t *database, gchar *name, gint type);
 static gint does_table_exists(db_t *database, gchar *tablename);
 static gint does_index_exists(db_t *database, gchar *indexname);
@@ -43,6 +45,10 @@ static void verify_if_tables_exists(db_t *database);
 static file_row_t *get_file_id(db_t *database, meta_data_t *meta);
 static file_row_t *new_file_row_t(void);
 static void free_file_row_t(file_row_t *row);
+static int transmit_callback(void *userp, int nb_col, char **data, char **name_col);
+static transmited_t *new_transmited_t(db_t *database, comm_t *comm);
+static int delete_transmited_callback(void *userp, int nb_col, char **data, char **name_col);
+static int delete_transmited_buffers(db_t *database);
 static void bind_guint64_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, guint64 value);
 static void bind_guint_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, guint value);
 static void bind_text_value(sqlite3 *db, sqlite3_stmt *stmt, const gchar *name, gchar *value);
@@ -341,7 +347,6 @@ static int count_lines_callback(void *num, int nb_col, char **data, char **name_
 
     return 0;
 }
-
 
 
 /**
@@ -1163,25 +1168,22 @@ db_t *open_database(gchar *dirname, gchar *filename)
         {
             create_directory(dirname);
             database_name = g_build_filename(dirname, filename, NULL);
-
-            database = (db_t *) g_malloc0(sizeof(db_t));
-
             result = sqlite3_open(database_name, &db);
 
             if (result != SQLITE_OK)
                 {
                     print_db_error(_("(%d) Error while trying to open %s database: %s\n"), result, database_name, sqlite3_errmsg(db));
-                    free_variable(database);
                     sqlite3_close(db);
-
                     free_variable(database_name);
 
                     return NULL;
                 }
             else
                 {
-                    database->version_filename = g_strdup_printf("%s.version", database_name);
+                    database = (db_t *) g_malloc0(sizeof(db_t));
+                    g_assert_nonnull(database);
 
+                    database->version_filename = g_strdup_printf("%s.version", database_name);
                     database->db = db;
                     database->stmts = new_stmts(db);
                     sqlite3_extended_result_codes(db, 1);
@@ -1230,5 +1232,3 @@ static void migrate_schema_if_needed(db_t *database)
             exit(EXIT_FAILURE);
         }
 }
-
-
