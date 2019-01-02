@@ -5,25 +5,30 @@
 #
 
 ##
-# Prints the file to be deleted (first argument of the function : $1) and
-# deletes it.
+# Deletes all files passed in arguments
 #
-function delete_file {
+function delete_files {
 
-    echo "${1}"
-    rm -f "${1}"
-
+    for file in "${@}"; do
+        if test -f "${file}"; then
+            echo "${file}"
+            rm -f "${file}"
+        fi
+    done
 }
 
 
 ##
-# Prints the directory to be deleted (first argument of the function : $1)
-# and deletes it.
+# Deletes all directories (and their content) passed in arguments
 #
-function delete_dir {
+function delete_dirs {
 
-    echo "${1}"
-    rm -fr "${1}"
+    for dir in "${@}"; do
+        if test -d "${dir}"; then
+            echo "${dir}"
+            rm -fr "${dir}"
+        fi
+    done
 }
 
 
@@ -31,11 +36,12 @@ function delete_dir {
 # Prints the command being executed and deletes files in the whole
 # project ($1 is the argument to find files to be deleted)
 #
-function delete_evrywhere {
+function delete_files_everywhere {
 
-echo "find . -name ${1} -exec rm -f {} \;"
-find . -name "${1}" -exec rm -f {} \;
-
+    for file in "${@}"; do
+        echo "find . -name ${file} -exec rm -f {} \;"
+        find . -name "${file}" -exec rm -f {} \;
+    done
 }
 
 ##
@@ -46,28 +52,11 @@ if [ -f Makefile ];
     make distclean
 fi;
 
-delete_file "aclocal.m4"
-delete_file "config.guess"
-delete_file "config.sub"
-delete_file "depcomp"
-delete_file "install-sh"
-delete_file "ltmain.sh"
-delete_file "missing"
-delete_file "configure"
-delete_file "config.status"
-delete_file "config.log"
-delete_file "libtool"
-delete_file "compile"
-delete_dir "autom4te.cache"
-delete_dir "packaging/debian/cdpfgl*"
+delete_files "aclocal.m4" "config.guess" "config.sub" "depcomp" "install-sh"
+delete_files "ltmain.sh" "missing" "configure" "config.status" "config.log"
+delete_files "libtool" "compile"
 
-delete_evrywhere "*~"
-delete_evrywhere "*#"
-delete_evrywhere "*.gcd[ao]"
-delete_evrywhere "*.gcov"
-delete_evrywhere "*.gcno"
-delete_evrywhere "gmon.out"
-delete_evrywhere "Makefile"
-delete_evrywhere "Makefile.in"
-delete_evrywhere ".libs"
-delete_evrywhere ".deps"
+delete_dirs "autom4te.cache" 'packaging/debian/cdpfgl*'
+
+delete_files_everywhere '*~' '*#' '*.gcd[ao]' '*.gcov' '*.gcno'
+delete_files_everywhere "gmon.out" "Makefile" "Makefile.in" ".libs" ".deps"
