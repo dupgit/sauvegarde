@@ -348,6 +348,7 @@ gint get_url(comm_t *comm, gchar *url, gchar *header)
             else
                 {
                     print_error(__FILE__, __LINE__, _("Error while sending GET command and receiving data: %s\n"), error_buf);
+                    comm->buffer = NULL;
                 }
 
             free_variable(real_url);
@@ -434,11 +435,11 @@ gint post_url(comm_t *comm, gchar *url)
             curl_easy_setopt(comm->curl_handle, CURLOPT_HTTPHEADER, chunk);
 
             success = curl_easy_perform(comm->curl_handle);
-            curl_slist_free_all(chunk);
 
             if (success != CURLE_OK)
                 {
                     print_error(__FILE__, __LINE__, _("Error while sending POST command (to \"%s\"): %s\n"), real_url, error_buf);
+                    comm->buffer = NULL;
                 }
             else if (comm->buffer != NULL)
                 {
@@ -449,10 +450,11 @@ gint post_url(comm_t *comm, gchar *url)
             free_variable(error_buf);
             free_variable(len);
             free_compress_t(cmpbuf);
+            curl_slist_free_all(chunk);
 
             /* This function is called by the one that manages the local database
              * directly with the values that are in the database and a strlen() is
-             * done at it's begining so the data in the database MUST be stlen()
+             * done at it's begining so the data in the database MUST be strlen()
              * compatible. That is to say that they MUST be stored untransformed.
              * So we get them as they were when entering this function.
              */
