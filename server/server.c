@@ -841,6 +841,9 @@ static int answer_hash_array_post_request(server_struct_t *server_struct, struct
             content_type = CT_PLAIN;
         }
 
+    /* Here we will try to answer which hashs are needed and then
+     * send thoses hashs back in the answer
+     */
     return create_MHD_response(connection, answer, content_type);
 }
 
@@ -870,6 +873,99 @@ static void print_received_data_for_hash(guint8 *hash, gssize read)
 
 
 /**
+ * Answers /Data.json POST request by answering to the client 'Ok'.
+ * @param server_struct is the main structure for the server.
+ * @param connection is the connection in MHD
+ * @param received_data is a gchar * string to the data that was received
+ *        by the POST request.
+ */
+static int answer_data_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data)
+{
+    gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
+    hash_data_t *hash_data = NULL;
+    int success = MHD_NO;
+
+    hash_data = convert_string_to_hash_data(received_data);
+    add_hash_size_to_dedup_bytes(server_struct->stats, hash_data);
+
+    if (get_debug_mode() == TRUE)
+        {
+            print_received_data_for_hash(hash_data->hash, hash_data->read);
+        }
+
+    /**
+     * Sending received_data into the queue in order to be treated by
+     * the corresponding thread. hash_data is freed by data_thread
+     * and should not be used after this "call" here.
+     */
+    g_async_queue_push(server_struct->data_queue, hash_data);
+
+    /**
+     * creating an answer for the client to say that everything went Ok!
+     */
+    answer = answer_json_success_string(MHD_HTTP_OK, _("Ok!"));
+    success = create_MHD_response(connection, answer, CT_PLAIN);
+
+    return success;
+}
+
+/**
+ * Answers /Data_Array.json POST request by answering to the client 'Ok'.
+ * @param server_struct is the main structure for the server.
+ * @param connection is the connection in MHD
+ * @param received_data is a gchar * string to the data that was received
+ *        by the POST request.
+ */
+static int answer_data_array_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data)
+{
+    gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
+    hash_data_t *hash_data = NULL;
+    int success = MHD_NO;
+    a_clock_t *elapsed = NULL;
+    json_t *root = NULL;
+    GList *hash_data_list = NULL;
+    GList *head = NULL;
+    gboolean debug = FALSE;
+
+    elapsed = new_clock_t();
+    root = load_json(received_data);
+    end_clock(elapsed, "load_json");
+    hash_data_list = extract_glist_from_array(root, "data_array", FALSE);
+    head = hash_data_list;
+    json_decref(root);
+    debug = get_debug_mode();
+
+    while (hash_data_list != NULL)
+        {
+            hash_data = hash_data_list->data;
+            add_hash_size_to_dedup_bytes(server_struct->stats, hash_data);
+
+            if (debug == TRUE)
+                {
+                    /* Only for debbugging ! */
+                    print_received_data_for_hash(hash_data->hash, hash_data->read);
+                }
+
+            /** Sending hash_data into the queue. */
+            g_async_queue_push(server_struct->data_queue, hash_data);
+            hash_data_list = g_list_next(hash_data_list);
+        }
+
+    g_list_free(head);
+
+    /**
+     * creating an answer for the client to say that everything went Ok!
+     */
+
+    answer = answer_json_success_string(MHD_HTTP_OK, _("Ok!"));
+    success = create_MHD_response(connection, answer, CT_PLAIN);
+
+    return success;
+
+}
+
+
+/**
  * Function that process the received data from the POST command and
  * answers to the client.
  * Here we may do something with this data (we may want to store it
@@ -886,15 +982,10 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
 {
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     int success = MHD_NO;
-    gboolean debug = FALSE;
-    hash_data_t *hash_data = NULL;
-    json_t *root = NULL;
-    GList *hash_data_list = NULL;
-    GList *head = NULL;
-    a_clock_t *elapsed = NULL;
     guint64 uncmp_len = 0;
     compress_t *comp = NULL;
     gshort cmptype = COMPRESS_NONE_TYPE;
+
 
     cmptype = get_header_compression_type(connection);
 
@@ -927,70 +1018,16 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
         {
             add_one_to_post_url_hash_array(server_struct->stats);
             success = answer_hash_array_post_request(server_struct, connection, received_data);
-            /* Here we will try to answer which hashs are needed and then
-             * send thoses hashs back in the answer
-             */
         }
     else if (g_str_has_prefix(url, "/Data.json") && received_data != NULL)
         {
             add_one_to_post_url_data(server_struct->stats);
-            hash_data = convert_string_to_hash_data(received_data);
-            add_hash_size_to_dedup_bytes(server_struct->stats, hash_data);
-
-            if (get_debug_mode() == TRUE)
-                {
-                    print_received_data_for_hash(hash_data->hash, hash_data->read);
-                }
-
-            /**
-             * Sending received_data into the queue in order to be treated by
-             * the corresponding thread. hash_data is freed by data_thread
-             * and should not be used after this "call" here.
-             */
-            g_async_queue_push(server_struct->data_queue, hash_data);
-
-
-            /**
-             * creating an answer for the client to say that everything went Ok!
-             */
-            answer = answer_json_success_string(MHD_HTTP_OK, _("Ok!"));
-            success = create_MHD_response(connection, answer, CT_PLAIN);
+            success = answer_data_post_request(server_struct, connection, received_data);
         }
     else if (g_str_has_prefix(url, "/Data_Array.json") && received_data != NULL)
         {
             add_one_to_post_url_data_array(server_struct->stats);
-            elapsed = new_clock_t();
-            root = load_json(received_data);
-            end_clock(elapsed, "load_json");
-            hash_data_list = extract_glist_from_array(root, "data_array", FALSE);
-            head = hash_data_list;
-            json_decref(root);
-            debug = get_debug_mode();
-
-            while (hash_data_list != NULL)
-                {
-                    hash_data = hash_data_list->data;
-                    add_hash_size_to_dedup_bytes(server_struct->stats, hash_data);
-
-                    if (debug == TRUE)
-                        {
-                            /* Only for debbugging ! */
-                            print_received_data_for_hash(hash_data->hash, hash_data->read);
-                        }
-
-                    /** Sending hash_data into the queue. */
-                    g_async_queue_push(server_struct->data_queue, hash_data);
-                    hash_data_list = g_list_next(hash_data_list);
-                }
-
-            g_list_free(head);
-
-            /**
-             * creating an answer for the client to say that everything went Ok!
-             */
-
-            answer = answer_json_success_string(MHD_HTTP_OK, _("Ok!"));
-            success = create_MHD_response(connection, answer, CT_PLAIN);
+            success = answer_data_array_post_request(server_struct, connection, received_data);
         }
     else
         {
@@ -1002,7 +1039,6 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
         }
 
     free_compress_t(comp);
-
 
     return success;
 }
