@@ -325,6 +325,7 @@ static hash_data_t *create_one_hash_data_t_from_hash_data_list(GList *hash_data_
     hash_data_t *hash_data = NULL;
     guint8 *binary = NULL;
     guint pos = 0;
+    gshort cmptype = COMPRESS_NONE_TYPE;
 
     data = (guchar *) g_malloc(size);
 
@@ -332,6 +333,7 @@ static hash_data_t *create_one_hash_data_t_from_hash_data_list(GList *hash_data_
     while (hash_data_list != NULL)
         {
             hash_data = hash_data_list->data;
+            cmptype = hash_data->cmptype;    /* We do assume that cmptype is the same for all the list */
 
             memcpy(data + pos, hash_data->data, hash_data->read);
             pos = pos + hash_data->read;
@@ -344,7 +346,7 @@ static hash_data_t *create_one_hash_data_t_from_hash_data_list(GList *hash_data_
      * @todo may be we can manage to have the real hashs from the data
      */
     binary = (guint8 *) g_malloc(HASH_LEN);
-    hash_data = new_hash_data_t(data, size, binary);
+    hash_data = new_hash_data_t(data, size, binary, cmptype);
 
     return hash_data;
 }

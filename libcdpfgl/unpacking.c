@@ -31,6 +31,7 @@
 static guint8 get_guint8_from_json_root(json_t *root, gchar *keyname);
 static guint32 get_guint32_from_json_root(json_t *root, gchar *keyname);
 static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname);
+static gshort get_gshort_from_json_root(json_t *root, gchar *keyname);
 
 /**
  * gets a json_t *value into the json_t *root array.
@@ -189,6 +190,28 @@ static guint64 get_guint64_from_json_root(json_t *root, gchar *keyname)
 
 
 /**
+ * returns the gshort value associated with key keyname from the json tree
+ * root.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we seek the guint64 value.
+ * @returns a guint64 number that is the value associated with key keyname.
+ */
+static gshort get_gshort_from_json_root(json_t *root, gchar *keyname)
+{
+    json_t *value = NULL;
+    gshort number = 0;
+
+    if (root != NULL && keyname != NULL)
+        {
+            value = get_json_value_from_json_root(root, keyname);
+            number = (gshort) json_integer_value(value);
+        }
+
+    return number;
+}
+
+
+/**
  * This function loads a JSON string into a json_t struture
  * @param json_str is the json string
  * @returns a pointer to a filled json_t * structure or NULL upon error
@@ -303,7 +326,7 @@ GList *extract_glist_from_array(json_t *root, gchar *name, gboolean only_hash)
                     if (only_hash == TRUE)
                         {
                             a_hash = g_base64_decode(json_string_value(value), &hash_len);
-                            hash_data = new_hash_data_t(NULL, 0, a_hash);
+                            hash_data = new_hash_data_t(NULL, 0, a_hash, COMPRESS_NONE_TYPE);
                         }
                     else
                         {
@@ -420,6 +443,7 @@ hash_data_t *convert_json_t_to_hash_data(json_t *root)
     gchar *string_read = NULL;
     gchar *string_hash_len = NULL;
     gchar *string_data_len = NULL;
+    gshort cmptype = COMPRESS_NONE_TYPE;
 
     hash_data_t *hash_data = NULL;
 
@@ -430,11 +454,12 @@ hash_data_t *convert_json_t_to_hash_data(json_t *root)
             hash = (guint8 *) g_base64_decode(json_string_value(get_json_value_from_json_root(root, "hash")), &hash_len);
 
             read = get_guint64_from_json_root(root, "size");
+            cmptype = get_gshort_from_json_root(root, "cmptype");
 
             /* Some basic verifications */
             if (data_len == read && hash_len == HASH_LEN)
                 {
-                    hash_data = new_hash_data_t(data, read, hash);
+                    hash_data = new_hash_data_t(data, read, hash, cmptype);
                 }
             else
                 {

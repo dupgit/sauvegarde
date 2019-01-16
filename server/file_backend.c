@@ -893,6 +893,8 @@ hash_data_t *file_retrieve_data(server_struct_t *server_struct, gchar *hex_hash)
                         }
                     else
                         {
+                            /* We need to know the compression type directly from the stored filename */
+                            /* see retreive_data() in server.c */
                             hash_data = new_hash_data_t(data, read, hash);
                         }
 

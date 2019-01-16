@@ -43,6 +43,7 @@ typedef struct
     guint8 *hash;
     guchar *data;
     gssize read;
+    gshort cmptype;  /* tells wether the data here has been compressed or not and what type of compression it is */
 } hash_data_t;
 
 
@@ -106,7 +107,7 @@ extern void free_hdt_struct(gpointer data);
  * Inits and returns a newly hash_data_t structure.
  * @returns a newly created hash_data_t structure.
  */
-extern hash_data_t *new_hash_data_t(guchar * data, gssize read, guint8 *hash);
+extern hash_data_t *new_hash_data_t(guchar * data, gssize read, guint8 *hash, gshort cmptype);
 
 
 /**

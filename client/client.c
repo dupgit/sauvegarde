@@ -215,7 +215,7 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
                             g_checksum_get_digest(checksum, a_hash, &digest_len);
 
                             /* Need to save data and read in hash_data_t structure */
-                            hash_data = new_hash_data_t(buffer, read, a_hash);
+                            hash_data = new_hash_data_t(buffer, read, a_hash, COMPRESS_NONE_TYPE);
 
                             hash_data_list = g_list_prepend(hash_data_list, hash_data);
                             g_checksum_reset(checksum);
@@ -1009,7 +1009,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                     g_checksum_get_digest(checksum, a_hash, &digest_len);
 
                                     /* Need to save 'data', 'read' and digest hash in an hash_data_t structure */
-                                    hash_data = new_hash_data_t(buffer, read, a_hash);
+                                    hash_data = new_hash_data_t(buffer, read, a_hash, COMPRESS_NONE_TYPE);
                                     hash_data_list = g_list_prepend(hash_data_list, hash_data);
 
                                     g_checksum_reset(checksum);

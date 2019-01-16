@@ -239,7 +239,7 @@ void free_hdt_struct(gpointer data)
  * Inits and returns a newly hash_data_t structure.
  * @returns a newly hash_data_t structure.
  */
-hash_data_t *new_hash_data_t(guchar *data, gssize read, guint8 *hash)
+hash_data_t *new_hash_data_t(guchar *data, gssize read, guint8 *hash, gshort cmptype)
 {
     hash_data_t *hash_data = NULL;
 
@@ -249,6 +249,7 @@ hash_data_t *new_hash_data_t(guchar *data, gssize read, guint8 *hash)
     hash_data->hash = hash;
     hash_data->data = data;
     hash_data->read = read;
+    hash_data->cmptype = cmptype;
 
     return hash_data;
 }
@@ -445,7 +446,7 @@ GList *make_hash_data_list_from_string(gchar *hash_string)
                     /* we have to base64 decode it to insert it into the hash_data_t * structure
                      * and then into the meta_data one.
                      */
-                    hash_data = new_hash_data_t(NULL, 0, g_base64_decode(a_hash, &len));
+                    hash_data = new_hash_data_t(NULL, 0, g_base64_decode(a_hash, &len), COMPRESS_NONE_TYPE);
                     hash_list = g_list_prepend(hash_list, hash_data);
                     free_variable(a_hash);
                     i = i + 1;
@@ -512,7 +513,7 @@ gpointer copy_only_hash(gconstpointer src, gpointer user_data)
     g_assert_nonnull(hash_dst);
 
     hash_dst = memcpy(hash_dst, hash_data_src->hash, HASH_LEN);
-    hash_data_dst = new_hash_data_t(NULL, hash_data_src->read, hash_dst);
+    hash_data_dst = new_hash_data_t(NULL, hash_data_src->read, hash_dst, hash_data_src->cmptype);
 
     return hash_data_dst;
 }

@@ -31,6 +31,7 @@
 static void insert_guint8_into_json_root(json_t *root, gchar *keyname, guint8 number);
 static void insert_guint32_into_json_root(json_t *root, gchar *keyname, guint32 number);
 static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 number);
+static void insert_gshort_into_json_root(json_t *root, gchar *keyname, gshort number);
 static json_t *create_json_code(guint32 http_code, gchar *message);
 static json_t *create_json_answer(gchar *type, guint32 http_code, gchar *message);
 
@@ -194,6 +195,24 @@ static void insert_guint64_into_json_root(json_t *root, gchar *keyname, guint64 
 
 
 /**
+ * Inserts the guint64 number into the json tree root with key keyname.
+ * @param[in,out] root is the main json tree
+ * @param keyname is the key for which we will insert a new value
+ * @param number is the value to be inserted with key keyname.
+ */
+static void insert_gshort_into_json_root(json_t *root, gchar *keyname, gshort number)
+{
+    json_t *value = NULL;
+
+    if (root != NULL && keyname != NULL)
+        {
+            value = json_integer(number);
+            insert_json_value_into_json_root(root, keyname, value);
+        }
+}
+
+
+/**
  * Converts the hash list to a json_t * array
  * @param hash_list : the GList * list of hashs
  * @returns a json_t * array with the element of the list in it (if any).
@@ -298,6 +317,7 @@ json_t *convert_hash_data_t_to_json(hash_data_t *hash_data)
             insert_string_into_json_root(root, "hash", encoded_hash);
             insert_string_into_json_root(root, "data", encoded_data);
             insert_guint64_into_json_root(root, "size", hash_data->read);
+            insert_gshort_into_json_root(root, "cmptype", hash_data->cmptype);
             free_variable(encoded_data);
             free_variable(encoded_hash);
         }
