@@ -32,6 +32,7 @@
 #include "server.h"
 
 
+static gchar *build_filename_from_hash(gchar *path, gchar *hex_hash, gshort cmptype, guint level);
 static void make_all_subdirectories(file_backend_t *file_backend);
 static buffer_t *init_buffer_structure(GFileInputStream *stream);
 static void free_buffer_t(buffer_t *a_buffer);
@@ -39,8 +40,8 @@ static void read_one_buffer(buffer_t *a_buffer);
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer);
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query);
 static GList *get_file_list_from_regex_and_query(GFileInputStream *stream, GRegex *a_regex, query_t *query);
-static gshort get_cmptype_used_for_hash(gchar *path, gchar *hex_hash);
-static gshort test_one_compression_type_for_hash(gchar *path, gchar *hex_hash, gshort cmptype);
+static gshort get_cmptype_used_for_hash(gchar *path, gchar *hex_hash, guint level);
+static gshort test_one_compression_type_for_hash(gchar *path, gchar *hex_hash, gshort cmptype, guint level);
 
 /**
  * Stores meta data into a flat file. A file is created for each host that
@@ -146,6 +147,23 @@ void file_store_smeta(server_struct_t *server_struct, server_meta_data_t *smeta)
         }
 }
 
+/**
+ * Builds the filename of a block represented by a hash
+ */
+static gchar *build_filename_from_hash(gchar *path, gchar *hex_hash, gshort cmptype, guint level)
+{
+    gchar *hash_cmp_filename = NULL;
+    gchar *filename = NULL;
+
+    /* Stores compression type in the hash filename's separated by a , */
+    hash_cmp_filename = g_strdup_printf("%s,%hd", hex_hash + level*2, cmptype);
+    filename = g_build_filename(path, hash_cmp_filename, NULL);
+
+    free_variable(hash_cmp_filename);
+
+    return filename;
+}
+
 
 /**
  * Stores data into a flat file. The file is named by its hash in hex
@@ -169,7 +187,6 @@ void file_store_data(server_struct_t *server_struct, hash_data_t *hash_data)
     gchar *hex_hash = NULL;
     gchar *path = NULL;
     gchar *prefix = NULL;
-    gchar *hash_cmp_filename = NULL;
     file_backend_t *file_backend = NULL;
 
     if (server_struct != NULL && server_struct->backend != NULL && server_struct->backend->user_data != NULL)
@@ -181,10 +198,8 @@ void file_store_data(server_struct_t *server_struct, hash_data_t *hash_data)
                 {
                     path = make_path_from_hash(prefix, hash_data->hash, file_backend->level);
                     hex_hash = hash_to_string(hash_data->hash);
-                    /* Stores compression type in the hash filename's separated by a , */
-                    hash_cmp_filename = g_strdup_printf("%s,%hd", hex_hash, hash_data->cmptype);
-                    filename = g_build_filename(path, hash_cmp_filename, NULL);
-                    free_variable(hash_cmp_filename);
+
+                    filename = build_filename_from_hash(path, hex_hash, hash_data->cmptype, file_backend->level);
 
                     data_file = g_file_new_for_path(filename);
                     stream = g_file_replace(data_file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
@@ -852,21 +867,18 @@ gchar *file_get_list_of_files(server_struct_t *server_struct, query_t *query)
  * @param hex_hash is a gchar * hash in hexadecimal format as retrieved
  *        from the url.
  */
-static gshort test_one_compression_type_for_hash(gchar *path, gchar *hex_hash, gshort cmptype)
+static gshort test_one_compression_type_for_hash(gchar *path, gchar *hex_hash, gshort cmptype, guint level)
 {
     gchar *filename = NULL;
-    gchar *filechar = NULL;
     gshort result = -1;
 
-    filechar = g_strdup_printf("%s,%hd", hex_hash, cmptype);
-    filename = g_build_filename(path, filechar, NULL);
+    filename = build_filename_from_hash(path, hex_hash, cmptype, level);
 
     if (file_exists(filename))
         {
             result = cmptype;
         }
 
-    free_variable(filechar);
     free_variable(filename);
 
     return result;
@@ -880,15 +892,15 @@ static gshort test_one_compression_type_for_hash(gchar *path, gchar *hex_hash, g
  * @param hex_hash is a gchar * hash in hexadecimal format as retrieved
  *        from the url.
  */
-static gshort get_cmptype_used_for_hash(gchar *path, gchar *hex_hash)
+static gshort get_cmptype_used_for_hash(gchar *path, gchar *hex_hash, guint level)
 {
    gshort result = -1;
 
-   result = test_one_compression_type_for_hash(path, hex_hash, COMPRESS_ZLIB_TYPE);
+   result = test_one_compression_type_for_hash(path, hex_hash, COMPRESS_ZLIB_TYPE, level);
 
    if (result == -1)
     {
-        result = test_one_compression_type_for_hash(path, hex_hash, COMPRESS_NONE_TYPE);
+        result = test_one_compression_type_for_hash(path, hex_hash, COMPRESS_NONE_TYPE, level);
     }
 
    return result;
@@ -914,7 +926,6 @@ hash_data_t *file_retrieve_data(server_struct_t *server_struct, gchar *hex_hash)
     gchar *string_read = NULL;
     gchar *path = NULL;
     gchar *prefix = NULL;
-    gchar *filechar = NULL;
     file_backend_t *file_backend = NULL;
     hash_data_t *hash_data = NULL;
     guchar *data = NULL;
@@ -929,9 +940,8 @@ hash_data_t *file_retrieve_data(server_struct_t *server_struct, gchar *hex_hash)
             prefix = g_build_filename((gchar *) file_backend->prefix, "data", NULL);
             hash = string_to_hash(hex_hash);
             path = make_path_from_hash(prefix, hash, file_backend->level);
-            cmptype = get_cmptype_used_for_hash(path, hex_hash);
-            filechar = g_strdup_printf("%s,%hd", hex_hash, cmptype);
-            filename = g_build_filename(path, filechar, NULL);
+            cmptype = get_cmptype_used_for_hash(path, hex_hash, file_backend->level);
+            filename = build_filename_from_hash(path, hex_hash, cmptype, file_backend->level);
             data_file = g_file_new_for_path(filename);
             stream = g_file_read(data_file, NULL, &error);
 
