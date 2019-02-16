@@ -318,6 +318,7 @@ json_t *convert_hash_data_t_to_json(hash_data_t *hash_data)
             insert_string_into_json_root(root, "data", encoded_data);
             insert_guint64_into_json_root(root, "size", hash_data->read);
             insert_gshort_into_json_root(root, "cmptype", hash_data->cmptype);
+            insert_guint64_into_json_root(root, "uncmpsize", hash_data->uncmplen);
             free_variable(encoded_data);
             free_variable(encoded_hash);
         }

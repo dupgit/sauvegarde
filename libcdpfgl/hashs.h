@@ -42,8 +42,9 @@ typedef struct
 {
     guint8 *hash;
     guchar *data;
-    gssize read;
+    gssize read;     /* Always the lenght of *data buffer (compressed or not) */
     gshort cmptype;  /* tells wether the data here has been compressed or not and what type of compression it is */
+    gssize uncmplen; /* The length of the uncompressed buffer if it has been compressed */
 } hash_data_t;
 
 
@@ -104,11 +105,18 @@ extern void free_hdt_struct(gpointer data);
 
 
 /**
- * Inits and returns a newly hash_data_t structure.
+ * Inits and returns a newly hash_data_t structure. (and compresses data if cmptype is
+ * a compression type such as COMPRESS_ZLIB_TYPE.
  * @returns a newly created hash_data_t structure.
  */
 extern hash_data_t *new_hash_data_t(guchar * data, gssize read, guint8 *hash, gshort cmptype);
 
+/**
+ * Inits and returns a newly hash_data_t structure filed with the value as stated and
+ * does nothing with the data
+ * @returns a newly created hash_data_t structure.
+ */
+extern hash_data_t *new_hash_data_t_as_is(guchar * data, gssize read, guint8 *hash, gshort cmptype, gssize uncmplen);
 
 /**
  * Converts the hash list to a list of comma separated hashs in one gchar *

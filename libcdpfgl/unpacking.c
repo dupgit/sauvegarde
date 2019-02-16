@@ -441,9 +441,11 @@ hash_data_t *convert_json_t_to_hash_data(json_t *root)
     gsize hash_len = 0;
     gssize read = 0;
     gchar *string_read = NULL;
+    gchar *string_uncmplen = NULL;
     gchar *string_hash_len = NULL;
     gchar *string_data_len = NULL;
     gshort cmptype = COMPRESS_NONE_TYPE;
+    gssize uncmplen = 0;
 
     hash_data_t *hash_data = NULL;
 
@@ -452,14 +454,14 @@ hash_data_t *convert_json_t_to_hash_data(json_t *root)
             /* This code is 10% faster then the older one (which was clearer) */
             data = (guchar *) g_base64_decode(json_string_value(get_json_value_from_json_root(root, "data")), &data_len);
             hash = (guint8 *) g_base64_decode(json_string_value(get_json_value_from_json_root(root, "hash")), &hash_len);
-
             read = get_guint64_from_json_root(root, "size");
+            uncmplen = get_guint64_from_json_root(root, "uncmpsize");
             cmptype = get_gshort_from_json_root(root, "cmptype");
 
             /* Some basic verifications */
             if (data_len == read && hash_len == HASH_LEN)
                 {
-                    hash_data = new_hash_data_t(data, read, hash, cmptype);
+                    hash_data = new_hash_data_t_as_is(data, read, hash, cmptype, uncmplen);
                 }
             else
                 {
@@ -471,12 +473,14 @@ hash_data_t *convert_json_t_to_hash_data(json_t *root)
                     string_data_len = g_strdup_printf("%" G_GSIZE_FORMAT, data_len);
                     string_hash_len = g_strdup_printf("%" G_GSIZE_FORMAT, hash_len);
                     string_read = g_strdup_printf("%" G_GSSIZE_FORMAT, read);
+                    string_uncmplen = g_strdup_printf("%" G_GSSIZE_FORMAT, uncmplen);
 
-                    print_error(__FILE__, __LINE__, _("Something is wrong with lengths: data_len = %s, read = %s, hash_len = %s, HASH_LEN = %d\n"), string_data_len, string_read, string_hash_len, HASH_LEN);
+                    print_error(__FILE__, __LINE__, _("Something is wrong with lengths: data_len = %s, read = %s, uncmplen = %s, hash_len = %s, HASH_LEN = %d\n"), string_data_len, string_read, string_uncmplen, string_hash_len, HASH_LEN);
 
                     free_variable(string_data_len);
                     free_variable(string_hash_len);
                     free_variable(string_read);
+                    free_variable(string_uncmplen);
                 }
         }
 

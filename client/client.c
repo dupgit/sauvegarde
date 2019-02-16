@@ -33,7 +33,7 @@
 static GSList *make_regex_exclude_list(GSList *exclude_list);
 static gboolean exclude_file(GSList *regex_exclude_list, gchar *filename);
 static main_struct_t *init_main_structure(options_t *opt);
-static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize);
+static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize, gshort cmptype);
 static meta_data_t *get_meta_data_from_fileinfo(file_event_t *file_event, filter_file_t *filter, options_t *opt);
 static gchar *send_meta_data_to_server(main_struct_t *main_struct, meta_data_t *meta, gboolean data_sent);
 static GList *find_hash_in_list(GList *hash_data_list, guint8 *hash);
@@ -184,7 +184,7 @@ static main_struct_t *init_main_structure(options_t *opt)
  * @param blocksize is the blocksize to be used to calculate hashs upon.
  * @returns a GSList * list of hashs stored in a binary form.
  */
-static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
+static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize, gshort cmptype)
 {
     GFileInputStream *stream = NULL;
     GError *error = NULL;
@@ -215,7 +215,7 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize)
                             g_checksum_get_digest(checksum, a_hash, &digest_len);
 
                             /* Need to save data and read in hash_data_t structure */
-                            hash_data = new_hash_data_t(buffer, read, a_hash, COMPRESS_NONE_TYPE);
+                            hash_data = new_hash_data_t(buffer, read, a_hash, cmptype);
 
                             hash_data_list = g_list_prepend(hash_data_list, hash_data);
                             g_checksum_reset(checksum);
@@ -831,11 +831,13 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
     gchar *answer = NULL;
     gint success = 0;      /** success returns a CURL Error status such as CURLE_OK for instance */
     a_clock_t *mesure_time = NULL;
+    gshort cmptype = COMPRESS_NONE_TYPE;
 
     g_assert_nonnull(main_struct);
 
     if (main_struct->opt != NULL && meta != NULL)
         {
+            cmptype = main_struct->opt->cmptype;
 
             print_debug(_("Processing small file: %s\n"), meta->name);
 
@@ -845,7 +847,7 @@ static void process_small_file_not_in_cache(main_struct_t *main_struct, meta_dat
 
                     /* Calculates hashs and takes care of data */
                     a_file = g_file_new_for_path(meta->name);
-                    meta->hash_data_list = calculate_hash_data_list_for_file(a_file, meta->blocksize);
+                    meta->hash_data_list = calculate_hash_data_list_for_file(a_file, meta->blocksize, cmptype);
                     free_object(a_file);
 
                     end_clock(mesure_time, "calculate_hash_data_list");
@@ -981,11 +983,14 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
     gsize digest_len = HASH_LEN;
     gsize read_bytes = 0;
     a_clock_t *elapsed = NULL;
+    gshort cmptype = COMPRESS_NONE_TYPE;
 
     g_assert_nonnull(main_struct);
 
     if (main_struct->opt != NULL && meta != NULL)
         {
+            cmptype = main_struct->opt->cmptype;
+
             a_file = g_file_new_for_path(meta->name);
             print_debug(_("Processing file: %s\n"), meta->name);
 
@@ -1009,7 +1014,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                     g_checksum_get_digest(checksum, a_hash, &digest_len);
 
                                     /* Need to save 'data', 'read' and digest hash in an hash_data_t structure */
-                                    hash_data = new_hash_data_t(buffer, read, a_hash, COMPRESS_NONE_TYPE);
+                                    hash_data = new_hash_data_t(buffer, read, a_hash, cmptype);
                                     hash_data_list = g_list_prepend(hash_data_list, hash_data);
 
                                     g_checksum_reset(checksum);

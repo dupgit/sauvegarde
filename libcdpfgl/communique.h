@@ -175,4 +175,16 @@ extern void free_comm_t(comm_t *comm);
  */
 extern gchar *create_x_get_hash_array_http_header(hash_extract_t *hash_extract, guint max);
 
+
+/**
+ * Concatenates buffer with buf1: puts buf1 at 'pos' position of buffer
+ * @param buffer is a gchar * string that may be NULL terminated or not
+ * @param pos is the position where to put buf1 (should be length of buffer)
+ * @param buf1 is a gchar * string that may be NULL terminated or not
+ * @param len is the len of buf1 (at least the number of bytes to concatenate
+ * @returns a newly allocated gchar * string that may be (or not) NULL
+ *          terminated and that contains buffer followed by buf1.
+ */
+extern gchar *concat_buffer(gchar *buffer, guint64 pos, gchar *buf1, size_t len);
+
 #endif /* #ifndef _COMMUNIQUE_H_ */

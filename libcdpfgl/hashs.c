@@ -242,18 +242,54 @@ void free_hdt_struct(gpointer data)
 hash_data_t *new_hash_data_t(guchar *data, gssize read, guint8 *hash, gshort cmptype)
 {
     hash_data_t *hash_data = NULL;
+    compress_t *compress = NULL;
 
     hash_data = (hash_data_t *) g_malloc(sizeof(hash_data_t));
     g_assert_nonnull(hash_data);
 
+    if (cmptype != COMPRESS_NONE_TYPE && data != NULL)
+        {
+            compress = compress_buffer((gchar *)data, (gint) cmptype);
+            hash_data->data = (guchar *) compress->text;
+            hash_data->read = compress->len;
+            hash_data->uncmplen = read;
+            free_variable(compress); /* do not free compress->text as its reference is now used in hash_data->data. */
+            free_variable(data);     /* This variable is not used here and it's reference may be lost in that case. */
+        }
+    else
+        {
+            hash_data->data = data;
+            hash_data->read = read;
+            hash_data->uncmplen = read;
+        }
+
     hash_data->hash = hash;
-    hash_data->data = data;
-    hash_data->read = read;
     hash_data->cmptype = cmptype;
 
     return hash_data;
 }
 
+
+/**
+ * Inits and returns a newly hash_data_t structure filed with the value as stated and
+ * does nothing with the data
+ * @returns a newly created hash_data_t structure.
+ */
+hash_data_t *new_hash_data_t_as_is(guchar * data, gssize read, guint8 *hash, gshort cmptype, gssize uncmplen)
+{
+    hash_data_t *hash_data = NULL;
+
+    hash_data = (hash_data_t *) g_malloc(sizeof(hash_data_t));
+    g_assert_nonnull(hash_data);
+
+    hash_data->data = data;
+    hash_data->read = read;
+    hash_data->uncmplen = uncmplen;
+    hash_data->hash = hash;
+    hash_data->cmptype = cmptype;
+
+    return hash_data;
+}
 
 /**
  * Converts the hash list to a list of comma separated hashs in one gchar *
@@ -514,6 +550,7 @@ gpointer copy_only_hash(gconstpointer src, gpointer user_data)
 
     hash_dst = memcpy(hash_dst, hash_data_src->hash, HASH_LEN);
     hash_data_dst = new_hash_data_t(NULL, hash_data_src->read, hash_dst, hash_data_src->cmptype);
+    hash_data_dst->uncmplen = hash_data_src->uncmplen;
 
     return hash_data_dst;
 }

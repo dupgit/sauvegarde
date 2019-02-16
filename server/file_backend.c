@@ -965,7 +965,7 @@ hash_data_t *file_retrieve_data(server_struct_t *server_struct, gchar *hex_hash)
                         {
                             /* We need to know the compression type directly from the stored filename */
                             /* see retreive_data() in server.c */
-                            hash_data = new_hash_data_t(data, read, hash, cmptype);
+                            hash_data = new_hash_data_t_as_is(data, read, hash, cmptype, uncmplen);
                         }
 
                     g_input_stream_close((GInputStream *) stream, NULL, &error);

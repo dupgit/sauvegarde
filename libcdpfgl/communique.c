@@ -115,7 +115,7 @@ static gchar *copy_buffer(void *buffer, size_t len)
  * @returns a newly allocated gchar * string that may be (or not) NULL
  *          terminated and that contains buffer followed by buf1.
  */
-static gchar *concat_buffer(gchar *buffer, guint64 pos, gchar *buf1, size_t len)
+gchar *concat_buffer(gchar *buffer, guint64 pos, gchar *buf1, size_t len)
 {
     gchar *concat = NULL;
 

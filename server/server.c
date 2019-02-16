@@ -368,12 +368,15 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
     gchar *hash = NULL;
     GList *head = NULL;
     GList *header_hdl = NULL;
-    GList *hash_data_list = NULL;
     hash_data_t *header_hd = NULL;
     hash_data_t *hash_data = NULL;
     backend_t *backend = server_struct->backend;
     guint size = 0;
+    guint buffer_len = 0;
+    gchar *concat = NULL;
+    gchar *final_buffer = NULL;
     a_clock_t *a_clock = NULL;
+    compress_t *compress = NULL;
 
 
     a_clock = new_clock_t();
@@ -389,26 +392,36 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
             hash = hash_to_string(header_hd->hash);
             hash_data = backend->retrieve_data(server_struct, hash);
             free_variable(hash);
-            size = size + hash_data->read;
-            hash_data_list = g_list_prepend(hash_data_list, hash_data);
+
+            if (hash_data->cmptype == COMPRESS_NONE_TYPE)
+                {
+                    concat = concat_buffer(final_buffer, size, (gchar *) hash_data->data, hash_data->read);
+                    buffer_len = hash_data->read;
+                }
+            else
+                {
+                    compress = uncompress_buffer((gchar *) hash_data->data, hash_data->read, hash_data->uncmplen, hash_data->cmptype);
+                    concat = concat_buffer(final_buffer, size, compress->text, compress->len);
+                    buffer_len = compress->len;
+                    free_compress_t(compress);
+                }
+
+            size = size + buffer_len;
+            free_variable(final_buffer);
+            final_buffer = concat;
+            free_hash_data_t(hash_data);
+
             header_hdl = g_list_next(header_hdl);
         }
     end_clock(a_clock, "Read all files");
 
-    a_clock = new_clock_t();
+    hash_data = new_hash_data_t_as_is((guchar *) final_buffer, size, NULL, COMPRESS_NONE_TYPE, size);
     g_list_free_full(head, free_hdt_struct);
-    hash_data_list = g_list_reverse(hash_data_list);
-
-    head = hash_data_list;
-
-    hash_data = create_one_hash_data_t_from_hash_data_list(hash_data_list, size);
-
-    g_list_free_full(head, free_hdt_struct);
-    end_clock(a_clock, "Concatenated all data");
 
     a_clock = new_clock_t();
     answer = convert_hash_data_t_to_string(hash_data);
     free_hash_data_t(hash_data);
+
     end_clock(a_clock, "Transformed into a JSON string");
 
     return answer;
