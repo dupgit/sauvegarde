@@ -45,6 +45,13 @@
 #define FILE_BACKEND_LEVEL (2)
 
 /**
+ * To store meta data of the hash file.
+ */
+#define GN_META ("Meta")
+#define KN_UNCMPLEN ("uncmplen")
+
+
+/**
  * @struct file_backend_t
  * @brief Structure that contains everything needed by file backend.
  *

@@ -377,7 +377,9 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
     gchar *final_buffer = NULL;
     a_clock_t *a_clock = NULL;
     compress_t *compress = NULL;
-
+    GChecksum *digest = NULL;
+    guint8 *a_hash = NULL;
+    gsize digest_len = HASH_LEN;
 
     a_clock = new_clock_t();
     header = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, X_GET_HASH_ARRAY);
@@ -390,35 +392,60 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
         {
             header_hd = header_hdl->data;
             hash = hash_to_string(header_hd->hash);
+            print_debug("Retrieving: %s - ", hash);
             hash_data = backend->retrieve_data(server_struct, hash);
             free_variable(hash);
 
-            if (hash_data->cmptype == COMPRESS_NONE_TYPE)
+            if (hash_data != NULL)
                 {
-                    concat = concat_buffer(final_buffer, size, (gchar *) hash_data->data, hash_data->read);
-                    buffer_len = hash_data->read;
-                }
-            else
-                {
-                    compress = uncompress_buffer((gchar *) hash_data->data, hash_data->read, hash_data->uncmplen, hash_data->cmptype);
-                    concat = concat_buffer(final_buffer, size, compress->text, compress->len);
-                    buffer_len = compress->len;
-                    free_compress_t(compress);
-                }
 
-            size = size + buffer_len;
-            free_variable(final_buffer);
-            final_buffer = concat;
-            free_hash_data_t(hash_data);
+                    if (hash_data->cmptype == COMPRESS_NONE_TYPE)
+                        {
+                            concat = concat_buffer(final_buffer, size, (gchar *) hash_data->data, hash_data->read);
+                            buffer_len = hash_data->read;
+                        }
+                    else
+                        {
+                            print_debug("uncompress_buffer(%p, %ld, %ld, %hd)\n", hash_data->data, hash_data->read, hash_data->uncmplen, hash_data->cmptype);
+                            compress = uncompress_buffer((gchar *) hash_data->data, hash_data->read, hash_data->uncmplen, hash_data->cmptype);
+
+                            if (compress != NULL)
+                                {
+                                    concat = concat_buffer(final_buffer, size, compress->text, compress->len);
+                                    buffer_len = compress->len;
+                                    print_debug("buffer: %s, buffer_len: %ld and uncmplen: %ld and size: %ld\n", compress->text, buffer_len, hash_data->uncmplen, size);
+                                    free_compress_t(compress);
+                                }
+                            else
+                                {
+                                    print_error(__FILE__, __LINE__, _("Error while uncompressing one block.\n"));
+                                }
+                        }
+
+                    size = size + buffer_len;
+
+                    free_variable(final_buffer);
+                    final_buffer = concat;
+                    free_hash_data_t(hash_data);
+                }
 
             header_hdl = g_list_next(header_hdl);
         }
+    g_list_free_full(head, free_hdt_struct);
     end_clock(a_clock, "Read all files");
 
-    hash_data = new_hash_data_t_as_is((guchar *) final_buffer, size, NULL, COMPRESS_NONE_TYPE, size);
-    g_list_free_full(head, free_hdt_struct);
-
     a_clock = new_clock_t();
+
+    /* Calculates cheksum for final_buffer */
+    a_hash = (guint8 *) g_malloc(digest_len);
+    digest = g_checksum_new(G_CHECKSUM_SHA256);
+    g_checksum_update(digest, (const guchar *) final_buffer, size);
+    g_checksum_get_digest(digest, a_hash, &digest_len);
+    g_checksum_free(digest);
+
+    print_debug("final_buffer size: %ld\n", size);
+
+    hash_data = new_hash_data_t_as_is((guchar *) final_buffer, size, a_hash, COMPRESS_NONE_TYPE, size);
     answer = convert_hash_data_t_to_string(hash_data);
     free_hash_data_t(hash_data);
 
@@ -679,6 +706,7 @@ static int process_get_request(server_struct_t *server_struct, struct MHD_Connec
     int success = MHD_NO;
     gchar *answer = NULL;
     gchar *content_type = NULL;
+    gchar * message = NULL;
 
     g_assert_nonnull(server_struct);
 
@@ -710,11 +738,20 @@ static int process_get_request(server_struct_t *server_struct, struct MHD_Connec
                     content_type = CT_PLAIN;
                 }
 
-                /* reset when done */
-                *con_cls = NULL;
+            /* reset when done */
+            *con_cls = NULL;
 
-                /* Do not free answer variable as MHD will do it for us ! */
-                success = create_MHD_response(connection, answer, content_type);
+            if (answer == NULL)
+                {
+                    message = g_strdup_printf(_("Error: could not process GET request for url: %s\n"), url);
+                    answer = answer_json_error_string(MHD_HTTP_INTERNAL_SERVER_ERROR, message);
+                    free_variable(message);
+                }
+
+            /* Do not free answer variable as MHD will do it for us ! */
+            success = create_MHD_response(connection, answer, content_type);
+
+
         }
 
     return success;

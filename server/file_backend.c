@@ -147,8 +147,13 @@ void file_store_smeta(server_struct_t *server_struct, server_meta_data_t *smeta)
         }
 }
 
+
 /**
  * Builds the filename of a block represented by a hash
+ * @param path is the whole path.
+ * @param hex_hash the hash to be stored / retrieved.
+ * @param cmptype is the compression type (COMPRESS_NONE_TYPE, COMPRESS_ZLIB_TYPE).
+ * @param level is the level chosen to store hashs.
  */
 static gchar *build_filename_from_hash(gchar *path, gchar *hex_hash, gshort cmptype, guint level)
 {
@@ -162,6 +167,44 @@ static gchar *build_filename_from_hash(gchar *path, gchar *hex_hash, gshort cmpt
     free_variable(hash_cmp_filename);
 
     return filename;
+}
+
+
+static gssize get_uncmplen_from_file_meta(gchar *filename)
+{
+    gchar *filename_meta = NULL;
+    GKeyFile *keyfile = NULL;
+    GError *error = NULL;
+    gssize uncmplen = 0;
+
+    filename_meta = g_strdup_printf("%s.meta", filename);
+    keyfile = g_key_file_new();
+
+    if (g_key_file_load_from_file(keyfile, filename_meta, G_KEY_FILE_KEEP_COMMENTS, &error))
+        {
+            uncmplen = read_int64_from_file(keyfile, filename_meta, GN_META, KN_UNCMPLEN, _("Error while reading uncmplen value"), 0);
+        }
+
+    g_key_file_free(keyfile);
+
+    return uncmplen;
+}
+
+
+static void set_uncmplen_to_file_meta(gchar *filename, gssize uncmplen)
+{
+    gchar *filename_meta = NULL;
+    GKeyFile *keyfile = NULL;
+    GError *error = NULL;
+
+    filename_meta = g_strdup_printf("%s.meta", filename);
+    keyfile = g_key_file_new();
+
+    g_key_file_set_int64(keyfile, GN_META, KN_UNCMPLEN, uncmplen);
+
+    g_key_file_save_to_file(keyfile, filename_meta, &error);
+
+    g_key_file_free(keyfile);
 }
 
 
@@ -200,6 +243,7 @@ void file_store_data(server_struct_t *server_struct, hash_data_t *hash_data)
                     hex_hash = hash_to_string(hash_data->hash);
 
                     filename = build_filename_from_hash(path, hex_hash, hash_data->cmptype, file_backend->level);
+                    set_uncmplen_to_file_meta(filename, hash_data->uncmplen);
 
                     data_file = g_file_new_for_path(filename);
                     stream = g_file_replace(data_file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
@@ -304,8 +348,6 @@ GList *file_build_needed_hash_list(server_struct_t *server_struct, GList *hash_d
 
     return needed;
 }
-
-
 
 
 /**
@@ -628,9 +670,6 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
 }
 
 
-
-
-
 /**
  * Extracts all meta data from one line.
  * @param line is the line that has been read.
@@ -922,7 +961,7 @@ hash_data_t *file_retrieve_data(server_struct_t *server_struct, gchar *hex_hash)
     gchar *filename = NULL;
     GFileInputStream *stream = NULL;
     GError *error = NULL;
-    gssize read = 0;
+    gssize size_read = 0;
     gchar *string_read = NULL;
     gchar *path = NULL;
     gchar *prefix = NULL;
@@ -932,6 +971,7 @@ hash_data_t *file_retrieve_data(server_struct_t *server_struct, gchar *hex_hash)
     guint8 *hash = NULL;
     guint64 filesize = 0;
     gshort cmptype = 0;
+    gssize uncmplen = 0;
 
 
     if (server_struct != NULL && server_struct->backend != NULL && server_struct->backend->user_data != NULL)
@@ -952,11 +992,11 @@ hash_data_t *file_retrieve_data(server_struct_t *server_struct, gchar *hex_hash)
                      * may not be too big: as large as the biggest CLIENT_BUFFER_SIZE. */
                     data = (guchar *) g_malloc(filesize + 1);   /* No need to do g_malloc0  because data is binary data */
 
-                    read = g_input_stream_read((GInputStream *) stream, data, filesize, NULL, &error);
+                    size_read = g_input_stream_read((GInputStream *) stream, data, filesize, NULL, &error);
 
                     if (error != NULL)
                         {
-                            string_read = g_strdup_printf("%"G_GSSIZE_FORMAT, read);
+                            string_read = g_strdup_printf("%"G_GSSIZE_FORMAT, size_read);
                             print_error(__FILE__, __LINE__, _("Error: unable to read from file %s (%s bytes read): %s.\n"), filename, string_read, error->message);
                             free_variable(string_read);
                             free_error(error);
@@ -964,8 +1004,10 @@ hash_data_t *file_retrieve_data(server_struct_t *server_struct, gchar *hex_hash)
                     else
                         {
                             /* We need to know the compression type directly from the stored filename */
+                            uncmplen = get_uncmplen_from_file_meta(filename);
+
                             /* see retreive_data() in server.c */
-                            hash_data = new_hash_data_t_as_is(data, read, hash, cmptype, uncmplen);
+                            hash_data = new_hash_data_t_as_is(data, size_read, hash, cmptype, uncmplen);
                         }
 
                     g_input_stream_close((GInputStream *) stream, NULL, &error);

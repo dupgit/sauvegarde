@@ -106,21 +106,27 @@ static void zlib_print_error(char *filename, int lineno, int ret)
         {
             case Z_ERRNO:
                 if (ferror(stdin))
-                    print_error(filename, lineno, _("Error reading stdin."));
+                    print_error(filename, lineno, _("Error reading stdin.\n"));
                 if (ferror(stdout))
-                    print_error(filename, lineno, _("Error writing stdout."));
+                    print_error(filename, lineno, _("Error writing stdout.\n"));
                 break;
             case Z_STREAM_ERROR:
-                print_error(filename, lineno, _("Error: invalid compression level."));
+                print_error(filename, lineno, _("Error: invalid compression level.\n"));
                 break;
             case Z_DATA_ERROR:
-                print_error(filename, lineno, _("Error: invalid or incomplete deflate data."));
+                print_error(filename, lineno, _("Error: invalid or incomplete deflate data.\n"));
                 break;
             case Z_MEM_ERROR:
-                print_error(filename, lineno, "Error: out of memory.");
+                print_error(filename, lineno, _("Error: out of memory.\n"));
+                break;
+            case Z_BUF_ERROR:
+                print_error(filename, lineno, _("Error: buffer error.\n"));
                 break;
             case Z_VERSION_ERROR:
-                print_error(filename, lineno, "Error: zlib version mismatch!");
+                print_error(filename, lineno, _("Error: zlib version mismatch.\n"));
+                break;
+            default:
+                print_error(filename, lineno, _("Error: zlib unknown error.\n"));
         }
 }
 
@@ -151,9 +157,18 @@ static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer)
 
             if (ret != Z_OK)
                 {
-                    zlib_print_error(__FILE__, __LINE__, ret);
-                    free_compress_t(comp);
-                    comp = NULL;
+                    if (ret != Z_BUF_ERROR)
+                        {
+                            zlib_print_error(__FILE__, __LINE__, ret);
+                            free_compress_t(comp);
+                            comp = NULL;
+                        }
+                    else if (comp != NULL)
+                        {
+                            comp->text = (gchar *) destbuffer;
+                            comp->len = destlen;
+                            comp->comp = TRUE;
+                        }
                 }
             else if (comp != NULL)
                 {
@@ -182,7 +197,9 @@ compress_t *uncompress_buffer(gchar *buffer, guint64 cmplen, guint64 textlen, gi
 
     comp = init_compress_t();
 
-    if (type == COMPRESS_ZLIB_TYPE && comp != NULL)
+    g_assert_nonnull(comp);
+
+    if (type == COMPRESS_ZLIB_TYPE)
         {
             comp->text = buffer;
             comp->len = cmplen;
@@ -219,13 +236,23 @@ static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len)
 
             ret = uncompress(destbuffer, &destlen, srcbuffer, sourcelen);
 
-            /* print_debug("ret : %d - Buffer (size %ld) uncompressed into a buffer (size %ld)\n", ret, sourcelen, destlen); */
+            print_debug("ret : %d - Buffer (size %ld) uncompressed into a buffer (size %ld)\n", ret, sourcelen, destlen);
 
             if (ret != Z_OK)
                 {
-                    zlib_print_error(__FILE__, __LINE__, ret);
-                    free_compress_t(comp);
-                    comp = NULL;
+                    if (ret != Z_BUF_ERROR)
+                        {
+                            zlib_print_error(__FILE__, __LINE__, ret);
+                            free_compress_t(comp);
+                            comp = NULL;
+                        }
+                    else if (comp != NULL)
+                        {
+                            comp->text = (gchar *) destbuffer;
+                            comp->text[destlen] = '\0';
+                            comp->len = destlen;
+                            comp->comp = FALSE;
+                        }
                 }
             else
                 {
