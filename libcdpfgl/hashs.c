@@ -482,7 +482,7 @@ GList *make_hash_data_list_from_string(gchar *hash_string)
                     /* we have to base64 decode it to insert it into the hash_data_t * structure
                      * and then into the meta_data one.
                      */
-                    hash_data = new_hash_data_t(NULL, 0, g_base64_decode(a_hash, &len), COMPRESS_NONE_TYPE);
+                    hash_data = new_hash_data_t_as_is(NULL, 0, g_base64_decode(a_hash, &len), COMPRESS_NONE_TYPE, 0);
                     hash_list = g_list_prepend(hash_list, hash_data);
                     free_variable(a_hash);
                     i = i + 1;
@@ -549,9 +549,32 @@ gpointer copy_only_hash(gconstpointer src, gpointer user_data)
     g_assert_nonnull(hash_dst);
 
     hash_dst = memcpy(hash_dst, hash_data_src->hash, HASH_LEN);
-    hash_data_dst = new_hash_data_t(NULL, hash_data_src->read, hash_dst, hash_data_src->cmptype);
-    hash_data_dst->uncmplen = hash_data_src->uncmplen;
+    hash_data_dst = new_hash_data_t_as_is(NULL, hash_data_src->read, hash_dst, hash_data_src->cmptype, hash_data_src->uncmplen);
 
     return hash_data_dst;
 }
 
+
+/**
+ * Calculates a hash for the buffer string buffer with size bytes long
+ * @param buffer is a buffer thut may contain \0 bytes
+ * @param size is the size that we want to be taken into account to
+ *             calculate the hash of the buffer.
+ * @returns a newly allocatted guint8 * hash that may be freed when no
+ *          longer needed.
+ */
+guint8 *calculate_hash_for_string(guchar *buffer, guint size)
+{
+    GChecksum *digest = NULL;
+    guint8 *a_hash = NULL;
+    gsize digest_len = HASH_LEN;
+
+    /* Calculates cheksum for final_buffer */
+    a_hash = (guint8 *) g_malloc(digest_len);
+    digest = g_checksum_new(G_CHECKSUM_SHA256);
+    g_checksum_update(digest, (const guchar *) buffer, size);
+    g_checksum_get_digest(digest, a_hash, &digest_len);
+    g_checksum_free(digest);
+
+    return a_hash;
+}

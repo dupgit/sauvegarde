@@ -48,7 +48,7 @@
  */
 typedef struct
 {
-    gchar *text;    /* Text (may be plain or compressed) */
+    guchar *text;   /* Text (may be plain or compressed) */
     guint64 len;    /* Length of text string above       */
     gboolean comp;  /* True if text is compressed        */
 } compress_t;
@@ -88,7 +88,7 @@ extern compress_t *compress_buffer(gchar *buffer, gint type);
  * @returns a compress_t structure containing a compressed text
  *          buffer.
  */
-extern compress_t *uncompress_buffer(gchar *buffer, guint64 cmplen, guint64 textlen, gint type);
+extern compress_t *uncompress_buffer(guchar *buffer, guint64 cmplen, guint64 textlen, gint type);
 
 
 /**

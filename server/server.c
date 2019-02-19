@@ -45,10 +45,10 @@ static gchar *get_unformatted_answer(server_struct_t *server_struct, const char 
 static int create_MHD_response(struct MHD_Connection *connection, gchar *answer, gchar *content_type);
 static int process_get_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls);
 static json_t *find_needed_hashs(server_struct_t *server_struct, GList *hash_data_list);
-static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data, guint64 length);
-static int answer_hash_array_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data);
+static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, guchar *received_data, guint64 length);
+static int answer_hash_array_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, guchar *received_data);
 static void print_received_data_for_hash(guint8 *hash, gssize read);
-static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, gchar *received_data, guint64 length);
+static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, guchar *received_data, guint64 length);
 static guint64 get_header_content_length(struct MHD_Connection *connection, gchar *header, guint64 default_value);
 static gshort get_header_compression_type(struct MHD_Connection *connection);
 static int process_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size);
@@ -341,11 +341,7 @@ static hash_data_t *create_one_hash_data_t_from_hash_data_list(GList *hash_data_
             hash_data_list = g_list_next(hash_data_list);
         }
 
-    /**
-     * We need a fake hash here in order to be able to make the json string
-     * @todo may be we can manage to have the real hashs from the data
-     */
-    binary = (guint8 *) g_malloc(HASH_LEN);
+    binary = calculate_hash_for_string(data, size);
     hash_data = new_hash_data_t(data, size, binary, cmptype);
 
     return hash_data;
@@ -373,13 +369,12 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
     backend_t *backend = server_struct->backend;
     guint size = 0;
     guint buffer_len = 0;
-    gchar *concat = NULL;
-    gchar *final_buffer = NULL;
+    guchar *concat = NULL;
+    guchar *final_buffer = NULL;
     a_clock_t *a_clock = NULL;
     compress_t *compress = NULL;
-    GChecksum *digest = NULL;
     guint8 *a_hash = NULL;
-    gsize digest_len = HASH_LEN;
+
 
     a_clock = new_clock_t();
     header = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, X_GET_HASH_ARRAY);
@@ -401,13 +396,13 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
 
                     if (hash_data->cmptype == COMPRESS_NONE_TYPE)
                         {
-                            concat = concat_buffer(final_buffer, size, (gchar *) hash_data->data, hash_data->read);
+                            concat = concat_buffer(final_buffer, size, hash_data->data, hash_data->read);
                             buffer_len = hash_data->read;
                         }
                     else
                         {
                             print_debug("uncompress_buffer(%p, %ld, %ld, %hd)\n", hash_data->data, hash_data->read, hash_data->uncmplen, hash_data->cmptype);
-                            compress = uncompress_buffer((gchar *) hash_data->data, hash_data->read, hash_data->uncmplen, hash_data->cmptype);
+                            compress = uncompress_buffer(hash_data->data, hash_data->read, hash_data->uncmplen, hash_data->cmptype);
 
                             if (compress != NULL)
                                 {
@@ -436,15 +431,8 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
 
     a_clock = new_clock_t();
 
-    /* Calculates cheksum for final_buffer */
-    a_hash = (guint8 *) g_malloc(digest_len);
-    digest = g_checksum_new(G_CHECKSUM_SHA256);
-    g_checksum_update(digest, (const guchar *) final_buffer, size);
-    g_checksum_get_digest(digest, a_hash, &digest_len);
-    g_checksum_free(digest);
-
     print_debug("final_buffer size: %ld\n", size);
-
+    a_hash = calculate_hash_for_string(final_buffer, size);
     hash_data = new_hash_data_t_as_is((guchar *) final_buffer, size, a_hash, COMPRESS_NONE_TYPE, size);
     answer = convert_hash_data_t_to_string(hash_data);
     free_hash_data_t(hash_data);
@@ -800,18 +788,18 @@ static json_t *find_needed_hashs(server_struct_t *server_struct, GList *hash_dat
  * client.
  * @param server_struct is the main structure for the server.
  * @param connection is the connection in MHD
- * @param received_data is a gchar * string to the data that was received
+ * @param received_data is a guchar * string to the data that was received
  *        by the POST request.
  * @param length is the total length of POST request in bytes
  */
-static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data, guint64 length)
+static int answer_meta_json_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, guchar *received_data, guint64 length)
 {
     server_meta_data_t *smeta = NULL; /** server_meta_data_t *smeta stores meta data along with hostname of the client */
     gchar *answer = NULL;             /** gchar *answer : Do not free answer variable as MHD will do it for us !       */
     json_t *root = NULL;              /** json_t *root is the root that will contain all meta data json formatted      */
     json_t *array = NULL;             /** json_t *array is the array that will receive base64 encoded hashs            */
 
-    smeta = convert_json_to_smeta_data(received_data);
+    smeta = convert_json_to_smeta_data((gchar *)received_data);
 
     if (smeta != NULL && smeta->meta != NULL)
         {   /* The convertion went well and smeta contains the meta data */
@@ -856,10 +844,10 @@ static int answer_meta_json_post_request(server_struct_t *server_struct, struct 
  * hashs
  * @param server_struct is the main structure for the server.
  * @param connection is the connection in MHD
- * @param received_data is a gchar * string to the data that was received
+ * @param received_data is a guchar * string to the data that was received
  *        by the POST request.
  */
-static int answer_hash_array_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data)
+static int answer_hash_array_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, guchar *received_data)
 {
     gchar *answer = NULL;         /** gchar *answer : Do not free answer variable as MHD will do it for us !  */
     json_t *root = NULL;          /** json_t *root is the root that will contain all meta data json formatted */
@@ -872,11 +860,11 @@ static int answer_hash_array_post_request(server_struct_t *server_struct, struct
     if (connection != NULL && received_data != NULL)
         {
 
-            root = load_json(received_data);
+            root = load_json((gchar *)received_data);
             hash_data_list = extract_glist_from_array(root, "hash_list", TRUE);
             json_decref(root);
 
-            print_debug(_("Received hash array of %zd bytes size\n"), strlen(received_data));
+            print_debug(_("Received hash array of %zd bytes size\n"), strlen((const gchar *)received_data));
 
             array = find_needed_hashs(server_struct, hash_data_list);
 
@@ -909,13 +897,13 @@ static int answer_hash_array_post_request(server_struct_t *server_struct, struct
  * @param read is the size of the data beeing read and leading to this
  *        hash
  */
-static void print_received_data_for_hash(guint8 *hash, gssize read)
+static void print_received_data_for_hash(guint8 *hash, gssize size_read)
 {
     gchar *encoded_hash = NULL;
     gchar *string_read = NULL;
 
     encoded_hash = g_base64_encode(hash, HASH_LEN);
-    string_read = g_strdup_printf("%"G_GSSIZE_FORMAT, read);
+    string_read = g_strdup_printf("%"G_GSSIZE_FORMAT, size_read);
 
     print_debug(_("Received data for hash: \"%s\" (%s bytes)\n"), encoded_hash, string_read);
 
@@ -928,16 +916,16 @@ static void print_received_data_for_hash(guint8 *hash, gssize read)
  * Answers /Data.json POST request by answering to the client 'Ok'.
  * @param server_struct is the main structure for the server.
  * @param connection is the connection in MHD
- * @param received_data is a gchar * string to the data that was received
+ * @param received_data is a guchar * string to the data that was received
  *        by the POST request.
  */
-static int answer_data_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data)
+static int answer_data_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, guchar *received_data)
 {
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     hash_data_t *hash_data = NULL;
     int success = MHD_NO;
 
-    hash_data = convert_string_to_hash_data(received_data);
+    hash_data = convert_string_to_hash_data((gchar *)received_data);
     add_hash_size_to_dedup_bytes(server_struct->stats, hash_data);
 
     if (get_debug_mode() == TRUE)
@@ -965,10 +953,10 @@ static int answer_data_post_request(server_struct_t *server_struct, struct MHD_C
  * Answers /Data_Array.json POST request by answering to the client 'Ok'.
  * @param server_struct is the main structure for the server.
  * @param connection is the connection in MHD
- * @param received_data is a gchar * string to the data that was received
+ * @param received_data is a guchar * string to the data that was received
  *        by the POST request.
  */
-static int answer_data_array_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, gchar *received_data)
+static int answer_data_array_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, guchar *received_data)
 {
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     hash_data_t *hash_data = NULL;
@@ -980,7 +968,7 @@ static int answer_data_array_post_request(server_struct_t *server_struct, struct
     gboolean debug = FALSE;
 
     elapsed = new_clock_t();
-    root = load_json(received_data);
+    root = load_json((gchar *)received_data);
     end_clock(elapsed, "load_json");
     hash_data_list = extract_glist_from_array(root, "data_array", FALSE);
     head = hash_data_list;
@@ -1026,11 +1014,11 @@ static int answer_data_array_post_request(server_struct_t *server_struct, struct
  * @param server_struct is the main structure for the server.
  * @param connection is the connection in MHD
  * @param url is the requested url
- * @param received_data is a gchar * string to the data that was received
+ * @param received_data is a guchar * string to the data that was received
  *        by the POST request.
  * @param length is received_data length (in bytes)
  */
-static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, gchar *received_data, guint64 length)
+static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, guchar *received_data, guint64 length)
 {
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     int success = MHD_NO;

@@ -117,7 +117,7 @@ typedef struct
  */
 typedef struct
 {
-    gchar *buffer;   /**< buffer that will grab all upload_data from MHD_ahc callback       */
+    guchar *buffer;  /**< buffer that will grab all upload_data from MHD_ahc callback       */
     guint64 pos;     /**< position in the buffer (at the end it is the size of that buffer) */
     guint64 number;  /**< number of upload_data buffers received                            */
 } upload_t;

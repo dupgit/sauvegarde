@@ -190,7 +190,7 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize,
     GError *error = NULL;
     GList *hash_data_list = NULL;
     hash_data_t *hash_data = NULL;
-    gssize read = 0;
+    gssize size_read = 0;
     guchar *buffer = NULL;
     GChecksum *checksum = NULL;
     guint8 *a_hash = NULL;
@@ -207,15 +207,15 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize,
                     buffer = (guchar *) g_malloc(blocksize);
                     a_hash = (guint8 *) g_malloc(digest_len);
 
-                    read = g_input_stream_read((GInputStream *) stream, buffer, blocksize, NULL, &error);
+                    size_read = g_input_stream_read((GInputStream *) stream, buffer, blocksize, NULL, &error);
 
-                    while (read != 0 && error == NULL)
+                    while (size_read != 0 && error == NULL)
                         {
-                            g_checksum_update(checksum, buffer, read);
+                            g_checksum_update(checksum, buffer, size_read);
                             g_checksum_get_digest(checksum, a_hash, &digest_len);
 
                             /* Need to save data and read in hash_data_t structure */
-                            hash_data = new_hash_data_t(buffer, read, a_hash, cmptype);
+                            hash_data = new_hash_data_t(buffer, size_read, a_hash, cmptype);
 
                             hash_data_list = g_list_prepend(hash_data_list, hash_data);
                             g_checksum_reset(checksum);
@@ -224,7 +224,7 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize,
                             buffer = (guchar *) g_malloc(blocksize);
                             a_hash = (guint8 *) g_malloc(digest_len);
 
-                            read = g_input_stream_read((GInputStream *) stream, buffer, blocksize, NULL, &error);
+                            size_read = g_input_stream_read((GInputStream *) stream, buffer, blocksize, NULL, &error);
                         }
 
                     if (error != NULL)
@@ -976,7 +976,7 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
     GList *hash_data_list = NULL;
     GList *saved_list = NULL;
     hash_data_t *hash_data = NULL;
-    gssize read = 0;
+    gssize size_read = 0;
     guchar *buffer = NULL;
     GChecksum *checksum = NULL;
     guint8 *a_hash = NULL;
@@ -1005,16 +1005,16 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                             buffer = (guchar *) g_malloc(meta->blocksize);
                             a_hash = (guint8 *) g_malloc(digest_len);
 
-                            read = g_input_stream_read((GInputStream *) stream, buffer, meta->blocksize, NULL, &error);
-                            read_bytes = read_bytes + read;
+                            size_read = g_input_stream_read((GInputStream *) stream, buffer, meta->blocksize, NULL, &error);
+                            read_bytes = read_bytes + size_read;
 
-                            while (read != 0 && error == NULL)
+                            while (size_read != 0 && error == NULL)
                                 {
-                                    g_checksum_update(checksum, buffer, read);
+                                    g_checksum_update(checksum, buffer, size_read);
                                     g_checksum_get_digest(checksum, a_hash, &digest_len);
 
                                     /* Need to save 'data', 'read' and digest hash in an hash_data_t structure */
-                                    hash_data = new_hash_data_t(buffer, read, a_hash, cmptype);
+                                    hash_data = new_hash_data_t(buffer, size_read, a_hash, cmptype);
                                     hash_data_list = g_list_prepend(hash_data_list, hash_data);
 
                                     g_checksum_reset(checksum);
@@ -1030,8 +1030,8 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
 
                                     buffer = (guchar *) g_malloc(meta->blocksize);
                                     a_hash = (guint8 *) g_malloc(digest_len);
-                                    read = g_input_stream_read((GInputStream *) stream, buffer, meta->blocksize, NULL, &error);
-                                    read_bytes = read_bytes + read;
+                                    size_read = g_input_stream_read((GInputStream *) stream, buffer, meta->blocksize, NULL, &error);
+                                    read_bytes = read_bytes + size_read;
                                 }
 
                             if (error != NULL)

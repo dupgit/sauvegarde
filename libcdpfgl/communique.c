@@ -115,11 +115,11 @@ static gchar *copy_buffer(void *buffer, size_t len)
  * @returns a newly allocated gchar * string that may be (or not) NULL
  *          terminated and that contains buffer followed by buf1.
  */
-gchar *concat_buffer(gchar *buffer, guint64 pos, gchar *buf1, size_t len)
+guchar *concat_buffer(guchar *buffer, guint64 pos, guchar *buf1, size_t len)
 {
-    gchar *concat = NULL;
+    guchar *concat = NULL;
 
-    concat = (gchar *) g_malloc(pos + len + 1);
+    concat = (guchar *) g_malloc(pos + len + 1);
     g_assert_nonnull(concat);
     if (buffer != NULL && buf1 != NULL)
         {
@@ -166,7 +166,7 @@ gchar *concat_buffer(gchar *buffer, guint64 pos, gchar *buf1, size_t len)
 static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 {
     comm_t *comm = (comm_t *) userp;
-    gchar *concat = NULL;
+    guchar *concat = NULL;
 
     if (comm != NULL)
         {
@@ -177,11 +177,11 @@ static size_t write_data(void *buffer, size_t size, size_t nmemb, void *userp)
                 }
             else
                 {
-                    concat = concat_buffer(comm->buffer, comm->pos, buffer, size * nmemb);
+                    concat = concat_buffer((guchar *) comm->buffer, comm->pos, buffer, size * nmemb);
                     comm->pos = comm->pos + size * nmemb;
 
                     free_variable(comm->buffer);
-                    comm->buffer = concat;
+                    comm->buffer = (gchar *) concat;
                 }
 
             comm->seq = comm->seq + 1;
@@ -401,7 +401,7 @@ gint post_url(comm_t *comm, gchar *url)
                     cmpbuf = compress_buffer(comm->readbuffer, comm->cmptype);
                     comm->length = cmpbuf->len;
                     readbuffer_orig = comm->readbuffer;
-                    comm->readbuffer =  cmpbuf->text;
+                    comm->readbuffer =  (gchar *) cmpbuf->text;
                 }
             else
                 {

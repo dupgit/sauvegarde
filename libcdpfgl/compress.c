@@ -165,14 +165,14 @@ static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer)
                         }
                     else if (comp != NULL)
                         {
-                            comp->text = (gchar *) destbuffer;
+                            comp->text = (guchar *) destbuffer;
                             comp->len = destlen;
                             comp->comp = TRUE;
                         }
                 }
             else if (comp != NULL)
                 {
-                    comp->text = (gchar *) destbuffer;
+                    comp->text = (guchar *) destbuffer;
                     comp->len = destlen;
                     comp->comp = TRUE;
                 }
@@ -191,7 +191,7 @@ static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer)
  * @returns a compress_t structure containing a compressed text
  *          buffer.
  */
-compress_t *uncompress_buffer(gchar *buffer, guint64 cmplen, guint64 textlen, gint type)
+compress_t *uncompress_buffer(guchar *buffer, guint64 cmplen, guint64 textlen, gint type)
 {
     compress_t *comp = NULL;
 
@@ -248,7 +248,7 @@ static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len)
                         }
                     else if (comp != NULL)
                         {
-                            comp->text = (gchar *) destbuffer;
+                            comp->text = (guchar *) destbuffer;
                             comp->text[destlen] = '\0';
                             comp->len = destlen;
                             comp->comp = FALSE;
@@ -256,7 +256,7 @@ static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len)
                 }
             else
                 {
-                    comp->text = (gchar *) destbuffer;
+                    comp->text = (guchar *) destbuffer;
                     comp->text[destlen] = '\0';
                     comp->len = destlen;
                     comp->comp = FALSE;

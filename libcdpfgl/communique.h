@@ -185,6 +185,6 @@ extern gchar *create_x_get_hash_array_http_header(hash_extract_t *hash_extract, 
  * @returns a newly allocated gchar * string that may be (or not) NULL
  *          terminated and that contains buffer followed by buf1.
  */
-extern gchar *concat_buffer(gchar *buffer, guint64 pos, gchar *buf1, size_t len);
+extern guchar *concat_buffer(guchar *buffer, guint64 pos, guchar *buf1, size_t len);
 
 #endif /* #ifndef _COMMUNIQUE_H_ */

@@ -198,6 +198,17 @@ extern hash_extract_t *new_hash_extract_t(void);
  *        convert.
  * @returns a correctly filled gchar *string
  */
-gchar *convert_max_hashs_from_hash_list_to_gchar(hash_extract_t *hash_extract, gint max);
+extern gchar *convert_max_hashs_from_hash_list_to_gchar(hash_extract_t *hash_extract, gint max);
+
+
+/**
+ * Calculates a hash for the buffer string buffer with size bytes long
+ * @param buffer is a buffer thut may contain \0 bytes
+ * @param size is the size that we want to be taken into account to
+ *             calculate the hash of the buffer.
+ * @returns a newly allocatted guint8 * hash that may be freed when no
+ *          longer needed.
+ */
+extern guint8 *calculate_hash_for_string(guchar *buffer, guint size);
 
 #endif /* #ifndef _HASHS_H_ */
