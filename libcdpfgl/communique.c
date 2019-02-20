@@ -379,10 +379,7 @@ gint post_url(comm_t *comm, gchar *url)
     gchar *real_url = NULL;
     gchar *error_buf = NULL;
     gchar *len = NULL;
-    gchar *uncomp = NULL;
-    gchar *readbuffer_orig = NULL;   /** A pointer to keep readbuffer one while sending compressed data */
     struct curl_slist *chunk = NULL;
-    compress_t *cmpbuf = NULL;
 
     if (comm != NULL && url != NULL && comm->curl_handle != NULL && comm->conn != NULL && comm->readbuffer != NULL)
         {
@@ -394,19 +391,8 @@ gint post_url(comm_t *comm, gchar *url)
 
             /* readbuffer here should be plain base64 encoded text */
             comm->uncomp_len = strlen(comm->readbuffer);
+            comm->length = strlen(comm->readbuffer);
 
-            if (comm->cmptype != COMPRESS_NONE_TYPE)
-                {
-                    /* Compress here */
-                    cmpbuf = compress_buffer(comm->readbuffer, comm->cmptype);
-                    comm->length = cmpbuf->len;
-                    readbuffer_orig = comm->readbuffer;
-                    comm->readbuffer =  (gchar *) cmpbuf->text;
-                }
-            else
-                {
-                    comm->length = strlen(comm->readbuffer);
-                }
 
             curl_easy_reset(comm->curl_handle);
             curl_easy_setopt(comm->curl_handle, CURLOPT_POST, 1);
@@ -417,15 +403,6 @@ gint post_url(comm_t *comm, gchar *url)
             curl_easy_setopt(comm->curl_handle, CURLOPT_WRITEDATA, comm);
             curl_easy_setopt(comm->curl_handle, CURLOPT_ERRORBUFFER, error_buf);
             /* curl_easy_setopt(comm->curl_handle, CURLOPT_VERBOSE, 1L); */
-
-            /* Setting header options */
-            if (comm->cmptype == COMPRESS_ZLIB_TYPE)
-                {
-                    curl_easy_setopt(comm->curl_handle, CURLOPT_POSTFIELDSIZE, comm->length);
-                    chunk = curl_slist_append(chunk, "Content-Encoding: gzip");
-                    uncomp = g_strdup_printf("%s: %zd", X_UNCOMPRESSED_CONTENT_LENGTH, comm->uncomp_len);
-                    chunk = curl_slist_append(chunk, uncomp);
-                }
 
             chunk = curl_slist_append(chunk, "Transfer-Encoding: chunked");
             len = g_strdup_printf("Content-Length: %zd", comm->length);
@@ -449,20 +426,7 @@ gint post_url(comm_t *comm, gchar *url)
             free_variable(real_url);
             free_variable(error_buf);
             free_variable(len);
-            free_compress_t(cmpbuf);
             curl_slist_free_all(chunk);
-
-            /* This function is called by the one that manages the local database
-             * directly with the values that are in the database and a strlen() is
-             * done at it's begining so the data in the database MUST be strlen()
-             * compatible. That is to say that they MUST be stored untransformed.
-             * So we get them as they were when entering this function.
-             */
-            if (comm->cmptype != COMPRESS_NONE_TYPE)
-                {
-                    comm->readbuffer = readbuffer_orig;
-                    comm->length = comm->uncomp_len;
-                }
 
         }
 

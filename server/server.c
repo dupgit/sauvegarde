@@ -1022,30 +1022,6 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
 {
     gchar *answer = NULL;                   /** gchar *answer : Do not free answer variable as MHD will do it for us ! */
     int success = MHD_NO;
-    guint64 uncmp_len = 0;
-    compress_t *comp = NULL;
-    gshort cmptype = COMPRESS_NONE_TYPE;
-
-
-    cmptype = get_header_compression_type(connection);
-
-    if (cmptype != COMPRESS_NONE_TYPE)
-        {
-            uncmp_len = get_header_content_length(connection, X_UNCOMPRESSED_CONTENT_LENGTH, 2*DEFAULT_SERVER_BUFFER_SIZE);
-            /* print_debug(_("Lengths: compressed data received: %ld, uncompressed indication: %ld\n"), length, uncmp_len); */
-            comp = uncompress_buffer(received_data, length, uncmp_len, cmptype);
-
-            if (comp != NULL)
-                {
-                    /* print_debug(_("comp->text:\n")); */
-                    received_data = comp->text;
-                    length = comp->len;
-                }
-            else
-                {
-                    return MHD_NO;
-                }
-        }
 
     add_one_post_request(server_struct->stats);
 
@@ -1078,7 +1054,6 @@ static int process_received_data(server_struct_t *server_struct, struct MHD_Conn
             success = create_MHD_response(connection, answer, CT_PLAIN);
         }
 
-    free_compress_t(comp);
 
     return success;
 }
