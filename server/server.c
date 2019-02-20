@@ -347,7 +347,6 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
         {
             header_hd = header_hdl->data;
             hash = hash_to_string(header_hd->hash);
-            print_debug("Retrieving: %s - ", hash);
             hash_data = backend->retrieve_data(server_struct, hash);
             free_variable(hash);
 
@@ -361,14 +360,12 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
                         }
                     else
                         {
-                            print_debug("uncompress_buffer(%p, %ld, %ld, %hd)\n", hash_data->data, hash_data->read, hash_data->uncmplen, hash_data->cmptype);
                             compress = uncompress_buffer(hash_data->data, hash_data->read, hash_data->uncmplen, hash_data->cmptype);
 
                             if (compress != NULL)
                                 {
                                     concat = concat_buffer(final_buffer, size, compress->text, compress->len);
                                     buffer_len = compress->len;
-                                    print_debug("buffer: %s, buffer_len: %ld and uncmplen: %ld and size: %ld\n", compress->text, buffer_len, hash_data->uncmplen, size);
                                     free_compress_t(compress);
                                 }
                             else
@@ -391,7 +388,6 @@ static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, stru
 
     a_clock = new_clock_t();
 
-    print_debug("final_buffer size: %ld\n", size);
     a_hash = calculate_hash_for_string(final_buffer, size);
     hash_data = new_hash_data_t_as_is((guchar *) final_buffer, size, a_hash, COMPRESS_NONE_TYPE, size);
     answer = convert_hash_data_t_to_string(hash_data);
@@ -824,6 +820,7 @@ static int answer_hash_array_post_request(server_struct_t *server_struct, struct
             hash_data_list = extract_glist_from_array(root, "hash_list", TRUE);
             json_decref(root);
 
+            /* strlen here is possible because received_data is a text base64 encoded structure */
             print_debug(_("Received hash array of %zd bytes size\n"), strlen((const gchar *)received_data));
 
             array = find_needed_hashs(server_struct, hash_data_list);
@@ -942,7 +939,7 @@ static int answer_data_array_post_request(server_struct_t *server_struct, struct
 
             if (debug == TRUE)
                 {
-                    /* Only for debbugging ! */
+                    /* Only for debugging ! */
                     print_received_data_for_hash(hash_data->hash, hash_data->read);
                 }
 

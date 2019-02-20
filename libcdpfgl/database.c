@@ -1185,10 +1185,10 @@ db_t *open_database(gchar *dirname, gchar *filename)
 
                     database->version_filename = g_strdup_printf("%s.version", database_name);
                     database->db = db;
-                    database->stmts = new_stmts(db);
                     sqlite3_extended_result_codes(db, 1);
 
                     verify_if_tables_exists(database);
+                    database->stmts = new_stmts(db);
                     database->version = get_database_version(database->version_filename, KN_CLIENT_DATABASE);
                     migrate_schema_if_needed(database);
 
