@@ -216,6 +216,10 @@ static GList *calculate_hash_data_list_for_file(GFile *a_file, gint64 blocksize,
 
                             /* Need to save data and read in hash_data_t structure */
                             hash_data = new_hash_data_t(buffer, size_read, a_hash, cmptype);
+                            if (cmptype != COMPRESS_NONE_TYPE)
+                                {
+                                    free_variable(buffer); /* buffer has been compressed and is no longer needed in the program */
+                                }
 
                             hash_data_list = g_list_prepend(hash_data_list, hash_data);
                             g_checksum_reset(checksum);
@@ -1016,6 +1020,10 @@ static void process_big_file_not_in_cache(main_struct_t *main_struct, meta_data_
                                     /* Need to save 'data', 'read' and digest hash in an hash_data_t structure */
                                     hash_data = new_hash_data_t(buffer, size_read, a_hash, cmptype);
                                     hash_data_list = g_list_prepend(hash_data_list, hash_data);
+                                    if (cmptype != COMPRESS_NONE_TYPE)
+                                        {
+                                            free_variable(buffer); /* buffer has been compressed and is no longer needed in the program */
+                                        }
 
                                     g_checksum_reset(checksum);
                                     digest_len = HASH_LEN;

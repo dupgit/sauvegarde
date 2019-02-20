@@ -29,7 +29,7 @@
 
 
 static void zlib_print_error(char *filename, int lineno, int ret);
-static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer);
+static compress_t *zlib_compress_buffer(compress_t *comp, guchar *buffer, guint size);
 static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len);
 
 
@@ -79,7 +79,7 @@ void free_compress_t(compress_t *comp)
  * @returns a compress_t structure containing a compressed text
  *          buffer.
  */
-compress_t *compress_buffer(gchar *buffer, gint type)
+compress_t *compress_buffer(guchar *buffer, guint size, gint type)
 {
     compress_t *comp = NULL;
 
@@ -87,7 +87,7 @@ compress_t *compress_buffer(gchar *buffer, gint type)
 
     if (type == COMPRESS_ZLIB_TYPE && comp != NULL)
         {
-            comp = zlib_compress_buffer(comp, buffer);
+            comp = zlib_compress_buffer(comp, buffer, size);
         }
 
     return comp;
@@ -139,16 +139,16 @@ static void zlib_print_error(char *filename, int lineno, int ret)
  * @returns a compress_t structure with compressed data in it
  *          or NULL in case that something went wrong.
  */
-static compress_t *zlib_compress_buffer(compress_t *comp, gchar *buffer)
+static compress_t *zlib_compress_buffer(compress_t *comp, guchar *buffer, guint size)
 {
     int ret = Z_OK;
     glong srclen = 0;
     uLongf destlen = 0;
     Bytef *destbuffer = NULL;
 
-    srclen = strlen(buffer);
+    srclen = (glong) size;
     destlen = compressBound((uLong) srclen);
-    destbuffer = (Bytef *) g_malloc(sizeof(Bytef)*destlen + 1);
+    destbuffer = (Bytef *) g_malloc(sizeof(Bytef)*(destlen + 2));
 
     if (destbuffer != NULL)
         {

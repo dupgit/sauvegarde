@@ -239,7 +239,7 @@ void free_hdt_struct(gpointer data)
  * Inits and returns a newly hash_data_t structure.
  * @returns a newly hash_data_t structure.
  */
-hash_data_t *new_hash_data_t(guchar *data, gssize read, guint8 *hash, gshort cmptype)
+hash_data_t *new_hash_data_t(guchar *data, gssize size_read, guint8 *hash, gshort cmptype)
 {
     hash_data_t *hash_data = NULL;
     compress_t *compress = NULL;
@@ -249,18 +249,18 @@ hash_data_t *new_hash_data_t(guchar *data, gssize read, guint8 *hash, gshort cmp
 
     if (cmptype != COMPRESS_NONE_TYPE && data != NULL)
         {
-            compress = compress_buffer((gchar *)data, (gint) cmptype);
-            hash_data->data = (guchar *) compress->text;
+            compress = compress_buffer(data, size_read, (gint) cmptype);
+            hash_data->data = compress->text;
             hash_data->read = compress->len;
-            hash_data->uncmplen = read;
+            hash_data->uncmplen = size_read;
             free_variable(compress); /* do not free compress->text as its reference is now used in hash_data->data. */
-            free_variable(data);     /* This variable is not used here and it's reference may be lost in that case. */
+            /* data variable is not used anymore (it has been replaced by compress->text) it has to be freed by the caller */
         }
     else
         {
             hash_data->data = data;
-            hash_data->read = read;
-            hash_data->uncmplen = read;
+            hash_data->read = size_read;
+            hash_data->uncmplen = size_read;
         }
 
     hash_data->hash = hash;

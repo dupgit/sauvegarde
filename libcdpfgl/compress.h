@@ -76,7 +76,7 @@ extern void free_compress_t(compress_t *comp);
  * @returns a compress_t structure containing a compressed text
  *          buffer.
  */
-extern compress_t *compress_buffer(gchar *buffer, gint type);
+extern compress_t *compress_buffer(guchar *buffer, guint size, gint type);
 
 
 /**

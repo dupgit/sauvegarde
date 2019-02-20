@@ -36,7 +36,6 @@ static gchar *get_data_from_a_specific_hash(server_struct_t *server_struct, gcha
 static gchar *get_argument_value_from_key(struct MHD_Connection *connection, gchar *key, gboolean encoded);
 static gboolean get_boolean_argument_value_from_key(struct MHD_Connection *connection, gchar *key);
 static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Connection *connection);
-static hash_data_t *create_one_hash_data_t_from_hash_data_list(GList *hash_data_list, guint size);
 static gchar *get_data_from_a_list_of_hashs(server_struct_t *server_struct, struct MHD_Connection *connection);
 static json_t *fills_json_with_get_stats(json_t *get, req_get_t *get_stats);
 static json_t *fills_json_with_post_stats(json_t *post, req_post_t *post_stats);
@@ -50,7 +49,6 @@ static int answer_hash_array_post_request(server_struct_t *server_struct, struct
 static void print_received_data_for_hash(guint8 *hash, gssize read);
 static int process_received_data(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, guchar *received_data, guint64 length);
 static guint64 get_header_content_length(struct MHD_Connection *connection, gchar *header, guint64 default_value);
-static gshort get_header_compression_type(struct MHD_Connection *connection);
 static int process_post_request(server_struct_t *server_struct, struct MHD_Connection *connection, const char *url, void **con_cls, const char *upload_data, size_t *upload_data_size);
 static int print_out_key(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
 static void print_headers(struct MHD_Connection *connection);
@@ -307,44 +305,6 @@ static gchar *get_a_list_of_files(server_struct_t *server_struct, struct MHD_Con
         }
 
     return answer;
-}
-
-
-/**
- * @param hash_data_list is a GList of hash_data_t structure.
- * @param size is a guint number that represents the sum of all 'read'
- *        fields in the hash_data_list. It will be the 'read' field
- *        of the returned hash_data_t.
- * @returns a newlly allocated hash_data_t structure filled with data
- *          from all data fields of the list and read is the sum of all
- *          read fields of the list.
- */
-static hash_data_t *create_one_hash_data_t_from_hash_data_list(GList *hash_data_list, guint size)
-{
-    guchar *data = NULL;
-    hash_data_t *hash_data = NULL;
-    guint8 *binary = NULL;
-    guint pos = 0;
-    gshort cmptype = COMPRESS_NONE_TYPE;
-
-    data = (guchar *) g_malloc(size);
-
-    pos = 0;
-    while (hash_data_list != NULL)
-        {
-            hash_data = hash_data_list->data;
-            cmptype = hash_data->cmptype;    /* We do assume that cmptype is the same for all the list */
-
-            memcpy(data + pos, hash_data->data, hash_data->read);
-            pos = pos + hash_data->read;
-
-            hash_data_list = g_list_next(hash_data_list);
-        }
-
-    binary = calculate_hash_for_string(data, size);
-    hash_data = new_hash_data_t(data, size, binary, cmptype);
-
-    return hash_data;
 }
 
 
@@ -1089,36 +1049,6 @@ static guint64 get_header_content_length(struct MHD_Connection *connection, gcha
 
     return len;
 }
-
-/**
- * @param connection is the connection in MHD
- * @returns a gshort as a compression type (COMPRESS_*_TYPE as defined
- *          in libcdpfgl/compress.h). Returns COMPRESS_NONE_TYPE by default
- */
-static gshort get_header_compression_type(struct MHD_Connection *connection)
-{
-    const char *encoding = NULL;
-
-    encoding = MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "Content-Encoding");
-
-    if (encoding != NULL)
-        {
-            print_debug("Encoding: '%s'\n", encoding);
-            if (g_strcmp0(encoding, "gzip") == 0)
-                {
-                    return COMPRESS_ZLIB_TYPE;
-                }
-            else
-                {
-                    return COMPRESS_NONE_TYPE;
-                }
-        }
-
-    return COMPRESS_NONE_TYPE;;
-}
-
-
-
 
 
 /**
