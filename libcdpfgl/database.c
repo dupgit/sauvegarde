@@ -232,7 +232,6 @@ static gint does_object_name_exists_in_returned_list(gchar *name, GList *list)
             list = list->next;
         }
 
-
     if (exists == TRUE)
         {
             return 0;
@@ -258,7 +257,7 @@ static gint does_object_name_exists_in_returned_list(gchar *name, GList *list)
 static gint does_db_object_exists(db_t *database, gchar *name, gint type)
 {
     char *error_message = NULL;
-    int result = 0;              /* result is used for the sqlite execution result */
+    int result = -3;              /* result is used for the sqlite execution result */
     list_t *container = NULL;
     gint object_exists = -1;     /* -1 is an SQL error and -2 is a struct error    */
     gchar *cmd = NULL;
@@ -297,7 +296,7 @@ static gint does_db_object_exists(db_t *database, gchar *name, gint type)
         }
 
     free_list_t(container);
-    return result;
+    return object_exists;
 }
 
 
@@ -381,6 +380,7 @@ static void check_and_create_object(db_t *database, gchar *name, gint type, gcha
     if (result == 1)
         {
             /* table or index does not exists and we have to create it */
+            print_debug(_("\t-> Creating database object: %s\n"), name);
             exec_sql_cmd(database, sql_creation_cmd , err_msg);
         }
 }
