@@ -3,7 +3,7 @@
  *    compress.c
  *    This file is part of "Sauvegarde" project.
  *
- *    (C) Copyright 2017 Olivier Delhomme
+ *    (C) Copyright 2017 - 2019 Olivier Delhomme
  *     e-mail : olivier.delhomme@free.fr
  *
  *    "Sauvegarde" is free software: you can redistribute it and/or modify
@@ -236,7 +236,8 @@ static compress_t *zlib_uncompress_buffer(compress_t *comp, guint64 len)
 
             ret = uncompress(destbuffer, &destlen, srcbuffer, sourcelen);
 
-            print_debug("ret : %d - Buffer (size %ld) uncompressed into a buffer (size %ld)\n", ret, sourcelen, destlen);
+            /* Only for heavy debug around zlib uncompression */
+            /* print_debug("ret : %d - Buffer (size %ld) uncompressed into a buffer (size %ld)\n", ret, sourcelen, destlen); */
 
             if (ret != Z_OK)
                 {

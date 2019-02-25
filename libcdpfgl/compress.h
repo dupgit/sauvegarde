@@ -3,7 +3,7 @@
  *    compress.h
  *    This file is part of "Sauvegarde" project.
  *
- *    (C) Copyright 2018 Olivier Delhomme
+ *    (C) Copyright 2017 - 2019 Olivier Delhomme
  *     e-mail : olivier.delhomme@free.fr
  *
  *    "Sauvegarde" is free software: you can redistribute it and/or modify
