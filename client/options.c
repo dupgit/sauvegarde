@@ -198,13 +198,17 @@ static void read_from_configuration_file(options_t *opt, gchar *filename)
  */
 static void set_compression_type(options_t *opt, gshort cmptype)
 {
+    gchar *compress_type_string = NULL;
+
     if (is_compress_type_allowed(cmptype))
         {
             opt->cmptype = cmptype;
         }
     else
         {
-            print_error(__FILE__, __LINE__, _("Unknown compression type: %d\n"), cmptype);
+            compress_type_string = get_compress_type_string();
+            print_error(__FILE__, __LINE__, _("Unknown compression type: %d. Allowed compression types are: %s\n"), cmptype, compress_type_string);
+            free_variable(compress_type_string);
             exit(EXIT_FAILURE);
         }
 }

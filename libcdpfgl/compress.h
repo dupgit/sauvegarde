@@ -98,6 +98,14 @@ extern compress_t *uncompress_buffer(guchar *buffer, guint64 cmplen, guint64 tex
  */
 extern gboolean is_compress_type_allowed(gshort cmptype);
 
+
+/**
+ * @returns a string that contains allowed compression type. This string is to be
+ *          printed to the user it may be freed when no longer needed
+ */
+extern gchar *get_compress_type_string(void);
+
+
 #endif  /* _COMPRESS_H_ */
 
 

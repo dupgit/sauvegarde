@@ -284,3 +284,18 @@ gboolean is_compress_type_allowed(gshort cmptype)
             return FALSE;
         }
 }
+
+
+/**
+ * @returns a string that contains allowed compression type. This string is to be
+ *          printed to the user it may be freed when no longer needed
+ */
+gchar *get_compress_type_string(void)
+{
+
+    return g_strdup_printf("%d, %d", COMPRESS_NONE_TYPE, COMPRESS_ZLIB_TYPE);
+
+}
+
+
+
