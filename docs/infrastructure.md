@@ -16,8 +16,10 @@ evolve in the future.
 
 
 * "client" carve and monitors a filesystem, cuts files into pieces of
-  16384 bytes (by default) and transmits every pieces along side with
-  meta data of each files to server, the server that saves everything.
+  16384 bytes (by default - the user can define a another size or use
+  the adaptive mode that has a variable size) and transmits every 
+  pieces along side with   meta data of each files to server, the 
+  server that saves everything.
 
 * "server" is the main cdpfgl server. Each client communicates with it
   and it keeps every chunks of every files with their attributes.
@@ -34,8 +36,9 @@ GAsyncQueue (glib). Binary data are not transformed and structures are
 passed in place (no copy in memory).
 
 Between programs messages are passed throught HTTP protocol via JSON
-structured messages (jansson). All binary data are transformed into base64
-encoded strings.
+structured messages (jansson). Each transmitted block may be compressed 
+(at user's will). All binary data are transformed into base64 encoded 
+strings.
 
 msg_id field is used to identify message type. It is based on ENC_* macros
 defined in packing.h. ENC_META_DATA indicates that the JSON string contains
@@ -162,8 +165,11 @@ The API is described in [API.md](docs/API.md)
 Stores meta data into flat files and data directly in directories and
 subdirectories named by their hash. Default level of indirection is 2. This
 means that each hash is stored in 2 subdirectories: beef0345... is stored
-in /be/ef/beef0345... with level 2 and in /be/ef/03/beef0345.... with level
-3.
+in /be/ef/0345... with level 2 and in /be/ef/03/45.... with level 3.
+Each filename of a hash ends with ',x' where x is a number representing
+the compression type used to store the hash. Along with the hash file a
+small meta file is stored (filename ends with .meta). It contains the
+original size of the uncompressed block.
 
 Considering that we do not want more than 256 files in (level + 1) and
 considering that each hash saved has the default size of 16 Kb then
