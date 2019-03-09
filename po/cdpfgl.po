@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-26 19:47+0100\n"
+"POT-Creation-Date: 2019-03-09 23:02+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -276,7 +276,7 @@ msgid "Reading configuration from file %s\n"
 msgstr ""
 
 #: ../client/options.c:183 ../restore/options.c:83
-#: ../server/file_backend.c:449 ../server/options.c:137
+#: ../server/file_backend.c:477 ../server/options.c:137
 #, c-format
 msgid "Failed to open %s configuration file: %s\n"
 msgstr ""
@@ -823,87 +823,91 @@ msgid ""
 "mtime: %s, size: %s, filename: %s, owner: %s, group: %s, uid: %d, gid: %d\n"
 msgstr ""
 
-#: ../server/file_backend.c:127 ../server/file_backend.c:258
+#: ../server/file_backend.c:125 ../server/file_backend.c:289
 #, c-format
 msgid "Error: unable to write to file %s (%s bytes written).\n"
 msgstr ""
 
-#: ../server/file_backend.c:135
+#: ../server/file_backend.c:133
 #, c-format
 msgid "Error: unable to open file %s to append meta-data in it.\n"
 msgstr ""
 
-#: ../server/file_backend.c:143
+#: ../server/file_backend.c:141
 msgid ""
 "Error: no server_meta_data_t structure or missing hostname or missing "
 "meta_data_t * structure.\n"
 msgstr ""
 
-#: ../server/file_backend.c:185
+#: ../server/file_backend.c:183
+msgid "Error while reading cmptype value"
+msgstr ""
+
+#: ../server/file_backend.c:209
 msgid "Error while reading uncmplen value"
 msgstr ""
 
-#: ../server/file_backend.c:271
+#: ../server/file_backend.c:302
 #, c-format
 msgid "Error: unable to open file %s to write data in it.\n"
 msgstr ""
 
-#: ../server/file_backend.c:281
+#: ../server/file_backend.c:312
 msgid "Error: no hash_data_t structure or hash in it or missing data in it.\n"
 msgstr ""
 
-#: ../server/file_backend.c:418
+#: ../server/file_backend.c:446
 #, c-format
 msgid "dir-level (%d) should be > 1 and < 5\n"
 msgstr ""
 
-#: ../server/file_backend.c:443
+#: ../server/file_backend.c:471
 msgid "Could not load [file_backend] file-directory from file."
 msgstr ""
 
-#: ../server/file_backend.c:444
+#: ../server/file_backend.c:472
 msgid "Could not load [file_backend] dir-level from file."
 msgstr ""
 
-#: ../server/file_backend.c:508
+#: ../server/file_backend.c:536
 #, c-format
 msgid "Please wait while creating directories\n"
 msgstr ""
 
-#: ../server/file_backend.c:510
+#: ../server/file_backend.c:538
 #, c-format
 msgid "Finished !\n"
 msgstr ""
 
-#: ../server/file_backend.c:517
+#: ../server/file_backend.c:545
 msgid "Error: no server structure or no backend structure.\n"
 msgstr ""
 
-#: ../server/file_backend.c:575
+#: ../server/file_backend.c:603
 #, c-format
 msgid "Error while reading the file: %s\n"
 msgstr ""
 
-#: ../server/file_backend.c:841
+#: ../server/file_backend.c:869
 #, c-format
 msgid "file_backend: filter is: %s && %s && %s && %s\n"
 msgstr ""
 
-#: ../server/file_backend.c:849
+#: ../server/file_backend.c:877
 #, c-format
 msgid "file_backend: Reading in %s\n"
 msgstr ""
 
-#: ../server/file_backend.c:880 ../server/file_backend.c:1018
+#: ../server/file_backend.c:908 ../server/file_backend.c:999
 #, c-format
 msgid "Error: unable to open file %s to read data from it.\n"
 msgstr ""
 
-#: ../server/file_backend.c:888
+#: ../server/file_backend.c:916
 msgid "file_backend: Something is wrong with backend initialization!\n"
 msgstr ""
 
-#: ../server/file_backend.c:1000
+#: ../server/file_backend.c:981
 #, c-format
 msgid "Error: unable to read from file %s (%s bytes read): %s.\n"
 msgstr ""

@@ -4,6 +4,7 @@ client/m_fanotify.c
 client/m_fanotify.h
 client/options.c
 client/options.h
+config.h
 libcdpfgl/clock.c
 libcdpfgl/clock.h
 libcdpfgl/communique.c
