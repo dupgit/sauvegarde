@@ -49,7 +49,7 @@
  */
 #define GN_META ("Meta")
 #define KN_UNCMPLEN ("uncmplen")
-
+#define KN_CMPTYPE ("cmptype")
 
 /**
  * @struct file_backend_t

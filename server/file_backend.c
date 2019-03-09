@@ -32,7 +32,7 @@
 #include "server.h"
 
 
-static gchar *build_filename_from_hash(gchar *path, gchar *hex_hash, gshort cmptype, guint level);
+static gchar *build_filename_from_hash(gchar *path, gchar *hex_has, guint level);
 static void make_all_subdirectories(file_backend_t *file_backend);
 static buffer_t *init_buffer_structure(GFileInputStream *stream);
 static void free_buffer_t(buffer_t *a_buffer);
@@ -40,8 +40,6 @@ static void read_one_buffer(buffer_t *a_buffer);
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer);
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query);
 static GList *get_file_list_from_regex_and_query(GFileInputStream *stream, GRegex *a_regex, query_t *query);
-static gshort get_cmptype_used_for_hash(gchar *path, gchar *hex_hash, guint level);
-static gshort test_one_compression_type_for_hash(gchar *path, gchar *hex_hash, gshort cmptype, guint level);
 
 /**
  * Stores meta data into a flat file. A file is created for each host that
@@ -155,18 +153,44 @@ void file_store_smeta(server_struct_t *server_struct, server_meta_data_t *smeta)
  * @param cmptype is the compression type (COMPRESS_NONE_TYPE, COMPRESS_ZLIB_TYPE).
  * @param level is the level chosen to store hashs.
  */
-static gchar *build_filename_from_hash(gchar *path, gchar *hex_hash, gshort cmptype, guint level)
+static gchar *build_filename_from_hash(gchar *path, gchar *hex_hash, guint level)
 {
     gchar *hash_cmp_filename = NULL;
     gchar *filename = NULL;
 
     /* Stores compression type in the hash filename's separated by a , */
-    hash_cmp_filename = g_strdup_printf("%s,%hd", hex_hash + level*2, cmptype);
+    hash_cmp_filename = g_strdup_printf("%s", hex_hash + level*2);
     filename = g_build_filename(path, hash_cmp_filename, NULL);
 
     free_variable(hash_cmp_filename);
 
     return filename;
+}
+
+
+static gshort get_cmptype_from_file_meta(gchar *filename)
+{
+    gchar *filename_meta = NULL;
+    GKeyFile *keyfile = NULL;
+    GError *error = NULL;
+    gshort cmptype = COMPRESS_NONE_TYPE;
+
+    filename_meta = g_strdup_printf("%s.meta", filename);
+    keyfile = g_key_file_new();
+
+    if (g_key_file_load_from_file(keyfile, filename_meta, G_KEY_FILE_KEEP_COMMENTS, &error))
+        {
+            cmptype = (gshort) read_int_from_file(keyfile, filename_meta, GN_META, KN_CMPTYPE, _("Error while reading cmptype value"), COMPRESS_NONE_TYPE);
+        }
+
+    g_key_file_free(keyfile);
+
+    if (is_compress_type_allowed(cmptype) == FALSE)
+        {
+            cmptype = COMPRESS_NONE_TYPE;
+        }
+
+    return cmptype;
 }
 
 
@@ -191,7 +215,7 @@ static gssize get_uncmplen_from_file_meta(gchar *filename)
 }
 
 
-static void set_uncmplen_to_file_meta(gchar *filename, gssize uncmplen)
+static void set_metadata_to_file_meta(gchar *filename, gssize uncmplen, gshort cmptype)
 {
     gchar *filename_meta = NULL;
     GKeyFile *keyfile = NULL;
@@ -200,11 +224,18 @@ static void set_uncmplen_to_file_meta(gchar *filename, gssize uncmplen)
     filename_meta = g_strdup_printf("%s.meta", filename);
     keyfile = g_key_file_new();
 
+    if (is_compress_type_allowed(cmptype) == FALSE)
+        {
+            cmptype = COMPRESS_NONE_TYPE;
+        }
+
     g_key_file_set_int64(keyfile, GN_META, KN_UNCMPLEN, uncmplen);
+    g_key_file_set_integer(keyfile, GN_META, KN_CMPTYPE, cmptype);
 
     g_key_file_save_to_file(keyfile, filename_meta, &error);
 
     g_key_file_free(keyfile);
+    free_variable(filename_meta);
 }
 
 
@@ -242,8 +273,8 @@ void file_store_data(server_struct_t *server_struct, hash_data_t *hash_data)
                     path = make_path_from_hash(prefix, hash_data->hash, file_backend->level);
                     hex_hash = hash_to_string(hash_data->hash);
 
-                    filename = build_filename_from_hash(path, hex_hash, hash_data->cmptype, file_backend->level);
-                    set_uncmplen_to_file_meta(filename, hash_data->uncmplen);
+                    filename = build_filename_from_hash(path, hex_hash, file_backend->level);
+                    set_metadata_to_file_meta(filename, hash_data->uncmplen, hash_data->cmptype);
 
                     data_file = g_file_new_for_path(filename);
                     stream = g_file_replace(data_file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
@@ -303,7 +334,6 @@ GList *file_build_needed_hash_list(server_struct_t *server_struct, GList *hash_d
     gchar *filename = NULL;
     gchar *path = NULL;
     gchar *prefix = NULL;
-    gchar *hash_cmp_filename = NULL;
     file_backend_t *file_backend = NULL;
     hash_data_t *hash_data = NULL;
     hash_data_t *needed_hash_data = NULL;
@@ -320,9 +350,7 @@ GList *file_build_needed_hash_list(server_struct_t *server_struct, GList *hash_d
                     hash_data = head->data;
                     path = make_path_from_hash(prefix, hash_data->hash, file_backend->level);
                     hex_hash = hash_to_string(hash_data->hash);
-                    hash_cmp_filename = g_strdup_printf("%s,%hd", hex_hash, hash_data->cmptype);
-                    filename = g_build_filename(path, hash_cmp_filename, NULL);
-                    free_variable(hash_cmp_filename);
+                    filename = build_filename_from_hash(path, hex_hash, file_backend->level);
                     data_file = g_file_new_for_path(filename);
 
                     if (g_file_query_exists(data_file, NULL) == FALSE && hash_data_is_in_list(hash_data, needed) == FALSE)
@@ -900,53 +928,6 @@ gchar *file_get_list_of_files(server_struct_t *server_struct, query_t *query)
 
 
 /**
- * Tests if a particular file exists or not and return the value of the cmptype
- * thar exists.
- * @param path is the complete path for the filename
- * @param hex_hash is a gchar * hash in hexadecimal format as retrieved
- *        from the url.
- */
-static gshort test_one_compression_type_for_hash(gchar *path, gchar *hex_hash, gshort cmptype, guint level)
-{
-    gchar *filename = NULL;
-    gshort result = -1;
-
-    filename = build_filename_from_hash(path, hex_hash, cmptype, level);
-
-    if (file_exists(filename))
-        {
-            result = cmptype;
-        }
-
-    free_variable(filename);
-
-    return result;
-}
-
-
-/**
- * returns cmptype 'guessed' by testing file existence. It first tries
- * to get compressed files.
- * @param path is the complete path for the filename
- * @param hex_hash is a gchar * hash in hexadecimal format as retrieved
- *        from the url.
- */
-static gshort get_cmptype_used_for_hash(gchar *path, gchar *hex_hash, guint level)
-{
-   gshort result = -1;
-
-   result = test_one_compression_type_for_hash(path, hex_hash, COMPRESS_ZLIB_TYPE, level);
-
-   if (result == -1)
-    {
-        result = test_one_compression_type_for_hash(path, hex_hash, COMPRESS_NONE_TYPE, level);
-    }
-
-   return result;
-}
-
-
-/**
  * Retrieves data from a flat file. The file is named by its hash in hex
  * representation (one should easily check that the sha256sum of such a
  * file gives its name !).
@@ -980,8 +961,8 @@ hash_data_t *file_retrieve_data(server_struct_t *server_struct, gchar *hex_hash)
             prefix = g_build_filename((gchar *) file_backend->prefix, "data", NULL);
             hash = string_to_hash(hex_hash);
             path = make_path_from_hash(prefix, hash, file_backend->level);
-            cmptype = get_cmptype_used_for_hash(path, hex_hash, file_backend->level);
-            filename = build_filename_from_hash(path, hex_hash, cmptype, file_backend->level);
+            filename = build_filename_from_hash(path, hex_hash, file_backend->level);
+            cmptype = get_cmptype_from_file_meta(filename);
             data_file = g_file_new_for_path(filename);
             stream = g_file_read(data_file, NULL, &error);
 
