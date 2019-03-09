@@ -166,10 +166,9 @@ Stores meta data into flat files and data directly in directories and
 subdirectories named by their hash. Default level of indirection is 2. This
 means that each hash is stored in 2 subdirectories: beef0345... is stored
 in /be/ef/0345... with level 2 and in /be/ef/03/45.... with level 3.
-Each filename of a hash ends with ',x' where x is a number representing
-the compression type used to store the hash. Along with the hash file a
-small meta file is stored (filename ends with .meta). It contains the
-original size of the uncompressed block.
+Along with the hash file a small meta file is stored (filename ends with 
+.meta). It contains the original size of the uncompressed block and the
+compression type that was used to store the hash.
 
 Considering that we do not want more than 256 files in (level + 1) and
 considering that each hash saved has the default size of 16 Kb then
