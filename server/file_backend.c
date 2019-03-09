@@ -353,6 +353,9 @@ GList *file_build_needed_hash_list(server_struct_t *server_struct, GList *hash_d
                     filename = build_filename_from_hash(path, hex_hash, file_backend->level);
                     data_file = g_file_new_for_path(filename);
 
+                    /* @todo : do we need to request compressed hash if we have an uncompressed version ?
+                     * Also : how can the program thy to answer this without knowing that the hash will be compressed or not ? */
+
                     if (g_file_query_exists(data_file, NULL) == FALSE && hash_data_is_in_list(hash_data, needed) == FALSE)
                         {
                             /* file does not exists and is not in the needed list so we need it!
