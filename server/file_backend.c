@@ -3,7 +3,7 @@
  *    file_backend.c
  *    This file is part of "Sauvegarde" project.
  *
- *    (C) Copyright 2015 - 2017 Olivier Delhomme
+ *    (C) Copyright 2015 - 2019 Olivier Delhomme
  *     e-mail : olivier.delhomme@free.fr
  *
  *    "Sauvegarde" is free software: you can redistribute it and/or modify
@@ -40,6 +40,9 @@ static void read_one_buffer(buffer_t *a_buffer);
 static gchar *extract_one_line_from_buffer(buffer_t *a_buffer);
 static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *query);
 static GList *get_file_list_from_regex_and_query(GFileInputStream *stream, GRegex *a_regex, query_t *query);
+static gshort get_cmptype_from_file_meta(gchar *filename);
+static gssize get_uncmplen_from_file_meta(gchar *filename);
+static void set_metadata_to_file_meta(gchar *filename, gssize uncmplen, gshort cmptype);
 
 /**
  * Stores meta data into a flat file. A file is created for each host that
@@ -168,6 +171,12 @@ static gchar *build_filename_from_hash(gchar *path, gchar *hex_hash, guint level
 }
 
 
+/**
+ * Gets cmptype from meta hash file.
+ * @param filename is the filename of the hash. The meta file has the
+ *        same name but ends with .meta
+ * @returns cmptype if possible or COMPRESS_NONE_TYPE.
+ */
 static gshort get_cmptype_from_file_meta(gchar *filename)
 {
     gchar *filename_meta = NULL;
@@ -194,6 +203,12 @@ static gshort get_cmptype_from_file_meta(gchar *filename)
 }
 
 
+/**
+ * Gets uncmplen: The uncompressed len of hash file from meta hash file.
+ * @param filename is the filename of the hash. The meta file has the
+ *        same name but ends with .meta
+ * @returns the len of the uncompressed hash file or 0.
+ */
 static gssize get_uncmplen_from_file_meta(gchar *filename)
 {
     gchar *filename_meta = NULL;
@@ -214,7 +229,13 @@ static gssize get_uncmplen_from_file_meta(gchar *filename)
     return uncmplen;
 }
 
-
+/**
+ * Sets cmptype and uncmplen in meta hash file.
+ * @param filename is the filename of the hash. The meta file has the
+ *        same name but ends with .meta
+ * @param uncmplen the len of the uncompressed hash file.
+ * @param cmptype the compression type used to store this hash file.
+ */
 static void set_metadata_to_file_meta(gchar *filename, gssize uncmplen, gshort cmptype)
 {
     gchar *filename_meta = NULL;
