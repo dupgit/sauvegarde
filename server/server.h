@@ -71,7 +71,7 @@
  * Protection under Gnu/Linux server)
  */
 #define SERVER_AUTHORS ("Olivier DELHOMME <olivier.delhomme@free.fr>")
-#define SERVER_DATE _("02 26 2019")
+#define SERVER_DATE _("03 10 2019")
 #define SERVER_LICENSE _("GPL v3 or later")
 #define SERVER_VERSION _("0.0.12")
 #define PROGRAM_NAME ("cdpfglserver")

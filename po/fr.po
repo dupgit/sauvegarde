@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sauvegarde 0.0.12\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-09 23:02+0100\n"
-"PO-Revision-Date: 2019-03-09 23:02+0100\n"
+"POT-Creation-Date: 2019-03-10 13:47+0100\n"
+"PO-Revision-Date: 2019-03-10 13:48+0100\n"
 "Last-Translator: Olivier Delhomme <olivier.delhomme@free.fr>\n"
 "Language-Team: French <olivier.delhomme@free.fr>\n"
 "Language: fr\n"
@@ -115,8 +115,8 @@ msgid "Unable to add signal handlers\n"
 msgstr "Impossible d'ajouter une fonction pour traiter les signaux\n"
 
 #: ../client/client.h:75 ../restore/restore.h:80 ../server/server.h:74
-msgid "02 26 2019"
-msgstr "26 02 2019"
+msgid "03 10 2019"
+msgstr "10 03 2019"
 
 #: ../client/client.h:76 ../restore/restore.h:81 ../server/server.h:75
 msgid "GPL v3 or later"
@@ -286,7 +286,7 @@ msgid "Reading configuration from file %s\n"
 msgstr "Lecture de la configuration depuis le fichier %s\n"
 
 #: ../client/options.c:183 ../restore/options.c:83
-#: ../server/file_backend.c:477 ../server/options.c:137
+#: ../server/file_backend.c:480 ../server/options.c:137
 #, c-format
 msgid "Failed to open %s configuration file: %s\n"
 msgstr "Impossible d'ouvrir le fichier de configuration %s : %s\n"
@@ -925,62 +925,62 @@ msgstr ""
 "Erreur : pas de structure hash_data_t ou hash ou données manquants à "
 "l'intérieur.\n"
 
-#: ../server/file_backend.c:446
+#: ../server/file_backend.c:449
 #, c-format
 msgid "dir-level (%d) should be > 1 and < 5\n"
 msgstr "'dir-level' (%d) devrait être > 1 et < 5\n"
 
-#: ../server/file_backend.c:471
+#: ../server/file_backend.c:474
 msgid "Could not load [file_backend] file-directory from file."
 msgstr ""
 "Impossible de charger l'option [file_backend] file-directory depuis le "
 "fichier."
 
-#: ../server/file_backend.c:472
+#: ../server/file_backend.c:475
 msgid "Could not load [file_backend] dir-level from file."
 msgstr ""
 "Impossible de charger l'option [file_backend] dir-level depuis le fichier."
 
-#: ../server/file_backend.c:536
+#: ../server/file_backend.c:539
 #, c-format
 msgid "Please wait while creating directories\n"
 msgstr "Merci de patientez pendant la création des dossiers\n"
 
-#: ../server/file_backend.c:538
+#: ../server/file_backend.c:541
 #, c-format
 msgid "Finished !\n"
 msgstr "Fini !\n"
 
-#: ../server/file_backend.c:545
+#: ../server/file_backend.c:548
 msgid "Error: no server structure or no backend structure.\n"
 msgstr "Erreur : aucune structure serveur ou aucune structure de backend.\n"
 
-#: ../server/file_backend.c:603
+#: ../server/file_backend.c:606
 #, c-format
 msgid "Error while reading the file: %s\n"
 msgstr "Erreur en lisant le fichier : %s\n"
 
-#: ../server/file_backend.c:869
+#: ../server/file_backend.c:872
 #, c-format
 msgid "file_backend: filter is: %s && %s && %s && %s\n"
 msgstr "file_backend : le filtre est : %s && %s && %s && %s\n"
 
-#: ../server/file_backend.c:877
+#: ../server/file_backend.c:880
 #, c-format
 msgid "file_backend: Reading in %s\n"
 msgstr "file_backend : Lecture dans %s\n"
 
-#: ../server/file_backend.c:908 ../server/file_backend.c:999
+#: ../server/file_backend.c:911 ../server/file_backend.c:1002
 #, c-format
 msgid "Error: unable to open file %s to read data from it.\n"
 msgstr "Erreur impossible d'ouvrir le fichier %s pour y lire des données.\n"
 
-#: ../server/file_backend.c:916
+#: ../server/file_backend.c:919
 msgid "file_backend: Something is wrong with backend initialization!\n"
 msgstr ""
 "file_backend : Quelque chose ne va pas avec l'initialisation du backend !\n"
 
-#: ../server/file_backend.c:981
+#: ../server/file_backend.c:984
 #, c-format
 msgid "Error: unable to read from file %s (%s bytes read): %s.\n"
 msgstr ""
@@ -1194,8 +1194,8 @@ msgstr "En écoute sur le port %d\n"
 msgid "Error: initialization failed.\n"
 msgstr "Erreur : initialisation échouée.\n"
 
-#~ msgid "09 10 2017"
-#~ msgstr "10 09 2017"
+#~ msgid "02 26 2019"
+#~ msgstr "26 02 2019"
 
 #~ msgid "server's IP address: %s\n"
 #~ msgstr "Adresse IP du serveur : %s\n"
