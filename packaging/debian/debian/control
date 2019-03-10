@@ -15,9 +15,9 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends}
 Breaks:
- cdpfgl (<= 0.0.11)
+ cdpfgl (<= 0.0.12)
 Replaces:
- cdpfgl (<= 0.0.11)
+ cdpfgl (<= 0.0.12)
 Description: Continuous data protection for GNU/Linux server
  cdpfglserver is the server part of Continuous data protection for GNU/Linux
  project. It is a stateless REST http server that listen to a specific port
@@ -31,9 +31,9 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends}
 Breaks:
- cdpfgl (<= 0.0.11)
+ cdpfgl (<= 0.0.12)
 Replaces:
- cdpfgl (<= 0.0.11)
+ cdpfgl (<= 0.0.12)
 Description: Continuous data protection for GNU/Linux client
  cdpfglclient is the client part of Continuous data protection for GNU/Linux
  project. It monitors your filesystem(s) and send blocks of files to the
@@ -47,9 +47,9 @@ Depends:
  ${shlibs:Depends},
  ${misc:Depends}
 Breaks:
- cdpfgl (<= 0.0.11)
+ cdpfgl (<= 0.0.12)
 Replaces:
- cdpfgl (<= 0.0.11)
+ cdpfgl (<= 0.0.12)
 Description: Common library for all programs of continuous data protection for GNU/Linux
  This library contains common parts for cdpfglserver, cdpfglclient and
  cdpfglrestore.
