@@ -622,7 +622,7 @@ static void read_one_buffer(buffer_t *a_buffer)
             a_buffer->size = g_input_stream_read((GInputStream *) a_buffer->stream, a_buffer->buf, FILE_BACKEND_BUFFER_SIZE, NULL, &error);
             a_buffer->pos = 0;
 
-            if (a_buffer->size < 0 && error != NULL)
+            if (error != NULL)
                 {
                     print_error(__FILE__, __LINE__, _("Error while reading the file: %s\n"), error->message);
                     free_error(error);
@@ -648,9 +648,9 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
     gchar *a_line = NULL;
     gchar *whole_line = NULL;
     gssize i = 0;
-    gint comma = 0;
-    gboolean end = FALSE;
-    gboolean in_string = FALSE;
+    gint comma = 0;             /* Counts the fields */
+    gboolean end = FALSE;       /* end of line detected */
+    gboolean in_string = FALSE; /* True when beetween " " and False otherwise */
 
     if (a_buffer != NULL && a_buffer->buf != NULL)
         {
@@ -669,7 +669,7 @@ static gchar *extract_one_line_from_buffer(buffer_t *a_buffer)
                                     comma++;
                                 }
 
-                            if (a_buffer->buf[i] == '\n' && in_string == FALSE && comma >=12)
+                            if (a_buffer->buf[i] == '\n' && in_string == FALSE && comma >= 12)
                                 {
                                     end = TRUE;
                                 }
@@ -804,11 +804,13 @@ static meta_data_t *extract_from_line(gchar *line, GRegex *a_regex, query_t *que
                             else
                                 {
                                     free_meta_data_t(meta, TRUE);
+                                    meta = NULL;
                                 }
                         }
                     else
                         {
                              free_meta_data_t(meta, TRUE);
+                             meta = NULL;
                         }
                 }
             else

@@ -595,15 +595,12 @@ gchar *get_substring_from_string(gchar *string, gboolean decodeit)
                 {
                     new_string = (gchar *) g_base64_decode(base64, &len);
                     free_variable(base64);
+                    base64 = g_strndup(new_string, len);
+                    free_variable(new_string);
                 }
-            else
-                {
-                    new_string = base64;
-                }
-
         }
 
-    return new_string;
+    return base64;
 }
 
 
